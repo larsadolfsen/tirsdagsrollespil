@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@400;700&family=Metamorphous&family=Spectral:ital,wght@0,400;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Grenze Gotisch", serif;
+  --font-serif: "Spectral", serif;
+  --font-magic: "Metamorphous", serif;
+
+  --color-wfrp-red: #8b0000;
+  --color-wfrp-gold: #c5a059;
+  --color-wfrp-parchment: #f4e4bc;
+  --color-wfrp-dark: #121212;
+  --color-wfrp-stone: #2a2a2a;
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility wfrp-table-header {
+  @apply px-4 py-2 border-b border-white/5 bg-black/40 text-[8px] font-bold text-gray-700 uppercase tracking-widest items-center;
+}
+
+@utility wfrp-table-row {
+  @apply p-3 sm:px-4 items-center border-b border-white/5 last:border-0 transition-colors;
+  &:hover {
+    @apply bg-white/[0.02];
+  }
+}
+
+@utility wfrp-label-sm {
+  @apply text-[8px] font-bold text-gray-700 uppercase tracking-widest;
+}
+
+@utility wfrp-label-xs {
+  @apply text-[10px] font-bold text-gray-600 uppercase bg-black/30 rounded px-1 w-fit;
+}
+
+@utility wfrp-action-btn {
+  @apply flex items-center justify-center rounded bg-[#121212] border border-[#303030] hover:border-wfrp-gold/50 text-gray-200 hover:text-wfrp-gold transition-all cursor-pointer active:scale-90 shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+}
+
+@utility wfrp-surface-strong {
+  @apply bg-[#181818] border-[#303030];
+}
+
+@utility wfrp-surface-soft {
+  @apply bg-black/20 border-white/5;
+}
+
+@utility wfrp-card {
+  @apply wfrp-surface-strong border rounded-lg p-3 lg:p-4 shadow-lg;
+}
+
+@utility wfrp-sidebar-shell {
+  @apply wfrp-surface-strong fixed top-0 right-0 h-full flex flex-col z-50 overflow-hidden border-l shadow-2xl;
+}
+
+@utility wfrp-sidebar-header {
+  @apply flex items-center justify-between border-b border-[#303030] bg-[#222];
+}
+
+@utility wfrp-stepper-btn {
+  @apply rounded border border-[#303030] p-1 text-gray-400 transition-all cursor-pointer hover:bg-[#303030] focus-visible:outline-none focus-visible:ring-1;
+}
+
+@utility wfrp-icon-btn {
+  @apply rounded text-gray-400 transition-colors cursor-pointer hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+}
+
+@utility wfrp-mini-action-btn {
+  @apply px-2.5 py-1 bg-[#222] border border-[#303030] rounded text-[9px] font-black text-gray-500 hover:text-white hover:border-wfrp-gold/50 transition-all active:scale-95 cursor-pointer shadow-sm;
+}
+
+@utility wfrp-dice-adjust-btn {
+  @apply h-5 w-5 flex items-center justify-center rounded border border-[#303030] bg-[#121212] text-gray-500 transition-all hover:bg-[#222] hover:text-white disabled:opacity-20 cursor-pointer;
+}
+
+@utility wfrp-roll-cta {
+  @apply w-fit px-6 py-1.5 bg-[#303030] text-[9px] font-bold uppercase tracking-widest text-gray-300 rounded transition-all active:scale-95 cursor-pointer hover:bg-[#404040] hover:text-white;
+}
+
+@utility wfrp-subpanel {
+  @apply wfrp-surface-soft border rounded-lg;
+}
+
+@utility wfrp-subpanel-shell {
+  @apply wfrp-subpanel overflow-hidden shadow-sm;
+}
+
+@utility wfrp-digit-window {
+  @apply relative h-8 w-8 overflow-hidden rounded border border-[#303030] bg-black/40;
+}
+
+@utility wfrp-panel-title {
+  @apply text-[11px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-2;
+}
+
+@utility wfrp-section-head {
+  @apply flex items-center justify-between gap-4;
+}
+
+@utility wfrp-section-meta {
+  @apply text-[10px] font-black uppercase tracking-widest text-gray-500;
+}
+
+@utility wfrp-subpanel-header {
+  @apply border-b border-white/5 bg-black/10 px-4 py-1;
+}
+
+@utility wfrp-panel-copy {
+  @apply text-sm leading-relaxed text-gray-400;
+}
+
+@utility wfrp-panel-rule {
+  @apply h-px flex-1 bg-white/5;
+}
+
+@utility wfrp-list-header {
+  @apply px-4 py-2 border-b border-white/5 bg-black/30 text-[9px] font-black text-gray-500 uppercase tracking-widest items-center;
+}
+
+@utility wfrp-list-group {
+  @apply px-2 py-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500;
+}
+
+@utility wfrp-stat-tile {
+  @apply p-3 bg-black/20 border border-white/5 rounded;
+}
+
+@utility wfrp-badge {
+  @apply px-2 py-0.5 rounded border inline-flex w-fit items-center gap-2 text-[10px] font-black uppercase tracking-widest;
+}
+
+@utility wfrp-skill-link {
+  @apply inline-block text-xs font-semibold text-gray-400 hover:text-wfrp-gold transition-colors text-left cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/30 rounded px-1 -ml-1;
+}
+
+@utility wfrp-list-cell-strong {
+  @apply text-xs font-semibold text-gray-400 text-left;
+}
+
+@utility wfrp-roll-btn {
+  @apply wfrp-action-btn h-8 px-2 font-mono font-bold text-sm text-gray-300 min-w-[32px] shadow-sm;
+}
+
+@utility wfrp-property-pill {
+  @apply inline-flex h-8 items-center justify-start gap-2 rounded-[8px] border border-white/5 bg-black/30 px-4 text-[10px] font-bold text-gray-500 transition-all cursor-pointer hover:text-wfrp-gold hover:border-wfrp-gold/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+}
+
+@utility wfrp-table-label {
+  @apply text-[10px] font-bold text-gray-600 uppercase tracking-widest;
+}
+
+@utility wfrp-sidebar-title {
+  @apply font-bold text-gray-100 leading-none;
+}
+
+@utility wfrp-sidebar-kicker {
+  @apply text-[10px] font-black uppercase tracking-widest text-gray-500 mt-1;
+}
+
+@utility wfrp-sidebar-section {
+  @apply text-[10px] font-black uppercase tracking-[0.2em] text-wfrp-gold/60 border-b border-wfrp-gold/20 pb-4;
+}
+
+@utility wfrp-sidebar-label {
+  @apply text-[9px] font-black uppercase tracking-widest text-gray-600 mb-0.5;
+}
+
+@utility wfrp-sidebar-body {
+  @apply text-[12px] leading-relaxed text-gray-400;
+}
+
+@utility wfrp-sidebar-meta {
+  @apply text-[11px] font-bold text-gray-400;
+}
+
+body {
+  @apply bg-[#0c0c0c] text-[#d4d4d4] font-serif selection:bg-wfrp-gold selection:text-wfrp-dark;
+}

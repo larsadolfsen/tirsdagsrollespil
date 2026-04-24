@@ -1,0 +1,171 @@
+export type RulesTextDefinition = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+export type SkillType = "basic" | "advanced";
+
+export interface SkillDefinition extends RulesTextDefinition {
+  type: SkillType;
+  grouped?: boolean;
+  specialisationLabel?: string;
+}
+
+export interface SkillSpecialisationDefinition {
+  id: string;
+  skillId: string;
+  name: string;
+}
+
+export interface ActionDefinition extends RulesTextDefinition {}
+
+export interface PropertyDefinition extends RulesTextDefinition {}
+
+export interface TalentDefinition extends RulesTextDefinition {}
+
+export interface SpellDefinition extends RulesTextDefinition {
+  cn: number;
+  range: string;
+  target: string;
+  duration: string;
+  damage: string;
+}
+
+export interface ItemDefinition extends RulesTextDefinition {
+  type: string;
+  encumbrance: number;
+  value: number;
+  currency: string;
+  carries?: number;
+  weaponId?: string;
+  armourId?: string;
+}
+
+export type Availability = "common" | "scarce" | "rare" | "exotic";
+
+export type ArmourLocation = "head" | "arms" | "body" | "legs";
+
+export type ArmourQualityOrFlawInstance = {
+  id: string;
+  value?: number | string;
+};
+
+export type ArmourPenalty = {
+  skillId: string;
+  value: number;
+};
+
+export type ArmourDefinition = {
+  id: string;
+  name: string;
+  category: "soft_leather" | "boiled_leather" | "mail" | "plate";
+  price: string;
+  encumbrance: number;
+  availability: Availability;
+  locations: ArmourLocation[];
+  aps: number;
+  penalties: ArmourPenalty[];
+  qualities: ArmourQualityOrFlawInstance[];
+  flaws: ArmourQualityOrFlawInstance[];
+  notes?: string[];
+};
+
+export type MeleeWeaponGroup =
+  | "basic"
+  | "brawling"
+  | "cavalry"
+  | "fencing"
+  | "flail"
+  | "parry"
+  | "polearm"
+  | "two_handed";
+
+export type RangedWeaponGroup =
+  | "blackpowder"
+  | "bow"
+  | "crossbow"
+  | "engineering"
+  | "entangling"
+  | "explosives"
+  | "sling"
+  | "throwing";
+
+export type WeaponAvailability = "common" | "average" | "scarce" | "rare" | "exotic";
+
+export interface WeaponPrice {
+  value: number;
+  currency: string;
+  label?: string;
+}
+
+export interface WeaponDefinitionBase extends RulesTextDefinition {
+  type: "melee_weapon" | "ranged_weapon";
+  groupType: "melee" | "ranged";
+  price: WeaponPrice;
+  encumbrance: number;
+  availability: WeaponAvailability;
+  damage: string;
+  hands?: 1 | 2;
+  qualities: string[];
+  flaws: string[];
+  specialRules: string[];
+}
+
+export interface MeleeWeaponDefinition extends WeaponDefinitionBase {
+  type: "melee_weapon";
+  groupType: "melee";
+  group: MeleeWeaponGroup;
+  reach: string;
+}
+
+export interface RangedWeaponDefinition extends WeaponDefinitionBase {
+  type: "ranged_weapon";
+  groupType: "ranged";
+  group: RangedWeaponGroup;
+  range: string;
+}
+
+export type WeaponDefinition = MeleeWeaponDefinition | RangedWeaponDefinition;
+
+export interface CareerRankDefinition {
+  rank: number;
+  name: string;
+  status: string;
+}
+
+export interface CareerDefinition {
+  id: string;
+  name: string;
+  tier: string;
+  skillIds: string[];
+  talentIds: string[];
+  ranks: CareerRankDefinition[];
+}
+
+export interface RaceDefinition {
+  id: string;
+  name: string;
+  attributeRolls: Record<string, string>;
+  woundsFormula: string;
+  fate: number;
+  resilience: number;
+  extraPoints: number;
+  movement: number;
+}
+
+export interface Ruleset {
+  id: string;
+  name: string;
+  races: RaceDefinition[];
+  skills: SkillDefinition[];
+  skillSpecialisations: SkillSpecialisationDefinition[];
+  actions: ActionDefinition[];
+  properties: PropertyDefinition[];
+  talents: TalentDefinition[];
+  spells: SpellDefinition[];
+  items: ItemDefinition[];
+  weapons: WeaponDefinition[];
+  armours: ArmourDefinition[];
+  careers: CareerDefinition[];
+}

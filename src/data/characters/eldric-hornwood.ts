@@ -1,0 +1,60 @@
+import type { CharacterRecord } from "../../types";
+
+export const eldricHornwood: CharacterRecord = {
+  id: "eldric_hornwood",
+  rulesetId: "wfrp4e",
+  name: "Eldric Hornwood",
+  race: "Human (Reiklander)",
+  career: {
+    careerId: "soldier_halberdier",
+    currentRank: 2,
+  },
+  wounds: { current: 14, max: 14, temp: 0 },
+  fate: 3,
+  fortune: 3,
+  resilience: 2,
+  resolve: 2,
+  move: 4,
+  corruption: 0,
+  maxCorruption: 100,
+  xpTotal: 10000,
+  coins: {
+    gc: 2,
+    s: 7,
+    d: 8,
+  },
+  attributes: {
+    WS: 42,
+    BS: 31,
+    S: 35,
+    T: 38,
+    I: 33,
+    Ag: 32,
+    Dex: 29,
+    Int: 28,
+    WP: 34,
+    Fel: 30,
+  },
+  skills: [
+    { skillId: "perception", advances: 5 },
+    { skillId: "melee", specialisationId: "melee_basic", advances: 10 },
+    { skillId: "melee", specialisationId: "melee_parry", advances: 6 },
+    { skillId: "language", specialisationId: "language_reikspiel", advances: 4 },
+  ],
+  equipment: [
+    { id: "halberd_1", itemId: "halberd_item", equipped: true },
+    { id: "crossbow_1", itemId: "crossbow_item", equipped: true },
+    { id: "leather_jack_1", itemId: "leather_jack_item", equipped: true },
+    { id: "backpack_1", itemId: "backpack_item", equipped: true },
+    { id: "rations_1", itemId: "rations_5_item", equipped: false, containerId: "backpack_1" },
+    { id: "sword_1", itemId: "sword_item", equipped: false, containerId: "backpack_1" },
+  ],
+  talents: [
+    { talentId: "combat_aware" },
+    { talentId: "strike_to_injure" },
+  ],
+  spells: [
+    { spellId: "bolt" },
+    { spellId: "blast" },
+  ],
+};
