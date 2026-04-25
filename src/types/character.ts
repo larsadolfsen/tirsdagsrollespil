@@ -51,6 +51,7 @@ export interface CharacterRecord {
   xpTotal: number;
   coins: CharacterCoins;
   attributes: Record<string, number>;
+  characteristicAdvances?: Record<string, number>;
   skills: CharacterSkillRecord[];
   equipment: CharacterEquipmentRecord[];
   talents: CharacterTalentRecord[];

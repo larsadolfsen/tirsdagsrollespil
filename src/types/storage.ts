@@ -8,6 +8,7 @@ export interface CharacterProgressData {
   xpCurrent: number;
   xpBaselineTotal?: number;
   careerCurrentRank?: number;
+  characteristicAdvances?: Record<string, number>;
   skills: Record<string, number>;
   talentIds?: string[];
   equipment: Record<string, boolean>;

@@ -28,7 +28,7 @@ export type RulesIndex = {
   actionDescriptionByName: Record<string, string>;
   propertyDescriptionByName: Record<string, string>;
   weaponStatsByName: Record<string, WeaponStats>;
-  careerAdvancementByName: Record<string, { skills: string[]; talents: string[] }>;
+  careerAdvancementByName: Record<string, { skills: string[]; talents: string[]; characteristics: Array<{ key: string; availableFromRank: number }> }>;
   resolvedSkillOptions: Array<{ id: string; skillId: string; specialisationId?: string; name: string }>;
 };
 
@@ -98,6 +98,10 @@ function buildRulesIndex(ruleset: Ruleset): RulesIndex {
         talents: career.talentIds
           .map((talentId) => ruleset.talents.find((talent) => talent.id === talentId)?.name)
           .filter((name): name is string => Boolean(name)),
+        characteristics: career.characteristicAdvances.map((entry) => ({
+          key: entry.characteristic,
+          availableFromRank: entry.availableFromRank,
+        })),
       },
     ]),
   );
@@ -124,6 +128,7 @@ export function getCareerAdvancementData(
   return rulesIndex.careerAdvancementByName[`${career.name} / ${career.tier}`] ?? {
     skills: [],
     talents: [],
+    characteristics: [],
   };
 }
 
@@ -191,6 +196,15 @@ function applyCharacterProgress(
     character.careerRecord.ranks.find((rank) => rank.rank === progress.careerCurrentRank) ??
     character.careerRecord.ranks.find((rank) => rank.rank === character.careerRecord.level) ??
     null;
+  const baseCharacteristicAdvances = character.characteristicAdvances ?? {};
+  const currentCharacteristicAdvances = progress.characteristicAdvances ?? baseCharacteristicAdvances;
+  const attributes = Object.fromEntries(
+    Object.entries(character.attributes).map(([key, value]) => {
+      const baseAdvances = baseCharacteristicAdvances[key] ?? 0;
+      const currentAdvances = currentCharacteristicAdvances[key] ?? baseAdvances;
+      return [key, value + (currentAdvances - baseAdvances)];
+    }),
+  );
 
   return {
     ...character,
@@ -201,6 +215,8 @@ function applyCharacterProgress(
     corruption: progress.corruptionCurrent,
     level: resolvedRank?.rank ?? character.level,
     status: resolvedRank?.status ?? character.status,
+    attributes,
+    characteristicAdvances: currentCharacteristicAdvances,
     careerRecord: {
       ...character.careerRecord,
       level: resolvedRank?.rank ?? character.careerRecord.level,

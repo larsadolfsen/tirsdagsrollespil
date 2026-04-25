@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { 
   Plus,
@@ -249,8 +249,6 @@ function AdvancementSection({
 }
 
 function AppScreen() {
-  const TALENT_PURCHASE_COST = 100;
-
   const {
     selectedCharacterId,
     setSelectedCharacterId,
@@ -275,6 +273,8 @@ function AppScreen() {
     setXpCurrent,
     currentCareerRank,
     setCurrentCareerRank,
+    currentCharacteristicAdvances,
+    setCurrentCharacteristicAdvances,
     characterSkills,
     setCharacterSkills,
     characterTalents,
@@ -283,7 +283,7 @@ function AppScreen() {
     setEquipmentState,
   } = useGameSessionContext();
   const availableCharacters = listCharacters();
-  const [activeInfo, setActiveInfo] = useState<{ type: 'skill' | 'equipment' | 'talent' | 'spell' | 'property' | 'attack', name: string, extra?: any } | null>(null);
+  const [activeInfo, setActiveInfo] = useState<{ type: 'skill' | 'equipment' | 'talent' | 'spell' | 'property' | 'attack' | 'career' | 'characteristic', name: string, extra?: any } | null>(null);
   const [activeMainTab, setActiveMainTab] = useState<'actions' | 'inventory' | 'spells' | 'features' | 'background' | 'notes' | 'career'>('actions');
   const [activeActionCategory, setActiveActionCategory] = useState<ActionCategory>('all');
   const [activeCareerSubtab, setActiveCareerSubtab] = useState<CareerSubtab>('all');
@@ -306,11 +306,25 @@ function AppScreen() {
   });
   const [displayRoll, setDisplayRoll] = useState(0);
   const [activeInventoryMenu, setActiveInventoryMenu] = useState<InventoryMenuState | null>(null);
+  const [pendingCharacteristicAdvances, setPendingCharacteristicAdvances] = useState<Record<string, number>>({});
   const [pendingSkillAdvances, setPendingSkillAdvances] = useState<Record<string, number>>({});
-  const [pendingTalentPurchases, setPendingTalentPurchases] = useState<string[]>([]);
+  const [pendingTalentPurchases, setPendingTalentPurchases] = useState<Record<string, number>>({});
   const [pendingCareerRank, setPendingCareerRank] = useState<number | null>(null);
   const activeRollerRef = useRef<HTMLDivElement>(null);
   const inventoryMenuRef = useRef<HTMLDivElement>(null);
+  const pendingCharacteristicSpend = Object.entries(pendingCharacteristicAdvances).reduce<number>(
+    (total, [characteristicKey, count]) => {
+      const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
+
+      let nextTotal = total;
+      for (let step = 0; step < Number(count); step += 1) {
+        nextTotal += getCharacteristicAdvanceCost(baseAdvances + step);
+      }
+
+      return nextTotal;
+    },
+    0,
+  );
   const pendingSkillSpend = Object.entries(pendingSkillAdvances).reduce<number>(
     (total, [skillName, count]) => {
       const baseAdvances =
@@ -325,23 +339,27 @@ function AppScreen() {
     },
     0,
   );
-  const pendingTalentSpend = pendingTalentPurchases.length * TALENT_PURCHASE_COST;
-  const pendingSpentXp = pendingSkillSpend + pendingTalentSpend;
-  const pendingAvailableXp = Math.max(0, Number(xpCurrent) - pendingSpentXp);
+  const pendingTalentSpend = Object.entries(pendingTalentPurchases).reduce<number>(
+    (total, [talentName, count]) => {
+      const baseTakenCount = characterTalents.filter((talent) => talent.name === talentName).length;
+
+      let nextTotal = total;
+      for (let step = 0; step < Number(count); step += 1) {
+        nextTotal += getTalentPurchaseCost(baseTakenCount + step);
+      }
+
+      return nextTotal;
+    },
+    0,
+  );
   const displayedCareerRank = pendingCareerRank ?? currentCareerRank;
   const hasPendingCareerChanges =
+    Object.keys(pendingCharacteristicAdvances).length > 0 ||
     Object.keys(pendingSkillAdvances).length > 0 ||
-    pendingTalentPurchases.length > 0 ||
+    Object.keys(pendingTalentPurchases).length > 0 ||
     pendingCareerRank !== null;
   const totalEarnedXp = characterData.xpTotal;
   const spentXp = Math.max(0, totalEarnedXp - xpCurrent);
-  const advancementProgress = careerAdvancementData.skills.length === 0
-    ? 0
-    : Math.round(
-      (careerAdvancementData.skills.filter((skillName) =>
-        characterSkills.some((skill) => skill.displayName === skillName && skill.advances > 0),
-      ).length / careerAdvancementData.skills.length) * 100,
-    );
   const displayedCareerRankRecord =
     characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank) ??
     characterData.careerRecord.ranks.find((rank) => rank.rank === characterData.careerRecord.level) ??
@@ -352,8 +370,13 @@ function AppScreen() {
   const advancementCharacteristics = UI_LABELS.CHARACTERISTICS.map(({ key, label }) => ({
     key,
     label,
+    advances: currentCharacteristicAdvances[key] ?? 0,
+    pendingAdvances: pendingCharacteristicAdvances[key] ?? 0,
     value: characterData.attributes[key] ?? 0,
   }));
+  const availableCareerCharacteristicKeys = careerAdvancementData.characteristics
+    .filter((item) => item.availableFromRank <= displayedCareerRank)
+    .map((item) => item.key);
   const advancementSkillNames = [...new Set([
     ...careerAdvancementData.skills,
     ...characterSkills.map((skill) => skill.displayName),
@@ -362,6 +385,63 @@ function AppScreen() {
     ...careerAdvancementData.talents,
     ...characterTalents.map((talent) => talent.name),
   ])];
+  const hasCareerTalentRequirement = careerAdvancementData.talents.some((talentName) =>
+    characterTalents.some((talent) => talent.name === talentName) ||
+    (pendingTalentPurchases[talentName] ?? 0) > 0,
+  );
+  const isCareerStepComplete = (rank: number) => {
+    const requiredAdvances = rank * 5;
+    const availableCharacteristicKeys = careerAdvancementData.characteristics
+      .filter((item) => item.availableFromRank <= rank)
+      .map((item) => item.key);
+    const completedCharacteristics = availableCharacteristicKeys.filter((characteristicKey) => {
+      const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
+      const pendingAdvances = pendingCharacteristicAdvances[characteristicKey] ?? 0;
+      return baseAdvances + pendingAdvances >= requiredAdvances;
+    }).length;
+    const completedSkills = careerAdvancementData.skills.filter((skillName) => {
+      const baseAdvances =
+        characterSkills.find((skill) => skill.displayName === skillName)?.advances ?? 0;
+      const pendingAdvances = pendingSkillAdvances[skillName] ?? 0;
+      return baseAdvances + pendingAdvances >= requiredAdvances;
+    }).length;
+
+    return (
+      completedCharacteristics === availableCharacteristicKeys.length &&
+      completedSkills === careerAdvancementData.skills.length &&
+      hasCareerTalentRequirement
+    );
+  };
+  const getCareerAdvanceCost = (rank: number) => (isCareerStepComplete(rank) ? 100 : 200);
+  const pendingCareerSpend =
+    pendingCareerRank === null || pendingCareerRank <= currentCareerRank
+      ? 0
+      : Array.from(
+          { length: pendingCareerRank - currentCareerRank },
+          (_, index) => currentCareerRank + index,
+        ).reduce((total, rank) => total + getCareerAdvanceCost(rank), 0);
+  const pendingSpentXp =
+    pendingCharacteristicSpend + pendingSkillSpend + pendingTalentSpend + pendingCareerSpend;
+  const pendingAvailableXp = Math.max(0, Number(xpCurrent) - pendingSpentXp);
+  const requiredCareerAdvances = displayedCareerRank * 5;
+  const completedCareerCharacteristics = availableCareerCharacteristicKeys.filter((characteristicKey) => {
+    const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
+    const pendingAdvances = pendingCharacteristicAdvances[characteristicKey] ?? 0;
+    return baseAdvances + pendingAdvances >= requiredCareerAdvances;
+  }).length;
+  const completedCareerSkills = careerAdvancementData.skills.filter((skillName) => {
+    const baseAdvances =
+      characterSkills.find((skill) => skill.displayName === skillName)?.advances ?? 0;
+    const pendingAdvances = pendingSkillAdvances[skillName] ?? 0;
+    return baseAdvances + pendingAdvances >= requiredCareerAdvances;
+  }).length;
+  const careerProgressGoalCount = availableCareerCharacteristicKeys.length + careerAdvancementData.skills.length + 1;
+  const careerProgressCompletedCount =
+    completedCareerCharacteristics + completedCareerSkills + (hasCareerTalentRequirement ? 1 : 0);
+  const advancementProgress = careerProgressGoalCount === 0
+    ? 0
+    : Math.round((careerProgressCompletedCount / careerProgressGoalCount) * 100);
+  const nextCareerAdvanceCost = nextCareerRankRecord ? getCareerAdvanceCost(displayedCareerRank) : null;
 
   useEffect(() => {
     setActiveInfo(null);
@@ -370,8 +450,9 @@ function AppScreen() {
     setActiveCareerSubtab("all");
     setActiveInventoryMenu(null);
     setIsDiceLogOpen(false);
+    setPendingCharacteristicAdvances({});
     setPendingSkillAdvances({});
-    setPendingTalentPurchases([]);
+    setPendingTalentPurchases({});
     setPendingCareerRank(null);
     setRollHistory([]);
     setRollState({
@@ -442,9 +523,16 @@ function AppScreen() {
 
   const skillListRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const propertyListRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const talentListRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useLayoutEffect(() => {
+    if (activeInfo?.type === 'talent' && talentListRefs.current[activeInfo.name]) {
+      talentListRefs.current[activeInfo.name]?.scrollIntoView({ block: 'start' });
+    }
+  }, [activeInfo]);
 
   // WFRP 4e Advance Cost Table
-  const getAdvanceCost = (currentAdvances: number) => {
+  function getAdvanceCost(currentAdvances: number) {
     if (currentAdvances < 5) return 10;
     if (currentAdvances < 10) return 15;
     if (currentAdvances < 15) return 20;
@@ -460,7 +548,29 @@ function AppScreen() {
     if (currentAdvances < 65) return 320;
     if (currentAdvances < 70) return 380;
     return 440;
-  };
+  }
+
+  function getCharacteristicAdvanceCost(currentAdvances: number) {
+    if (currentAdvances < 5) return 25;
+    if (currentAdvances < 10) return 30;
+    if (currentAdvances < 15) return 40;
+    if (currentAdvances < 20) return 50;
+    if (currentAdvances < 25) return 70;
+    if (currentAdvances < 30) return 90;
+    if (currentAdvances < 35) return 120;
+    if (currentAdvances < 40) return 150;
+    if (currentAdvances < 45) return 190;
+    if (currentAdvances < 50) return 230;
+    if (currentAdvances < 55) return 280;
+    if (currentAdvances < 60) return 330;
+    if (currentAdvances < 65) return 390;
+    if (currentAdvances < 70) return 450;
+    return 520;
+  }
+
+  function getTalentPurchaseCost(currentTimesTaken: number) {
+    return 100 + currentTimesTaken * 100;
+  }
 
   const handleAdvanceSkill = (skillName: string) => {
     const skillIndex = characterSkills.findIndex(s => s.displayName === skillName);
@@ -675,23 +785,40 @@ function AppScreen() {
     }));
   };
 
-  const purchaseTalent = (talentName: string) => {
-    if (pendingAvailableXp < TALENT_PURCHASE_COST) return;
+  const purchaseCharacteristicAdvance = (characteristicKey: string) => {
+    const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
+    const pendingAdvances = pendingCharacteristicAdvances[characteristicKey] ?? 0;
+    const nextCost = getCharacteristicAdvanceCost(baseAdvances + pendingAdvances);
 
+    if (pendingAvailableXp < nextCost) return;
+
+    setPendingCharacteristicAdvances((prev) => ({
+      ...prev,
+      [characteristicKey]: (prev[characteristicKey] ?? 0) + 1,
+    }));
+  };
+
+  const purchaseTalent = (talentName: string) => {
     const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
-    if (
-      !talentDefinition ||
-      characterTalents.some((talent) => talent.id === talentDefinition.id) ||
-      pendingTalentPurchases.includes(talentName)
-    ) {
+    if (!talentDefinition) {
       return;
     }
 
-    setPendingTalentPurchases((prev) => [...prev, talentName]);
+    const baseTakenCount = characterTalents.filter((talent) => talent.name === talentName).length;
+    const pendingTakenCount = pendingTalentPurchases[talentName] ?? 0;
+    const nextCost = getTalentPurchaseCost(baseTakenCount + pendingTakenCount);
+
+    if (pendingAvailableXp < nextCost) return;
+
+    setPendingTalentPurchases((prev) => ({
+      ...prev,
+      [talentName]: (prev[talentName] ?? 0) + 1,
+    }));
   };
 
   const increasePendingCareerRank = () => {
     if (!nextCareerRankRecord) return;
+    if (nextCareerAdvanceCost === null || pendingAvailableXp < nextCareerAdvanceCost) return;
     setPendingCareerRank(displayedCareerRank + 1);
   };
 
@@ -717,12 +844,50 @@ function AppScreen() {
     });
   };
 
+  const removePendingCharacteristicAdvance = (characteristicKey: string) => {
+    setPendingCharacteristicAdvances((prev) => {
+      const current = prev[characteristicKey] ?? 0;
+      if (current <= 1) {
+        const { [characteristicKey]: _removed, ...rest } = prev;
+        return rest;
+      }
+
+      return {
+        ...prev,
+        [characteristicKey]: current - 1,
+      };
+    });
+  };
+
   const removePendingTalentPurchase = (talentName: string) => {
-    setPendingTalentPurchases((prev) => prev.filter((name) => name !== talentName));
+    setPendingTalentPurchases((prev) => {
+      const current = prev[talentName] ?? 0;
+      if (current <= 1) {
+        const { [talentName]: _removed, ...rest } = prev;
+        return rest;
+      }
+
+      return {
+        ...prev,
+        [talentName]: current - 1,
+      };
+    });
   };
 
   const saveCareerChanges = () => {
     if (!hasPendingCareerChanges) return;
+
+    if (Object.keys(pendingCharacteristicAdvances).length > 0) {
+      setCurrentCharacteristicAdvances((prev) => {
+        const nextAdvances = { ...prev };
+
+        for (const [characteristicKey, pendingCount] of Object.entries(pendingCharacteristicAdvances)) {
+          nextAdvances[characteristicKey] = (nextAdvances[characteristicKey] ?? 0) + pendingCount;
+        }
+
+        return nextAdvances;
+      });
+    }
 
     if (Object.keys(pendingSkillAdvances).length > 0) {
       setCharacterSkills((prev) => {
@@ -764,21 +929,24 @@ function AppScreen() {
       });
     }
 
-    if (pendingTalentPurchases.length > 0) {
+    if (Object.keys(pendingTalentPurchases).length > 0) {
       setCharacterTalents((prev) => {
         const nextTalents = [...prev];
 
-        for (const talentName of pendingTalentPurchases) {
+        for (const [talentName, pendingCount] of Object.entries(pendingTalentPurchases)) {
           const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
-          if (!talentDefinition || nextTalents.some((talent) => talent.id === talentDefinition.id)) {
+          if (!talentDefinition) {
             continue;
           }
 
-          nextTalents.push({
-            id: talentDefinition.id,
-            name: talentDefinition.name,
-            description: talentDefinition.description,
-          });
+          const purchaseCount = Number(pendingCount);
+          for (let step = 0; step < purchaseCount; step += 1) {
+            nextTalents.push({
+              id: talentDefinition.id,
+              name: talentDefinition.name,
+              description: talentDefinition.description,
+            });
+          }
         }
 
         return nextTalents;
@@ -790,8 +958,9 @@ function AppScreen() {
     }
 
     setXpCurrent((prev) => Math.max(0, prev - pendingSpentXp));
+    setPendingCharacteristicAdvances({});
     setPendingSkillAdvances({});
-    setPendingTalentPurchases([]);
+    setPendingTalentPurchases({});
     setPendingCareerRank(null);
   };
 
@@ -861,6 +1030,23 @@ function AppScreen() {
       Fel: 'Fellowship',
     };
     return labels[key];
+  };
+
+  const getCharacteristicDescription = (key: Characteristic['key']) => {
+    const descriptions: Record<Characteristic['key'], string> = {
+      WS: "Your training and accuracy in close combat, used when striking with melee weapons and defending blade to blade.",
+      BS: "Your accuracy with ranged weapons, covering bows, crossbows, firearms, and other shots made at a distance.",
+      S: "Your raw physical power, used when lifting, forcing, grappling, and adding force behind many attacks.",
+      T: "Your hardiness and endurance, reflecting how well you withstand injury, hardship, poison, and fatigue.",
+      I: "Your awareness and instinctive reactions, useful for noticing danger and acting in the moment.",
+      Ag: "Your balance, speed, and bodily control, used for movement, dodging, and physical finesse.",
+      Dex: "Your hand precision and fine motor control, used for delicate work, craft, and careful manipulation.",
+      Int: "Your reasoning, memory, and learned understanding, used for knowledge, deduction, and study.",
+      WP: "Your mental discipline and resolve, used to resist fear, pressure, corruption, and magical strain.",
+      Fel: "Your force of personality and social presence, used when leading, persuading, deceiving, or inspiring others.",
+    };
+
+    return descriptions[key];
   };
 
   const getTestTypeTitle = (testType: RollState["testType"] | RollHistoryItem["testType"]) => {
@@ -1883,8 +2069,8 @@ function AppScreen() {
                     
                     {activeMainTab === 'features' && (
                       <div className="flex-1 overflow-y-auto p-4 space-y-1">
-                        {characterTalents.map((item) => (
-                        <div key={item.name} className="wfrp-table-row flex justify-between group">
+                        {characterTalents.map((item, idx) => (
+                        <div key={`${item.name}-${idx}`} className="wfrp-table-row flex justify-between group">
                            <span 
                               onClick={() => {
                                 openTalentInfo(item.name);
@@ -1938,24 +2124,55 @@ function AppScreen() {
                           {(activeCareerSubtab === 'all' || activeCareerSubtab === 'careers') && (
                             <AdvancementSection title="Careers" meta="Current Path">
                             <div className="wfrp-subpanel-shell flex flex-col">
-                              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_62px_74px] gap-2 lg:gap-4 items-center">
+                              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px] gap-2 lg:gap-4 items-center">
                                 <span className="wfrp-table-label text-left">Careers</span>
+                                <span className="wfrp-table-label text-left">Progress</span>
                                 <span className="wfrp-table-label text-left">Tier</span>
                                 <span className="wfrp-table-label text-center">Cost</span>
                                 <span className="wfrp-table-label text-right">Advance</span>
                               </div>
                               <div className="divide-y divide-white/5">
-                                <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_62px_74px] items-center gap-2 lg:gap-4 wfrp-table-row">
+                                <div className="grid grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px] items-center gap-2 lg:gap-4 wfrp-table-row">
                                   <div className="min-w-0">
-                                    <p className="wfrp-list-cell-strong truncate">
+                                    <button
+                                      onClick={() => {
+                                        setActiveInfo({
+                                          type: 'career',
+                                          name: `${characterData.career} ${toRoman(displayedCareerRank)}`,
+                                          extra: {
+                                            careerName: characterData.career,
+                                            tierName: displayedCareerRankRecord?.name ?? characterData.tier,
+                                            tierStatus: displayedCareerRankRecord?.status ?? characterData.status,
+                                            rank: displayedCareerRank,
+                                            careerSkills: careerAdvancementData.skills,
+                                            careerTalents: careerAdvancementData.talents,
+                                          },
+                                        });
+                                        setRollState(prev => ({ ...prev, characteristic: null }));
+                                      }}
+                                      className="wfrp-skill-link truncate text-left"
+                                    >
                                       {characterData.career} {toRoman(displayedCareerRank)}
-                                    </p>
+                                    </button>
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden shadow-inner">
+                                      <div
+                                        className="h-full bg-white/30 transition-all duration-500"
+                                        style={{ width: `${advancementProgress}%` }}
+                                        role="progressbar"
+                                        aria-valuenow={advancementProgress}
+                                        aria-valuemin={0}
+                                        aria-valuemax={100}
+                                        aria-label="Career step progress"
+                                      />
+                                    </div>
                                   </div>
                                   <div className="wfrp-list-cell-strong text-left truncate">
                                     {displayedCareerRankRecord?.name ?? characterData.tier}
                                   </div>
                                   <div className="wfrp-list-cell-strong text-center font-mono">
-                                    -
+                                    {nextCareerAdvanceCost ?? '-'}
                                   </div>
                                   <div className="flex justify-end gap-1">
                                     <button
@@ -1968,7 +2185,7 @@ function AppScreen() {
                                     </button>
                                     <button
                                       onClick={increasePendingCareerRank}
-                                      disabled={!nextCareerRankRecord}
+                                      disabled={!nextCareerRankRecord || nextCareerAdvanceCost === null || pendingAvailableXp < nextCareerAdvanceCost}
                                       className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
                                       aria-label={`Increase career rank for ${characterData.career}`}
                                     >
@@ -1984,53 +2201,85 @@ function AppScreen() {
                           {(activeCareerSubtab === 'all' || activeCareerSubtab === 'characteristics') && (
                             <AdvancementSection title="Characteristics" meta="Scaffolded">
                             <div className="wfrp-subpanel-shell flex flex-col">
-                              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_64px_62px_74px] gap-2 lg:gap-4 items-center">
+                              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_64px_72px_62px_74px] gap-2 lg:gap-4 items-center">
                                 <span className="wfrp-table-label text-left">Characteristics</span>
-                                <span className="wfrp-table-label text-center">Current</span>
+                                <span className="wfrp-table-label text-left">Base</span>
+                                <span className="wfrp-table-label text-center">Advances</span>
                                 <span className="wfrp-table-label text-center">Cost</span>
                                 <span className="wfrp-table-label text-right">Advance</span>
                               </div>
                               <div className="divide-y divide-white/5">
-                                {advancementCharacteristics.map((item) => (
-                                  <div
-                                    key={item.key}
-                                    className="grid grid-cols-[minmax(0,1fr)_64px_62px_74px] items-center gap-2 lg:gap-4 wfrp-table-row"
-                                  >
-                                    <div className="min-w-0">
-                                      <p className="wfrp-list-cell-strong truncate">{item.label}</p>
-                                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                                        {item.key}
-                                      </p>
+                                {advancementCharacteristics.map((item) => {
+                                  const totalAdvances = item.advances + item.pendingAdvances;
+                                  const advancesDisplay =
+                                    item.advances === 0
+                                      ? item.pendingAdvances > 0
+                                        ? `+${item.pendingAdvances}`
+                                        : '-'
+                                      : `${item.advances}${item.pendingAdvances > 0 ? ` +${item.pendingAdvances}` : ''}`;
+                                  const isAvailable = availableCareerCharacteristicKeys.includes(item.key);
+                                  const nextCharacteristicCost = getCharacteristicAdvanceCost(totalAdvances);
+
+                                  return (
+                                    <div
+                                      key={item.key}
+                                      className={`grid grid-cols-[minmax(0,1fr)_64px_72px_62px_74px] items-center gap-2 lg:gap-4 wfrp-table-row ${
+                                        !isAvailable ? 'opacity-70' : ''
+                                      }`}
+                                    >
+                                      <div className="min-w-0">
+                                        <button
+                                          onClick={() => {
+                                            setActiveInfo({
+                                              type: 'characteristic',
+                                              name: `${item.label} (${item.key})`,
+                                              extra: {
+                                                key: item.key,
+                                                label: getCharacteristicLabel(item.key),
+                                                advances: item.advances,
+                                                pendingAdvances: item.pendingAdvances,
+                                                currentValue: item.value,
+                                                nextCost: isAvailable ? nextCharacteristicCost : null,
+                                                availableFromRank: careerAdvancementData.characteristics.find((entry) => entry.key === item.key)?.availableFromRank ?? null,
+                                              },
+                                            });
+                                            setRollState(prev => ({ ...prev, characteristic: null }));
+                                          }}
+                                          className="wfrp-skill-link truncate text-left"
+                                        >
+                                          {item.label} ({item.key})
+                                        </button>
+                                      </div>
+                                      <div className="wfrp-list-cell-strong text-left font-mono">
+                                        {item.value}
+                                      </div>
+                                      <div className="wfrp-list-cell-strong text-center font-mono">
+                                        {advancesDisplay}
+                                      </div>
+                                      <div className="wfrp-list-cell-strong text-center font-mono">
+                                        {isAvailable ? nextCharacteristicCost : '-'}
+                                      </div>
+                                      <div className="flex justify-end gap-1">
+                                        <button
+                                          onClick={() => removePendingCharacteristicAdvance(item.key)}
+                                          disabled={item.pendingAdvances === 0 || !isAvailable}
+                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed hover:text-wfrp-red focus-visible:ring-wfrp-red/50"
+                                          aria-label={`Decrease ${item.label}`}
+                                        >
+                                          <Minus size={10} />
+                                        </button>
+                                        <button
+                                          onClick={() => purchaseCharacteristicAdvance(item.key)}
+                                          disabled={!isAvailable || pendingAvailableXp < nextCharacteristicCost}
+                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed hover:text-green-600 focus-visible:ring-green-600/50"
+                                          aria-label={`Increase ${item.label}`}
+                                        >
+                                          <Plus size={12} />
+                                        </button>
+                                      </div>
                                     </div>
-                                    <div className="wfrp-list-cell-strong text-center font-mono">
-                                      {item.value}
-                                    </div>
-                                    <div className="wfrp-list-cell-strong text-center font-mono">
-                                      -
-                                    </div>
-                                    <div className="flex justify-end gap-1">
-                                      <button
-                                        disabled
-                                        className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
-                                        aria-label={`Decrease ${item.label}`}
-                                      >
-                                        <Minus size={10} />
-                                      </button>
-                                      <button
-                                        disabled
-                                        className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
-                                        aria-label={`Increase ${item.label}`}
-                                      >
-                                        <Plus size={12} />
-                                      </button>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="wfrp-subpanel-header border-t border-b-0 py-3">
-                                <p className="wfrp-panel-copy">
-                                  Characteristic purchases are scaffolded next.
-                                </p>
+                                  );
+                                })}
                               </div>
                             </div>
                             </AdvancementSection>
@@ -2039,8 +2288,9 @@ function AppScreen() {
                           {(activeCareerSubtab === 'all' || activeCareerSubtab === 'skills') && (
                             <AdvancementSection title="Skills">
                             <div className="wfrp-subpanel-shell flex flex-col">
-                              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_62px_62px_74px] gap-2 lg:gap-4 items-center">
+                              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_56px_62px_62px_74px] gap-2 lg:gap-4 items-center">
                                 <span className="wfrp-table-label text-left">Skills</span>
+                                <span className="wfrp-table-label text-center">Base</span>
                                 <span className="wfrp-table-label text-center">Advances</span>
                                 <span className="wfrp-table-label text-center">Cost</span>
                                 <span className="wfrp-table-label text-right">Advance</span>
@@ -2063,7 +2313,7 @@ function AppScreen() {
                                   return (
                                     <div
                                       key={skillName}
-                                      className={`grid grid-cols-[minmax(0,1fr)_62px_62px_74px] items-center gap-2 lg:gap-4 wfrp-table-row group ${
+                                      className={`grid grid-cols-[minmax(0,1fr)_56px_62px_62px_74px] items-center gap-2 lg:gap-4 wfrp-table-row group ${
                                         !isCareerSkill ? 'opacity-70' : ''
                                       }`}
                                     >
@@ -2077,6 +2327,9 @@ function AppScreen() {
                                         >
                                           {skillName}
                                         </button>
+                                      </div>
+                                      <div className="wfrp-list-cell-strong text-center font-mono">
+                                        {baseAdvances === 0 ? '-' : baseAdvances}
                                       </div>
                                       <div className="wfrp-list-cell-strong text-center font-mono">
                                         {advancesDisplay}
@@ -2111,26 +2364,33 @@ function AppScreen() {
                           )}
 
                           {(activeCareerSubtab === 'all' || activeCareerSubtab === 'talents') && (
-                            <AdvancementSection title="Talents" meta={`${TALENT_PURCHASE_COST} XP`}>
+                            <AdvancementSection title="Talents">
                             <div className="wfrp-subpanel-shell flex flex-col">
                               <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_72px_62px_74px] gap-2 lg:gap-4 items-center">
                                 <span className="wfrp-table-label text-left">Talents</span>
-                                <span className="wfrp-table-label text-center">Status</span>
+                                <span className="wfrp-table-label text-center">Taken</span>
                                 <span className="wfrp-table-label text-center">Cost</span>
                                 <span className="wfrp-table-label text-right">Advance</span>
                               </div>
                               <div className="divide-y divide-white/5">
                                 {advancementTalentNames.map((talentName) => {
-                                  const hasTalent = characterTalents.some((talent) => talent.name === talentName);
-                                  const isPending = pendingTalentPurchases.includes(talentName);
+                                  const takenCount = characterTalents.filter((talent) => talent.name === talentName).length;
+                                  const pendingTakenCount = pendingTalentPurchases[talentName] ?? 0;
                                   const isCareerTalent = careerAdvancementData.talents.includes(talentName);
-                                  const canPurchase = isCareerTalent && pendingAvailableXp >= TALENT_PURCHASE_COST && !hasTalent && !isPending;
+                                  const nextTalentCost = getTalentPurchaseCost(takenCount + pendingTakenCount);
+                                  const canPurchase = isCareerTalent && pendingAvailableXp >= nextTalentCost;
+                                  const takenDisplay =
+                                    takenCount === 0
+                                      ? pendingTakenCount > 0
+                                        ? `+${pendingTakenCount}`
+                                        : '-'
+                                      : `${takenCount}${pendingTakenCount > 0 ? ` +${pendingTakenCount}` : ''}`;
 
                                   return (
                                     <div
                                       key={talentName}
                                       className={`grid grid-cols-[minmax(0,1fr)_72px_62px_74px] items-center gap-2 lg:gap-4 wfrp-table-row group ${
-                                        !isCareerTalent && !hasTalent ? 'opacity-70' : ''
+                                        !isCareerTalent && takenCount === 0 ? 'opacity-70' : ''
                                       }`}
                                     >
                                       <div className="min-w-0">
@@ -2142,15 +2402,15 @@ function AppScreen() {
                                         </button>
                                       </div>
                                       <div className="wfrp-list-cell-strong text-center font-mono">
-                                        {hasTalent ? 'Owned' : isPending ? 'Pending' : isCareerTalent ? 'Open' : 'Locked'}
+                                        {takenDisplay}
                                       </div>
                                       <div className="wfrp-list-cell-strong text-center font-mono">
-                                        {isCareerTalent && !hasTalent ? TALENT_PURCHASE_COST : '-'}
+                                        {isCareerTalent ? nextTalentCost : '-'}
                                       </div>
                                       <div className="flex justify-end gap-1">
                                         <button
                                           onClick={() => removePendingTalentPurchase(talentName)}
-                                          disabled={!isPending}
+                                          disabled={pendingTakenCount === 0}
                                           className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed hover:text-wfrp-red focus-visible:ring-wfrp-red/50"
                                           aria-label={`Decrease talent purchases for ${talentName}`}
                                         >
@@ -2614,6 +2874,8 @@ function AppScreen() {
                     <h2 className="wfrp-sidebar-title text-sm uppercase tracking-widest text-wfrp-gold">
                       {activeInfo.type === 'skill' ? 'Skill Compendium' : 
                        activeInfo.type === 'talent' ? 'Talent Ledger' :
+                       activeInfo.type === 'career' ? 'Career Ledger' :
+                       activeInfo.type === 'characteristic' ? 'Characteristic Ledger' :
                        activeInfo.type === 'equipment' ? 'Equipment Manifest' : 
                        activeInfo.type === 'property' ? 'Weapon Properties' : 
                        activeInfo.type === 'attack' ? 'Combat Action' : 'Grimoire'}
@@ -2773,6 +3035,97 @@ function AppScreen() {
                     );
                   })}
 
+                  {activeInfo.type === 'career' && (
+                    <div className="p-6 flex flex-col gap-6">
+                      <div className="wfrp-subpanel rounded-lg p-5 flex flex-col gap-5">
+                        <div className="flex flex-col gap-1">
+                          <h3 className="wfrp-sidebar-title text-xl">{activeInfo.name}</h3>
+                          <span className="wfrp-sidebar-section border-white/5 text-gray-500">
+                            {activeInfo.extra?.tierName ?? "Career Step"}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="wfrp-sidebar-label">Rank</p>
+                            <p className="wfrp-sidebar-body font-bold text-gray-200">
+                              {activeInfo.extra?.rank ?? "-"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="wfrp-sidebar-label">Status</p>
+                            <p className="wfrp-sidebar-body font-bold text-gray-200">
+                              {activeInfo.extra?.tierStatus ?? "-"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                          <div>
+                            <p className="wfrp-sidebar-label">Career Skills</p>
+                            <p className="wfrp-sidebar-body text-gray-200">
+                              {activeInfo.extra?.careerSkills?.length
+                                ? activeInfo.extra.careerSkills.join(", ")
+                                : "No career skills listed."}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="wfrp-sidebar-label">Career Talents</p>
+                            <p className="wfrp-sidebar-body text-gray-200">
+                              {activeInfo.extra?.careerTalents?.length
+                                ? activeInfo.extra.careerTalents.join(", ")
+                                : "No career talents listed."}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeInfo.type === 'characteristic' && (
+                    <div className="p-6 flex flex-col gap-6">
+                      <div className="wfrp-subpanel rounded-lg p-5 flex flex-col gap-5">
+                        <div className="flex flex-col gap-1">
+                          <h3 className="wfrp-sidebar-title text-xl">{activeInfo.extra?.label ?? activeInfo.name}</h3>
+                          <span className="wfrp-sidebar-section border-white/5 text-gray-500">
+                            {activeInfo.extra?.key ?? ""}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="wfrp-sidebar-label">Current Value</p>
+                            <p className="wfrp-sidebar-body font-bold text-gray-200">
+                              {activeInfo.extra?.currentValue ?? "-"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="wfrp-sidebar-label">Advances</p>
+                            <p className="wfrp-sidebar-body font-bold text-gray-200">
+                              {(activeInfo.extra?.advances ?? 0) + (activeInfo.extra?.pendingAdvances ?? 0)}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="wfrp-sidebar-label">Next Cost</p>
+                            <p className="wfrp-sidebar-body font-bold text-gray-200">
+                              {activeInfo.extra?.nextCost ?? "-"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="wfrp-sidebar-label">Unlocked At Rank</p>
+                            <p className="wfrp-sidebar-body font-bold text-gray-200">
+                              {activeInfo.extra?.availableFromRank ?? "-"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <p className="wfrp-sidebar-body">
+                          {getCharacteristicDescription(activeInfo.extra?.key ?? activeInfo.name)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                    {activeInfo.type === 'spell' && (
                      <div className="p-6 flex flex-col gap-8">
                         <div className="flex flex-col">
@@ -2809,22 +3162,34 @@ function AppScreen() {
                      </div>
                    )}
 
-                    {activeInfo.type === 'talent' && characterTalents
-                      .filter((talent) => talent.name === activeInfo.name)
-                      .map((talent) => (
-                      <div key={talent.name} className="p-4">
-                         <h3 className="wfrp-sidebar-title text-base uppercase tracking-tight text-white mb-2">{talent.name}</h3>
-                         <p className="wfrp-sidebar-body">{talent.description}</p>
-                      </div>
-                    ))}
-                    {activeInfo.type === 'talent' && !characterTalents.some((talent) => talent.name === activeInfo.name) && (
-                      <div className="p-4">
-                        <h3 className="wfrp-sidebar-title text-base uppercase tracking-tight text-white mb-2">{activeInfo.name}</h3>
-                        <p className="wfrp-sidebar-body">
-                          {activeInfo.extra?.description || "This talent is available through advancement, but it is not yet owned by the character."}
-                        </p>
-                      </div>
-                    )}
+                    {activeInfo.type === 'talent' &&
+                      [...new Set([...advancementTalentNames, ...characterTalents.map((talent) => talent.name)])]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((talentName) => {
+                          const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
+
+                          return (
+                            <div
+                              key={talentName}
+                              ref={el => { talentListRefs.current[talentName] = el; }}
+                              className={`p-4 border-b border-white/5 transition-all ${
+                                activeInfo.name === talentName ? 'bg-wfrp-gold/5' : ''
+                              }`}
+                            >
+                              <h3
+                                className={`wfrp-sidebar-title text-base uppercase tracking-tight mb-2 ${
+                                  activeInfo.name === talentName ? 'text-wfrp-gold' : 'text-white'
+                                }`}
+                              >
+                                {talentName}
+                              </h3>
+                              <p className="wfrp-sidebar-body">
+                                {talentDefinition?.description ||
+                                  "This talent is available through advancement, but it is not yet owned by the character."}
+                              </p>
+                            </div>
+                          );
+                        })}
 
                     {activeInfo.type === 'equipment' && characterData.equipment.map((item) => (
                       <div key={item.name} className="p-4">

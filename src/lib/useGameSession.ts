@@ -37,6 +37,7 @@ export function useGameSession() {
   const [resolveCurrent, setResolveCurrent] = useState(initialResolveCurrent);
   const [xpCurrent, setXpCurrent] = useState(initialXpCurrent);
   const [currentCareerRank, setCurrentCareerRank] = useState(character.level);
+  const [currentCharacteristicAdvances, setCurrentCharacteristicAdvances] = useState(character.characteristicAdvances);
   const [characterSkills, setCharacterSkills] = useState(character.skills);
   const [characterTalents, setCharacterTalents] = useState(character.talents);
   const [equipmentState, setEquipmentState] = useState(character.equipment);
@@ -50,6 +51,7 @@ export function useGameSession() {
     setResolveCurrent(initialResolveCurrent);
     setXpCurrent(initialXpCurrent);
     setCurrentCareerRank(character.level);
+    setCurrentCharacteristicAdvances(character.characteristicAdvances);
     setCharacterSkills(character.skills);
     setCharacterTalents(character.talents);
     setEquipmentState(character.equipment);
@@ -82,6 +84,7 @@ export function useGameSession() {
       xpCurrent,
       xpBaselineTotal: character.xpTotal,
       careerCurrentRank: currentCareerRank,
+      characteristicAdvances: currentCharacteristicAdvances,
       skills: Object.fromEntries(
         characterSkills.map((skill) => [getCharacterSkillKey(skill), skill.advances]),
       ),
@@ -107,6 +110,7 @@ export function useGameSession() {
     resolveCurrent,
     xpCurrent,
     currentCareerRank,
+    currentCharacteristicAdvances,
     characterSkills,
     characterTalents,
     equipmentState,
@@ -118,6 +122,14 @@ export function useGameSession() {
     null;
   const characterData = {
     ...character,
+    attributes: Object.fromEntries(
+      Object.entries(character.attributes).map(([key, value]) => {
+        const baseAdvances = character.characteristicAdvances[key] ?? 0;
+        const currentAdvances = currentCharacteristicAdvances[key] ?? baseAdvances;
+        return [key, Number(value) + (currentAdvances - baseAdvances)];
+      }),
+    ),
+    characteristicAdvances: currentCharacteristicAdvances,
     level: currentCareer?.rank ?? character.level,
     status: currentCareer?.status ?? character.status,
     careerRecord: {
@@ -156,6 +168,8 @@ export function useGameSession() {
     setXpCurrent,
     currentCareerRank,
     setCurrentCareerRank,
+    currentCharacteristicAdvances,
+    setCurrentCharacteristicAdvances,
     characterSkills,
     setCharacterSkills,
     characterTalents,

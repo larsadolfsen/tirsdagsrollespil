@@ -62,6 +62,7 @@ export interface ResolvedCharacterCareer {
   ranks: CareerDefinition["ranks"];
   skillIds: string[];
   talentIds: string[];
+  characteristicAdvances: CareerDefinition["characteristicAdvances"];
 }
 
 export interface ResolvedCharacterRecord {
@@ -80,6 +81,7 @@ export interface ResolvedCharacterRecord {
   xpTotal: number;
   coins: CharacterRecord["coins"];
   attributes: Record<string, number>;
+  characteristicAdvances: Record<string, number>;
   career: string;
   tier: string;
   level: number;
@@ -134,6 +136,7 @@ export function resolveCharacterRecord(
     xpTotal: character.xpTotal,
     coins: character.coins,
     attributes: character.attributes,
+    characteristicAdvances: character.characteristicAdvances ?? {},
     career: career.name,
     tier: career.tier,
     level: currentRank.rank,
@@ -147,6 +150,7 @@ export function resolveCharacterRecord(
       ranks: career.ranks,
       skillIds: career.skillIds,
       talentIds: career.talentIds,
+      characteristicAdvances: career.characteristicAdvances,
     },
     skills: character.skills.map((skill) => {
       const definition = skillsById[skill.skillId];

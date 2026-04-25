@@ -21,6 +21,14 @@ export const careerDefinitions: CareerDefinition[] = [
       "strike_to_stun",
       "warrior_born",
     ],
+    characteristicAdvances: [
+      { characteristic: "WS", availableFromRank: 1 },
+      { characteristic: "T", availableFromRank: 1 },
+      { characteristic: "WP", availableFromRank: 1 },
+      { characteristic: "BS", availableFromRank: 2 },
+      { characteristic: "I", availableFromRank: 3 },
+      { characteristic: "Fel", availableFromRank: 4 },
+    ],
     ranks: [
       { rank: 1, name: "Recruit", status: "Brass 3" },
       { rank: 2, name: "Soldier", status: "Silver 3" },

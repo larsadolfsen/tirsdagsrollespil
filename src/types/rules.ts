@@ -134,12 +134,18 @@ export interface CareerRankDefinition {
   status: string;
 }
 
+export interface CareerCharacteristicAdvanceDefinition {
+  characteristic: string;
+  availableFromRank: number;
+}
+
 export interface CareerDefinition {
   id: string;
   name: string;
   tier: string;
   skillIds: string[];
   talentIds: string[];
+  characteristicAdvances: CareerCharacteristicAdvanceDefinition[];
   ranks: CareerRankDefinition[];
 }
 
