@@ -26,7 +26,7 @@
 }
 
 @utility wfrp-table-row {
-  @apply p-3 sm:px-4 items-center border-b border-white/5 last:border-0 transition-colors;
+  @apply px-3 py-2 sm:px-3 items-center border-b border-white/5 last:border-0 transition-colors;
   &:hover {
     @apply bg-white/[0.02];
   }
@@ -54,6 +54,14 @@
 
 @utility wfrp-card {
   @apply wfrp-surface-strong border rounded-lg p-3 lg:p-4 shadow-lg;
+}
+
+@utility wfrp-card-tab-header {
+  @apply flex items-center border-b border-[#303030] bg-[#111] px-4 py-3.5;
+}
+
+@utility wfrp-card-tab-body {
+  @apply bg-[#0c0c0c]/50 p-3 lg:p-4;
 }
 
 @utility wfrp-sidebar-shell {
@@ -109,7 +117,7 @@
 }
 
 @utility wfrp-subpanel-header {
-  @apply border-b border-white/5 bg-black/10 px-4 py-1;
+  @apply border-b border-white/5 bg-black/10 px-3 py-1;
 }
 
 @utility wfrp-panel-copy {

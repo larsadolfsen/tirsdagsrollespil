@@ -41,6 +41,8 @@ export function useGameSession() {
   const [characterSkills, setCharacterSkills] = useState(character.skills);
   const [characterTalents, setCharacterTalents] = useState(character.talents);
   const [equipmentState, setEquipmentState] = useState(character.equipment);
+  const [backgroundText, setBackgroundText] = useState(session.progress?.backgroundText ?? "");
+  const [notes, setNotes] = useState(session.progress?.notes ?? []);
 
   useEffect(() => {
     setWoundsCurrent(character.wounds.current);
@@ -55,6 +57,8 @@ export function useGameSession() {
     setCharacterSkills(character.skills);
     setCharacterTalents(character.talents);
     setEquipmentState(character.equipment);
+    setBackgroundText(session.progress?.backgroundText ?? "");
+    setNotes(session.progress?.notes ?? []);
   }, [
     character,
     initialCorruptionCurrent,
@@ -63,6 +67,7 @@ export function useGameSession() {
     initialResilienceCurrent,
     initialResolveCurrent,
     initialXpCurrent,
+    session.progress,
   ]);
 
   useEffect(() => {
@@ -95,9 +100,19 @@ export function useGameSession() {
       equipmentContainers: Object.fromEntries(
         equipmentState.map((item) => [item.id, item.containerId ?? null]),
       ),
+      addedEquipment: equipmentState
+        .filter((item) => item.id.startsWith("shop-"))
+        .map((item) => ({
+          id: item.id,
+          itemId: item.itemId,
+          equipped: item.equipped,
+          containerId: item.containerId ?? null,
+        })),
       removedEquipmentIds: character.equipment
         .filter((item) => !equipmentState.some((currentItem) => currentItem.id === item.id))
         .map((item) => item.id),
+      backgroundText,
+      notes,
     });
   }, [
     selectedCharacterId,
@@ -114,6 +129,8 @@ export function useGameSession() {
     characterSkills,
     characterTalents,
     equipmentState,
+    backgroundText,
+    notes,
   ]);
 
   const currentCareer =
@@ -176,6 +193,10 @@ export function useGameSession() {
     setCharacterTalents,
     equipmentState,
     setEquipmentState,
+    backgroundText,
+    setBackgroundText,
+    notes,
+    setNotes,
   };
 }
 

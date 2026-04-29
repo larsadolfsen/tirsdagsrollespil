@@ -1,6 +1,10 @@
 import type {
   CareerDefinition,
   CharacterRecord,
+  ArmourDefinition,
+  ArmourLocation,
+  ArmourPenalty,
+  ArmourQualityOrFlawInstance,
   CharacterSkillRecord,
   ItemDefinition,
   Ruleset,
@@ -25,6 +29,14 @@ export interface ResolvedCharacterEquipment {
   id: string;
   itemId: string;
   weaponId?: string;
+  armourId?: string;
+  armourLocations?: ArmourLocation[];
+  armourCategory?: ArmourDefinition["category"];
+  armourAps?: number;
+  armourPenalties?: ArmourPenalty[];
+  armourQualities?: ArmourQualityOrFlawInstance[];
+  armourFlaws?: ArmourQualityOrFlawInstance[];
+  armourNotes?: string[];
   name: string;
   type: string;
   description: string;
@@ -32,6 +44,8 @@ export interface ResolvedCharacterEquipment {
   carries?: number;
   value: number;
   currency: string;
+  priceLabel?: string;
+  availability?: ItemDefinition["availability"];
   equipped: boolean;
   containerId?: string | null;
 }
@@ -104,6 +118,7 @@ export function resolveCharacterRecord(
   const skillsById = byId<SkillDefinition>(ruleset.skills);
   const skillSpecialisationsById = byId<SkillSpecialisationDefinition>(ruleset.skillSpecialisations);
   const itemsById = byId<ItemDefinition>(ruleset.items);
+  const armoursById = byId<ArmourDefinition>(ruleset.armours);
   const talentsById = byId<TalentDefinition>(ruleset.talents);
   const spellsById = byId<SpellDefinition>(ruleset.spells);
   const careersById = byId<CareerDefinition>(ruleset.careers);
@@ -126,11 +141,11 @@ export function resolveCharacterRecord(
     name: character.name,
     race: character.race,
     wounds: character.wounds,
-    fate: raceDefinition?.fate ?? character.fate,
-    fortune: raceDefinition?.fate ?? character.fortune,
-    resilience: raceDefinition?.resilience ?? character.resilience,
-    resolve: raceDefinition?.resilience ?? character.resolve,
-    move: raceDefinition?.movement ?? character.move,
+    fate: character.fate ?? raceDefinition?.fate,
+    fortune: character.fortune ?? raceDefinition?.fate,
+    resilience: character.resilience ?? raceDefinition?.resilience,
+    resolve: character.resolve ?? raceDefinition?.resilience,
+    move: character.move ?? raceDefinition?.movement,
     corruption: character.corruption,
     maxCorruption: character.maxCorruption,
     xpTotal: character.xpTotal,
@@ -180,11 +195,20 @@ export function resolveCharacterRecord(
       if (!definition) {
         throw new Error(`Unknown item "${item.itemId}" for character "${character.id}".`);
       }
+      const armour = definition.armourId ? armoursById[definition.armourId] : undefined;
 
       return {
         id: item.id,
         itemId: item.itemId,
         weaponId: definition.weaponId,
+        armourId: definition.armourId,
+        armourLocations: definition.armourLocations ?? armour?.locations,
+        armourCategory: armour?.category,
+        armourAps: armour?.aps,
+        armourPenalties: armour?.penalties,
+        armourQualities: armour?.qualities,
+        armourFlaws: armour?.flaws,
+        armourNotes: armour?.notes,
         name: definition.name,
         type: definition.type,
         description: definition.description,
@@ -192,6 +216,8 @@ export function resolveCharacterRecord(
         carries: definition.carries,
         value: definition.value,
         currency: definition.currency,
+        priceLabel: definition.priceLabel ?? armour?.price,
+        availability: definition.availability ?? armour?.availability,
         equipped: item.equipped,
         containerId: item.containerId ?? null,
       };

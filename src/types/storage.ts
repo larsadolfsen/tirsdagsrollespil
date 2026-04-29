@@ -13,5 +13,20 @@ export interface CharacterProgressData {
   talentIds?: string[];
   equipment: Record<string, boolean>;
   equipmentContainers?: Record<string, string | null>;
+  addedEquipment?: Array<{
+    id: string;
+    itemId: string;
+    equipped: boolean;
+    containerId?: string | null;
+  }>;
   removedEquipmentIds?: string[];
+  backgroundText?: string;
+  notes?: CharacterNoteData[];
+}
+
+export interface CharacterNoteData {
+  id: string;
+  title?: string;
+  text: string;
+  createdAt: string;
 }

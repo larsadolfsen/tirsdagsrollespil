@@ -1,34 +1,24 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Dice5, Minus, MoreHorizontal, Plus, Settings } from "lucide-react";
-import { UI_LABELS } from "../labels";
+import { Check, ChevronDown, Dice5, MoreHorizontal, Plus, Settings } from "lucide-react";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { CharacterSummary } from "../data/repository";
+import { UI_LABELS } from "../labels";
 
 export function CharacterHeader({
   characterData,
   availableCharacters,
   selectedCharacterId,
-  woundsCurrent,
-  corruptionCurrent,
-  maxCorruption,
   xpCurrent,
   onSelectCharacter,
   onCreateCharacter,
-  adjustWounds,
-  adjustCorruption,
   onOpenDice,
 }: {
   characterData: ResolvedCharacterRecord;
   availableCharacters: CharacterSummary[];
   selectedCharacterId: string;
-  woundsCurrent: number;
-  corruptionCurrent: number;
-  maxCorruption: number;
   xpCurrent: number;
   onSelectCharacter: (characterId: string) => void;
   onCreateCharacter: () => void;
-  adjustWounds: (delta: number) => void;
-  adjustCorruption: (delta: number) => void;
   onOpenDice: () => void;
 }) {
   const [isCampaignMenuOpen, setIsCampaignMenuOpen] = useState(false);
@@ -81,90 +71,6 @@ export function CharacterHeader({
       </div>
 
       <div className="flex items-center gap-2 sm:gap-6">
-        <div className="hidden sm:flex items-center gap-2">
-          <button
-            onClick={() => adjustWounds(-1)}
-            className="wfrp-stepper-btn hover:text-wfrp-red focus-visible:ring-wfrp-red/50"
-            aria-label="Decrease current wounds"
-          >
-            <Minus size={10} />
-          </button>
-
-          <div className="flex flex-col w-24 lg:w-36 gap-1">
-            <div className="flex justify-between items-end leading-none">
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tight">
-                {UI_LABELS.WOUNDS}
-              </span>
-              <span className="text-[10px] font-bold text-gray-200">
-                {woundsCurrent} / {characterData.wounds.max}
-              </span>
-            </div>
-            <div className="h-1.5 w-full bg-[#303030] rounded-full overflow-hidden shadow-inner">
-              <div
-                className="h-full bg-wfrp-red transition-all duration-500 ease-out"
-                style={{ width: `${(woundsCurrent / characterData.wounds.max) * 100}%` }}
-                role="progressbar"
-                aria-valuenow={woundsCurrent}
-                aria-valuemin={0}
-                aria-valuemax={characterData.wounds.max}
-                aria-label="Wounds remaining"
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={() => adjustWounds(1)}
-            className="wfrp-stepper-btn hover:text-green-600 focus-visible:ring-green-600/50"
-            aria-label="Increase current wounds"
-          >
-            <Plus size={10} />
-          </button>
-        </div>
-
-        <div className="h-6 w-[1px] bg-[#303030] hidden sm:block mx-1" />
-
-        <div className="hidden md:flex items-center gap-2">
-          <button
-            onClick={() => adjustCorruption(-1)}
-            className="wfrp-stepper-btn hover:text-purple-400 focus-visible:ring-purple-400/50"
-            aria-label="Decrease current corruption"
-          >
-            <Minus size={10} />
-          </button>
-
-          <div className="flex flex-col w-24 lg:w-36 gap-1">
-            <div className="flex justify-between items-end leading-none">
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tight">
-                {UI_LABELS.CORRUPTION}
-              </span>
-              <span className="text-[10px] font-bold text-gray-200">
-                {corruptionCurrent} / {maxCorruption}
-              </span>
-            </div>
-            <div className="h-1.5 w-full bg-[#303030] rounded-full overflow-hidden shadow-inner">
-              <div
-                className="h-full bg-purple-600 transition-all duration-500 ease-out"
-                style={{ width: `${(corruptionCurrent / maxCorruption) * 100}%` }}
-                role="progressbar"
-                aria-valuenow={corruptionCurrent}
-                aria-valuemin={0}
-                aria-valuemax={maxCorruption}
-                aria-label="Corruption level"
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={() => adjustCorruption(1)}
-            className="wfrp-stepper-btn hover:text-purple-400 focus-visible:ring-purple-400/50"
-            aria-label="Increase current corruption"
-          >
-            <Plus size={10} />
-          </button>
-        </div>
-
-        <div className="h-6 w-[1px] bg-[#303030] hidden md:block mx-1" />
-
         <div className="flex items-center gap-1 group/campaign transition-colors">
           <div className="relative" ref={campaignMenuRef}>
             <button

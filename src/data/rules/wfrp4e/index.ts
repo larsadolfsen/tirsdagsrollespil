@@ -1,6 +1,7 @@
 import type { Ruleset } from "../../../types";
 import { actionDefinitions } from "./actions";
 import { armourDefinitions } from "./armours";
+import { armourQualities, armourFlaws, armourLocations, armourCategories } from "./armourProperties";
 import { careerDefinitions } from "./careers";
 import { itemDefinitions } from "./items";
 import { propertyDefinitions } from "./properties";
@@ -39,6 +40,9 @@ export const wfrp4eRuleset: Ruleset = {
   armours: armourDefinitions,
   careers: careerDefinitions,
 };
+
+// Export armour-specific utilities
+export { armourQualities, armourFlaws, armourLocations, armourCategories } from "./armourProperties";
 
 export const skillDescriptionByName: Record<string, string> = Object.fromEntries(
   buildResolvedSkillOptions(skillDefinitions, skillSpecialisationDefinitions).map((option) => {

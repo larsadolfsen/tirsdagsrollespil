@@ -36,6 +36,7 @@ export interface GameSession {
   character: ResolvedCharacterRecord;
   ruleset: Ruleset;
   rulesIndex: RulesIndex;
+  progress: CharacterProgressData | null;
   resourceCaps: {
     corruption: number;
     fate: number;
@@ -147,7 +148,13 @@ export function getCharacterSkillKey(skill: Pick<ResolvedCharacterSkill, "skillI
   return skill.specialisationId ? `${skill.skillId}:${skill.specialisationId}` : skill.skillId;
 }
 
-export function formatItemValue(item: Pick<ResolvedCharacterEquipment, "value" | "currency">) {
+export function formatItemValue(
+  item: Pick<ResolvedCharacterEquipment, "value" | "currency" | "priceLabel">,
+) {
+  if (item.priceLabel) {
+    return item.priceLabel;
+  }
+
   if (item.currency === "gc") {
     return `${item.value}GC`;
   }
@@ -205,6 +212,43 @@ function applyCharacterProgress(
       return [key, value + (currentAdvances - baseAdvances)];
     }),
   );
+  const addedEquipment = (progress.addedEquipment ?? [])
+    .map((item): ResolvedCharacterEquipment | null => {
+      const definition = ruleset.items.find((entry) => entry.id === item.itemId);
+      if (!definition) {
+        return null;
+      }
+
+      const armour = definition.armourId
+        ? ruleset.armours.find((entry) => entry.id === definition.armourId)
+        : undefined;
+
+      return {
+        id: item.id,
+        itemId: item.itemId,
+        weaponId: definition.weaponId,
+        armourId: definition.armourId,
+        armourLocations: definition.armourLocations ?? armour?.locations,
+        armourCategory: armour?.category,
+        armourAps: armour?.aps,
+        armourPenalties: armour?.penalties,
+        armourQualities: armour?.qualities,
+        armourFlaws: armour?.flaws,
+        armourNotes: armour?.notes,
+        name: definition.name,
+        type: definition.type,
+        description: definition.description,
+        encumbrance: definition.encumbrance,
+        carries: definition.carries,
+        value: definition.value,
+        currency: definition.currency,
+        priceLabel: definition.priceLabel ?? armour?.price,
+        availability: definition.availability ?? armour?.availability,
+        equipped: item.equipped,
+        containerId: item.containerId ?? null,
+      };
+    })
+    .filter((item): item is ResolvedCharacterEquipment => Boolean(item));
 
   return {
     ...character,
@@ -227,7 +271,7 @@ function applyCharacterProgress(
       advances: progress.skills[getCharacterSkillKey(skill)] ?? skill.advances,
     })),
     talents,
-    equipment: character.equipment
+    equipment: [...character.equipment, ...addedEquipment]
       .filter((item) => !progress.removedEquipmentIds?.includes(item.id))
       .map((item) => ({
         ...item,
@@ -255,6 +299,7 @@ export function loadGameSession(characterId?: string): GameSession {
     character,
     ruleset,
     rulesIndex,
+    progress,
     resourceCaps: {
       corruption: baseCharacter.maxCorruption,
       fate: baseCharacter.fate,

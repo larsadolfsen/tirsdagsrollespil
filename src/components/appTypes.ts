@@ -22,7 +22,15 @@ export interface RollState {
 }
 
 export interface ActiveInfoState {
-  type: "skill" | "equipment" | "talent" | "spell" | "property" | "attack";
+  type:
+    | "skill"
+    | "equipment"
+    | "talent"
+    | "spell"
+    | "property"
+    | "attack"
+    | "career"
+    | "characteristic";
   name: string;
   extra?: any;
 }

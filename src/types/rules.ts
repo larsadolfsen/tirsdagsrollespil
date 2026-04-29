@@ -37,9 +37,12 @@ export interface ItemDefinition extends RulesTextDefinition {
   encumbrance: number;
   value: number;
   currency: string;
+  priceLabel?: string;
+  availability?: Availability;
   carries?: number;
   weaponId?: string;
   armourId?: string;
+  armourLocations?: ArmourLocation[];
 }
 
 export type Availability = "common" | "scarce" | "rare" | "exotic";
@@ -147,6 +150,26 @@ export interface CareerDefinition {
   talentIds: string[];
   characteristicAdvances: CareerCharacteristicAdvanceDefinition[];
   ranks: CareerRankDefinition[];
+}
+
+export interface CareerPathDefinition {
+  id: string;
+  name: string;
+  classId: string;
+  speciesIds: string[];
+  stepIds: string[];
+}
+
+export interface CareerStepDefinition {
+  id: string;
+  careerPathId: string;
+  rank: number;
+  name: string;
+  status: string;
+  characteristicAdvances: CareerCharacteristicAdvanceDefinition[];
+  skillIds: string[];
+  talentIds: string[];
+  trappingIds: string[];
 }
 
 export interface RaceDefinition {

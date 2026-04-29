@@ -1,10 +1,10 @@
 import type { CharacterRecord } from "../../types";
-import { eldricHornwood } from "./eldric-hornwood";
+import { thanoVoss } from "./thano-voss";
 
-export const characterRecords: CharacterRecord[] = [eldricHornwood];
+export const characterRecords: CharacterRecord[] = [thanoVoss];
 
 export const characterRecordById = Object.fromEntries(
   characterRecords.map((character) => [character.id, character]),
 );
 
-export const defaultCharacterId = eldricHornwood.id;
+export const defaultCharacterId = thanoVoss.id;
