@@ -19,7 +19,7 @@ export const thanoVoss: CharacterRecord = {
   maxCorruption: 100,
   xpTotal: 1050,
   coins: {
-    gc: 0,
+    gc: 100,
     s: 0,
     d: 0,
   },

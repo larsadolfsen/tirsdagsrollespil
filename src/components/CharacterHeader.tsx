@@ -85,7 +85,7 @@ export function CharacterHeader({
                   {UI_LABELS.CAMPAIGN_HEADER}
                 </span>
                 <span className="text-[11px] font-semibold text-gray-400 whitespace-nowrap group-hover/campaign:text-wfrp-gold transition-colors">
-                  Enemy Within
+                  {UI_LABELS.CAMPAIGN_NAME}
                 </span>
               </div>
               <ChevronDown

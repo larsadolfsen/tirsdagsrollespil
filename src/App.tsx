@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from "react";
-import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
+import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -25,7 +25,10 @@ import { InfoSidebar } from "./components/InfoSidebar";
 import { ShopSidebar } from "./components/ShopSidebar";
 import type { ActiveInfoState } from "./components/appTypes";
 import { GameSessionProvider, useGameSessionContext } from "./context/GameSessionContext";
-import type { ResolvedCharacterSkill } from "./data/characters/resolved";
+import type {
+  ResolvedCharacterEquipment,
+  ResolvedCharacterSkill,
+} from "./data/characters/resolved";
 import { listCharacters } from "./data/repository";
 import { skillCharacteristicById } from "./data/rules/wfrp4e";
 import {
@@ -35,7 +38,7 @@ import {
   getWeaponStats,
 } from "./lib/gameSession";
 import { UI_LABELS } from "./labels";
-import type { Characteristic, SkillDefinition } from "./types";
+import type { ArmourDefinition, ArmourLocation, Characteristic, SkillDefinition } from "./types";
 import type { ItemDefinition } from "./types";
 
 interface RollHistoryItem {
@@ -80,6 +83,12 @@ interface InventoryMenuState {
   left: number;
 }
 
+type InventoryDropTargetId = "carried" | string;
+
+interface InventoryDragState {
+  itemId: string;
+}
+
 type ResourceCounterBarProps = {
   label: string;
   current: number;
@@ -116,6 +125,15 @@ type InlineSubtabOption<T extends string> = {
 
 type ActionCategory = 'all' | 'melee' | 'ranged' | 'other';
 type SkillSubtab = 'all' | 'advanced' | 'basic-trained' | 'basic-untrained';
+
+const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
+  [...items].sort((first, second) => {
+    const nameComparison = first.name.localeCompare(second.name, undefined, {
+      sensitivity: "base",
+    });
+
+    return nameComparison || first.id.localeCompare(second.id);
+  });
 type CareerSubtab = 'all' | 'careers' | 'characteristics' | 'skills' | 'talents';
 
 function ResourceCounterBar({
@@ -366,6 +384,7 @@ function AppScreen() {
     setResolveCurrent,
     xpCurrent,
     setXpCurrent,
+    setCharacterCoins,
     currentCareerRank,
     setCurrentCareerRank,
     currentCharacteristicAdvances,
@@ -407,15 +426,23 @@ function AppScreen() {
   });
   const [displayRoll, setDisplayRoll] = useState(0);
   const [activeInventoryMenu, setActiveInventoryMenu] = useState<InventoryMenuState | null>(null);
+  const [inventoryDrag, setInventoryDrag] = useState<InventoryDragState | null>(null);
+  const [inventoryDropTarget, setInventoryDropTarget] = useState<InventoryDropTargetId | null>(null);
   const [pendingCharacteristicAdvances, setPendingCharacteristicAdvances] = useState<Record<string, number>>({});
   const [pendingSkillAdvances, setPendingSkillAdvances] = useState<Record<string, number>>({});
   const [pendingTalentPurchases, setPendingTalentPurchases] = useState<Record<string, number>>({});
   const [pendingCareerRank, setPendingCareerRank] = useState<number | null>(null);
+  const [coinDraft, setCoinDraft] = useState({ gc: "", s: "", d: "" });
   const [newNoteTitle, setNewNoteTitle] = useState("");
   const [newNoteText, setNewNoteText] = useState("");
   const [noteSearch, setNoteSearch] = useState("");
   const activeRollerRef = useRef<HTMLDivElement>(null);
   const inventoryMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    document.title = `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
+  }, [characterData.name]);
+
   const pendingCharacteristicSpend = Object.entries(pendingCharacteristicAdvances).reduce<number>(
     (total, [characteristicKey, count]) => {
       const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
@@ -613,6 +640,7 @@ function AppScreen() {
     setPendingSkillAdvances({});
     setPendingTalentPurchases({});
     setPendingCareerRank(null);
+    setCoinDraft({ gc: "", s: "", d: "" });
     setRollHistory([]);
     setRollState({
       characteristic: null,
@@ -759,9 +787,24 @@ function AppScreen() {
   */
 
   const handleToggleEquip = (itemId: string) => {
-    setEquipmentState(prev => prev.map(item => 
+    const activeItem = equipmentState.find((item) => item.id === itemId);
+    if (!activeItem) return;
+
+    const shouldEquip = !activeItem.equipped;
+    if (shouldEquip) {
+      const conflicts = getArmourFitConflicts(
+        activeItem,
+        equipmentState.filter((item) => item.id !== activeItem.id),
+      );
+
+      if (conflicts.length > 0) {
+        return;
+      }
+    }
+
+    setEquipmentState(prev => prev.map(item =>
       item.id === itemId
-        ? { ...item, equipped: !item.equipped, containerId: item.equipped ? item.containerId ?? null : null }
+        ? { ...item, equipped: shouldEquip, containerId: activeItem.equipped ? item.containerId ?? null : null }
         : item
     ));
   };
@@ -801,6 +844,31 @@ function AppScreen() {
     setActiveInventoryMenu(null);
   };
 
+  const handleResolveArmourFit = (
+    newItemId: string,
+    conflictItemIds: string[],
+    action: "container" | "drop",
+    containerId?: string,
+  ) => {
+    const conflictIds = new Set(conflictItemIds);
+    setEquipmentState((prev) =>
+      prev
+        .filter((item) => action !== "drop" || !conflictIds.has(item.id))
+        .map((item) => {
+          if (item.id === newItemId) {
+            return { ...item, equipped: true, containerId: null };
+          }
+
+          if (action === "container" && conflictIds.has(item.id)) {
+            return { ...item, equipped: false, containerId: containerId ?? null };
+          }
+
+          return item;
+        }),
+    );
+    setActiveInventoryMenu(null);
+  };
+
   const handleAddShopItem = (item: ItemDefinition) => {
     const purchasedAt = Date.now();
 
@@ -826,6 +894,25 @@ function AppScreen() {
       },
     ]);
     setActiveMainTab("inventory");
+  };
+
+  const handleAddCoins = () => {
+    const addedCoins = {
+      gc: Math.max(0, Math.floor(Number(coinDraft.gc) || 0)),
+      s: Math.max(0, Math.floor(Number(coinDraft.s) || 0)),
+      d: Math.max(0, Math.floor(Number(coinDraft.d) || 0)),
+    };
+
+    if (addedCoins.gc === 0 && addedCoins.s === 0 && addedCoins.d === 0) {
+      return;
+    }
+
+    setCharacterCoins((prev) => ({
+      gc: prev.gc + addedCoins.gc,
+      s: prev.s + addedCoins.s,
+      d: prev.d + addedCoins.d,
+    }));
+    setCoinDraft({ gc: "", s: "", d: "" });
   };
 
   const handleToggleInventoryMenu = (
@@ -868,8 +955,8 @@ function AppScreen() {
   const carryCapacity = Math.max(sb + tb, 1);
   const encumbrancePercent = Math.min((totalEncumbrance / carryCapacity) * 100, 100);
   const containers = equipmentState.filter((item) => item.type === "Container");
-  const carriedItems = equipmentState.filter(
-    (item) => !item.containerId && item.type !== "Container",
+  const carriedItems = sortEquipmentByName(
+    equipmentState.filter((item) => !item.containerId && item.type !== "Container"),
   );
   const itemDefinitionsById = Object.fromEntries(
     ruleset.items.map((item) => [item.id, item]),
@@ -877,16 +964,72 @@ function AppScreen() {
   const armourDefinitionsById = Object.fromEntries(
     ruleset.armours.map((armour) => [armour.id, armour]),
   );
-  const equippedArmours = equipmentState
-    .filter((item) => item.equipped)
-    .flatMap((item) => {
-      const definition = itemDefinitionsById[item.itemId];
-      const armourId = item.armourId ?? definition?.armourId;
-      if (!armourId) return [];
-      const armour = armourDefinitionsById[armourId];
-      const locations = item.armourLocations ?? definition?.armourLocations ?? armour?.locations;
-      return armour && locations ? [{ item, armour, locations }] : [];
-    });
+
+  type EquippedArmour = {
+    item: ResolvedCharacterEquipment;
+    armour: ArmourDefinition;
+    locations: ArmourLocation[];
+  };
+
+  const getItemArmour = (item: ResolvedCharacterEquipment): EquippedArmour | null => {
+    const definition = itemDefinitionsById[item.itemId];
+    const armourId = item.armourId ?? definition?.armourId;
+    if (!armourId) return null;
+
+    const armour = armourDefinitionsById[armourId];
+    const locations = item.armourLocations ?? definition?.armourLocations ?? armour?.locations;
+    return armour && locations ? { item, armour, locations } : null;
+  };
+
+  const isSoftLeather = (armour: ArmourDefinition) => armour.category === "soft_leather";
+  const isFlexible = (armour: ArmourDefinition) =>
+    armour.qualities.some((quality) => quality.id === "flexible");
+
+  const canLayerArmours = (first: ArmourDefinition, second: ArmourDefinition) => {
+    if (isSoftLeather(first) || isSoftLeather(second)) {
+      return !isSoftLeather(first) || !isSoftLeather(second);
+    }
+
+    return isFlexible(first) !== isFlexible(second);
+  };
+
+  const getArmourFitConflictsForArmour = (
+    armourToFit: EquippedArmour,
+    fittedArmours: EquippedArmour[],
+  ) =>
+    fittedArmours.filter((fittedArmour) =>
+      armourToFit.locations.some((location) =>
+        fittedArmour.locations.includes(location) &&
+        !canLayerArmours(armourToFit.armour, fittedArmour.armour),
+      ),
+    );
+
+  const getArmourFitConflicts = (
+    itemToFit: ResolvedCharacterEquipment,
+    items: ResolvedCharacterEquipment[],
+  ) => {
+    const armourToFit = getItemArmour(itemToFit);
+    if (!armourToFit) return [];
+
+    return getArmourFitConflictsForArmour(
+      armourToFit,
+      getFittedArmours(items),
+    );
+  };
+
+  const getFittedArmours = (items: ResolvedCharacterEquipment[]) =>
+    items.reduce<EquippedArmour[]>((fittedArmours, item) => {
+      if (!item.equipped) return fittedArmours;
+
+      const armourToFit = getItemArmour(item);
+      if (!armourToFit || getArmourFitConflictsForArmour(armourToFit, fittedArmours).length > 0) {
+        return fittedArmours;
+      }
+
+      return [...fittedArmours, armourToFit];
+    }, []);
+
+  const equippedArmours = getFittedArmours(equipmentState);
   const armourCoverageTotals = equippedArmours.reduce(
     (totals, { armour, locations }) => {
       locations.forEach((location) => {
@@ -908,7 +1051,7 @@ function AppScreen() {
   const equippedArmourNames = equippedArmours.map(({ armour }) => armour.name);
 
   const getContainerContents = (containerId: string) =>
-    equipmentState.filter((item) => item.containerId === containerId);
+    sortEquipmentByName(equipmentState.filter((item) => item.containerId === containerId));
 
   const getContainerUsedEncumbrance = (containerId: string) =>
     getContainerContents(containerId).reduce(
@@ -933,6 +1076,69 @@ function AppScreen() {
     const currentContribution = item.containerId === containerId ? item.encumbrance : 0;
 
     return used - currentContribution + item.encumbrance <= capacity;
+  };
+
+  const canDropInventoryItem = (
+    itemId: string,
+    targetContainerId: string | null,
+  ) => {
+    const item = equipmentState.find((entry) => entry.id === itemId);
+    if (!item) return false;
+
+    const currentContainerId = item.containerId ?? null;
+    if (currentContainerId === targetContainerId) return false;
+    if (!targetContainerId) return true;
+
+    return canStoreInContainer(itemId, targetContainerId);
+  };
+
+  const handleInventoryDragStart = (
+    item: ResolvedCharacterEquipment,
+    event: ReactDragEvent<HTMLDivElement>,
+  ) => {
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", item.id);
+    setActiveInventoryMenu(null);
+    setInventoryDrag({
+      itemId: item.id,
+    });
+  };
+
+  const handleInventoryDragEnd = () => {
+    setInventoryDrag(null);
+    setInventoryDropTarget(null);
+  };
+
+  const handleInventoryDragOver = (
+    targetId: InventoryDropTargetId,
+    targetContainerId: string | null,
+    event: ReactDragEvent<HTMLDivElement>,
+  ) => {
+    if (!inventoryDrag || !canDropInventoryItem(inventoryDrag.itemId, targetContainerId)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    setInventoryDropTarget(targetId);
+  };
+
+  const handleInventoryDrop = (
+    targetContainerId: string | null,
+    event: ReactDragEvent<HTMLDivElement>,
+  ) => {
+    event.preventDefault();
+    if (!inventoryDrag || !canDropInventoryItem(inventoryDrag.itemId, targetContainerId)) {
+      handleInventoryDragEnd();
+      return;
+    }
+
+    if (targetContainerId) {
+      handleStoreItem(inventoryDrag.itemId, targetContainerId);
+    } else {
+      handleCarryItem(inventoryDrag.itemId);
+    }
+    handleInventoryDragEnd();
   };
 
   const formatSpellRange = (range: string) =>
@@ -2392,11 +2598,57 @@ function AppScreen() {
                     {activeMainTab === 'inventory' && (
                       <div className="flex flex-col h-full overflow-hidden">
                         <div className="px-4 py-2 border-b border-white/5 bg-black/10">
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="wfrp-table-label">Coin</span>
-                            <span className="wfrp-list-cell-strong font-mono">
-                              {formatCharacterCoins(characterData.coins)}
-                            </span>
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <span className="wfrp-table-label">Coin</span>
+                              <span className="wfrp-list-cell-strong font-mono">
+                                {formatCharacterCoins(characterData.coins)}
+                              </span>
+                            </div>
+                            <div className="flex min-w-0 flex-wrap items-center gap-2">
+                              {([
+                                ["gc", "GC"],
+                                ["s", "/-"],
+                                ["d", "d"],
+                              ] as const).map(([key, label]) => (
+                                <label
+                                  key={key}
+                                  className="flex h-8 items-center gap-1 rounded border border-white/5 bg-black/30 px-2 focus-within:border-wfrp-gold/40"
+                                >
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    inputMode="numeric"
+                                    value={coinDraft[key]}
+                                    onChange={(event) =>
+                                      setCoinDraft((prev) => ({
+                                        ...prev,
+                                        [key]: event.target.value,
+                                      }))
+                                    }
+                                    onKeyDown={(event) => {
+                                      if (event.key === "Enter") {
+                                        handleAddCoins();
+                                      }
+                                    }}
+                                    className="h-full w-12 bg-transparent text-right font-mono text-xs font-bold text-gray-100 outline-none placeholder:text-gray-700"
+                                    placeholder="0"
+                                    aria-label={`Add ${label} to wallet`}
+                                  />
+                                  <span className="text-[10px] font-black uppercase text-gray-500">{label}</span>
+                                </label>
+                              ))}
+                              <button
+                                type="button"
+                                onClick={handleAddCoins}
+                                className="flex h-8 w-8 items-center justify-center rounded border border-wfrp-gold/30 bg-wfrp-gold/10 text-wfrp-gold transition-colors hover:bg-wfrp-gold/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                                aria-label="Add coins to wallet"
+                                title="Add coins"
+                              >
+                                <Plus size={14} />
+                              </button>
+                            </div>
                           </div>
                         </div>
 
@@ -2453,17 +2705,49 @@ function AppScreen() {
 
                         <div className="flex-1 overflow-y-auto p-2 space-y-4">
                           {[
-                            { title: 'Carried', items: carriedItems, alwaysVisible: carriedItems.length > 0 },
+                            {
+                              id: "carried",
+                              title: 'Carried',
+                              items: carriedItems,
+                              dropContainerId: null,
+                              alwaysVisible: carriedItems.length > 0 || Boolean(inventoryDrag),
+                            },
                             ...containers.map((container) => ({
+                              id: container.id,
                               title: container.name,
                               subtitle: `${getContainerUsedEncumbrance(container.id)} / ${container.carries ?? 0} enc`,
                               items: getContainerContents(container.id),
+                              dropContainerId: container.id,
                               alwaysVisible: true,
                             })),
                           ]
                             .filter((section) => section.alwaysVisible)
-                            .map((section) => (
-                            <div key={section.title} className="wfrp-subpanel-shell">
+                            .map((section) => {
+                              const isActiveDropTarget = inventoryDropTarget === section.id;
+                              const canDropHere = inventoryDrag
+                                ? canDropInventoryItem(inventoryDrag.itemId, section.dropContainerId)
+                                : false;
+
+                              return (
+                            <div
+                              key={section.id}
+                              onDragOver={(event) =>
+                                handleInventoryDragOver(section.id, section.dropContainerId, event)
+                              }
+                              onDragLeave={() =>
+                                setInventoryDropTarget((current) =>
+                                  current === section.id ? null : current,
+                                )
+                              }
+                              onDrop={(event) => handleInventoryDrop(section.dropContainerId, event)}
+                              className={`wfrp-subpanel-shell ${
+                                isActiveDropTarget
+                                  ? "border-wfrp-gold/50 bg-wfrp-gold/5"
+                                  : canDropHere
+                                    ? "border-wfrp-gold/20"
+                                    : ""
+                              }`}
+                            >
                                <h3 className="wfrp-list-group">
                                   <span>{section.title}</span>
                                   {"subtitle" in section && section.subtitle ? (
@@ -2473,8 +2757,18 @@ function AppScreen() {
                                   ) : null}
                                   <div className="wfrp-panel-rule" />
                                </h3>
-                               {section.items.map((item: any) => (
-                                <div key={item.id} className="wfrp-table-row flex border-0 group">
+                               {section.items.map((item: ResolvedCharacterEquipment) => (
+                                <div
+                                  key={item.id}
+                                  draggable={item.type !== "Container"}
+                                  onDragStart={(event) => handleInventoryDragStart(item, event)}
+                                  onDragEnd={handleInventoryDragEnd}
+                                  className={`wfrp-table-row flex border-0 group ${
+                                    inventoryDrag?.itemId === item.id ? "opacity-45" : ""
+                                  } ${
+                                    item.type === "Container" ? "" : "cursor-grab active:cursor-grabbing"
+                                  }`}
+                                >
                                   <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_80px] gap-2 lg:gap-4 items-center">
                                     <div className="flex flex-col">
                                       <span 
@@ -2517,11 +2811,12 @@ function AppScreen() {
                               ))}
                               {section.items.length === 0 && (
                                 <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-700">
-                                  Empty
+                                  {canDropHere ? "Drop here" : "Empty"}
                                 </div>
                               )}
                             </div>
-                          ))}
+                              );
+                            })}
                         </div>
                         {activeInventoryMenu && (
                           <div
@@ -2537,18 +2832,79 @@ function AppScreen() {
                                 (item) =>
                                   item.type === "Container" &&
                                   item.id !== activeItem.id &&
+                                  item.id !== activeItem.containerId &&
                                   canStoreInContainer(activeItem.id, item.id),
                               );
+                              const armourFitConflicts = activeItem.equipped
+                                ? []
+                                : getArmourFitConflicts(
+                                    activeItem,
+                                    equipmentState.filter((item) => item.id !== activeItem.id),
+                                  );
+                              const conflictItemIds = armourFitConflicts.map(({ item }) => item.id);
+                              const replacedArmourNames = armourFitConflicts
+                                .map(({ item }) => item.name)
+                                .join(", ");
+                              const replacementContainers = armourFitConflicts.length > 0
+                                ? containers.filter((container) => {
+                                    const capacity = container.carries ?? 0;
+                                    const used = getContainerUsedEncumbrance(container.id);
+                                    const currentContribution = armourFitConflicts
+                                      .filter(({ item }) => item.containerId === container.id)
+                                      .reduce((sum, { item }) => sum + Number(item.encumbrance || 0), 0);
+                                    const required = armourFitConflicts.reduce(
+                                      (sum, { item }) => sum + Number(item.encumbrance || 0),
+                                      0,
+                                    );
+
+                                    return capacity > 0 && used - currentContribution + required <= capacity;
+                                  })
+                                : [];
 
                               return (
                                 <>
-                                  {(activeItem.type.includes('Weapon') || activeItem.type.includes('Armor')) && (
+                                  {armourFitConflicts.length > 0 && (
+                                    <>
+                                      <div className="px-3 py-2 text-[9px] font-black uppercase leading-snug tracking-widest text-gray-500">
+                                        Replace {replacedArmourNames}
+                                      </div>
+                                      {replacementContainers.map((container) => (
+                                        <button
+                                          key={container.id}
+                                          onClick={() =>
+                                            handleResolveArmourFit(
+                                              activeItem.id,
+                                              conflictItemIds,
+                                              "container",
+                                              container.id,
+                                            )
+                                          }
+                                          className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+                                        >
+                                          Put old in {container.name}
+                                        </button>
+                                      ))}
+                                      <button
+                                        onClick={() =>
+                                          handleResolveArmourFit(
+                                            activeItem.id,
+                                            conflictItemIds,
+                                            "drop",
+                                          )
+                                        }
+                                        className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-red"
+                                      >
+                                        Drop old armour
+                                      </button>
+                                    </>
+                                  )}
+                                  {armourFitConflicts.length === 0 && (activeItem.type.includes('Weapon') || activeItem.type.includes('Armor')) && (
                                     <button
                                       onClick={() => {
                                         handleToggleEquip(activeItem.id);
                                         setActiveInventoryMenu(null);
                                       }}
-                                      className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:bg-white/5 hover:text-wfrp-gold transition-colors"
+                                      className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
                                     >
                                       {activeItem.equipped ? 'Unequip' : 'Equip'}
                                     </button>
@@ -2561,14 +2917,13 @@ function AppScreen() {
                                       Carry on Person
                                     </button>
                                   )}
-                                  {!activeItem.containerId &&
-                                    stowableContainers.map((container) => (
+                                  {stowableContainers.map((container) => (
                                       <button
                                         key={container.id}
                                         onClick={() => handleStoreItem(activeItem.id, container.id)}
                                         className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:bg-white/5 hover:text-wfrp-gold transition-colors"
                                       >
-                                        Stow in {container.name}
+                                        {activeItem.containerId ? "Move to" : "Stow in"} {container.name}
                                       </button>
                                     ))}
                                   <button
@@ -3520,7 +3875,8 @@ function AppScreen() {
         <ShopSidebar
           isOpen={isShopOpen}
           coins={formatCharacterCoins(characterData.coins)}
-          onAddToCart={handleAddShopItem}
+          onAddToInventory={handleAddShopItem}
+          onBuy={handleAddShopItem}
           onClose={() => setIsShopOpen(false)}
         />
       </div>

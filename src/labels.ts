@@ -1,5 +1,6 @@
 export const UI_LABELS = {
   CAMPAIGN_HEADER: "Campaign",
+  CAMPAIGN_NAME: "Enemy Within",
   FATE_BTN: "Fate",
   CORRUPTION: "Corruption",
   WOUNDS: "Wounds",

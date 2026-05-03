@@ -94,7 +94,7 @@ export type RangedWeaponGroup =
   | "sling"
   | "throwing";
 
-export type WeaponAvailability = "common" | "average" | "scarce" | "rare" | "exotic";
+export type WeaponAvailability = "common" | "average" | "scarce" | "rare" | "exotic" | "n/a";
 
 export interface WeaponPrice {
   value: number;

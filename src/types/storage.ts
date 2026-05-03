@@ -7,6 +7,11 @@ export interface CharacterProgressData {
   resolveCurrent?: number;
   xpCurrent: number;
   xpBaselineTotal?: number;
+  coins?: {
+    gc: number;
+    s: number;
+    d: number;
+  };
   careerCurrentRank?: number;
   characteristicAdvances?: Record<string, number>;
   skills: Record<string, number>;

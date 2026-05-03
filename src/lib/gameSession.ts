@@ -257,6 +257,7 @@ function applyCharacterProgress(
       current: progress.woundsCurrent,
     },
     corruption: progress.corruptionCurrent,
+    coins: progress.coins ?? character.coins,
     level: resolvedRank?.rank ?? character.level,
     status: resolvedRank?.status ?? character.status,
     attributes,

@@ -36,6 +36,7 @@ export function useGameSession() {
   const [resilienceCurrent, setResilienceCurrent] = useState(initialResilienceCurrent);
   const [resolveCurrent, setResolveCurrent] = useState(initialResolveCurrent);
   const [xpCurrent, setXpCurrent] = useState(initialXpCurrent);
+  const [characterCoins, setCharacterCoins] = useState(character.coins);
   const [currentCareerRank, setCurrentCareerRank] = useState(character.level);
   const [currentCharacteristicAdvances, setCurrentCharacteristicAdvances] = useState(character.characteristicAdvances);
   const [characterSkills, setCharacterSkills] = useState(character.skills);
@@ -52,6 +53,7 @@ export function useGameSession() {
     setResilienceCurrent(initialResilienceCurrent);
     setResolveCurrent(initialResolveCurrent);
     setXpCurrent(initialXpCurrent);
+    setCharacterCoins(character.coins);
     setCurrentCareerRank(character.level);
     setCurrentCharacteristicAdvances(character.characteristicAdvances);
     setCharacterSkills(character.skills);
@@ -88,6 +90,7 @@ export function useGameSession() {
       resolveCurrent,
       xpCurrent,
       xpBaselineTotal: character.xpTotal,
+      coins: characterCoins,
       careerCurrentRank: currentCareerRank,
       characteristicAdvances: currentCharacteristicAdvances,
       skills: Object.fromEntries(
@@ -124,6 +127,7 @@ export function useGameSession() {
     resilienceCurrent,
     resolveCurrent,
     xpCurrent,
+    characterCoins,
     currentCareerRank,
     currentCharacteristicAdvances,
     characterSkills,
@@ -147,6 +151,7 @@ export function useGameSession() {
       }),
     ),
     characteristicAdvances: currentCharacteristicAdvances,
+    coins: characterCoins,
     level: currentCareer?.rank ?? character.level,
     status: currentCareer?.status ?? character.status,
     careerRecord: {
@@ -183,6 +188,8 @@ export function useGameSession() {
     setResolveCurrent,
     xpCurrent,
     setXpCurrent,
+    characterCoins,
+    setCharacterCoins,
     currentCareerRank,
     setCurrentCareerRank,
     currentCharacteristicAdvances,

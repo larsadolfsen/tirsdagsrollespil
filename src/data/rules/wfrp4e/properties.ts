@@ -176,6 +176,14 @@ export const weaponQualityDefinitions: WeaponPropertyDefinition[] = [
 
 export const weaponFlawDefinitions: WeaponPropertyDefinition[] = [
   {
+    id: "dangerous",
+    name: "Dangerous",
+    kind: "flaw",
+    valueType: "none",
+    description:
+      "Any failed test including a 9 on either the tens or units die results in a Fumble.",
+  },
+  {
     id: "imprecise",
     name: "Imprecise",
     kind: "flaw",
