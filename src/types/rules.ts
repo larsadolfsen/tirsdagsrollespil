@@ -27,6 +27,7 @@ export interface TalentDefinition extends RulesTextDefinition {}
 export interface SpellDefinition extends RulesTextDefinition {
   category: "petty" | "arcane" | "school";
   school?: string;
+  schools?: string[];
   cn: number;
   range: string;
   target: string;

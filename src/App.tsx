@@ -2015,6 +2015,27 @@ function AppScreen() {
             }}
           />
 
+          <section className="mx-auto w-full max-w-[1500px] rounded border border-[#303030] bg-[#181818] px-3 py-3 shadow-lg">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <HeaderResourceSlider
+                label="Wounds"
+                current={woundsCurrent}
+                max={characterData.wounds.max}
+                onAdjust={adjustWounds}
+                barClassName="bg-wfrp-red"
+                contentClassName="flex min-w-0 flex-1 flex-col gap-1"
+              />
+              <HeaderResourceSlider
+                label="Corruption"
+                current={corruptionCurrent}
+                max={maxCorruption}
+                onAdjust={adjustCorruption}
+                barClassName="bg-purple-600"
+                contentClassName="flex min-w-0 flex-1 flex-col gap-1"
+              />
+            </div>
+          </section>
+
         <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-8">
           {/* Layout for Characteristics and Skills */}
           {/* Characteristics Section */}
@@ -2059,11 +2080,10 @@ function AppScreen() {
           </section>
 
           <div className="flex flex-col md:flex-row gap-6">
-            <div className="grid w-full grid-cols-1 gap-6 md:w-1/3 xl:w-[46%] xl:grid-cols-2">
-            <div className="flex flex-col gap-6">
+            <div className="flex w-full flex-col gap-6 md:w-[28%] xl:w-[24%]">
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">
-                <h3 className="wfrp-panel-title">WOUNDS & ARMOUR</h3>
+                <h3 className="wfrp-panel-title">ARMOUR</h3>
               </div>
               <div className="wfrp-card-tab-body">
                 <div className="wfrp-subpanel-shell px-3 py-3 space-y-3">
@@ -2087,14 +2107,6 @@ function AppScreen() {
                       </div>
                     ))}
                   </div>
-                  <HeaderResourceSlider
-                    label="Wounds"
-                    current={woundsCurrent}
-                    max={characterData.wounds.max}
-                    onAdjust={adjustWounds}
-                    barClassName="bg-wfrp-red"
-                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                  />
                   <div className="flex flex-col items-start gap-1">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                       Equipped
@@ -2107,29 +2119,7 @@ function AppScreen() {
               </div>
             </section>
 
-            <section className="wfrp-card overflow-hidden p-0!">
-              <div className="wfrp-card-tab-header">
-                <h3 className="wfrp-panel-title">CORRUPTION</h3>
-              </div>
-              <div className="wfrp-card-tab-body">
-                <div className="wfrp-subpanel-shell px-3 py-3">
-                  <div className="grid grid-cols-1 gap-3">
-                    <HeaderResourceSlider
-                      label="Corruption"
-                      current={corruptionCurrent}
-                      max={maxCorruption}
-                      onAdjust={adjustCorruption}
-                      barClassName="bg-purple-600"
-                      contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                    />
-                  </div>
-                </div>
-              </div>
-            </section>
-            </div>
-
             {/* Reserves Section - Below Skills */}
-            <div className="flex flex-col gap-6">
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">
                 <h3 className="wfrp-panel-title">FATE & RESILIENCE</h3>
@@ -2178,11 +2168,10 @@ function AppScreen() {
                 </div>
               </div>
             </section>
-            </div>
           </div>
 
           {/* Tabbed Info Box - 2/3 width on Desktop/Tablet */}
-          <section className="w-full md:w-2/3 xl:flex-1 wfrp-card flex flex-col overflow-hidden self-start min-h-[500px] p-0!">
+          <section className="w-full md:flex-1 wfrp-card flex flex-col overflow-hidden self-start min-h-[500px] p-0!">
               <ScrollableTabStrip className="flex px-4 bg-[#111] border-b border-[#303030] gap-4 lg:gap-6 overflow-x-auto no-scrollbar">
                 {[
                   { id: 'skills', label: 'Skills' },

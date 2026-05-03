@@ -1,6 +1,60 @@
 import type { SpellDefinition } from "../../../types";
 
-export const spellDefinitions: SpellDefinition[] = [
+type SpellDefinitionSeed = Omit<SpellDefinition, "category" | "school" | "schools"> &
+  Partial<Pick<SpellDefinition, "category" | "school" | "schools">>;
+
+const pettySpellIds = new Set([
+  "animal-friend",
+  "bearings",
+  "careful-step",
+  "conserve",
+  "dart",
+  "dazzle",
+  "drain",
+  "eavesdrop",
+  "gust",
+  "light",
+  "magic-flame",
+  "marsh-lights",
+  "murmured-whisper",
+  "open-lock",
+  "produce-small-animal",
+  "protection-from-rain",
+  "purify-water",
+  "rot",
+  "shock",
+  "sleep",
+  "sly-hands",
+  "sounds",
+  "spring",
+  "twitch",
+  "warning",
+]);
+
+const fireLoreSpellIds = new Set([
+  "aqshys-aegis",
+  "cauterise",
+  "crown-of-flame",
+  "flaming-hearts",
+  "firewall",
+  "great-fires-of-uzhul",
+  "flaming-sword-of-rhuin",
+  "purge",
+]);
+
+const resolveSpellCategory = (spell: SpellDefinitionSeed): SpellDefinition["category"] => {
+  if (spell.category) {
+    return spell.category;
+  }
+
+  if (pettySpellIds.has(spell.id)) {
+    return "petty";
+  }
+
+  return fireLoreSpellIds.has(spell.id) ? "school" : "arcane";
+};
+
+const spellDefinitionSeeds: SpellDefinitionSeed[] = [
   {
     id: "animal-friend",
     name: "Animal Friend",
@@ -614,3 +668,15 @@ export const spellDefinitions: SpellDefinition[] = [
     damage: "Special",
   },
 ];
+
+export const spellDefinitions: SpellDefinition[] = spellDefinitionSeeds.map((spell) => {
+  const category = resolveSpellCategory(spell);
+  const schools = spell.schools ?? (spell.school ? [spell.school] : category === "school" ? ["fire"] : undefined);
+
+  return {
+    ...spell,
+    category,
+    school: spell.school ?? schools?.[0],
+    schools,
+  };
+});

@@ -5,6 +5,7 @@ import { Chip } from "./Chip";
 import type { SpellDefinition } from "../types";
 
 const spellCategoryOrder: SpellDefinition["category"][] = ["petty", "arcane", "school"];
+type SpellFilter = "All" | SpellDefinition["category"] | `school:${string}`;
 
 function formatSpellCategoryLabel(category: SpellDefinition["category"]) {
   if (category === "petty") {
@@ -35,9 +36,33 @@ function formatSpellSchoolLabel(school: string) {
   return `The Lore of ${titledSchool}`;
 }
 
+function formatSpellSchoolShortLabel(school: string) {
+  return formatSpellSchoolLabel(school).replace(/^The Lore of\s+/i, "");
+}
+
+function getSpellSchools(spell: SpellDefinition) {
+  return spell.schools ?? (spell.school ? [spell.school] : []);
+}
+
+function getSpellSchoolFilterValue(school: string) {
+  return `school:${school}` as const;
+}
+
+function getSpellTypeLabel(spell: SpellDefinition) {
+  const schools = getSpellSchools(spell);
+
+  if (spell.category === "school" && schools.length > 0) {
+    return schools.map(formatSpellSchoolShortLabel).join(", ");
+  }
+
+  return formatSpellCategoryLabel(spell.category);
+}
+
 function getSpellGroupLabel(spell: SpellDefinition) {
-  if (spell.category === "school" && spell.school) {
-    return formatSpellSchoolLabel(spell.school);
+  const schools = getSpellSchools(spell);
+
+  if (spell.category === "school" && schools.length > 0) {
+    return schools.map(formatSpellSchoolLabel).join(" / ");
   }
 
   return formatSpellCategoryLabel(spell.category);
@@ -57,7 +82,7 @@ export function SpellShopSidebar({
   onClose: () => void;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<"All" | SpellDefinition["category"]>("All");
+  const [selectedFilter, setSelectedFilter] = useState<SpellFilter>("All");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [expandedSpellId, setExpandedSpellId] = useState<string | null>(null);
 
@@ -81,20 +106,26 @@ export function SpellShopSidebar({
   const filteredStock = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
     const categoryFilteredStock =
-      selectedCategory === "All"
+      selectedFilter === "All"
         ? shopStock
-        : shopStock.filter((spell) => spell.category === selectedCategory);
+        : selectedFilter.startsWith("school:")
+          ? shopStock.filter(
+              (spell) =>
+                spell.category === "school" &&
+                getSpellSchools(spell).includes(selectedFilter.replace(/^school:/, "")),
+            )
+          : shopStock.filter((spell) => spell.category === selectedFilter);
 
     if (!normalizedSearchTerm) {
       return categoryFilteredStock;
     }
 
     return categoryFilteredStock.filter((spell) =>
-      [spell.name, spell.description, spell.category, spell.school, String(spell.cn)]
+      [spell.name, spell.description, spell.category, ...getSpellSchools(spell), String(spell.cn)]
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearchTerm)),
     );
-  }, [searchTerm, selectedCategory, shopStock]);
+  }, [searchTerm, selectedFilter, shopStock]);
 
   const groupedStock = useMemo(() => {
     return filteredStock.reduce<Array<{ label: string; spells: SpellDefinition[] }>>((groups, spell) => {
@@ -111,7 +142,23 @@ export function SpellShopSidebar({
     }, []);
   }, [filteredStock]);
 
-  const categoryOptions: Array<"All" | SpellDefinition["category"]> = ["All", ...spellCategoryOrder];
+  const categoryOptions = useMemo<Array<{ label: string; value: SpellFilter }>>(() => {
+    const schoolOptions = [...new Set(shopStock.flatMap(getSpellSchools))]
+      .sort((firstSchool, secondSchool) =>
+        formatSpellSchoolShortLabel(firstSchool).localeCompare(formatSpellSchoolShortLabel(secondSchool)),
+      )
+      .map((school) => ({
+        label: formatSpellSchoolShortLabel(school),
+        value: getSpellSchoolFilterValue(school),
+      }));
+
+    return [
+      { label: "All", value: "All" },
+      { label: "Petty", value: "petty" },
+      { label: "Arcane", value: "arcane" },
+      ...schoolOptions,
+    ];
+  }, [shopStock]);
 
   return (
     <AnimatePresence mode="wait">
@@ -175,28 +222,33 @@ export function SpellShopSidebar({
                     <div className="px-2 pb-1 text-[9px] font-black uppercase tracking-widest text-gray-700">
                       Type
                     </div>
-                    {categoryOptions.map((category) => {
+                    {categoryOptions.map((option) => {
                       const spellCount =
-                        category === "All"
+                        option.value === "All"
                           ? shopStock.length
-                          : shopStock.filter((spell) => spell.category === category).length;
-                      const label = category === "All" ? "All" : formatSpellCategoryLabel(category);
+                          : option.value.startsWith("school:")
+                            ? shopStock.filter(
+                                (spell) =>
+                                  spell.category === "school" &&
+                                  getSpellSchools(spell).includes(option.value.replace(/^school:/, "")),
+                              ).length
+                            : shopStock.filter((spell) => spell.category === option.value).length;
 
                       return (
                         <button
-                          key={category}
+                          key={option.value}
                           type="button"
                           onClick={() => {
-                            setSelectedCategory(category);
+                            setSelectedFilter(option.value);
                             setExpandedSpellId(null);
                           }}
                           className={`flex h-8 w-full items-center justify-between rounded px-2 text-left text-[10px] font-black uppercase tracking-widest transition-colors ${
-                            selectedCategory === category
+                            selectedFilter === option.value
                               ? "bg-wfrp-gold/10 text-wfrp-gold"
                               : "text-gray-500 hover:bg-white/5 hover:text-gray-200"
                           }`}
                         >
-                          <span>{label}</span>
+                          <span>{option.label}</span>
                           <span className="font-mono text-[9px] text-gray-600">{spellCount}</span>
                         </button>
                       );
@@ -205,16 +257,18 @@ export function SpellShopSidebar({
                 )}
               </div>
 
-              {selectedCategory !== "All" && (
+              {selectedFilter !== "All" && (
                 <div className="flex flex-wrap gap-2">
                   <Chip
                     onClose={() => {
-                      setSelectedCategory("All");
+                      setSelectedFilter("All");
                       setExpandedSpellId(null);
                     }}
-                    closeLabel={`Clear ${formatSpellCategoryLabel(selectedCategory)} spell filter`}
+                    closeLabel={`Clear ${
+                      categoryOptions.find((option) => option.value === selectedFilter)?.label ?? "spell"
+                    } spell filter`}
                   >
-                    {formatSpellCategoryLabel(selectedCategory)}
+                    {categoryOptions.find((option) => option.value === selectedFilter)?.label}
                   </Chip>
                 </div>
               )}
@@ -268,7 +322,7 @@ export function SpellShopSidebar({
                               </div>
 
                               <div className="wfrp-list-cell-strong truncate text-right">
-                                {formatSpellCategoryLabel(spell.category)}
+                                {getSpellTypeLabel(spell)}
                               </div>
 
                               <ChevronDown

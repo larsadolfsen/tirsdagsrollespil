@@ -93,8 +93,8 @@ export const thanoVoss: CharacterRecord = {
     { spellId: "sleep" },
     { spellId: "sounds" },
     { spellId: "twitch" },
-    { spellId: "marsh_lights" },
-    { spellId: "open_lock" },
+    { spellId: "marsh-lights" },
+    { spellId: "open-lock" },
     { spellId: "blast" },
   ],
 };

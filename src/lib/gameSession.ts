@@ -184,6 +184,8 @@ function applyCharacterProgress(
     return character;
   }
 
+  const progressSkills = progress.skills ?? {};
+  const progressEquipment = progress.equipment ?? {};
   const talentIds = progress.talentIds ?? character.talents.map((talent) => talent.id);
   const talents = talentIds
     .map((talentId) => {
@@ -277,9 +279,9 @@ function applyCharacterProgress(
     ...character,
     wounds: {
       ...character.wounds,
-      current: progress.woundsCurrent,
+      current: progress.woundsCurrent ?? character.wounds.current,
     },
-    corruption: progress.corruptionCurrent,
+    corruption: progress.corruptionCurrent ?? character.corruption,
     coins: progress.coins ?? character.coins,
     level: resolvedRank?.rank ?? character.level,
     status: resolvedRank?.status ?? character.status,
@@ -292,7 +294,7 @@ function applyCharacterProgress(
     },
     skills: character.skills.map((skill) => ({
       ...skill,
-      advances: progress.skills[getCharacterSkillKey(skill)] ?? skill.advances,
+      advances: progressSkills[getCharacterSkillKey(skill)] ?? skill.advances,
     })),
     talents,
     spells,
@@ -300,7 +302,7 @@ function applyCharacterProgress(
       .filter((item) => !progress.removedEquipmentIds?.includes(item.id))
       .map((item) => ({
         ...item,
-        equipped: progress.equipment[item.id] ?? item.equipped,
+        equipped: progressEquipment[item.id] ?? item.equipped,
         containerId: progress.equipmentContainers?.[item.id] ?? item.containerId ?? null,
       })),
   };
