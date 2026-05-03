@@ -16,6 +16,7 @@ export interface CharacterProgressData {
   characteristicAdvances?: Record<string, number>;
   skills: Record<string, number>;
   talentIds?: string[];
+  spellIds?: string[];
   equipment: Record<string, boolean>;
   equipmentContainers?: Record<string, string | null>;
   addedEquipment?: Array<{

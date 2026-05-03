@@ -60,6 +60,8 @@ export interface ResolvedCharacterSpell {
   id: string;
   name: string;
   description: string;
+  category: SpellDefinition["category"];
+  school?: string;
   cn: number;
   range: string;
   target: string;
@@ -244,6 +246,8 @@ export function resolveCharacterRecord(
         id: definition.id,
         name: definition.name,
         description: definition.description,
+        category: definition.category,
+        school: definition.school,
         cn: definition.cn,
         range: definition.range,
         target: definition.target,

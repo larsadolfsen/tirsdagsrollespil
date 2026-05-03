@@ -4,6 +4,7 @@ export const spellDefinitions: SpellDefinition[] = [
   {
     id: "dart",
     name: "Dart",
+    category: "petty",
     description: "You cast a small dart of magical force at a nearby target.",
     cn: 0,
     range: "Willpower yards",
@@ -14,6 +15,7 @@ export const spellDefinitions: SpellDefinition[] = [
   {
     id: "sleep",
     name: "Sleep",
+    category: "petty",
     description: "You touch a target and cloud their senses with sudden magical drowsiness.",
     cn: 0,
     range: "Touch",
@@ -24,6 +26,7 @@ export const spellDefinitions: SpellDefinition[] = [
   {
     id: "sounds",
     name: "Sounds",
+    category: "petty",
     description: "You create small illusory noises nearby, such as whispers, taps, or footsteps.",
     cn: 8,
     range: "Willpower yards",
@@ -34,6 +37,7 @@ export const spellDefinitions: SpellDefinition[] = [
   {
     id: "twitch",
     name: "Twitch",
+    category: "petty",
     description: "You make a small unattended object twitch, shift, or jerk suddenly.",
     cn: 0,
     range: "Willpower Bonus yards",
@@ -44,6 +48,7 @@ export const spellDefinitions: SpellDefinition[] = [
   {
     id: "marsh_lights",
     name: "Marsh Lights",
+    category: "petty",
     description: "You conjure small floating lights that glimmer and drift in the gloom.",
     cn: 4,
     range: "Willpower Bonus yards",
@@ -54,6 +59,7 @@ export const spellDefinitions: SpellDefinition[] = [
   {
     id: "open_lock",
     name: "Open Lock",
+    category: "petty",
     description: "You coax a simple lock open with a whispered word and a twist of magic.",
     cn: 1,
     range: "Willpower yards",
@@ -64,6 +70,7 @@ export const spellDefinitions: SpellDefinition[] = [
   {
     id: "bolt",
     name: "Bolt",
+    category: "arcane",
     description: "You fire a missile of shimmering magical energy from your hand at a target.",
     cn: 4,
     range: "24 yards",
@@ -74,6 +81,7 @@ export const spellDefinitions: SpellDefinition[] = [
   {
     id: "blast",
     name: "Blast",
+    category: "arcane",
     description:
       "You channel magic into an explosive blast. This is a magic missile with Damage +3 that targets everyone in the Area of Effect.",
     cn: 4,

@@ -11,6 +11,7 @@ import type {
   ResolvedCharacterEquipment,
   ResolvedCharacterRecord,
   ResolvedCharacterSkill,
+  ResolvedCharacterSpell,
 } from "../data/characters/resolved";
 import {
   buildResolvedSkillOptions,
@@ -198,6 +199,28 @@ function applyCharacterProgress(
       };
     })
     .filter((talent): talent is ResolvedCharacterRecord["talents"][number] => Boolean(talent));
+  const spellIds = progress.spellIds ?? character.spells.map((spell) => spell.id);
+  const spells = spellIds
+    .map((spellId): ResolvedCharacterSpell | null => {
+      const definition = ruleset.spells.find((spell) => spell.id === spellId);
+      if (!definition) {
+        return null;
+      }
+
+      return {
+        id: definition.id,
+        name: definition.name,
+        description: definition.description,
+        category: definition.category,
+        school: definition.school,
+        cn: definition.cn,
+        range: definition.range,
+        target: definition.target,
+        duration: definition.duration,
+        damage: definition.damage,
+      };
+    })
+    .filter((spell): spell is NonNullable<typeof spell> => Boolean(spell));
 
   const resolvedRank =
     character.careerRecord.ranks.find((rank) => rank.rank === progress.careerCurrentRank) ??
@@ -272,6 +295,7 @@ function applyCharacterProgress(
       advances: progress.skills[getCharacterSkillKey(skill)] ?? skill.advances,
     })),
     talents,
+    spells,
     equipment: [...character.equipment, ...addedEquipment]
       .filter((item) => !progress.removedEquipmentIds?.includes(item.id))
       .map((item) => ({

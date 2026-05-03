@@ -9,6 +9,7 @@ import {
 import type {
   ResolvedCharacterEquipment,
   ResolvedCharacterSkill,
+  ResolvedCharacterSpell,
   ResolvedCharacterTalent,
 } from "../data/characters/resolved";
 
@@ -41,6 +42,7 @@ export function useGameSession() {
   const [currentCharacteristicAdvances, setCurrentCharacteristicAdvances] = useState(character.characteristicAdvances);
   const [characterSkills, setCharacterSkills] = useState(character.skills);
   const [characterTalents, setCharacterTalents] = useState(character.talents);
+  const [characterSpells, setCharacterSpells] = useState(character.spells);
   const [equipmentState, setEquipmentState] = useState(character.equipment);
   const [backgroundText, setBackgroundText] = useState(session.progress?.backgroundText ?? "");
   const [notes, setNotes] = useState(session.progress?.notes ?? []);
@@ -58,6 +60,7 @@ export function useGameSession() {
     setCurrentCharacteristicAdvances(character.characteristicAdvances);
     setCharacterSkills(character.skills);
     setCharacterTalents(character.talents);
+    setCharacterSpells(character.spells);
     setEquipmentState(character.equipment);
     setBackgroundText(session.progress?.backgroundText ?? "");
     setNotes(session.progress?.notes ?? []);
@@ -97,6 +100,7 @@ export function useGameSession() {
         characterSkills.map((skill) => [getCharacterSkillKey(skill), skill.advances]),
       ),
       talentIds: characterTalents.map((talent) => talent.id),
+      spellIds: characterSpells.map((spell) => spell.id),
       equipment: Object.fromEntries(
         equipmentState.map((item) => [item.id, item.equipped]),
       ),
@@ -132,6 +136,7 @@ export function useGameSession() {
     currentCharacteristicAdvances,
     characterSkills,
     characterTalents,
+    characterSpells,
     equipmentState,
     backgroundText,
     notes,
@@ -159,6 +164,7 @@ export function useGameSession() {
       level: currentCareer?.rank ?? character.careerRecord.level,
       status: currentCareer?.status ?? character.careerRecord.status,
     },
+    spells: characterSpells,
   };
 
   const careerAdvancementData = getCareerAdvancementData(
@@ -198,6 +204,8 @@ export function useGameSession() {
     setCharacterSkills,
     characterTalents,
     setCharacterTalents,
+    characterSpells,
+    setCharacterSpells,
     equipmentState,
     setEquipmentState,
     backgroundText,
@@ -210,4 +218,5 @@ export function useGameSession() {
 export type GameSessionHook = ReturnType<typeof useGameSession>;
 export type GameSessionSkillState = ResolvedCharacterSkill;
 export type GameSessionTalentState = ResolvedCharacterTalent;
+export type GameSessionSpellState = ResolvedCharacterSpell;
 export type GameSessionEquipmentState = ResolvedCharacterEquipment;

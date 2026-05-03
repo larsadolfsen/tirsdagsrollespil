@@ -22,6 +22,7 @@ type InfoSidebarProps = {
   ruleset: Ruleset;
   rulesIndex: RulesIndex;
   getCharacteristicDescription: (key: Characteristic["key"]) => string;
+  formatSpellDuration: (duration: string) => string;
   skillListRefs: MutableRefObject<Record<string, HTMLDivElement | null>>;
   propertyListRefs: MutableRefObject<Record<string, HTMLDivElement | null>>;
   talentListRefs: MutableRefObject<Record<string, HTMLDivElement | null>>;
@@ -175,10 +176,13 @@ const getEquipmentSections = (item: ResolvedCharacterEquipment): RuleDetailSecti
       : []),
   ];
 
-const getSpellStats = (spell: ResolvedCharacterRecord["spells"][number]) =>
+const getSpellStats = (
+  spell: ResolvedCharacterRecord["spells"][number],
+  formatSpellDuration: (duration: string) => string,
+) =>
   compactStats([
     { label: "CN", value: spell.cn },
-    { label: "Duration", value: spell.duration },
+    { label: "Duration", value: formatSpellDuration(spell.duration) },
     { label: "Range", value: spell.range },
     { label: "Target", value: spell.target },
     spell.damage && spell.damage !== "-" ? { label: "Damage", value: spell.damage } : null,
@@ -359,6 +363,7 @@ export function InfoSidebar({
   ruleset,
   rulesIndex,
   getCharacteristicDescription,
+  formatSpellDuration,
   skillListRefs,
   propertyListRefs,
   talentListRefs,
@@ -587,7 +592,7 @@ export function InfoSidebar({
                 key={spell.name}
                 title={spell.name}
                 isActive={activeInfo.name === spell.name}
-                details={getSpellStats(spell)}
+                details={getSpellStats(spell, formatSpellDuration)}
                 innerRef={(el) => {
                   spellListRefs.current[spell.name] = el;
                 }}

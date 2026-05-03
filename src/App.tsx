@@ -23,6 +23,7 @@ import { useRef } from "react";
 import { CharacterHeader } from "./components/CharacterHeader";
 import { InfoSidebar } from "./components/InfoSidebar";
 import { ShopSidebar } from "./components/ShopSidebar";
+import { SpellShopSidebar } from "./components/SpellShopSidebar";
 import type { ActiveInfoState } from "./components/appTypes";
 import { GameSessionProvider, useGameSessionContext } from "./context/GameSessionContext";
 import type {
@@ -39,7 +40,7 @@ import {
 } from "./lib/gameSession";
 import { UI_LABELS } from "./labels";
 import type { ArmourDefinition, ArmourLocation, Characteristic, SkillDefinition } from "./types";
-import type { ItemDefinition } from "./types";
+import type { ItemDefinition, SpellDefinition } from "./types";
 
 interface RollHistoryItem {
   id: string;
@@ -125,6 +126,8 @@ type InlineSubtabOption<T extends string> = {
 
 type ActionCategory = 'all' | 'melee' | 'ranged' | 'other';
 type SkillSubtab = 'all' | 'advanced' | 'basic-trained' | 'basic-untrained';
+type SpellSubtab = 'all' | 'petty' | 'arcane' | `school:${string}`;
+type InventorySubtab = 'all' | 'carried' | `container:${string}`;
 
 const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
   [...items].sort((first, second) => {
@@ -135,6 +138,23 @@ const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
     return nameComparison || first.id.localeCompare(second.id);
   });
 type CareerSubtab = 'all' | 'careers' | 'characteristics' | 'skills' | 'talents';
+
+const formatSpellSchoolLabel = (school: string) => {
+  const normalizedSchool = school
+    .replace(/^the\s+lore\s+of\s+/i, "")
+    .replace(/^lore\s+of\s+/i, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const titledSchool = normalizedSchool
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+
+  return `The Lore of ${titledSchool}`;
+};
 
 function ResourceCounterBar({
   label,
@@ -302,28 +322,39 @@ function InlineSubtabs<T extends string>({
   options,
   activeId,
   onChange,
+  trailingContent,
 }: {
   options: InlineSubtabOption<T>[];
   activeId: T;
   onChange: (id: T) => void;
+  trailingContent?: ReactNode;
 }) {
   return (
-    <ScrollableTabStrip className="flex items-center gap-2 p-3 lg:p-4 bg-black/20 border-b border-white/5 overflow-x-auto no-scrollbar">
-      {options.map((option) => (
-        <button
-          key={option.id}
-          onClick={() => onChange(option.id)}
-          className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
-            activeId === option.id
-              ? 'bg-[#333] text-white shadow-lg'
-              : 'bg-black/40 text-gray-400 hover:bg-[#222] hover:text-gray-200'
-          }`}
-          aria-pressed={activeId === option.id}
-        >
-          {option.label}
-        </button>
-      ))}
-    </ScrollableTabStrip>
+    <div className="flex items-center gap-2 border-b border-white/5 bg-black/20">
+      <div className="min-w-0 flex-1">
+        <ScrollableTabStrip className="flex items-center gap-2 p-3 lg:p-4 overflow-x-auto no-scrollbar">
+          {options.map((option) => (
+            <button
+              key={option.id}
+              onClick={() => onChange(option.id)}
+              className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
+                activeId === option.id
+                  ? 'bg-[#333] text-white shadow-lg'
+                  : 'bg-black/40 text-gray-400 hover:bg-[#222] hover:text-gray-200'
+              }`}
+              aria-pressed={activeId === option.id}
+            >
+              {option.label}
+            </button>
+          ))}
+        </ScrollableTabStrip>
+      </div>
+      {trailingContent ? (
+        <div className="shrink-0 pr-3 lg:pr-4">
+          {trailingContent}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -393,6 +424,7 @@ function AppScreen() {
     setCharacterSkills,
     characterTalents,
     setCharacterTalents,
+    setCharacterSpells,
     equipmentState,
     setEquipmentState,
     backgroundText,
@@ -405,10 +437,13 @@ function AppScreen() {
   const [activeMainTab, setActiveMainTab] = useState<'skills' | 'actions' | 'inventory' | 'spells' | 'features' | 'background' | 'notes' | 'career'>('skills');
   const [activeActionCategory, setActiveActionCategory] = useState<ActionCategory>('all');
   const [activeSkillSubtab, setActiveSkillSubtab] = useState<SkillSubtab>('all');
+  const [activeSpellSubtab, setActiveSpellSubtab] = useState<SpellSubtab>('all');
+  const [activeInventorySubtab, setActiveInventorySubtab] = useState<InventorySubtab>('all');
   const [activeCareerSubtab, setActiveCareerSubtab] = useState<CareerSubtab>('all');
   const [rollHistory, setRollHistory] = useState<RollHistoryItem[]>([]);
   const [isDiceLogOpen, setIsDiceLogOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
+  const [isSpellShopOpen, setIsSpellShopOpen] = useState(false);
   const [rollState, setRollState] = useState<RollState>({
     characteristic: null,
     title: null,
@@ -526,6 +561,35 @@ function AppScreen() {
     const pendingAdvances = pendingSkillAdvances[skillName] ?? 0;
     return baseAdvances + pendingAdvances;
   };
+  const spellSchoolOptions = [...new Set<string>(
+    characterData.spells
+      .filter((spell) => spell.category === "school" && spell.school)
+      .map((spell) => spell.school as string),
+  )].sort((first, second) =>
+    formatSpellSchoolLabel(first).localeCompare(formatSpellSchoolLabel(second), undefined, {
+      sensitivity: "base",
+    }),
+  );
+  const spellSubtabOptions: InlineSubtabOption<SpellSubtab>[] = [
+    { id: "all", label: "All" },
+    { id: "petty", label: "Petty" },
+    { id: "arcane", label: "Arcane" },
+    ...spellSchoolOptions.map((school) => ({
+      id: `school:${school}` as SpellSubtab,
+      label: formatSpellSchoolLabel(school),
+    })),
+  ];
+  const filteredSpells = characterData.spells.filter((spell) => {
+    if (activeSpellSubtab === "all") {
+      return true;
+    }
+
+    if (activeSpellSubtab === "petty" || activeSpellSubtab === "arcane") {
+      return spell.category === activeSpellSubtab;
+    }
+
+    return spell.category === "school" && spell.school === activeSpellSubtab.replace(/^school:/, "");
+  });
   const getCareerSkillAdvanceTotal = (careerSkillName: string) => {
     const skillDefinition = skillDefinitionByName.get(careerSkillName);
 
@@ -632,6 +696,7 @@ function AppScreen() {
     setActiveMainTab("skills");
     setActiveActionCategory("all");
     setActiveSkillSubtab("all");
+    setActiveInventorySubtab("all");
     setActiveCareerSubtab("all");
     setActiveInventoryMenu(null);
     setIsDiceLogOpen(false);
@@ -896,6 +961,31 @@ function AppScreen() {
     setActiveMainTab("inventory");
   };
 
+  const handleAddSpell = (spell: SpellDefinition) => {
+    setCharacterSpells((currentSpells) => {
+      if (currentSpells.some((currentSpell) => currentSpell.id === spell.id)) {
+        return currentSpells;
+      }
+
+      return [
+        ...currentSpells,
+        {
+          id: spell.id,
+          name: spell.name,
+          description: spell.description,
+          category: spell.category,
+          school: spell.school,
+          cn: spell.cn,
+          range: spell.range,
+          target: spell.target,
+          duration: spell.duration,
+          damage: spell.damage,
+        },
+      ];
+    });
+    setActiveMainTab("spells");
+  };
+
   const handleAddCoins = () => {
     const addedCoins = {
       gc: Math.max(0, Math.floor(Number(coinDraft.gc) || 0)),
@@ -1153,6 +1243,13 @@ function AppScreen() {
       .replace(/Willpower Bonus/gi, `${wpb}`)
       .replace(/Willpower/gi, `${wp}`)
       .replace(/\(\s*(\d+)\s+yards\s*\)/gi, "($1 yards)")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const formatSpellDuration = (duration: string) =>
+    duration
+      .replace(/Willpower Bonus/gi, `${wpb}`)
+      .replace(/Willpower/gi, `${wp}`)
       .replace(/\s+/g, " ")
       .trim();
 
@@ -1962,27 +2059,28 @@ function AppScreen() {
           </section>
 
           <div className="flex flex-col md:flex-row gap-6">
-            <div className="w-full md:w-1/3 flex flex-col gap-6">
+            <div className="grid w-full grid-cols-1 gap-6 md:w-1/3 xl:w-[46%] xl:grid-cols-2">
+            <div className="flex flex-col gap-6">
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">
                 <h3 className="wfrp-panel-title">WOUNDS & ARMOUR</h3>
               </div>
               <div className="wfrp-card-tab-body">
                 <div className="wfrp-subpanel-shell px-3 py-3 space-y-3">
-                  <div className="grid grid-cols-6 gap-2">
+                  <div className="grid grid-cols-8 gap-2">
                     {[
-                      { label: "Head", value: armourTotals.head, className: "col-start-3 row-start-1 col-span-2" },
-                      { label: "Left arm", value: armourTotals.leftArm, className: "col-start-1 row-start-2 col-span-2" },
-                      { label: "Body", value: armourTotals.body, className: "col-start-3 row-start-2 col-span-2" },
-                      { label: "Right arm", value: armourTotals.rightArm, className: "col-start-5 row-start-2 col-span-2" },
-                      { label: "Left leg", value: armourTotals.leftLeg, className: "col-start-2 row-start-3 col-span-2" },
-                      { label: "Right leg", value: armourTotals.rightLeg, className: "col-start-4 row-start-3 col-span-2" },
+                      { label: "Head", value: armourTotals.head, className: "col-start-4 row-start-1 col-span-2 aspect-square rounded-full" },
+                      { label: "Left arm", value: armourTotals.leftArm, className: "col-start-3 row-start-2 col-span-1 row-span-2 aspect-[1/2] rounded-full rounded-tr-none" },
+                      { label: "Body", value: armourTotals.body, className: "col-start-4 row-start-2 col-span-2 row-span-2 aspect-[2/3] rounded-lg" },
+                      { label: "Right arm", value: armourTotals.rightArm, className: "col-start-6 row-start-2 col-span-1 row-span-2 aspect-[1/2] rounded-full rounded-tl-none" },
+                      { label: "Left leg", value: armourTotals.leftLeg, className: "col-start-4 row-start-4 col-span-1 row-span-2 aspect-[1/2] rounded-b-full rounded-t-lg" },
+                      { label: "Right leg", value: armourTotals.rightLeg, className: "col-start-5 row-start-4 col-span-1 row-span-2 aspect-[1/2] rounded-b-full rounded-t-lg" },
                     ].map(({ label, value, className }) => (
                       <div
                         key={label}
-                        className={`rounded border border-white/5 bg-black/30 px-2 py-2 text-center ${className}`}
+                        className={`flex flex-col items-center justify-center border border-white/5 bg-black/30 px-1.5 py-2 text-center ${className}`}
                       >
-                        <div className="text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                        <div className="text-[8px] font-bold uppercase leading-tight tracking-widest text-gray-500">
                           {label}
                         </div>
                         <div className="mt-1 text-lg font-bold text-gray-100">{value}</div>
@@ -2028,15 +2126,17 @@ function AppScreen() {
                 </div>
               </div>
             </section>
+            </div>
 
             {/* Reserves Section - Below Skills */}
+            <div className="flex flex-col gap-6">
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">
                 <h3 className="wfrp-panel-title">FATE & RESILIENCE</h3>
               </div>
               <div className="wfrp-card-tab-body space-y-3">
                 <div className="wfrp-subpanel-shell px-3 py-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3">
                     <HeaderResourceSlider
                       label="Fate"
                       current={fateCurrent}
@@ -2057,7 +2157,7 @@ function AppScreen() {
                 </div>
 
                 <div className="wfrp-subpanel-shell px-3 py-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3">
                     <HeaderResourceSlider
                       label="Resilience"
                       current={resilienceCurrent}
@@ -2078,10 +2178,11 @@ function AppScreen() {
                 </div>
               </div>
             </section>
+            </div>
           </div>
 
           {/* Tabbed Info Box - 2/3 width on Desktop/Tablet */}
-          <section className="w-full md:w-2/3 wfrp-card flex flex-col overflow-hidden self-start min-h-[500px] p-0!">
+          <section className="w-full md:w-2/3 xl:flex-1 wfrp-card flex flex-col overflow-hidden self-start min-h-[500px] p-0!">
               <ScrollableTabStrip className="flex px-4 bg-[#111] border-b border-[#303030] gap-4 lg:gap-6 overflow-x-auto no-scrollbar">
                 {[
                   { id: 'skills', label: 'Skills' },
@@ -2526,33 +2627,66 @@ function AppScreen() {
 
                     {activeMainTab === 'spells' && (
                        <div className="flex flex-col h-full overflow-hidden">
+                          <InlineSubtabs
+                            options={spellSubtabOptions}
+                            activeId={activeSpellSubtab}
+                            onChange={setActiveSpellSubtab}
+                            trailingContent={
+                              <button
+                                type="button"
+                                onClick={() => setIsSpellShopOpen(true)}
+                                className="wfrp-action-btn inline-flex h-7 items-center gap-1.5 px-3 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+                                aria-label="Add spells"
+                              >
+                                <Plus size={12} />
+                                <span className="whitespace-nowrap">Add Spells</span>
+                              </button>
+                            }
+                          />
                           <div className="flex-1 overflow-y-auto p-2 space-y-1">
                             <div className="wfrp-subpanel-shell flex flex-col overflow-hidden">
-                              <div className="grid grid-cols-[minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px_72px] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
+                              <div className="grid grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
+                                <span className="wfrp-table-label text-center">Channel</span>
                                 <span className="wfrp-table-label text-left">Spell</span>
                                 <span className="wfrp-table-label text-center">CN</span>
                                 <span className="wfrp-table-label text-left">Range</span>
                                 <span className="wfrp-table-label text-left">Target</span>
                                 <span className="wfrp-table-label text-left">Duration</span>
-                                <span className="wfrp-table-label text-center">Channel</span>
                               </div>
 
                               <div className="flex flex-col divide-y divide-white/5">
-                                {characterData.spells.map((spell: any) => {
+                                {filteredSpells.map((spell) => {
                                   const baseWP = (characterData.attributes as Record<string, number>)['WP'] || 0;
                                   const chnSkill = characterSkills.find(s => s.baseName === 'Channelling');
                                   const skillValue = chnSkill ? baseWP + chnSkill.advances : baseWP;
                                   const spellRange = formatSpellRange(spell.range);
                                   const spellTarget = formatSpellTarget(spell.target);
+                                  const spellDuration = formatSpellDuration(spell.duration);
 
                                   return (
                                     <div
                                       key={spell.name}
-                                      className="grid grid-cols-[minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px_72px] gap-2 lg:gap-4 px-4 py-2 items-center"
+                                      className="grid grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-2 items-center"
                                     >
+                                      <div className="flex justify-center">
+                                        <button
+                                          onClick={() => {
+                                            handleRoll({ key: 'WP', label: spell.name }, undefined, { testType: 'channeling' });
+                                          }}
+                                          className="wfrp-roll-btn w-12"
+                                          aria-label={`Channel ${spell.name}`}
+                                        >
+                                          {skillValue}
+                                        </button>
+                                      </div>
+
                                       <button
                                         onClick={() => {
-                                          setActiveInfo({ type: 'spell', name: spell.name, extra: { ...spell, range: spellRange, target: spellTarget } });
+                                          setActiveInfo({
+                                            type: 'spell',
+                                            name: spell.name,
+                                            extra: { ...spell, range: spellRange, target: spellTarget, duration: spellDuration },
+                                          });
                                           setRollState(prev => ({ ...prev, characteristic: null }));
                                         }}
                                         className="wfrp-skill-link truncate text-left"
@@ -2573,19 +2707,7 @@ function AppScreen() {
                                       </div>
 
                                       <div className="wfrp-list-cell-strong">
-                                        {spell.duration}
-                                      </div>
-
-                                      <div className="flex justify-center">
-                                        <button
-                                          onClick={() => {
-                                            handleRoll({ key: 'WP', label: spell.name }, undefined, { testType: 'channeling' });
-                                          }}
-                                          className="wfrp-roll-btn w-12"
-                                          aria-label={`Channel ${spell.name}`}
-                                        >
-                                          {skillValue}
-                                        </button>
+                                        {spellDuration}
                                       </div>
                                     </div>
                                   );
@@ -2597,6 +2719,34 @@ function AppScreen() {
                     )}
                     {activeMainTab === 'inventory' && (
                       <div className="flex flex-col h-full overflow-hidden">
+                        <InlineSubtabs<InventorySubtab>
+                          options={[
+                            { id: 'all', label: 'All' },
+                            { id: 'carried', label: 'Carried' },
+                            ...containers.map((container) => ({
+                              id: `container:${container.id}` as InventorySubtab,
+                              label: container.name,
+                            })),
+                          ]}
+                          activeId={activeInventorySubtab}
+                          onChange={setActiveInventorySubtab}
+                          trailingContent={
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActiveInfo(null);
+                                setIsDiceLogOpen(false);
+                                setIsShopOpen(true);
+                              }}
+                              className="wfrp-action-btn inline-flex h-7 items-center gap-1.5 px-3 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+                              aria-label="Open shop"
+                            >
+                              <ShoppingBag size={12} />
+                              <span className="whitespace-nowrap">Shop</span>
+                            </button>
+                          }
+                        />
+
                         <div className="px-4 py-2 border-b border-white/5 bg-black/10">
                           <div className="flex flex-wrap items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
@@ -2679,18 +2829,6 @@ function AppScreen() {
                                 />
                               </div>
                             </div>
-                            <button
-                              onClick={() => {
-                                setActiveInfo(null);
-                                setIsDiceLogOpen(false);
-                                setIsShopOpen(true);
-                              }}
-                              className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 shrink-0"
-                              aria-label="Open shop"
-                            >
-                              <ShoppingBag size={14} className="mr-1.5" />
-                              Shop
-                            </button>
                           </div>
                         </div>
 
@@ -2710,7 +2848,10 @@ function AppScreen() {
                               title: 'Carried',
                               items: carriedItems,
                               dropContainerId: null,
-                              alwaysVisible: carriedItems.length > 0 || Boolean(inventoryDrag),
+                              alwaysVisible:
+                                activeInventorySubtab === 'carried' ||
+                                carriedItems.length > 0 ||
+                                Boolean(inventoryDrag),
                             },
                             ...containers.map((container) => ({
                               id: container.id,
@@ -2721,7 +2862,12 @@ function AppScreen() {
                               alwaysVisible: true,
                             })),
                           ]
-                            .filter((section) => section.alwaysVisible)
+                            .filter((section) => {
+                              if (!section.alwaysVisible) return false;
+                              if (activeInventorySubtab === 'all') return true;
+                              if (activeInventorySubtab === 'carried') return section.id === 'carried';
+                              return activeInventorySubtab === `container:${section.id}`;
+                            })
                             .map((section) => {
                               const isActiveDropTarget = inventoryDropTarget === section.id;
                               const canDropHere = inventoryDrag
@@ -3868,6 +4014,7 @@ function AppScreen() {
           ruleset={ruleset}
           rulesIndex={rulesIndex}
           getCharacteristicDescription={getCharacteristicDescription}
+          formatSpellDuration={formatSpellDuration}
           skillListRefs={skillListRefs}
           propertyListRefs={propertyListRefs}
           talentListRefs={talentListRefs}
@@ -3878,6 +4025,13 @@ function AppScreen() {
           onAddToInventory={handleAddShopItem}
           onBuy={handleAddShopItem}
           onClose={() => setIsShopOpen(false)}
+        />
+        <SpellShopSidebar
+          isOpen={isSpellShopOpen}
+          spells={ruleset.spells}
+          knownSpellIds={new Set(characterData.spells.map((spell) => spell.id))}
+          onAddSpell={handleAddSpell}
+          onClose={() => setIsSpellShopOpen(false)}
         />
       </div>
     </div>
