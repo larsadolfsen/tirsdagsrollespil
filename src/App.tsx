@@ -28,6 +28,7 @@ import { GameSessionProvider, useGameSessionContext } from "./context/GameSessio
 import type {
   ResolvedCharacterEquipment,
   ResolvedCharacterSkill,
+  ResolvedCharacterTalent,
 } from "./data/characters/resolved";
 import { listCharacters } from "./data/repository";
 import { skillCharacteristicById } from "./data/rules/wfrp4e";
@@ -37,6 +38,11 @@ import {
   getCharacterSkillKey,
   getWeaponStats,
 } from "./lib/gameSession";
+import {
+  formatTalentEffect,
+  getApplicableTalentEffects,
+  getTalentSlBonus,
+} from "./lib/talentEffects";
 import { UI_LABELS } from "./labels";
 import type { ArmourDefinition, ArmourLocation, Characteristic, Ruleset, SkillDefinition } from "./types";
 import type { ItemDefinition, SpellDefinition } from "./types";
@@ -1023,10 +1029,56 @@ function AppScreen() {
       (!option.specialisationId || option.specialisationId.endsWith("_basic") || skillDefinition?.grouped)
     );
   };
+  const characteristicKeyByTalentMaxName: Record<string, string> = {
+    "Weapon Skill": "WS",
+    "Ballistic Skill": "BS",
+    Strength: "S",
+    Toughness: "T",
+    Initiative: "I",
+    Agility: "Ag",
+    Dexterity: "Dex",
+    Intelligence: "Int",
+    Willpower: "WP",
+    Fellowship: "Fel",
+  };
+  const getTalentMaxDisplay = (max: string) => {
+    const numericMax = Number.parseInt(max, 10);
+
+    if (Number.isFinite(numericMax) && `${numericMax}` === max.trim()) {
+      return numericMax;
+    }
+
+    const bonusMatch = max.match(/^(.+?)\s+Bonus$/i);
+    if (!bonusMatch) {
+      return max;
+    }
+
+    const characteristicKey = characteristicKeyByTalentMaxName[bonusMatch[1]];
+    if (!characteristicKey) {
+      return max;
+    }
+
+    return Math.floor(((characterData.attributes as Record<string, number>)[characteristicKey] ?? 0) / 10);
+  };
   const advancementTalentNames = [...new Set([
     ...careerAdvancementData.talents,
     ...characterTalents.map((talent) => talent.name),
   ])];
+  const characterTalentRows = Array.from<{ talent: ResolvedCharacterTalent; count: number }>(
+    characterTalents
+      .reduce<Map<string, { talent: ResolvedCharacterTalent; count: number }>>((rows, talent) => {
+        const current = rows.get(talent.name);
+
+        if (current) {
+          current.count += 1;
+          return rows;
+        }
+
+        rows.set(talent.name, { talent, count: 1 });
+        return rows;
+      }, new Map())
+      .values(),
+  ).sort((first, second) => first.talent.name.localeCompare(second.talent.name));
   const hasCareerTalentRequirement = careerAdvancementData.talents.some((talentName) =>
     characterTalents.some((talent) => talent.name === talentName) ||
     (pendingTalentPurchases[talentName] ?? 0) > 0,
@@ -1926,6 +1978,9 @@ function AppScreen() {
               id: talentDefinition.id,
               name: talentDefinition.name,
               description: talentDefinition.description,
+              max: talentDefinition.max,
+              tests: talentDefinition.tests,
+              effects: talentDefinition.effects,
             });
           }
         }
@@ -2111,6 +2166,26 @@ function AppScreen() {
     // Archive current roll if it has a result
     archiveRoll(rollState);
 
+    const optionBonusSources = options?.bonuses
+      ?? (options?.slBonusLabel || options?.slBonus
+        ? [{ label: options?.slBonusLabel ?? "Bonus", value: options?.slBonus ?? 0 }]
+        : []);
+    const talentEffects = getApplicableTalentEffects({
+      talents: characterTalents,
+      talentDefinitions: ruleset.talents,
+      context: { testName: char.label },
+    });
+    const talentSlBonus = getTalentSlBonus(talentEffects);
+    const bonusSources = talentSlBonus === 0
+      ? optionBonusSources
+      : [
+          ...optionBonusSources,
+          {
+            label: "Talents",
+            value: talentSlBonus,
+          },
+        ];
+
     setRollState({
       characteristic: char,
       title: options?.title ?? null,
@@ -2123,10 +2198,7 @@ function AppScreen() {
       sl: null,
       isRolling: false,
       damageBase: damage || null,
-      bonusSources: options?.bonuses
-        ?? (options?.slBonusLabel || options?.slBonus
-          ? [{ label: options?.slBonusLabel ?? "Bonus", value: options?.slBonus ?? 0 }]
-          : []),
+      bonusSources,
       fortuneActionUsed: false,
     });
   };
@@ -3480,19 +3552,43 @@ function AppScreen() {
                     )}
                     
                     {activeMainTab === 'features' && (
-                      <div className="flex-1 overflow-y-auto p-4 space-y-1">
-                        {characterTalents.map((item, idx) => (
-                        <div key={`${item.name}-${idx}`} className="wfrp-table-row flex">
-                           <span 
-                              onClick={() => {
-                                openTalentInfo(item.name);
-                              }}
-                              className="wfrp-skill-link"
-                            >
-                              {item.name}
-                            </span>
-                        </div>
-                      ))}
+                      <div className="flex-1 overflow-y-auto p-2">
+                        {characterTalentRows.length > 0 ? (
+                          <div className="wfrp-subpanel-shell flex flex-col">
+                            <div className="wfrp-subpanel-header grid grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)] gap-2 items-center">
+                              <span className="wfrp-table-label text-left">Talent</span>
+                              <span className="wfrp-table-label text-center">Taken</span>
+                              <span className="wfrp-table-label text-left">Description</span>
+                            </div>
+                            <div className="divide-y divide-white/5">
+                              {characterTalentRows.map(({ talent, count }) => (
+                                <button
+                                  key={talent.name}
+                                  type="button"
+                                  onClick={() => openTalentInfo(talent.name)}
+                                  className="group grid w-full grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)] items-start gap-2 wfrp-table-row cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40"
+                                  aria-label={`Open ${talent.name} talent rule`}
+                                >
+                                  <span className="min-w-0 text-xs font-semibold text-gray-400 transition-colors group-hover:text-wfrp-gold">
+                                    {talent.name}
+                                  </span>
+                                  <span className="min-w-0 text-center text-xs leading-relaxed text-gray-500">
+                                    {count}/{getTalentMaxDisplay(talent.max)}
+                                  </span>
+                                  <span className="min-w-0 text-xs leading-relaxed text-gray-500">
+                                    {talent.effects?.length
+                                      ? talent.effects.map(formatTalentEffect).join("; ")
+                                      : talent.description}
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="rounded border border-white/10 bg-black/20 px-4 py-6 text-center text-sm text-gray-500">
+                            No talents bought yet.
+                          </div>
+                        )}
                       </div>
                     )}
 

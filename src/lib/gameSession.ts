@@ -188,7 +188,7 @@ function applyCharacterProgress(
   const progressEquipment = progress.equipment ?? {};
   const talentIds = progress.talentIds ?? character.talents.map((talent) => talent.id);
   const talents = talentIds
-    .map((talentId) => {
+    .map((talentId): ResolvedCharacterRecord["talents"][number] | null => {
       const definition = ruleset.talents.find((talent) => talent.id === talentId);
       if (!definition) {
         return null;
@@ -198,6 +198,9 @@ function applyCharacterProgress(
         id: definition.id,
         name: definition.name,
         description: definition.description,
+        max: definition.max,
+        tests: definition.tests,
+        effects: definition.effects,
       };
     })
     .filter((talent): talent is ResolvedCharacterRecord["talents"][number] => Boolean(talent));

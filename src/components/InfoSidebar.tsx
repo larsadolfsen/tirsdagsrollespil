@@ -10,6 +10,7 @@ import type {
 import { armourFlaws, armourQualities } from "../data/rules/wfrp4e/armourProperties";
 import { getCharacterSkillKey } from "../lib/gameSession";
 import type { RulesIndex } from "../lib/gameSession";
+import { formatTalentEffect, getTalentLevel } from "../lib/talentEffects";
 import type { Characteristic, Ruleset } from "../types";
 import type { ActiveInfoState } from "./appTypes";
 
@@ -610,6 +611,10 @@ export function InfoSidebar({
           .map((talentName) => {
             const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
             const isOwned = characterData.talents.some((talent) => talent.name === talentName);
+            const takenCount = talentDefinition
+              ? getTalentLevel(characterData.talents, talentDefinition)
+              : 0;
+            const talentEffects = talentDefinition?.effects ?? [];
 
             return (
               <RuleListEntry
@@ -621,13 +626,38 @@ export function InfoSidebar({
                     label: "Status",
                     value: isOwned ? "Owned" : "Available through advancement",
                   },
+                  ...(takenCount > 0 ? [{ label: "Taken", value: takenCount }] : []),
+                  ...(talentDefinition?.max ? [{ label: "Max", value: talentDefinition.max }] : []),
+                  ...(talentDefinition?.tests ? [{ label: "Tests", value: talentDefinition.tests }] : []),
                 ]}
                 innerRef={(el) => {
                   talentListRefs.current[talentName] = el;
                 }}
               >
-                {talentDefinition?.description ||
-                  "This talent is available through advancement, but it is not yet owned by the character."}
+                <div className="flex flex-col gap-4">
+                  <p>
+                    {talentDefinition?.description ||
+                      "This talent is available through advancement, but it is not yet owned by the character."}
+                  </p>
+                  <RuleDetailSections
+                    sections={
+                      talentEffects.length > 0
+                        ? [
+                            {
+                              title: "Effects",
+                              entries: talentEffects.map((effect, index) => ({
+                                title: `${index + 1}. ${formatTalentEffect(effect)}`,
+                                description:
+                                  "condition" in effect && effect.condition
+                                    ? `Condition: ${effect.condition}`
+                                    : undefined,
+                              })),
+                            },
+                          ]
+                        : []
+                    }
+                  />
+                </div>
               </RuleListEntry>
             );
           })}
