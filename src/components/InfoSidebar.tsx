@@ -8,7 +8,7 @@ import type {
   ResolvedCharacterSkill,
 } from "../data/characters/resolved";
 import { armourFlaws, armourQualities } from "../data/rules/wfrp4e/armourProperties";
-import { getCharacterSkillKey } from "../lib/gameSession";
+import { formatItemValue, getCharacterSkillKey } from "../lib/gameSession";
 import type { RulesIndex } from "../lib/gameSession";
 import { formatTalentEffect, getTalentLevel } from "../lib/talentEffects";
 import type { Characteristic, Ruleset } from "../types";
@@ -102,7 +102,7 @@ const getEquipmentStats = (
 ) =>
   compactStats([
     { label: "Type", value: item.type },
-    item.priceLabel ? { label: "Price", value: item.priceLabel } : null,
+    { label: "Price", value: formatItemValue(item) },
     item.armourLocations?.length
       ? { label: "Locations", value: formatArmourLocations(item.armourLocations) }
       : null,

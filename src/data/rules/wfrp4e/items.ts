@@ -187,7 +187,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "backpack_item",
     name: "Backpack",
-    type: "Container",
+    type: "Packs and containers",
     description: "A sturdy travel pack for carrying everyday gear. Counts as worn when strapped to your back.",
     encumbrance: 2,
     carries: 4,
@@ -199,7 +199,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "barrel_item",
     name: "Barrel",
-    type: "Container",
+    type: "Packs and containers",
     description: "A large wooden barrel with a capacity of 32 gallons of liquid.",
     encumbrance: 6,
     carries: 12,
@@ -210,7 +210,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "cask_item",
     name: "Cask",
-    type: "Container",
+    type: "Packs and containers",
     description: "A small wooden cask with a capacity of 10 gallons of liquid.",
     encumbrance: 2,
     carries: 4,
@@ -221,7 +221,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "flask_item",
     name: "Flask",
-    type: "Container",
+    type: "Packs and containers",
     description: "A small flask with a capacity of 1 pint of liquid.",
     encumbrance: 0,
     carries: 0,
@@ -232,7 +232,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "jug_item",
     name: "Jug",
-    type: "Container",
+    type: "Packs and containers",
     description: "A simple jug with a capacity of 1 gallon of liquid.",
     encumbrance: 1,
     carries: 1,
@@ -244,7 +244,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "pewter_stein_item",
     name: "Pewter Stein",
-    type: "Container",
+    type: "Packs and containers",
     description: "A pewter drinking stein.",
     encumbrance: 0,
     carries: 0,
@@ -255,7 +255,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "pouch_item",
     name: "Pouch",
-    type: "Container",
+    type: "Packs and containers",
     description: "A small pouch for coins, trinkets, and light supplies.",
     encumbrance: 0,
     carries: 1,
@@ -266,7 +266,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "sack_item",
     name: "Sack",
-    type: "Container",
+    type: "Packs and containers",
     description: "A coarse sack. Requires 1 hand to carry.",
     encumbrance: 2,
     carries: 4,
@@ -277,7 +277,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "large_sack_item",
     name: "Sack, Large",
-    type: "Container",
+    type: "Packs and containers",
     description: "A large coarse sack. Requires 1 hand to carry, or 2 hands if full.",
     encumbrance: 3,
     carries: 6,
@@ -289,7 +289,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "saddlebags_item",
     name: "Saddlebags",
-    type: "Container",
+    type: "Packs and containers",
     description: "A pair of saddlebags for securing gear to a mount.",
     encumbrance: 4,
     carries: 8,
@@ -300,7 +300,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "sling_bag_item",
     name: "Sling Bag",
-    type: "Container",
+    type: "Packs and containers",
     description: "A shoulder bag. Counts as worn when slung over your shoulder.",
     encumbrance: 1,
     carries: 2,
@@ -311,7 +311,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "scroll_case_item",
     name: "Scroll Case",
-    type: "Container",
+    type: "Packs and containers",
     description: "A protective case for scrolls, papers, maps, and similar documents.",
     encumbrance: 0,
     carries: 0,
@@ -322,7 +322,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "waterskin_item",
     name: "Waterskin",
-    type: "Container",
+    type: "Packs and containers",
     description: "A flexible waterskin with a capacity of 1 gallon of liquid.",
     encumbrance: 1,
     carries: 1,
@@ -772,7 +772,7 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "robe_10_yards_item",
     name: "Robe (10 yards)",
-    type: "Clothing",
+    type: "Travel Gear",
     description: "Ten yards of plain robe cloth.",
     encumbrance: 1,
     value: 1,

@@ -1,11 +1,22 @@
 import { AnimatePresence, motion } from "motion/react";
-import { BookOpen, ChevronDown, ListFilter, Search, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowDown, ArrowUp, BookOpen, ChevronDown, ListFilter, Search, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
 import type { SpellDefinition } from "../types";
 
 const spellCategoryOrder: SpellDefinition["category"][] = ["petty", "arcane", "school"];
 type SpellFilter = "All" | SpellDefinition["category"] | `school:${string}`;
+type SpellSortKey = "name" | "cn" | "type";
+type SortDirection = "asc" | "desc";
+
+function OwnershipDot({ label }: { label: string }) {
+  return (
+    <span
+      className="h-1 w-1 shrink-0 rounded-full bg-wfrp-gold shadow-[0_0_4px_rgba(214,168,86,0.65)]"
+      aria-label={label}
+    />
+  );
+}
 
 function formatSpellCategoryLabel(category: SpellDefinition["category"]) {
   if (category === "petty") {
@@ -68,6 +79,69 @@ function getSpellGroupLabel(spell: SpellDefinition) {
   return formatSpellCategoryLabel(spell.category);
 }
 
+function getSpellSortValue(spell: SpellDefinition, sortKey: SpellSortKey) {
+  if (sortKey === "cn") {
+    return spell.cn;
+  }
+
+  if (sortKey === "type") {
+    return getSpellTypeLabel(spell);
+  }
+
+  return spell.name;
+}
+
+function compareSpells(firstSpell: SpellDefinition, secondSpell: SpellDefinition, sortKey: SpellSortKey) {
+  const firstValue = getSpellSortValue(firstSpell, sortKey);
+  const secondValue = getSpellSortValue(secondSpell, sortKey);
+
+  if (typeof firstValue === "number" && typeof secondValue === "number") {
+    return firstValue - secondValue || firstSpell.name.localeCompare(secondSpell.name, undefined, { sensitivity: "base" });
+  }
+
+  return String(firstValue).localeCompare(String(secondValue), undefined, { sensitivity: "base" }) ||
+    firstSpell.name.localeCompare(secondSpell.name, undefined, { sensitivity: "base" });
+}
+
+function SortHeaderButton({
+  align = "left",
+  activeSortKey,
+  label,
+  sortDirection,
+  sortKey,
+  onSort,
+}: {
+  align?: "left" | "center" | "right";
+  activeSortKey: SpellSortKey;
+  label: string;
+  sortDirection: SortDirection;
+  sortKey: SpellSortKey;
+  onSort: (sortKey: SpellSortKey) => void;
+}) {
+  const isActive = activeSortKey === sortKey;
+  const alignClass = align === "center" ? "justify-center text-center" : align === "right" ? "justify-end text-right" : "justify-start text-left";
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSort(sortKey)}
+      className={`inline-flex items-center gap-1 uppercase transition-colors hover:text-wfrp-gold ${alignClass} ${
+        isActive ? "text-wfrp-gold" : ""
+      }`}
+      aria-label={`Sort spells by ${label}`}
+    >
+      <span>{label}</span>
+      {isActive ? (
+        sortDirection === "asc" ? (
+          <ArrowUp size={10} aria-hidden="true" strokeWidth={3} />
+        ) : (
+          <ArrowDown size={10} aria-hidden="true" strokeWidth={3} />
+        )
+      ) : null}
+    </button>
+  );
+}
+
 export function SpellShopSidebar({
   isOpen,
   spells,
@@ -83,8 +157,44 @@ export function SpellShopSidebar({
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<SpellFilter>("All");
+  const [sortKey, setSortKey] = useState<SpellSortKey>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [expandedSpellId, setExpandedSpellId] = useState<string | null>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!sidebarRef.current?.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isFilterOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!filterRef.current?.contains(event.target as Node)) {
+        setIsFilterOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isFilterOpen]);
 
   const shopStock = useMemo(
     () =>
@@ -128,7 +238,22 @@ export function SpellShopSidebar({
   }, [searchTerm, selectedFilter, shopStock]);
 
   const groupedStock = useMemo(() => {
-    return filteredStock.reduce<Array<{ label: string; spells: SpellDefinition[] }>>((groups, spell) => {
+    const sortSpells = (stock: SpellDefinition[]) =>
+      [...stock].sort((firstSpell, secondSpell) => {
+        const comparison = compareSpells(firstSpell, secondSpell, sortKey);
+        return sortDirection === "asc" ? comparison : -comparison;
+      });
+
+    if (selectedFilter === "All") {
+      return [
+        {
+          label: "All Spells",
+          spells: sortSpells(filteredStock),
+        },
+      ];
+    }
+
+    const groups = filteredStock.reduce<Array<{ label: string; spells: SpellDefinition[] }>>((groups, spell) => {
       const label = getSpellGroupLabel(spell);
       const existingGroup = groups.find((group) => group.label === label);
 
@@ -140,7 +265,16 @@ export function SpellShopSidebar({
 
       return groups;
     }, []);
-  }, [filteredStock]);
+
+    return groups.map((group) => ({ ...group, spells: sortSpells(group.spells) }));
+  }, [filteredStock, selectedFilter, sortDirection, sortKey]);
+
+  const handleSort = (nextSortKey: SpellSortKey) => {
+    setSortDirection((currentDirection) =>
+      sortKey === nextSortKey && currentDirection === "asc" ? "desc" : "asc",
+    );
+    setSortKey(nextSortKey);
+  };
 
   const categoryOptions = useMemo<Array<{ label: string; value: SpellFilter }>>(() => {
     const schoolOptions = Array.from(new Set<string>(shopStock.flatMap(getSpellSchools)))
@@ -164,12 +298,13 @@ export function SpellShopSidebar({
     <AnimatePresence mode="wait">
       {isOpen && (
         <motion.aside
+          ref={sidebarRef}
           key="spell-shop-sidebar"
           initial={{ x: "100%", opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="wfrp-sidebar-shell w-[400px]"
+          className="wfrp-sidebar-shell w-[620px]"
         >
           <div className="wfrp-sidebar-header p-4">
             <div className="flex items-center gap-3">
@@ -194,7 +329,7 @@ export function SpellShopSidebar({
 
           <div className="flex-1 overflow-y-auto bg-black/10 p-4 no-scrollbar">
             <div className="flex flex-col gap-4">
-              <div className="relative flex gap-2">
+              <div ref={filterRef} className="relative flex gap-2">
                 <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded border border-white/5 bg-black/30 px-3 text-gray-500 focus-within:border-wfrp-gold/40">
                   <Search size={14} />
                   <input
@@ -275,19 +410,21 @@ export function SpellShopSidebar({
 
               <div className="wfrp-subpanel-shell">
                 <div className="grid grid-cols-[1fr_46px_78px_18px] gap-3 wfrp-list-header">
-                  <span className="text-left">Spell</span>
-                  <span className="text-center">CN</span>
-                  <span className="text-right">Type</span>
+                  <SortHeaderButton activeSortKey={sortKey} label="Spell" sortDirection={sortDirection} sortKey="name" onSort={handleSort} />
+                  <SortHeaderButton align="center" activeSortKey={sortKey} label="CN" sortDirection={sortDirection} sortKey="cn" onSort={handleSort} />
+                  <SortHeaderButton activeSortKey={sortKey} label="Type" sortDirection={sortDirection} sortKey="type" onSort={handleSort} />
                   <span aria-hidden="true" />
                 </div>
 
                 <div className="max-h-[calc(100vh-190px)] overflow-y-auto p-2 no-scrollbar">
                   {groupedStock.map((group) => (
                     <div key={group.label} className="mb-3 last:mb-0">
-                      <h4 className="wfrp-list-group">
-                        <span>{group.label}</span>
-                        <div className="wfrp-panel-rule" />
-                      </h4>
+                      {selectedFilter !== "All" ? (
+                        <h4 className="wfrp-list-group">
+                          <span>{group.label}</span>
+                          <div className="wfrp-panel-rule" />
+                        </h4>
+                      ) : null}
 
                       {group.spells.map((spell) => {
                         const isKnown = knownSpellIds.has(spell.id);
@@ -309,11 +446,7 @@ export function SpellShopSidebar({
                                   <span className="wfrp-list-cell-strong truncate text-gray-200">
                                     {spell.name}
                                   </span>
-                                  {isKnown ? (
-                                    <span className="shrink-0 rounded border border-wfrp-gold/20 bg-wfrp-gold/10 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-wfrp-gold">
-                                      Known
-                                    </span>
-                                  ) : null}
+                                  {isKnown ? <OwnershipDot label="Known spell" /> : null}
                                 </div>
                               </div>
 
@@ -321,7 +454,7 @@ export function SpellShopSidebar({
                                 {spell.cn}
                               </div>
 
-                              <div className="wfrp-list-cell-strong truncate text-right">
+                              <div className="wfrp-list-cell-strong truncate text-left">
                                 {getSpellTypeLabel(spell)}
                               </div>
 
@@ -356,16 +489,18 @@ export function SpellShopSidebar({
                                     <p className="wfrp-list-cell-strong mt-1 text-gray-200">{spell.damage}</p>
                                   </div>
                                 </div>
-                                <div className="mt-3">
-                                  <button
-                                    type="button"
-                                    onClick={() => onAddSpell(spell)}
-                                    disabled={isKnown}
-                                    className="wfrp-roll-cta inline-flex items-center gap-2 whitespace-nowrap px-4 disabled:cursor-not-allowed disabled:opacity-45"
-                                  >
-                                    {isKnown ? "Known" : "Add Spell"}
-                                  </button>
-                                </div>
+                                {!isKnown ? (
+                                  <div className="mt-3">
+                                    <button
+                                      type="button"
+                                      onClick={() => onAddSpell(spell)}
+                                      className="wfrp-roll-cta inline-flex items-center gap-2 whitespace-nowrap px-4"
+                                      aria-label={`Add ${spell.name}`}
+                                    >
+                                      Add Spell
+                                    </button>
+                                  </div>
+                                ) : null}
                               </div>
                             )}
                           </div>

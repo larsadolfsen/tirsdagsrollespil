@@ -84,6 +84,7 @@ interface RollState {
 
 interface InventoryMenuState {
   id: string;
+  mode: "move" | "drop";
   top: number;
   left: number;
 }
@@ -101,8 +102,6 @@ type ResourceCounterBarProps = {
   onAdjust: (delta: number) => void;
   barClassName: string;
   counterToneClassName: string;
-  minusHoverClassName: string;
-  plusHoverClassName: string;
   minusRingClassName: string;
   plusRingClassName: string;
   contentClassName?: string;
@@ -134,6 +133,21 @@ type SpellSubtab = 'all' | 'petty' | 'arcane' | `school:${string}`;
 type InventorySubtab = 'all' | 'wallet' | 'worn' | 'carried' | `container:${string}`;
 type CoinKey = "gc" | "s" | "d";
 
+const formatCoinTotalValue = (coins: { gc: number; s: number; d: number }) => {
+  const totalBrass = coins.gc * 240 + coins.s * 12 + coins.d;
+  const gc = Math.floor(totalBrass / 240);
+  const remainingAfterGold = totalBrass % 240;
+  const ss = Math.floor(remainingAfterGold / 12);
+  const b = remainingAfterGold % 12;
+  const parts = [
+    gc > 0 ? `${gc}gc` : null,
+    ss > 0 ? `${ss}ss` : null,
+    b > 0 ? `${b}bp` : null,
+  ].filter(Boolean);
+
+  return parts.length > 0 ? parts.join(" ") : "0bp";
+};
+
 const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
   [...items].sort((first, second) => {
     const nameComparison = first.name.localeCompare(second.name, undefined, {
@@ -156,16 +170,27 @@ const getConsumableBaseName = (item: ResolvedCharacterEquipment) =>
 const formatConsumableName = (item: ResolvedCharacterEquipment, count: number) =>
   `${getConsumableBaseName(item)} (${count})`;
 
+const PACKS_AND_CONTAINERS_TYPE = "Packs and containers";
+
+const isPacksAndContainersItem = (item: ResolvedCharacterEquipment) =>
+  item.type === PACKS_AND_CONTAINERS_TYPE || item.type === "Container";
+
+const isBackpackContainerItem = (item: ResolvedCharacterEquipment) =>
+  isPacksAndContainersItem(item) &&
+  (item.itemId === "backpack_item" || item.name.toLowerCase() === "backpack");
+
 const isWearableInventoryItem = (item: ResolvedCharacterEquipment) =>
-    item.type === "Clothing" ||
-    item.type === "Jewellery" ||
-    item.type === "Jewelry" ||
-    item.type === "Armor";
+  item.type === "Clothing" ||
+  item.type === "Jewellery" ||
+  item.type === "Jewelry" ||
+  item.type === "Armor" ||
+  isBackpackContainerItem(item);
 
 const isWornInventoryItem = (item: ResolvedCharacterEquipment) =>
   !item.containerId &&
   isWearableInventoryItem(item) &&
-  (item.type !== "Armor" || item.equipped);
+  (item.type !== "Armor" || item.equipped) &&
+  (!isPacksAndContainersItem(item) || item.equipped);
 
 const getInventoryEncumbrance = (item: ResolvedCharacterEquipment) => {
   const encumbrance = Number(item.encumbrance || 0);
@@ -218,8 +243,6 @@ function ResourceCounterBar({
   onAdjust,
   barClassName,
   counterToneClassName,
-  minusHoverClassName,
-  plusHoverClassName,
   minusRingClassName,
   plusRingClassName,
   contentClassName,
@@ -231,7 +254,7 @@ function ResourceCounterBar({
     <div className="flex items-center gap-2">
       <button
         onClick={() => onAdjust(-1)}
-        className={`wfrp-stepper-btn ${minusHoverClassName} ${minusRingClassName}`}
+        className={`wfrp-stepper-btn ${minusRingClassName}`}
         aria-label={`Decrease current ${label.toLowerCase()}`}
       >
         <Minus size={10} />
@@ -261,7 +284,7 @@ function ResourceCounterBar({
 
       <button
         onClick={() => onAdjust(1)}
-        className={`wfrp-stepper-btn ${plusHoverClassName} ${plusRingClassName}`}
+        className={`wfrp-stepper-btn ${plusRingClassName}`}
         aria-label={`Increase current ${label.toLowerCase()}`}
       >
         <Plus size={10} />
@@ -286,8 +309,6 @@ function HeaderResourceSlider({
       onAdjust={onAdjust}
       barClassName={barClassName}
       counterToneClassName="text-gray-200"
-      minusHoverClassName="hover:text-wfrp-red"
-      plusHoverClassName="hover:text-green-600"
       minusRingClassName="focus-visible:ring-wfrp-red/50"
       plusRingClassName="focus-visible:ring-green-600/50"
       contentClassName={contentClassName}
@@ -1384,7 +1405,10 @@ function AppScreen() {
         item.id === itemId
           ? {
               ...item,
-              equipped: item.type === "Armor" ? true : item.equipped,
+              equipped:
+                item.type === "Armor" || isBackpackContainerItem(item)
+                  ? true
+                  : item.equipped,
               containerId: null,
             }
           : item,
@@ -1399,7 +1423,10 @@ function AppScreen() {
         item.id === itemId
           ? {
               ...item,
-              equipped: item.type === "Armor" ? false : item.equipped,
+              equipped:
+                item.type === "Armor" || isBackpackContainerItem(item)
+                  ? false
+                  : item.equipped,
               containerId: null,
             }
           : item,
@@ -1484,7 +1511,7 @@ function AppScreen() {
         currency: item.currency,
         priceLabel: item.priceLabel,
         availability: item.availability,
-        equipped: false,
+        equipped: item.id === "backpack_item",
         containerId: null,
       },
     ]);
@@ -1526,6 +1553,7 @@ function AppScreen() {
   const handleToggleInventoryMenu = (
     itemId: string,
     event: ReactMouseEvent<HTMLButtonElement>,
+    mode: InventoryMenuState["mode"],
   ) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const menuWidth = 136;
@@ -1535,10 +1563,11 @@ function AppScreen() {
     );
 
     setActiveInventoryMenu((current) =>
-      current?.id === itemId
+      current?.id === itemId && current.mode === mode
         ? null
         : {
             id: itemId,
+            mode,
             top: rect.bottom + 6,
             left: Math.max(12, nextLeft),
           },
@@ -1562,11 +1591,11 @@ function AppScreen() {
   }, 0);
   const carryCapacity = Math.max(sb + tb, 1);
   const encumbrancePercent = Math.min((totalEncumbrance / carryCapacity) * 100, 100);
-  const containers = equipmentState.filter((item) => item.type === "Container");
+  const containers = equipmentState.filter(isPacksAndContainersItem);
   const wornItems = sortEquipmentByName(equipmentState.filter(isWornInventoryItem));
   const carriedItems = sortEquipmentByName(
     equipmentState.filter(
-      (item) => !item.containerId && item.type !== "Container" && !isWornInventoryItem(item),
+      (item) => !item.containerId && !isWornInventoryItem(item),
     ),
   );
   const itemDefinitionsById = Object.fromEntries(
@@ -1678,7 +1707,8 @@ function AppScreen() {
     const container = equipmentState.find((entry) => entry.id === containerId);
 
     if (!item || !container || item.id === container.id) return false;
-    if (item.type === "Container") return false;
+    if (isPacksAndContainersItem(item)) return false;
+    if (isBackpackContainerItem(container) && !isWornInventoryItem(container)) return false;
 
     const capacity = container.carries ?? 0;
     if (capacity <= 0) return false;
@@ -1710,7 +1740,7 @@ function AppScreen() {
     }
 
     if (targetCarried && isWornInventoryItem(item)) {
-      return item.type === "Armor";
+      return item.type === "Armor" || isBackpackContainerItem(item);
     }
 
     const currentContainerId = item.containerId ?? null;
@@ -2622,6 +2652,13 @@ function AppScreen() {
               setIsShopOpen(false);
               setIsDiceLogOpen(true);
             }}
+            onOpenAdvance={() => {
+              setActiveInfo(null);
+              setIsShopOpen(false);
+              setIsSpellShopOpen(false);
+              setIsDiceLogOpen(false);
+              setActiveMainTab("career");
+            }}
           />
 
         <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-8">
@@ -3215,7 +3252,6 @@ function AppScreen() {
                                 className="wfrp-action-btn inline-flex h-7 items-center gap-1.5 px-3 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
                                 aria-label="Add spells"
                               >
-                                <Plus size={12} />
                                 <span className="whitespace-nowrap">Add Spells</span>
                               </button>
                             }
@@ -3300,8 +3336,8 @@ function AppScreen() {
                           options={[
                             { id: 'all', label: 'All' },
                             { id: 'wallet', label: 'Wallet' },
+                            { id: 'carried', label: 'Ready' },
                             { id: 'worn', label: 'Worn' },
-                            { id: 'carried', label: 'Carried' },
                             ...containers.map((container) => ({
                               id: `container:${container.id}` as InventorySubtab,
                               label: container.name,
@@ -3311,7 +3347,7 @@ function AppScreen() {
                           onChange={setActiveInventorySubtab}
                           trailingContent={
                             <div className="flex items-center gap-4">
-                              <div className="hidden w-56 flex-col gap-1 sm:flex lg:w-72">
+                              <div className="hidden w-32 flex-col gap-1 sm:flex lg:w-40">
                                 <div className="flex items-end justify-between leading-none">
                                   <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
                                     Encumbrance
@@ -3352,24 +3388,27 @@ function AppScreen() {
                           }
                         />
 
-                        {/* List Headers */}
-                        <div className="grid grid-cols-[1fr_140px_60px_60px_80px] gap-2 lg:gap-4 wfrp-list-header">
-                          <span className="text-left">Item</span>
-                          <span className="text-left">Type</span>
-                          <span className="text-center">Enc</span>
-                          <span className="text-center">Value</span>
-                          <span className="text-right">Action</span>
-                        </div>
-
                         <div className="flex-1 overflow-y-auto p-2 space-y-4">
                           {[
                             {
                               id: "wallet",
                               title: "Wallet",
+                              subtitle: formatCoinTotalValue(characterData.coins),
                               items: [] as ResolvedCharacterEquipment[],
                               dropContainerId: null,
                               alwaysVisible: true,
                               acceptsDrops: false,
+                            },
+                            {
+                              id: "carried",
+                              title: 'Ready',
+                              items: carriedItems,
+                              dropContainerId: null,
+                              dropCarried: true,
+                              alwaysVisible:
+                                activeInventorySubtab === 'carried' ||
+                                carriedItems.length > 0 ||
+                                Boolean(inventoryDrag),
                             },
                             {
                               id: "worn",
@@ -3378,17 +3417,6 @@ function AppScreen() {
                               dropContainerId: null,
                               dropWorn: true,
                               alwaysVisible: true,
-                            },
-                            {
-                              id: "carried",
-                              title: 'Carried',
-                              items: carriedItems,
-                              dropContainerId: null,
-                              dropCarried: true,
-                              alwaysVisible:
-                                activeInventorySubtab === 'carried' ||
-                                carriedItems.length > 0 ||
-                                Boolean(inventoryDrag),
                             },
                             ...containers.map((container) => ({
                               id: container.id,
@@ -3458,24 +3486,29 @@ function AppScreen() {
                                     : ""
                               }`}
                             >
-                               <h3 className="wfrp-list-group">
-                                  <span>{section.title}</span>
-                                  {"subtitle" in section && section.subtitle ? (
-                                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-gray-600">
-                                      {section.subtitle}
-                                    </span>
-                                  ) : null}
-                                  <div className="wfrp-panel-rule" />
-                               </h3>
+                               <div className="grid grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 wfrp-list-header">
+                                 <span className="flex min-w-0 items-center gap-2 text-left">
+                                   <span className="truncate">{section.title}</span>
+                                   {"subtitle" in section && section.subtitle ? (
+                                     <span className="truncate font-mono text-[9px] font-bold uppercase tracking-wider text-gray-600">
+                                       {section.subtitle}
+                                     </span>
+                                   ) : null}
+                                 </span>
+                                 <span className="text-left">Type</span>
+                                 <span className="text-center">Enc</span>
+                                 <span className="text-center">Value</span>
+                                 <span className="text-right">Actions</span>
+                               </div>
                                {section.id === "wallet" && (
                                 <>
                                   {([
-                                    ["gc", "Gold Crowns", "GC"],
-                                    ["s", "Silver Shillings", "/-"],
-                                    ["d", "Brass Pennies", "d"],
+                                    ["gc", "Gold Crowns", "gc"],
+                                    ["s", "Silver Shillings", "ss"],
+                                    ["d", "Brass Pennies", "bp"],
                                   ] as const).map(([key, name, label]) => (
                                     <div key={key} className="wfrp-table-row flex border-0 group">
-                                      <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_80px] gap-2 lg:gap-4 items-center">
+                                      <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 items-center">
                                         <div className="flex flex-col">
                                           <span className="wfrp-skill-link flex items-center gap-1.5">
                                             {name}
@@ -3494,23 +3527,40 @@ function AppScreen() {
                                           {characterData.coins[key]}{label}
                                         </div>
 
-                                        <div className="flex justify-end gap-2 pr-1">
+                                        <div className="flex justify-end gap-1 pr-1">
+                                          <button
+                                            type="button"
+                                            onClick={() => handleAdjustCoinType(key, -10)}
+                                            className="wfrp-stepper-btn inline-flex h-5 min-w-7 items-center justify-center px-1.5 py-0 leading-none focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
+                                            aria-label={`Decrease ${name.toLowerCase()} by 10`}
+                                            disabled={characterData.coins[key] <= 0}
+                                          >
+                                            <span className="font-mono text-[10px] font-bold leading-none">-10</span>
+                                          </button>
                                           <button
                                             type="button"
                                             onClick={() => handleAdjustCoinType(key, -1)}
-                                            className="wfrp-stepper-btn hover:text-wfrp-red focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
-                                            aria-label={`Decrease ${name.toLowerCase()}`}
+                                            className="wfrp-stepper-btn inline-flex h-5 min-w-7 items-center justify-center px-1.5 py-0 leading-none focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
+                                            aria-label={`Decrease ${name.toLowerCase()} by 1`}
                                             disabled={characterData.coins[key] <= 0}
                                           >
-                                            <Minus size={10} />
+                                            <span className="font-mono text-[10px] font-bold leading-none">-1</span>
                                           </button>
                                           <button
                                             type="button"
                                             onClick={() => handleAdjustCoinType(key, 1)}
-                                            className="wfrp-stepper-btn hover:text-green-600 focus-visible:ring-green-600/50"
-                                            aria-label={`Increase ${name.toLowerCase()}`}
+                                            className="wfrp-stepper-btn inline-flex h-5 min-w-7 items-center justify-center px-1.5 py-0 leading-none focus-visible:ring-green-600/50"
+                                            aria-label={`Increase ${name.toLowerCase()} by 1`}
                                           >
-                                            <Plus size={10} />
+                                            <span className="font-mono text-[10px] font-bold leading-none">+1</span>
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleAdjustCoinType(key, 10)}
+                                            className="wfrp-stepper-btn inline-flex h-5 min-w-7 items-center justify-center px-1.5 py-0 leading-none focus-visible:ring-green-600/50"
+                                            aria-label={`Increase ${name.toLowerCase()} by 10`}
+                                          >
+                                            <span className="font-mono text-[10px] font-bold leading-none">+10</span>
                                           </button>
                                         </div>
                                       </div>
@@ -3521,16 +3571,16 @@ function AppScreen() {
                                {section.items.map((item: ResolvedCharacterEquipment) => (
                                 <div
                                   key={item.id}
-                                  draggable={item.type !== "Container"}
+                                  draggable={!isPacksAndContainersItem(item)}
                                   onDragStart={(event) => handleInventoryDragStart(item, event)}
                                   onDragEnd={handleInventoryDragEnd}
                                   className={`wfrp-table-row flex border-0 group ${
                                     inventoryDrag?.itemId === item.id ? "opacity-45" : ""
                                   } ${
-                                    item.type === "Container" ? "" : "cursor-grab active:cursor-grabbing"
+                                    isPacksAndContainersItem(item) ? "" : "cursor-grab active:cursor-grabbing"
                                   }`}
                                 >
-                                  <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_80px] gap-2 lg:gap-4 items-center">
+                                  <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 items-center">
                                     <div className="flex flex-col">
                                       <span 
                                         onClick={() => {
@@ -3540,9 +3590,6 @@ function AppScreen() {
                                         className="wfrp-skill-link flex items-center gap-1.5"
                                       >
                                         {item.name}
-                                        {item.equipped && !item.containerId && (
-                                          <span className="w-1 h-1 rounded-full bg-wfrp-gold shadow-[0_0_4px_rgba(212,175,55,0.6)]" />
-                                        )}
                                       </span>
                                     </div>
 
@@ -3558,23 +3605,32 @@ function AppScreen() {
                                       {formatItemValue(item)}
                                     </div>
 
-                                    <div className="relative flex items-center justify-end gap-2 pr-1">
+                                    <div className="relative flex items-center justify-end gap-1 pr-1">
                                       {item.type === "Consumable" && (
                                         <button
                                           type="button"
                                           onClick={() => handleConsumeItem(item.id)}
-                                          className="wfrp-stepper-btn hover:text-wfrp-red focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
+                                          className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
                                           aria-label={`Use one ${getConsumableBaseName(item).toLowerCase()}`}
                                         >
                                           <Minus size={10} />
                                         </button>
                                       )}
                                       <button
-                                        onClick={(event) => handleToggleInventoryMenu(item.id, event)}
-                                        className="flex h-8 w-8 items-center justify-center rounded text-gray-500 transition-colors hover:bg-white/5 hover:text-gray-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                                        aria-label={`Open actions for ${item.name}`}
+                                        type="button"
+                                        onClick={(event) => handleToggleInventoryMenu(item.id, event, "drop")}
+                                        className="wfrp-stepper-btn inline-flex h-5 min-w-12 items-center justify-center px-1.5 py-0 focus-visible:ring-wfrp-gold/50"
+                                        aria-label={`Drop ${item.name}`}
                                       >
-                                        <MoreHorizontal size={14} />
+                                        <span className="font-mono text-[10px] font-bold leading-none">Drop</span>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={(event) => handleToggleInventoryMenu(item.id, event, "move")}
+                                        className="wfrp-stepper-btn inline-flex h-5 min-w-12 items-center justify-center px-1.5 py-0 focus-visible:ring-wfrp-gold/50"
+                                        aria-label={`Move ${item.name}`}
+                                      >
+                                        <span className="font-mono text-[10px] font-bold leading-none">Move</span>
                                       </button>
                                     </div>
                                   </div>
@@ -3592,7 +3648,7 @@ function AppScreen() {
                         {activeInventoryMenu && (
                           <div
                             ref={inventoryMenuRef}
-                            className="fixed z-50 min-w-[136px] overflow-hidden rounded-lg border border-white/10 bg-[#141414] shadow-xl"
+                            className="fixed z-50 min-w-[152px] overflow-hidden rounded border border-white/10 bg-[#141414] py-1 shadow-xl"
                             style={{ top: activeInventoryMenu.top, left: activeInventoryMenu.left }}
                           >
                             {(() => {
@@ -3601,122 +3657,60 @@ function AppScreen() {
 
                               const stowableContainers = equipmentState.filter(
                                 (item) =>
-                                  item.type === "Container" &&
+                                  isPacksAndContainersItem(item) &&
                                   item.id !== activeItem.id &&
                                   item.id !== activeItem.containerId &&
                                   canStoreInContainer(activeItem.id, item.id),
                               );
-                              const armourFitConflicts = activeItem.equipped
-                                ? []
-                                : getArmourFitConflicts(
-                                    activeItem,
-                                    equipmentState.filter((item) => item.id !== activeItem.id),
-                                  );
-                              const conflictItemIds = armourFitConflicts.map(({ item }) => item.id);
-                              const replacedArmourNames = armourFitConflicts
-                                .map(({ item }) => item.name)
-                                .join(", ");
-                              const replacementContainers = armourFitConflicts.length > 0
-                                ? containers.filter((container) => {
-                                    const capacity = container.carries ?? 0;
-                                    const used = getContainerUsedEncumbrance(container.id);
-                                    const currentContribution = armourFitConflicts
-                                      .filter(({ item }) => item.containerId === container.id)
-                                      .reduce((sum, { item }) => sum + Number(item.encumbrance || 0), 0);
-                                    const required = armourFitConflicts.reduce(
-                                      (sum, { item }) => sum + Number(item.encumbrance || 0),
-                                      0,
-                                    );
-
-                                    return capacity > 0 && used - currentContribution + required <= capacity;
-                                  })
-                                : [];
+                              const canMoveToWorn = canDropInventoryItem(activeItem.id, null, true);
+                              const canMoveToCarried = isWornInventoryItem(activeItem)
+                                ? canDropInventoryItem(activeItem.id, null, false, true)
+                                : canDropInventoryItem(activeItem.id, null);
 
                               return (
                                 <>
-                                  {armourFitConflicts.length > 0 && (
-                                    <>
-                                      <div className="px-3 py-2 text-[9px] font-black uppercase leading-snug tracking-widest text-gray-500">
-                                        Replace {replacedArmourNames}
-                                      </div>
-                                      {replacementContainers.map((container) => (
-                                        <button
-                                          key={container.id}
-                                          onClick={() =>
-                                            handleResolveArmourFit(
-                                              activeItem.id,
-                                              conflictItemIds,
-                                              "container",
-                                              container.id,
-                                            )
-                                          }
-                                          className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
-                                        >
-                                          Put old in {container.name}
-                                        </button>
-                                      ))}
-                                      <button
-                                        onClick={() =>
-                                          handleResolveArmourFit(
-                                            activeItem.id,
-                                            conflictItemIds,
-                                            "drop",
-                                          )
-                                        }
-                                        className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-red"
-                                      >
-                                        Drop old armour
-                                      </button>
-                                    </>
-                                  )}
-                                  {armourFitConflicts.length === 0 && activeItem.type.includes('Weapon') && (
+                                  {activeInventoryMenu.mode === "drop" ? (
                                     <button
-                                      onClick={() => {
-                                        handleToggleEquip(activeItem.id);
-                                        setActiveInventoryMenu(null);
-                                      }}
-                                      className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+                                      onClick={() => handleDropItem(activeItem.id)}
+                                      className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
                                     >
-                                      {activeItem.equipped ? 'Unequip' : 'Equip'}
+                                      Confirm
                                     </button>
-                                  )}
-                                  {armourFitConflicts.length === 0 && isWearableInventoryItem(activeItem) && (
+                                  ) : (
+                                    <>
+                                      {canMoveToWorn && (
+                                    <button
+                                      onClick={() => handleWearItem(activeItem.id)}
+                                      className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+                                    >
+                                      Wear
+                                    </button>
+                                      )}
+                                      {canMoveToCarried && (
                                     <button
                                       onClick={() => {
                                         if (isWornInventoryItem(activeItem)) {
                                           handleUnwearItem(activeItem.id);
                                         } else {
-                                          handleWearItem(activeItem.id);
+                                          handleCarryItem(activeItem.id);
                                         }
                                       }}
-                                      className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+                                      className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
                                     >
-                                      {isWornInventoryItem(activeItem) ? 'Remove' : 'Wear'}
+                                      Ready
                                     </button>
-                                  )}
-                                  {activeItem.containerId && (
-                                    <button
-                                      onClick={() => handleCarryItem(activeItem.id)}
-                                      className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:bg-white/5 hover:text-wfrp-gold transition-colors"
-                                    >
-                                      Carry on Person
-                                    </button>
-                                  )}
-                                  {stowableContainers.map((container) => (
+                                      )}
+                                      {stowableContainers.map((container) => (
                                       <button
                                         key={container.id}
                                         onClick={() => handleStoreItem(activeItem.id, container.id)}
-                                        className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:bg-white/5 hover:text-wfrp-gold transition-colors"
+                                        className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
                                       >
-                                        {activeItem.containerId ? "Move to" : "Stow in"} {container.name}
+                                        {container.name}
                                       </button>
-                                    ))}
-                                  <button
-                                    onClick={() => handleDropItem(activeItem.id)}
-                                    className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 hover:bg-white/5 hover:text-wfrp-red transition-colors"
-                                  >
-                                    Drop
-                                  </button>
+                                      ))}
+                                    </>
+                                  )}
                                 </>
                               );
                             })()}
@@ -3944,7 +3938,7 @@ function AppScreen() {
                                         <button
                                           onClick={() => removePendingCharacteristicAdvance(item.key)}
                                           disabled={item.pendingAdvances === 0 || !isAvailable}
-                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed hover:text-wfrp-red focus-visible:ring-wfrp-red/50"
+                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
                                           aria-label={`Decrease ${item.label}`}
                                         >
                                           <Minus size={10} />
@@ -3952,7 +3946,7 @@ function AppScreen() {
                                         <button
                                           onClick={() => purchaseCharacteristicAdvance(item.key)}
                                           disabled={!isAvailable || pendingAvailableXp < nextCharacteristicCost}
-                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed hover:text-green-600 focus-visible:ring-green-600/50"
+                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
                                           aria-label={`Increase ${item.label}`}
                                         >
                                           <Plus size={12} />
@@ -4025,7 +4019,7 @@ function AppScreen() {
                                               <button
                                                 onClick={() => removePendingSkillAdvance(skillRow.skillName)}
                                                 disabled={skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
-                                                className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed hover:text-wfrp-red focus-visible:ring-wfrp-red/50"
+                                                className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
                                                 aria-label={`Decrease skill advances for ${skillRow.skillName}`}
                                               >
                                                 <Minus size={10} />
@@ -4033,7 +4027,7 @@ function AppScreen() {
                                               <button
                                                 onClick={() => purchaseSkillAdvance(skillRow.skillName)}
                                                 disabled={!canPurchase}
-                                                className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed hover:text-green-600 focus-visible:ring-green-600/50"
+                                                className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
                                                 aria-label={`Advance skill ${skillRow.skillName}`}
                                               >
                                                 <Plus size={12} />
@@ -4098,7 +4092,7 @@ function AppScreen() {
                                         <button
                                           onClick={() => removePendingTalentPurchase(talentName)}
                                           disabled={pendingTakenCount === 0}
-                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed hover:text-wfrp-red focus-visible:ring-wfrp-red/50"
+                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
                                           aria-label={`Decrease talent purchases for ${talentName}`}
                                         >
                                           <Minus size={10} />
@@ -4106,7 +4100,7 @@ function AppScreen() {
                                         <button
                                           onClick={() => purchaseTalent(talentName)}
                                           disabled={!canPurchase}
-                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed hover:text-green-600 focus-visible:ring-green-600/50"
+                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
                                           aria-label={`Purchase talent ${talentName}`}
                                         >
                                           <Plus size={12} />
@@ -4684,6 +4678,7 @@ function AppScreen() {
         <ShopSidebar
           isOpen={isShopOpen}
           coins={formatCharacterCoins(characterData.coins)}
+          ownedItemIds={new Set(equipmentState.map((item) => item.itemId))}
           onAddToInventory={handleAddShopItem}
           onBuy={handleAddShopItem}
           onClose={() => setIsShopOpen(false)}

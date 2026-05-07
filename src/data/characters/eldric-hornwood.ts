@@ -9,7 +9,7 @@ export const eldricHornwood: CharacterRecord = {
     careerId: "soldier_halberdier",
     currentRank: 2,
   },
-  wounds: { current: 14, max: 14, temp: 0 },
+  wounds: { current: 0, max: 14, temp: 0 },
   fate: 3,
   fortune: 3,
   resilience: 2,

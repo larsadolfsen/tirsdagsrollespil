@@ -13,6 +13,7 @@ export function CharacterHeader({
   onSelectCharacter,
   onCreateCharacter,
   onOpenDice,
+  onOpenAdvance,
 }: {
   characterData: ResolvedCharacterRecord;
   availableCharacters: CharacterSummary[];
@@ -22,6 +23,7 @@ export function CharacterHeader({
   onSelectCharacter: (characterId: string) => void;
   onCreateCharacter: () => void;
   onOpenDice: () => void;
+  onOpenAdvance: () => void;
 }) {
   const [isCampaignMenuOpen, setIsCampaignMenuOpen] = useState(false);
   const campaignMenuRef = useRef<HTMLDivElement>(null);
@@ -82,33 +84,42 @@ export function CharacterHeader({
 
         <div className="flex items-center gap-1 group/campaign transition-colors">
           <div className="relative" ref={campaignMenuRef}>
-            <button
-              onClick={() => setIsCampaignMenuOpen((prev) => !prev)}
-              className="flex items-center gap-2 rounded border border-white/5 bg-black/20 px-2 py-0.5 text-left transition-colors hover:bg-[#242424] cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-              aria-label="Open character selection"
-              aria-haspopup="menu"
-              aria-expanded={isCampaignMenuOpen}
-            >
-              <div className="flex flex-col">
-                <span className="text-[8px] font-bold text-gray-500 uppercase leading-none">
-                  {UI_LABELS.CAMPAIGN_HEADER}
-                </span>
-                <span className="text-[11px] font-semibold text-gray-400 whitespace-nowrap group-hover/campaign:text-wfrp-gold transition-colors">
-                  {UI_LABELS.CAMPAIGN_NAME}
-                </span>
-              </div>
-              <ChevronDown
-                size={12}
-                className={`text-gray-500 transition-transform ${isCampaignMenuOpen ? "rotate-180 text-wfrp-gold" : "group-hover/campaign:text-wfrp-gold"}`}
-              />
-              <div className="h-5 w-[1px] bg-[#303030] opacity-60" />
-              <div className="flex flex-col items-center min-w-9">
+            <div className="flex overflow-hidden rounded border border-white/5 bg-black/20 transition-colors hover:bg-[#242424]">
+              <button
+                onClick={() => setIsCampaignMenuOpen((prev) => !prev)}
+                className="flex items-center gap-2 px-2 py-0.5 text-left transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                aria-label="Open character selection"
+                aria-haspopup="menu"
+                aria-expanded={isCampaignMenuOpen}
+              >
+                <div className="flex flex-col">
+                  <span className="text-[8px] font-bold text-gray-500 uppercase leading-none">
+                    {UI_LABELS.CAMPAIGN_HEADER}
+                  </span>
+                  <span className="text-[11px] font-semibold text-gray-400 whitespace-nowrap group-hover/campaign:text-wfrp-gold transition-colors">
+                    {UI_LABELS.CAMPAIGN_NAME}
+                  </span>
+                </div>
+                <ChevronDown
+                  size={12}
+                  className={`text-gray-500 transition-transform ${isCampaignMenuOpen ? "rotate-180 text-wfrp-gold" : "group-hover/campaign:text-wfrp-gold"}`}
+                />
+              </button>
+              <div className="my-1 h-5 w-[1px] bg-[#303030] opacity-60" />
+              <button
+                onClick={() => {
+                  onOpenAdvance();
+                  setIsCampaignMenuOpen(false);
+                }}
+                className="flex min-w-9 flex-col items-center px-2 py-0.5 transition-colors hover:bg-[#242424] cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                aria-label="Open Advance tab"
+              >
                 <span className="text-[8px] font-bold text-gray-500 uppercase leading-none">Exp</span>
                 <span className="text-[11px] font-bold text-blue-400 whitespace-nowrap">
                   {xpCurrent}/{characterData.xpTotal}
                 </span>
-              </div>
-            </button>
+              </button>
+            </div>
 
             {isCampaignMenuOpen && (
               <div

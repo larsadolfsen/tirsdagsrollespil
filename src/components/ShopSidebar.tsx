@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronDown, ListFilter, Search, ShoppingBag, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowDown, ArrowUp, ChevronDown, ListFilter, Search, ShoppingBag, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
 import { itemDefinitions } from "../data/rules/wfrp4e/items";
-import { formatItemValue } from "../lib/gameSession";
+import { formatItemValue, getItemPriceInBrass } from "../lib/gameSession";
 import type { ItemDefinition } from "../types";
 
 const shopStock = [...itemDefinitions].sort((firstItem, secondItem) => {
@@ -12,6 +12,17 @@ const shopStock = [...itemDefinitions].sort((firstItem, secondItem) => {
 });
 
 const availabilityOrder = ["common", "average", "scarce", "rare", "exotic", "n/a"];
+type ItemSortKey = "name" | "type" | "rarity" | "price";
+type SortDirection = "asc" | "desc";
+
+function OwnershipDot({ label }: { label: string }) {
+  return (
+    <span
+      className="h-1 w-1 shrink-0 rounded-full bg-wfrp-gold shadow-[0_0_4px_rgba(214,168,86,0.65)]"
+      aria-label={label}
+    />
+  );
+}
 
 function formatFilterLabel(value: string) {
   return value
@@ -20,15 +31,90 @@ function formatFilterLabel(value: string) {
     .join(" ");
 }
 
+function getItemRarity(item: ItemDefinition) {
+  return item.availability ?? "standard";
+}
+
+function getItemSortValue(item: ItemDefinition, sortKey: ItemSortKey) {
+  if (sortKey === "type") {
+    return item.type;
+  }
+
+  if (sortKey === "rarity") {
+    const rarity = getItemRarity(item);
+    const rarityIndex = availabilityOrder.indexOf(rarity);
+    return rarityIndex === -1 ? Number.MAX_SAFE_INTEGER : rarityIndex;
+  }
+
+  if (sortKey === "price") {
+    return getItemPriceInBrass(item);
+  }
+
+  return item.name;
+}
+
+function compareItems(firstItem: ItemDefinition, secondItem: ItemDefinition, sortKey: ItemSortKey) {
+  const firstValue = getItemSortValue(firstItem, sortKey);
+  const secondValue = getItemSortValue(secondItem, sortKey);
+
+  if (typeof firstValue === "number" && typeof secondValue === "number") {
+    return firstValue - secondValue || firstItem.name.localeCompare(secondItem.name, undefined, { sensitivity: "base" });
+  }
+
+  return String(firstValue).localeCompare(String(secondValue), undefined, { sensitivity: "base" }) ||
+    firstItem.name.localeCompare(secondItem.name, undefined, { sensitivity: "base" });
+}
+
+function SortHeaderButton({
+  align = "left",
+  activeSortKey,
+  label,
+  sortDirection,
+  sortKey,
+  onSort,
+}: {
+  align?: "left" | "center" | "right";
+  activeSortKey: ItemSortKey;
+  label: string;
+  sortDirection: SortDirection;
+  sortKey: ItemSortKey;
+  onSort: (sortKey: ItemSortKey) => void;
+}) {
+  const isActive = activeSortKey === sortKey;
+  const alignClass = align === "center" ? "justify-center text-center" : align === "right" ? "justify-end text-right" : "justify-start text-left";
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSort(sortKey)}
+      className={`inline-flex items-center gap-1 uppercase transition-colors hover:text-wfrp-gold ${alignClass} ${
+        isActive ? "text-wfrp-gold" : ""
+      }`}
+      aria-label={`Sort goods by ${label}`}
+    >
+      <span>{label}</span>
+      {isActive ? (
+        sortDirection === "asc" ? (
+          <ArrowUp size={10} aria-hidden="true" strokeWidth={3} />
+        ) : (
+          <ArrowDown size={10} aria-hidden="true" strokeWidth={3} />
+        )
+      ) : null}
+    </button>
+  );
+}
+
 export function ShopSidebar({
   isOpen,
   coins,
+  ownedItemIds,
   onAddToInventory,
   onBuy,
   onClose,
 }: {
   isOpen: boolean;
   coins: string;
+  ownedItemIds: Set<string>;
   onAddToInventory: (item: ItemDefinition) => void;
   onBuy: (item: ItemDefinition) => void;
   onClose: () => void;
@@ -36,8 +122,44 @@ export function ShopSidebar({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItemType, setSelectedItemType] = useState("All");
   const [selectedAvailability, setSelectedAvailability] = useState("All");
+  const [sortKey, setSortKey] = useState<ItemSortKey>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!sidebarRef.current?.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isFilterOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!filterRef.current?.contains(event.target as Node)) {
+        setIsFilterOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isFilterOpen]);
 
   const itemTypes = useMemo(() => {
     return Array.from(new Set(shopStock.map((item) => item.type)));
@@ -82,7 +204,22 @@ export function ShopSidebar({
   }, [searchTerm, selectedAvailability, selectedItemType]);
 
   const groupedStock = useMemo(() => {
-    return filteredStock.reduce<Array<{ type: string; items: typeof shopStock }>>((groups, item) => {
+    const sortItems = (stock: typeof shopStock) =>
+      [...stock].sort((firstItem, secondItem) => {
+        const comparison = compareItems(firstItem, secondItem, sortKey);
+        return sortDirection === "asc" ? comparison : -comparison;
+      });
+
+    if (selectedItemType === "All") {
+      return [
+        {
+          type: "All Goods",
+          items: sortItems(filteredStock),
+        },
+      ];
+    }
+
+    const groups = filteredStock.reduce<Array<{ type: string; items: typeof shopStock }>>((groups, item) => {
       const existingGroup = groups.find((group) => group.type === item.type);
 
       if (existingGroup) {
@@ -93,18 +230,28 @@ export function ShopSidebar({
 
       return groups;
     }, []);
-  }, [filteredStock]);
+
+    return groups.map((group) => ({ ...group, items: sortItems(group.items) }));
+  }, [filteredStock, selectedItemType, sortDirection, sortKey]);
+
+  const handleSort = (nextSortKey: ItemSortKey) => {
+    setSortDirection((currentDirection) =>
+      sortKey === nextSortKey && currentDirection === "asc" ? "desc" : "asc",
+    );
+    setSortKey(nextSortKey);
+  };
 
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
         <motion.aside
+          ref={sidebarRef}
           key="shop-sidebar"
           initial={{ x: "100%", opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="wfrp-sidebar-shell w-[400px]"
+          className="wfrp-sidebar-shell w-[620px]"
         >
           <div className="wfrp-sidebar-header p-4">
             <div className="flex items-center gap-3">
@@ -136,7 +283,7 @@ export function ShopSidebar({
                 </div>
               </div>
 
-              <div className="relative flex gap-2">
+              <div ref={filterRef} className="relative flex gap-2">
                 <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded border border-white/5 bg-black/30 px-3 text-gray-500 focus-within:border-wfrp-gold/40">
                   <Search size={14} />
                   <input
@@ -251,22 +398,28 @@ export function ShopSidebar({
               )}
 
               <div className="wfrp-subpanel-shell">
-                <div className="grid grid-cols-[1fr_54px_64px_18px] gap-3 wfrp-list-header">
-                  <span className="text-left">Item</span>
-                  <span className="text-center">Enc</span>
-                  <span className="text-right">Price</span>
+                <div className="grid grid-cols-[1fr_132px_96px_84px_18px] gap-3 wfrp-list-header">
+                  <SortHeaderButton activeSortKey={sortKey} label="Item" sortDirection={sortDirection} sortKey="name" onSort={handleSort} />
+                  <SortHeaderButton activeSortKey={sortKey} label="Type" sortDirection={sortDirection} sortKey="type" onSort={handleSort} />
+                  <SortHeaderButton activeSortKey={sortKey} label="Rarity" sortDirection={sortDirection} sortKey="rarity" onSort={handleSort} />
+                  <SortHeaderButton align="right" activeSortKey={sortKey} label="Price" sortDirection={sortDirection} sortKey="price" onSort={handleSort} />
                   <span aria-hidden="true" />
                 </div>
 
                 <div className="max-h-[calc(100vh-250px)] overflow-y-auto p-2 no-scrollbar">
                   {groupedStock.map((group) => (
                     <div key={group.type} className="mb-3 last:mb-0">
-                      <h4 className="wfrp-list-group">
-                        <span>{group.type}</span>
-                        <div className="wfrp-panel-rule" />
-                      </h4>
+                      {selectedItemType !== "All" ? (
+                        <h4 className="wfrp-list-group">
+                          <span>{group.type}</span>
+                          <div className="wfrp-panel-rule" />
+                        </h4>
+                      ) : null}
 
-                      {group.items.map((item) => (
+                      {group.items.map((item) => {
+                        const isOwned = ownedItemIds.has(item.id);
+
+                        return (
                         <div key={item.id} className="rounded border border-transparent transition-colors hover:border-white/5">
                           <button
                             type="button"
@@ -275,7 +428,7 @@ export function ShopSidebar({
                                 currentId === item.id ? null : item.id,
                               )
                             }
-                            className="wfrp-table-row grid w-full grid-cols-[1fr_54px_64px_18px] gap-3 border-0 text-left"
+                            className="wfrp-table-row grid w-full grid-cols-[1fr_132px_96px_84px_18px] gap-3 border-0 text-left"
                             aria-expanded={expandedItemId === item.id}
                           >
                             <div className="min-w-0">
@@ -283,16 +436,16 @@ export function ShopSidebar({
                                 <span className="wfrp-list-cell-strong truncate text-gray-200">
                                   {item.name}
                                 </span>
-                                {item.availability ? (
-                                  <span className="shrink-0 rounded border border-white/10 bg-black/20 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-gray-500">
-                                    {item.availability}
-                                  </span>
-                                ) : null}
+                                {isOwned ? <OwnershipDot label="Already owned" /> : null}
                               </div>
                             </div>
 
-                            <div className="wfrp-list-cell-strong text-center font-mono">
-                              {item.encumbrance || "-"}
+                            <div className="wfrp-list-cell-strong min-w-0 truncate text-left">
+                              {item.type}
+                            </div>
+
+                            <div className="wfrp-list-cell-strong min-w-0 truncate text-left">
+                              {formatFilterLabel(getItemRarity(item))}
                             </div>
 
                             <div className="wfrp-list-cell-strong text-right font-mono">
@@ -363,7 +516,8 @@ export function ShopSidebar({
                             </div>
                           )}
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   ))}
 

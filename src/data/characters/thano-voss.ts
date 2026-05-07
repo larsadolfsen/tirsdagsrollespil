@@ -9,7 +9,7 @@ export const thanoVoss: CharacterRecord = {
     careerId: "wizard_apprentice",
     currentRank: 1,
   },
-  wounds: { current: 14, max: 14, temp: 0 },
+  wounds: { current: 0, max: 14, temp: 0 },
   fate: 6,
   fortune: 6,
   resilience: 2,

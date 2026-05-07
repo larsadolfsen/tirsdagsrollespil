@@ -149,30 +149,96 @@ export function getCharacterSkillKey(skill: Pick<ResolvedCharacterSkill, "skillI
   return skill.specialisationId ? `${skill.skillId}:${skill.specialisationId}` : skill.skillId;
 }
 
+export type CoinPrice = {
+  g: number;
+  s: number;
+  b: number;
+};
+
+export function getItemPriceParts(
+  item: Pick<ResolvedCharacterEquipment, "value" | "currency" | "priceLabel">,
+): CoinPrice {
+  if (item.priceLabel) {
+    const normalizedLabel = item.priceLabel.trim().toUpperCase();
+    const goldMatch = normalizedLabel.match(/^(\d+)\s*(?:GC|G)$/);
+    const silverMatch = normalizedLabel.match(/^(\d+)\s*(?:\/-|S)$/);
+    const brassMatch = normalizedLabel.match(/^(\d+)\s*(?:D|B)$/);
+    const slashMatch = normalizedLabel.match(/^(\d+)\s*\/\s*(\d+)$/);
+
+    if (goldMatch) {
+      return { g: Number(goldMatch[1]), s: 0, b: 0 };
+    }
+
+    if (silverMatch) {
+      return { g: 0, s: Number(silverMatch[1]), b: 0 };
+    }
+
+    if (brassMatch) {
+      return { g: 0, s: 0, b: Number(brassMatch[1]) };
+    }
+
+    if (slashMatch) {
+      return { g: 0, s: Number(slashMatch[1]), b: Number(slashMatch[2]) };
+    }
+
+    return {
+      g: 0,
+      s: 0,
+      b: 0,
+    };
+  }
+
+  if (item.currency === "gc") {
+    return { g: item.value, s: 0, b: 0 };
+  }
+
+  if (item.currency === "s") {
+    return { g: 0, s: item.value, b: 0 };
+  }
+
+  if (item.currency === "d" || item.currency === "b") {
+    return { g: 0, s: 0, b: item.value };
+  }
+
+  return { g: 0, s: 0, b: item.value };
+}
+
+export function getItemPriceInBrass(
+  item: Pick<ResolvedCharacterEquipment, "value" | "currency" | "priceLabel">,
+) {
+  const price = getItemPriceParts(item);
+  return price.g * 240 + price.s * 12 + price.b;
+}
+
 export function formatItemValue(
   item: Pick<ResolvedCharacterEquipment, "value" | "currency" | "priceLabel">,
 ) {
+  const price = getItemPriceParts(item);
+  const parts = [
+    price.g > 0 ? `${price.g}gc` : null,
+    price.s > 0 ? `${price.s}ss` : null,
+    price.b > 0 ? `${price.b}bp` : null,
+  ].filter(Boolean);
+
+  if (parts.length > 0) {
+    return parts.join(" ");
+  }
+
   if (item.priceLabel) {
     return item.priceLabel;
   }
 
-  if (item.currency === "gc") {
-    return `${item.value}GC`;
-  }
-
-  if (item.currency === "s") {
-    return `${item.value}/-`;
-  }
-
-  if (item.currency === "d") {
-    return `${item.value}d`;
-  }
-
-  return `${item.value}${item.currency}`;
+  return item.value ? `${item.value}${item.currency === "b" || item.currency === "d" ? "bp" : item.currency}` : "-";
 }
 
 export function formatCharacterCoins(coins: { gc: number; s: number; d: number }) {
-  return `${coins.gc}GC ${coins.s}/- ${coins.d}d`;
+  const parts = [
+    coins.gc > 0 ? `${coins.gc}gc` : null,
+    coins.s > 0 ? `${coins.s}ss` : null,
+    coins.d > 0 ? `${coins.d}bp` : null,
+  ].filter(Boolean);
+
+  return parts.length > 0 ? parts.join(" ") : "0bp";
 }
 
 const getConsumableBaseName = (name: string) => name.replace(/\s*\(\d+\)\s*$/, "");
