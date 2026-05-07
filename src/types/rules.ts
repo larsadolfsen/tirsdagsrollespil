@@ -4,6 +4,44 @@ export type RulesTextDefinition = {
   description: string;
 };
 
+export type TalentEffect =
+  | {
+      type: "test_sl_bonus";
+      test: string;
+      valuePerLevel: number;
+      condition?: string;
+    }
+  | {
+      type: "test_reverse_failed_roll";
+      test: string;
+      condition?: string;
+    }
+  | {
+      type: "attribute_bonus";
+      attribute: string;
+      valuePerLevel: number;
+      condition?: string;
+    }
+  | {
+      type: "damage_bonus";
+      valuePerLevel: number;
+      condition?: string;
+    }
+  | {
+      type: "ignore_penalty";
+      penalty: string;
+      condition?: string;
+    }
+  | {
+      type: "action_unlock";
+      action: string;
+      condition?: string;
+    }
+  | {
+      type: "special_rule";
+      rule: string;
+    };
+
 export type SkillType = "basic" | "advanced";
 
 export interface SkillDefinition extends RulesTextDefinition {
@@ -22,7 +60,11 @@ export interface ActionDefinition extends RulesTextDefinition {}
 
 export interface PropertyDefinition extends RulesTextDefinition {}
 
-export interface TalentDefinition extends RulesTextDefinition {}
+export interface TalentDefinition extends RulesTextDefinition {
+  max: string;
+  tests?: string;
+  effects?: TalentEffect[];
+}
 
 export interface SpellDefinition extends RulesTextDefinition {
   category: "petty" | "arcane" | "school";

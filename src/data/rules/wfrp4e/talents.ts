@@ -4,81 +4,231 @@ export const talentDefinitions: TalentDefinition[] = [
   {
     id: "combat_aware",
     name: "Combat Aware",
-    description: "You are naturally wary in combat and gain bonuses to initiative.",
+    max: "Initiative Bonus",
+    tests: "Perception during melee",
+    description:
+      "You are used to scanning the battlefield to make snap decisions informed by the shifting tides of war. You may take a Challenging (+0) Perception Test to ignore Surprise, which is modified by circumstance as normal.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "May take a Challenging (+0) Perception Test to ignore Surprise.",
+      },
+    ],
   },
   {
     id: "strike_to_injure",
     name: "Strike to Injure",
-    description: "You know where it hurts. Your attacks inflict more severe wounds.",
+    max: "Initiative Bonus",
+    description:
+      "You inflict your level of Strike to Injure in additional Wounds when you cause a Critical Wound.",
+    effects: [
+      {
+        type: "damage_bonus",
+        valuePerLevel: 1,
+        condition: "when_causing_critical_wound",
+      },
+    ],
   },
   {
     id: "drilled",
     name: "Drilled",
-    description: "You excel at maintaining formation and acting with practiced military discipline.",
+    max: "Weapon Skill Bonus",
+    tests: "Melee Tests when beside an ally with Drilled",
+    description:
+      "You have been trained to fight shoulder-to-shoulder with other soldiers. If an enemy causes you to lose Advantage when standing beside an active ally with the Drilled Talent, you may keep 1 lost Advantage for each time you have taken the Drilled Talent.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "When beside an active ally with Drilled, keep 1 lost Advantage per Talent level when an enemy causes Advantage loss.",
+      },
+    ],
   },
   {
     id: "flee",
     name: "Flee!",
-    description: "You know how to disengage and survive when a battle turns against you.",
+    max: "Agility Bonus",
+    tests: "Athletics when Fleeing",
+    description:
+      "When your life is on the line you are capable of impressive bursts of speed. Your Movement Attribute counts as 1 higher when Fleeing.",
+    effects: [
+      {
+        type: "attribute_bonus",
+        attribute: "movement",
+        valuePerLevel: 1,
+        condition: "when_fleeing",
+      },
+    ],
   },
   {
     id: "shields_up",
     name: "Shields Up",
-    description: "You are trained to maximize protection when fighting in formation or under pressure.",
+    max: "Strength Bonus",
+    tests: "Any Test to defend with a shield",
+    description:
+      "You are trained to maximize protection when fighting with a shield or under pressure.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "Apply shield-specific defensive rules when this Talent is used with a shield.",
+      },
+    ],
   },
   {
     id: "strike_to_stun",
     name: "Strike to Stun",
-    description: "You can deliver well-placed blows intended to daze and overwhelm your target.",
+    max: "Weapon Skill Bonus",
+    tests: "Melee Tests when Striking to Stun",
+    description:
+      "You know where to hit an opponent to bring him down fast. You ignore the Called Shot penalty to strike the Head Hit Location when using a melee weapon with the Pummel Quality. Further, you count all improvised weapons as having the Pummel Quality.",
+    effects: [
+      {
+        type: "ignore_penalty",
+        penalty: "called_shot_head",
+        condition: "when_using_melee_weapon_with_pummel_quality",
+      },
+      {
+        type: "special_rule",
+        rule: "Improvised weapons count as having the Pummel Quality.",
+      },
+    ],
   },
   {
     id: "warrior_born",
     name: "Warrior Born",
-    description: "Battle comes naturally to you, and martial instincts guide your actions in a fight.",
+    max: "1",
+    description:
+      "You gain a permanent +5 bonus to your starting Weapon Skill Characteristic. This does not count as Advances.",
+    effects: [
+      {
+        type: "attribute_bonus",
+        attribute: "weaponSkill",
+        valuePerLevel: 5,
+        condition: "starting_characteristic_only",
+      },
+    ],
   },
   {
     id: "doomed",
     name: "Doomed",
-    description: "You know the words of your doom, and they wait for the proper day.",
+    max: "1",
+    description:
+      "At the age of 10, a Priest of Morr called a Doomsayer took you aside to foretell your death. Should your character die in a fashion that matches your Dooming, your next character gains a bonus of half the total XP your dead character accrued during play.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "If the character dies in the manner of their Dooming, the next character gains half the dead character's accrued XP.",
+      },
+    ],
   },
   {
     id: "suave",
     name: "Suave",
-    description: "You have a natural ease with people and an impressive personal presence.",
+    max: "1",
+    description:
+      "You gain a permanent +5 bonus to your starting Fellowship Characteristic. This does not count towards your Advances.",
+    effects: [
+      {
+        type: "attribute_bonus",
+        attribute: "fellowship",
+        valuePerLevel: 5,
+        condition: "starting_characteristic_only",
+      },
+    ],
   },
   {
     id: "perfect_pitch",
     name: "Perfect Pitch",
-    description: "You can identify, reproduce, and remember notes and tones with uncanny accuracy.",
+    max: "Initiative Bonus",
+    tests: "Entertain (Sing), Language (Tonal Languages, such as Eltharin, Cathayan, and Magick)",
+    description:
+      "You have perfect pitch, able to replicate notes perfectly and identify them without even making a Test. Further, add Entertain (Sing) to any Career you enter; if it is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "Identify and replicate notes without a Test. Add Entertain (Sing) to any Career, or buy it 5 XP cheaper per Advance if already in Career.",
+      },
+    ],
   },
   {
     id: "read_write",
     name: "Read/Write",
-    description: "You are literate and can read and write the languages you know.",
+    max: "1",
+    description:
+      "You are one of the rare literate individuals in the Old World. You are assumed to be able to read and write all of the Languages you can speak, if appropriate.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "Can read and write known Languages where appropriate.",
+      },
+    ],
   },
   {
     id: "resistance_corruption",
     name: "Resistance (Corruption)",
+    max: "Toughness Bonus",
+    tests: "Endurance Tests to resist Corruption",
     description: "You have a hardened spirit when resisting corrupting influences.",
+    effects: [
+      {
+        type: "test_sl_bonus",
+        test: "Endurance Tests to resist Corruption",
+        valuePerLevel: 1,
+      },
+    ],
   },
   {
     id: "instinctive_diction",
     name: "Instinctive Diction",
-    description: "The words of magic come easily to you, even under pressure.",
+    max: "Initiative Bonus",
+    tests: "Language (Magick) when casting",
+    description:
+      "You instinctively understand the language of Magick and are capable of articulating the most complex phrases rapidly without error. You do not suffer a Miscast if you roll a double on a successful Language (Magick) Test.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "No Miscast from doubles on successful Language (Magick) Tests.",
+      },
+    ],
   },
   {
     id: "petty_magic",
     name: "Petty Magic",
-    description: "You know a handful of minor spells and tricks of the Winds.",
+    max: "1",
+    description:
+      "You have the spark to cast magic within you and have mastered techniques to control it at a basic level. When you take this Talent, you manifest and permanently memorise a number of spells equal to your Willpower Bonus.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "Learn Petty spells equal to Willpower Bonus. Extra Petty spells may be learned for XP by tier.",
+      },
+    ],
   },
   {
     id: "aethyric_attunement",
     name: "Aethyric Attunement",
-    description: "You are sensitive to the Winds of Magic and can better sense their flow.",
+    max: "Initiative Bonus",
+    tests: "Channel (Any)",
+    description:
+      "Your experience, talent or training lets you more safely manipulate the Winds of Magic. You do not suffer a Miscast if you roll a double on a successful Channel Test.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "No Miscast from doubles on successful Channel Tests.",
+      },
+    ],
   },
   {
     id: "second_sight",
     name: "Second Sight",
-    description: "You can perceive magical auras, disturbances, and other aethyric signs.",
+    max: "Initiative Bonus",
+    tests: "Any Test to detect the Winds of Magic",
+    description:
+      "You can perceive the shifting Winds of Magic that course from the Chaos Gates at the poles of the world. You now have the Sight.",
+    effects: [
+      {
+        type: "special_rule",
+        rule: "Can perceive the Winds of Magic and use the Sight.",
+      },
+    ],
   },
 ];
