@@ -19,6 +19,7 @@ export interface CharacterProgressData {
   spellIds?: string[];
   equipment: Record<string, boolean>;
   equipmentContainers?: Record<string, string | null>;
+  consumableCounts?: Record<string, number>;
   addedEquipment?: Array<{
     id: string;
     itemId: string;

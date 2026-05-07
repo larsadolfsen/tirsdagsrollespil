@@ -175,6 +175,11 @@ export function formatCharacterCoins(coins: { gc: number; s: number; d: number }
   return `${coins.gc}GC ${coins.s}/- ${coins.d}d`;
 }
 
+const getConsumableBaseName = (name: string) => name.replace(/\s*\(\d+\)\s*$/, "");
+
+const formatConsumableName = (name: string, count: number) =>
+  `${getConsumableBaseName(name)} (${count})`;
+
 function applyCharacterProgress(
   character: ResolvedCharacterRecord,
   ruleset: Ruleset,
@@ -305,6 +310,10 @@ function applyCharacterProgress(
       .filter((item) => !progress.removedEquipmentIds?.includes(item.id))
       .map((item) => ({
         ...item,
+        name:
+          item.type === "Consumable" && progress.consumableCounts?.[item.id]
+            ? formatConsumableName(item.name, progress.consumableCounts[item.id])
+            : item.name,
         equipped: progressEquipment[item.id] ?? item.equipped,
         containerId: progress.equipmentContainers?.[item.id] ?? item.containerId ?? null,
       })),

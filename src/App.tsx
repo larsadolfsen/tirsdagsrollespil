@@ -14,8 +14,7 @@ import {
   MoreHorizontal,
   Trash2,
   X,
-  Dice5,
-  ShoppingBag
+  Dice5
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRef } from "react";
@@ -132,7 +131,8 @@ type InlineSubtabOption<T extends string> = {
 type ActionCategory = 'all' | 'melee' | 'ranged' | 'other';
 type SkillSubtab = 'all' | 'advanced' | 'basic-trained' | 'basic-untrained';
 type SpellSubtab = 'all' | 'petty' | 'arcane' | `school:${string}`;
-type InventorySubtab = 'all' | 'carried' | `container:${string}`;
+type InventorySubtab = 'all' | 'wallet' | 'worn' | 'carried' | `container:${string}`;
+type CoinKey = "gc" | "s" | "d";
 
 const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
   [...items].sort((first, second) => {
@@ -142,6 +142,36 @@ const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
 
     return nameComparison || first.id.localeCompare(second.id);
   });
+
+const getConsumableCount = (item: ResolvedCharacterEquipment) => {
+  if (item.type !== "Consumable") return null;
+
+  const match = item.name.match(/\((\d+)\)\s*$/);
+  return match ? Number(match[1]) : 1;
+};
+
+const getConsumableBaseName = (item: ResolvedCharacterEquipment) =>
+  item.name.replace(/\s*\(\d+\)\s*$/, "");
+
+const formatConsumableName = (item: ResolvedCharacterEquipment, count: number) =>
+  `${getConsumableBaseName(item)} (${count})`;
+
+const isWearableInventoryItem = (item: ResolvedCharacterEquipment) =>
+    item.type === "Clothing" ||
+    item.type === "Jewellery" ||
+    item.type === "Jewelry" ||
+    item.type === "Armor";
+
+const isWornInventoryItem = (item: ResolvedCharacterEquipment) =>
+  !item.containerId &&
+  isWearableInventoryItem(item) &&
+  (item.type !== "Armor" || item.equipped);
+
+const getInventoryEncumbrance = (item: ResolvedCharacterEquipment) => {
+  const encumbrance = Number(item.encumbrance || 0);
+  return isWornInventoryItem(item) ? Math.max(0, encumbrance - 1) : encumbrance;
+};
+
 type CareerSubtab = 'all' | 'careers' | 'characteristics' | 'skills' | 'talents';
 type BuilderStepId =
   | "species"
@@ -861,7 +891,6 @@ function AppScreen() {
   const [pendingSkillAdvances, setPendingSkillAdvances] = useState<Record<string, number>>({});
   const [pendingTalentPurchases, setPendingTalentPurchases] = useState<Record<string, number>>({});
   const [pendingCareerRank, setPendingCareerRank] = useState<number | null>(null);
-  const [coinDraft, setCoinDraft] = useState({ gc: "", s: "", d: "" });
   const [newNoteTitle, setNewNoteTitle] = useState("");
   const [newNoteText, setNewNoteText] = useState("");
   const [noteSearch, setNoteSearch] = useState("");
@@ -1145,7 +1174,6 @@ function AppScreen() {
     setPendingSkillAdvances({});
     setPendingTalentPurchases({});
     setPendingCareerRank(null);
-    setCoinDraft({ gc: "", s: "", d: "" });
     setRollHistory([]);
     setRollState({
       characteristic: null,
@@ -1336,6 +1364,50 @@ function AppScreen() {
     setActiveInventoryMenu(null);
   };
 
+  const handleWearItem = (itemId: string) => {
+    const activeItem = equipmentState.find((item) => item.id === itemId);
+    if (!activeItem || !isWearableInventoryItem(activeItem)) return;
+
+    if (activeItem.type === "Armor") {
+      const conflicts = getArmourFitConflicts(
+        activeItem,
+        equipmentState.filter((item) => item.id !== activeItem.id),
+      );
+
+      if (conflicts.length > 0) {
+        return;
+      }
+    }
+
+    setEquipmentState((prev) =>
+      prev.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              equipped: item.type === "Armor" ? true : item.equipped,
+              containerId: null,
+            }
+          : item,
+      ),
+    );
+    setActiveInventoryMenu(null);
+  };
+
+  const handleUnwearItem = (itemId: string) => {
+    setEquipmentState((prev) =>
+      prev.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              equipped: item.type === "Armor" ? false : item.equipped,
+              containerId: null,
+            }
+          : item,
+      ),
+    );
+    setActiveInventoryMenu(null);
+  };
+
   const handleDropItem = (itemId: string) => {
     setEquipmentState((prev) =>
       prev
@@ -1347,6 +1419,24 @@ function AppScreen() {
         ),
     );
     setActiveInventoryMenu(null);
+  };
+
+  const handleConsumeItem = (itemId: string) => {
+    setEquipmentState((prev) =>
+      prev
+        .map((item) => {
+          if (item.id !== itemId) return item;
+
+          const count = getConsumableCount(item);
+          if (!count || count <= 1) return null;
+
+          return {
+            ...item,
+            name: formatConsumableName(item, count - 1),
+          };
+        })
+        .filter((item): item is ResolvedCharacterEquipment => Boolean(item)),
+    );
   };
 
   const handleResolveArmourFit = (
@@ -1426,23 +1516,11 @@ function AppScreen() {
     setActiveMainTab("spells");
   };
 
-  const handleAddCoins = () => {
-    const addedCoins = {
-      gc: Math.max(0, Math.floor(Number(coinDraft.gc) || 0)),
-      s: Math.max(0, Math.floor(Number(coinDraft.s) || 0)),
-      d: Math.max(0, Math.floor(Number(coinDraft.d) || 0)),
-    };
-
-    if (addedCoins.gc === 0 && addedCoins.s === 0 && addedCoins.d === 0) {
-      return;
-    }
-
+  const handleAdjustCoinType = (coinKey: CoinKey, amount: number) => {
     setCharacterCoins((prev) => ({
-      gc: prev.gc + addedCoins.gc,
-      s: prev.s + addedCoins.s,
-      d: prev.d + addedCoins.d,
+      ...prev,
+      [coinKey]: Math.max(0, prev[coinKey] + amount),
     }));
-    setCoinDraft({ gc: "", s: "", d: "" });
   };
 
   const handleToggleInventoryMenu = (
@@ -1480,13 +1558,16 @@ function AppScreen() {
 
   const totalEncumbrance = equipmentState.reduce((sum, item) => {
     if (item.containerId) return sum;
-    return sum + Number(item.encumbrance || 0);
+    return sum + getInventoryEncumbrance(item);
   }, 0);
   const carryCapacity = Math.max(sb + tb, 1);
   const encumbrancePercent = Math.min((totalEncumbrance / carryCapacity) * 100, 100);
   const containers = equipmentState.filter((item) => item.type === "Container");
+  const wornItems = sortEquipmentByName(equipmentState.filter(isWornInventoryItem));
   const carriedItems = sortEquipmentByName(
-    equipmentState.filter((item) => !item.containerId && item.type !== "Container"),
+    equipmentState.filter(
+      (item) => !item.containerId && item.type !== "Container" && !isWornInventoryItem(item),
+    ),
   );
   const itemDefinitionsById = Object.fromEntries(
     ruleset.items.map((item) => [item.id, item]),
@@ -1611,9 +1692,26 @@ function AppScreen() {
   const canDropInventoryItem = (
     itemId: string,
     targetContainerId: string | null,
+    targetWorn = false,
+    targetCarried = false,
   ) => {
     const item = equipmentState.find((entry) => entry.id === itemId);
     if (!item) return false;
+
+    if (targetWorn) {
+      if (!isWearableInventoryItem(item) || isWornInventoryItem(item)) return false;
+      if (item.type === "Armor") {
+        return getArmourFitConflicts(
+          item,
+          equipmentState.filter((entry) => entry.id !== item.id),
+        ).length === 0;
+      }
+      return true;
+    }
+
+    if (targetCarried && isWornInventoryItem(item)) {
+      return item.type === "Armor";
+    }
 
     const currentContainerId = item.containerId ?? null;
     if (currentContainerId === targetContainerId) return false;
@@ -1643,8 +1741,13 @@ function AppScreen() {
     targetId: InventoryDropTargetId,
     targetContainerId: string | null,
     event: ReactDragEvent<HTMLDivElement>,
+    targetWorn = false,
+    targetCarried = false,
   ) => {
-    if (!inventoryDrag || !canDropInventoryItem(inventoryDrag.itemId, targetContainerId)) {
+    if (
+      !inventoryDrag ||
+      !canDropInventoryItem(inventoryDrag.itemId, targetContainerId, targetWorn, targetCarried)
+    ) {
       return;
     }
 
@@ -1656,14 +1759,23 @@ function AppScreen() {
   const handleInventoryDrop = (
     targetContainerId: string | null,
     event: ReactDragEvent<HTMLDivElement>,
+    targetWorn = false,
+    targetCarried = false,
   ) => {
     event.preventDefault();
-    if (!inventoryDrag || !canDropInventoryItem(inventoryDrag.itemId, targetContainerId)) {
+    if (
+      !inventoryDrag ||
+      !canDropInventoryItem(inventoryDrag.itemId, targetContainerId, targetWorn, targetCarried)
+    ) {
       handleInventoryDragEnd();
       return;
     }
 
-    if (targetContainerId) {
+    if (targetWorn) {
+      handleWearItem(inventoryDrag.itemId);
+    } else if (targetCarried && isWornInventoryItem(equipmentState.find((item) => item.id === inventoryDrag.itemId)!)) {
+      handleUnwearItem(inventoryDrag.itemId);
+    } else if (targetContainerId) {
       handleStoreItem(inventoryDrag.itemId, targetContainerId);
     } else {
       handleCarryItem(inventoryDrag.itemId);
@@ -3187,6 +3299,8 @@ function AppScreen() {
                         <InlineSubtabs<InventorySubtab>
                           options={[
                             { id: 'all', label: 'All' },
+                            { id: 'wallet', label: 'Wallet' },
+                            { id: 'worn', label: 'Worn' },
                             { id: 'carried', label: 'Carried' },
                             ...containers.map((container) => ({
                               id: `container:${container.id}` as InventorySubtab,
@@ -3196,106 +3310,47 @@ function AppScreen() {
                           activeId={activeInventorySubtab}
                           onChange={setActiveInventorySubtab}
                           trailingContent={
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActiveInfo(null);
-                                setIsDiceLogOpen(false);
-                                setIsShopOpen(true);
-                              }}
-                              className="wfrp-action-btn inline-flex h-7 items-center gap-1.5 px-3 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
-                              aria-label="Open shop"
-                            >
-                              <ShoppingBag size={12} />
-                              <span className="whitespace-nowrap">Shop</span>
-                            </button>
-                          }
-                        />
-
-                        <div className="px-4 py-2 border-b border-white/5 bg-black/10">
-                          <div className="flex flex-wrap items-center justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                              <span className="wfrp-table-label">Coin</span>
-                              <span className="wfrp-list-cell-strong font-mono">
-                                {formatCharacterCoins(characterData.coins)}
-                              </span>
-                            </div>
-                            <div className="flex min-w-0 flex-wrap items-center gap-2">
-                              {([
-                                ["gc", "GC"],
-                                ["s", "/-"],
-                                ["d", "d"],
-                              ] as const).map(([key, label]) => (
-                                <label
-                                  key={key}
-                                  className="flex h-8 items-center gap-1 rounded border border-white/5 bg-black/30 px-2 focus-within:border-wfrp-gold/40"
-                                >
-                                  <input
-                                    type="number"
-                                    min="0"
-                                    step="1"
-                                    inputMode="numeric"
-                                    value={coinDraft[key]}
-                                    onChange={(event) =>
-                                      setCoinDraft((prev) => ({
-                                        ...prev,
-                                        [key]: event.target.value,
-                                      }))
-                                    }
-                                    onKeyDown={(event) => {
-                                      if (event.key === "Enter") {
-                                        handleAddCoins();
-                                      }
-                                    }}
-                                    className="h-full w-12 bg-transparent text-right font-mono text-xs font-bold text-gray-100 outline-none placeholder:text-gray-700"
-                                    placeholder="0"
-                                    aria-label={`Add ${label} to wallet`}
+                            <div className="flex items-center gap-4">
+                              <div className="hidden w-56 flex-col gap-1 sm:flex lg:w-72">
+                                <div className="flex items-end justify-between leading-none">
+                                  <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
+                                    Encumbrance
+                                  </span>
+                                  <span className="font-mono text-[10px] font-bold text-gray-200">
+                                    {totalEncumbrance} / {carryCapacity}
+                                  </span>
+                                </div>
+                                <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#303030] shadow-inner">
+                                  <div
+                                    className={`h-full transition-all duration-500 ease-out ${
+                                      totalEncumbrance > carryCapacity
+                                        ? "bg-wfrp-red"
+                                        : "bg-wfrp-gold"
+                                    }`}
+                                    style={{ width: `${encumbrancePercent}%` }}
+                                    role="progressbar"
+                                    aria-valuenow={totalEncumbrance}
+                                    aria-valuemin={0}
+                                    aria-valuemax={carryCapacity}
+                                    aria-label="Current encumbrance"
                                   />
-                                  <span className="text-[10px] font-black uppercase text-gray-500">{label}</span>
-                                </label>
-                              ))}
+                                </div>
+                              </div>
                               <button
                                 type="button"
-                                onClick={handleAddCoins}
-                                className="flex h-8 w-8 items-center justify-center rounded border border-wfrp-gold/30 bg-wfrp-gold/10 text-wfrp-gold transition-colors hover:bg-wfrp-gold/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                                aria-label="Add coins to wallet"
-                                title="Add coins"
+                                onClick={() => {
+                                  setActiveInfo(null);
+                                  setIsDiceLogOpen(false);
+                                  setIsShopOpen(true);
+                                }}
+                                className="wfrp-action-btn inline-flex h-7 items-center gap-1.5 px-3 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+                                aria-label="Add item"
                               >
-                                <Plus size={14} />
+                                <span className="whitespace-nowrap">Add item</span>
                               </button>
                             </div>
-                          </div>
-                        </div>
-
-                        <div className="px-4 py-3 border-b border-white/5 bg-black/20">
-                          <div className="flex items-center gap-3">
-                            <div className="flex flex-1 flex-col gap-1">
-                              <div className="flex justify-between items-end leading-none">
-                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tight">
-                                  Encumbrance
-                                </span>
-                                <span className="text-[10px] font-bold text-gray-200 font-mono">
-                                  {totalEncumbrance} / {carryCapacity}
-                                </span>
-                              </div>
-                              <div className="h-1.5 w-full bg-[#303030] rounded-full overflow-hidden shadow-inner">
-                                <div
-                                  className={`h-full transition-all duration-500 ease-out ${
-                                    totalEncumbrance > carryCapacity
-                                      ? "bg-wfrp-red"
-                                      : "bg-wfrp-gold"
-                                  }`}
-                                  style={{ width: `${encumbrancePercent}%` }}
-                                  role="progressbar"
-                                  aria-valuenow={totalEncumbrance}
-                                  aria-valuemin={0}
-                                  aria-valuemax={carryCapacity}
-                                  aria-label="Current encumbrance"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                          }
+                        />
 
                         {/* List Headers */}
                         <div className="grid grid-cols-[1fr_140px_60px_60px_80px] gap-2 lg:gap-4 wfrp-list-header">
@@ -3309,10 +3364,27 @@ function AppScreen() {
                         <div className="flex-1 overflow-y-auto p-2 space-y-4">
                           {[
                             {
+                              id: "wallet",
+                              title: "Wallet",
+                              items: [] as ResolvedCharacterEquipment[],
+                              dropContainerId: null,
+                              alwaysVisible: true,
+                              acceptsDrops: false,
+                            },
+                            {
+                              id: "worn",
+                              title: "Worn",
+                              items: wornItems,
+                              dropContainerId: null,
+                              dropWorn: true,
+                              alwaysVisible: true,
+                            },
+                            {
                               id: "carried",
                               title: 'Carried',
                               items: carriedItems,
                               dropContainerId: null,
+                              dropCarried: true,
                               alwaysVisible:
                                 activeInventorySubtab === 'carried' ||
                                 carriedItems.length > 0 ||
@@ -3330,27 +3402,54 @@ function AppScreen() {
                             .filter((section) => {
                               if (!section.alwaysVisible) return false;
                               if (activeInventorySubtab === 'all') return true;
+                              if (activeInventorySubtab === 'wallet') return section.id === 'wallet';
+                              if (activeInventorySubtab === 'worn') return section.id === 'worn';
                               if (activeInventorySubtab === 'carried') return section.id === 'carried';
                               return activeInventorySubtab === `container:${section.id}`;
                             })
                             .map((section) => {
                               const isActiveDropTarget = inventoryDropTarget === section.id;
-                              const canDropHere = inventoryDrag
-                                ? canDropInventoryItem(inventoryDrag.itemId, section.dropContainerId)
+                              const acceptsDrops = section.acceptsDrops !== false;
+                              const dropsToWorn = "dropWorn" in section && section.dropWorn === true;
+                              const dropsToCarried = "dropCarried" in section && section.dropCarried === true;
+                              const canDropHere = acceptsDrops && inventoryDrag
+                                ? canDropInventoryItem(
+                                    inventoryDrag.itemId,
+                                    section.dropContainerId,
+                                    dropsToWorn,
+                                    dropsToCarried,
+                                  )
                                 : false;
 
                               return (
                             <div
                               key={section.id}
                               onDragOver={(event) =>
-                                handleInventoryDragOver(section.id, section.dropContainerId, event)
+                                acceptsDrops
+                                  ? handleInventoryDragOver(
+                                      section.id,
+                                      section.dropContainerId,
+                                      event,
+                                      dropsToWorn,
+                                      dropsToCarried,
+                                    )
+                                  : undefined
                               }
                               onDragLeave={() =>
                                 setInventoryDropTarget((current) =>
                                   current === section.id ? null : current,
                                 )
                               }
-                              onDrop={(event) => handleInventoryDrop(section.dropContainerId, event)}
+                              onDrop={(event) =>
+                                acceptsDrops
+                                  ? handleInventoryDrop(
+                                      section.dropContainerId,
+                                      event,
+                                      dropsToWorn,
+                                      dropsToCarried,
+                                    )
+                                  : undefined
+                              }
                               className={`wfrp-subpanel-shell ${
                                 isActiveDropTarget
                                   ? "border-wfrp-gold/50 bg-wfrp-gold/5"
@@ -3368,6 +3467,57 @@ function AppScreen() {
                                   ) : null}
                                   <div className="wfrp-panel-rule" />
                                </h3>
+                               {section.id === "wallet" && (
+                                <>
+                                  {([
+                                    ["gc", "Gold Crowns", "GC"],
+                                    ["s", "Silver Shillings", "/-"],
+                                    ["d", "Brass Pennies", "d"],
+                                  ] as const).map(([key, name, label]) => (
+                                    <div key={key} className="wfrp-table-row flex border-0 group">
+                                      <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_80px] gap-2 lg:gap-4 items-center">
+                                        <div className="flex flex-col">
+                                          <span className="wfrp-skill-link flex items-center gap-1.5">
+                                            {name}
+                                          </span>
+                                        </div>
+
+                                        <div className="wfrp-list-cell-strong truncate">
+                                          Currency
+                                        </div>
+
+                                        <div className="wfrp-list-cell-strong text-center font-mono">
+                                          -
+                                        </div>
+
+                                        <div className="wfrp-list-cell-strong text-center font-mono">
+                                          {characterData.coins[key]}{label}
+                                        </div>
+
+                                        <div className="flex justify-end gap-2 pr-1">
+                                          <button
+                                            type="button"
+                                            onClick={() => handleAdjustCoinType(key, -1)}
+                                            className="wfrp-stepper-btn hover:text-wfrp-red focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
+                                            aria-label={`Decrease ${name.toLowerCase()}`}
+                                            disabled={characterData.coins[key] <= 0}
+                                          >
+                                            <Minus size={10} />
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleAdjustCoinType(key, 1)}
+                                            className="wfrp-stepper-btn hover:text-green-600 focus-visible:ring-green-600/50"
+                                            aria-label={`Increase ${name.toLowerCase()}`}
+                                          >
+                                            <Plus size={10} />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </>
+                               )}
                                {section.items.map((item: ResolvedCharacterEquipment) => (
                                 <div
                                   key={item.id}
@@ -3401,14 +3551,24 @@ function AppScreen() {
                                     </div>
 
                                     <div className="wfrp-list-cell-strong text-center font-mono">
-                                      {item.encumbrance || '-'}
+                                      {getInventoryEncumbrance(item) || '-'}
                                     </div>
 
                                     <div className="wfrp-list-cell-strong text-center font-mono">
                                       {formatItemValue(item)}
                                     </div>
 
-                                    <div className="relative flex justify-end pr-1">
+                                    <div className="relative flex items-center justify-end gap-2 pr-1">
+                                      {item.type === "Consumable" && (
+                                        <button
+                                          type="button"
+                                          onClick={() => handleConsumeItem(item.id)}
+                                          className="wfrp-stepper-btn hover:text-wfrp-red focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
+                                          aria-label={`Use one ${getConsumableBaseName(item).toLowerCase()}`}
+                                        >
+                                          <Minus size={10} />
+                                        </button>
+                                      )}
                                       <button
                                         onClick={(event) => handleToggleInventoryMenu(item.id, event)}
                                         className="flex h-8 w-8 items-center justify-center rounded text-gray-500 transition-colors hover:bg-white/5 hover:text-gray-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
@@ -3420,7 +3580,7 @@ function AppScreen() {
                                   </div>
                                 </div>
                               ))}
-                              {section.items.length === 0 && (
+                              {section.items.length === 0 && section.id !== "wallet" && (
                                 <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-700">
                                   {canDropHere ? "Drop here" : "Empty"}
                                 </div>
@@ -3509,7 +3669,7 @@ function AppScreen() {
                                       </button>
                                     </>
                                   )}
-                                  {armourFitConflicts.length === 0 && (activeItem.type.includes('Weapon') || activeItem.type.includes('Armor')) && (
+                                  {armourFitConflicts.length === 0 && activeItem.type.includes('Weapon') && (
                                     <button
                                       onClick={() => {
                                         handleToggleEquip(activeItem.id);
@@ -3518,6 +3678,20 @@ function AppScreen() {
                                       className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
                                     >
                                       {activeItem.equipped ? 'Unequip' : 'Equip'}
+                                    </button>
+                                  )}
+                                  {armourFitConflicts.length === 0 && isWearableInventoryItem(activeItem) && (
+                                    <button
+                                      onClick={() => {
+                                        if (isWornInventoryItem(activeItem)) {
+                                          handleUnwearItem(activeItem.id);
+                                        } else {
+                                          handleWearItem(activeItem.id);
+                                        }
+                                      }}
+                                      className="flex w-full items-center justify-between px-3 py-2 text-[10px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+                                    >
+                                      {isWornInventoryItem(activeItem) ? 'Remove' : 'Wear'}
                                     </button>
                                   )}
                                   {activeItem.containerId && (

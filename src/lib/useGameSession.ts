@@ -14,6 +14,13 @@ import type {
   ResolvedCharacterTalent,
 } from "../data/characters/resolved";
 
+const getConsumableCount = (item: ResolvedCharacterEquipment) => {
+  if (item.type !== "Consumable") return null;
+
+  const match = item.name.match(/\((\d+)\)\s*$/);
+  return match ? Number(match[1]) : 1;
+};
+
 export function useGameSession() {
   const [selectedCharacterId, setSelectedCharacterId] = useState(defaultCharacterId);
   const [isProgressHydrated, setIsProgressHydrated] = useState(false);
@@ -136,6 +143,11 @@ export function useGameSession() {
       ),
       equipmentContainers: Object.fromEntries(
         equipmentState.map((item) => [item.id, item.containerId ?? null]),
+      ),
+      consumableCounts: Object.fromEntries(
+        equipmentState
+          .filter((item) => item.type === "Consumable")
+          .map((item) => [item.id, getConsumableCount(item) ?? 1]),
       ),
       addedEquipment: equipmentState
         .filter((item) => item.id.startsWith("shop-"))
