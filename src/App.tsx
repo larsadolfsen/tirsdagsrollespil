@@ -15,7 +15,6 @@ import {
   Trash2,
   X,
   Dice5,
-  Info,
   ShoppingBag
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -39,7 +38,7 @@ import {
   getWeaponStats,
 } from "./lib/gameSession";
 import { UI_LABELS } from "./labels";
-import type { ArmourDefinition, ArmourLocation, Characteristic, SkillDefinition } from "./types";
+import type { ArmourDefinition, ArmourLocation, Characteristic, Ruleset, SkillDefinition } from "./types";
 import type { ItemDefinition, SpellDefinition } from "./types";
 
 interface RollHistoryItem {
@@ -138,6 +137,26 @@ const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
     return nameComparison || first.id.localeCompare(second.id);
   });
 type CareerSubtab = 'all' | 'careers' | 'characteristics' | 'skills' | 'talents';
+type BuilderStepId =
+  | "species"
+  | "career"
+  | "attributes"
+  | "skills-talents"
+  | "trappings"
+  | "details"
+  | "review"
+  | "finish";
+
+const builderSteps: Array<{ id: BuilderStepId; label: string; summary: string }> = [
+  { id: "species", label: "Species", summary: "Choose or roll species and track any creation XP bonus." },
+  { id: "career", label: "Class and Career", summary: "Pick the class, career path, and starting rank." },
+  { id: "attributes", label: "Attributes", summary: "Generate characteristics and apply the chosen method." },
+  { id: "skills-talents", label: "Skills and Talents", summary: "Select creation advances, talents, and required options." },
+  { id: "trappings", label: "Trappings", summary: "Confirm starting equipment, coin, and containers." },
+  { id: "details", label: "Details", summary: "Add appearance, background, ambitions, and party context." },
+  { id: "review", label: "Review", summary: "Validate missing fields before creating the sheet." },
+  { id: "finish", label: "Finish", summary: "Mark the builder complete and open the ready character sheet." },
+];
 
 const formatSpellSchoolLabel = (school: string) => {
   const normalizedSchool = school
@@ -392,6 +411,374 @@ function AdvancementSection({
   );
 }
 
+function CharacterBuilderScreen({
+  ruleset,
+  onClose,
+  onFinish,
+}: {
+  ruleset: Ruleset;
+  onClose: () => void;
+  onFinish: () => void;
+}) {
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [selectedSpeciesId, setSelectedSpeciesId] = useState(ruleset.races[0]?.id ?? "");
+  const [selectedCareerId, setSelectedCareerId] = useState(ruleset.careers[0]?.id ?? "");
+  const [characterName, setCharacterName] = useState("");
+  const [ambition, setAmbition] = useState("");
+  const [background, setBackground] = useState("");
+  const currentStep = builderSteps[currentStepIndex];
+  const selectedSpecies = ruleset.races.find((race) => race.id === selectedSpeciesId) ?? ruleset.races[0] ?? null;
+  const selectedCareer = ruleset.careers.find((career) => career.id === selectedCareerId) ?? ruleset.careers[0] ?? null;
+  const selectedCareerSkills = selectedCareer
+    ? selectedCareer.skillIds
+        .map((skillId) => ruleset.skills.find((skill) => skill.id === skillId)?.name)
+        .filter((name): name is string => Boolean(name))
+    : [];
+  const selectedCareerTalents = selectedCareer
+    ? selectedCareer.talentIds
+        .map((talentId) => ruleset.talents.find((talent) => talent.id === talentId)?.name)
+        .filter((name): name is string => Boolean(name))
+    : [];
+  const validationItems = [
+    { label: "Species", isComplete: Boolean(selectedSpecies) },
+    { label: "Career", isComplete: Boolean(selectedCareer) },
+    { label: "Name", isComplete: characterName.trim().length > 0 },
+    { label: "Background", isComplete: background.trim().length > 0 },
+    { label: "Ambition", isComplete: ambition.trim().length > 0 },
+  ];
+  const missingItems = validationItems.filter((item) => !item.isComplete);
+  const completedCount = currentStepIndex;
+  const isFirstStep = currentStepIndex === 0;
+  const isLastStep = currentStepIndex === builderSteps.length - 1;
+
+  const goToPreviousStep = () => {
+    setCurrentStepIndex((current) => Math.max(0, current - 1));
+  };
+
+  const goToNextStep = () => {
+    if (isLastStep) {
+      onFinish();
+      return;
+    }
+
+    setCurrentStepIndex((current) => Math.min(builderSteps.length - 1, current + 1));
+  };
+
+  const renderBuilderStep = () => {
+    switch (currentStep.id) {
+      case "species":
+        return (
+          <div className="grid gap-3 md:grid-cols-2">
+            {ruleset.races.map((race) => (
+              <button
+                key={race.id}
+                type="button"
+                onClick={() => setSelectedSpeciesId(race.id)}
+                className={`rounded border p-4 text-left transition-colors ${
+                  race.id === selectedSpeciesId
+                    ? "border-wfrp-gold bg-[#2a2417]"
+                    : "border-white/10 bg-black/20 hover:border-white/20"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="wfrp-panel-title text-gray-100">{race.name}</h3>
+                  <span className="wfrp-table-label text-wfrp-gold">M {race.movement}</span>
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2 text-[11px] text-gray-300">
+                  <span>Fate {race.fate}</span>
+                  <span>Res {race.resilience}</span>
+                  <span>Extra {race.extraPoints}</span>
+                </div>
+                <p className="mt-3 text-xs text-gray-500">Wounds: {race.woundsFormula}</p>
+              </button>
+            ))}
+          </div>
+        );
+      case "career":
+        return (
+          <div className="grid gap-4 lg:grid-cols-[minmax(220px,0.8fr)_minmax(0,1.2fr)]">
+            <div className="flex flex-col gap-2">
+              {ruleset.careers.map((career) => (
+                <button
+                  key={career.id}
+                  type="button"
+                  onClick={() => setSelectedCareerId(career.id)}
+                  className={`rounded border px-3 py-2 text-left transition-colors ${
+                    career.id === selectedCareerId
+                      ? "border-wfrp-gold bg-[#2a2417] text-wfrp-gold"
+                      : "border-white/10 bg-black/20 text-gray-200 hover:border-white/20"
+                  }`}
+                >
+                  <div className="text-sm font-bold">{career.name}</div>
+                  <div className="wfrp-table-label text-gray-500">{career.tier}</div>
+                </button>
+              ))}
+            </div>
+            {selectedCareer && (
+              <div className="rounded border border-white/10 bg-black/20 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-bold font-serif">{selectedCareer.name}</h3>
+                    <p className="wfrp-section-meta">{selectedCareer.tier}</p>
+                  </div>
+                  <span className="wfrp-table-label text-wfrp-gold">{selectedCareer.ranks[0]?.status}</span>
+                </div>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <div>
+                    <p className="wfrp-panel-title text-gray-400">Career Skills</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedCareerSkills.map((skill) => (
+                        <span key={skill} className="rounded border border-white/10 bg-black/30 px-2 py-1 text-xs text-gray-300">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="wfrp-panel-title text-gray-400">Talent Options</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {selectedCareerTalents.map((talent) => (
+                        <span key={talent} className="rounded border border-white/10 bg-black/30 px-2 py-1 text-xs text-gray-300">
+                          {talent}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      case "attributes":
+        return (
+          <div className="rounded border border-white/10 bg-black/20 p-4">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+              {UI_LABELS.CHARACTERISTICS.map((characteristic) => (
+                <div key={characteristic.key} className="rounded border border-white/10 bg-black/25 p-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">{characteristic.label}</p>
+                  <p className="mt-1 text-lg font-black text-wfrp-gold">
+                    {selectedSpecies?.attributeRolls[characteristic.key] ?? "-"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case "skills-talents":
+        return (
+          <div className="grid gap-4 md:grid-cols-2">
+            <section className="rounded border border-white/10 bg-black/20 p-4">
+              <h3 className="wfrp-panel-title text-gray-300">Skill Choices</h3>
+              <div className="mt-3 flex flex-col gap-2">
+                {selectedCareerSkills.map((skill) => (
+                  <div key={skill} className="flex items-center justify-between rounded border border-white/10 bg-black/25 px-3 py-2">
+                    <span className="text-sm text-gray-200">{skill}</span>
+                    <span className="wfrp-table-label text-gray-500">Career</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+            <section className="rounded border border-white/10 bg-black/20 p-4">
+              <h3 className="wfrp-panel-title text-gray-300">Talent Pool</h3>
+              <div className="mt-3 flex flex-col gap-2">
+                {selectedCareerTalents.map((talent) => (
+                  <div key={talent} className="rounded border border-white/10 bg-black/25 px-3 py-2 text-sm text-gray-200">
+                    {talent}
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        );
+      case "trappings":
+        return (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {ruleset.items.slice(0, 12).map((item) => (
+              <div key={item.id} className="rounded border border-white/10 bg-black/20 p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="text-sm font-bold text-gray-100">{item.name}</h3>
+                  <span className="wfrp-table-label text-gray-500">{item.type}</span>
+                </div>
+                <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-gray-500">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        );
+      case "details":
+        return (
+          <div className="grid gap-4">
+            <label className="flex flex-col gap-2">
+              <span className="wfrp-panel-title text-gray-400">Name</span>
+              <input
+                value={characterName}
+                onChange={(event) => setCharacterName(event.target.value)}
+                className="rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-100 outline-none focus:border-wfrp-gold/60"
+                placeholder="Character name"
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="wfrp-panel-title text-gray-400">Background</span>
+              <textarea
+                value={background}
+                onChange={(event) => setBackground(event.target.value)}
+                className="min-h-28 rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-100 outline-none focus:border-wfrp-gold/60"
+                placeholder="Origin, appearance, reputation, or notable history"
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="wfrp-panel-title text-gray-400">Ambition</span>
+              <input
+                value={ambition}
+                onChange={(event) => setAmbition(event.target.value)}
+                className="rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-100 outline-none focus:border-wfrp-gold/60"
+                placeholder="Short-term or long-term ambition"
+              />
+            </label>
+          </div>
+        );
+      case "review":
+        return (
+          <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
+            <section className="rounded border border-white/10 bg-black/20 p-4">
+              <h3 className="wfrp-panel-title text-gray-300">Character Draft</h3>
+              <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div><dt className="wfrp-table-label text-gray-500">Name</dt><dd className="text-sm text-gray-100">{characterName || "Unnamed"}</dd></div>
+                <div><dt className="wfrp-table-label text-gray-500">Species</dt><dd className="text-sm text-gray-100">{selectedSpecies?.name ?? "-"}</dd></div>
+                <div><dt className="wfrp-table-label text-gray-500">Career</dt><dd className="text-sm text-gray-100">{selectedCareer?.name ?? "-"}</dd></div>
+                <div><dt className="wfrp-table-label text-gray-500">Tier</dt><dd className="text-sm text-gray-100">{selectedCareer?.tier ?? "-"}</dd></div>
+              </dl>
+            </section>
+            <section className="rounded border border-white/10 bg-black/20 p-4">
+              <h3 className="wfrp-panel-title text-gray-300">Validation</h3>
+              <div className="mt-3 flex flex-col gap-2">
+                {validationItems.map((item) => (
+                  <div key={item.label} className="flex items-center justify-between rounded border border-white/10 bg-black/25 px-3 py-2">
+                    <span className="text-sm text-gray-200">{item.label}</span>
+                    <span className={item.isComplete ? "text-xs font-bold text-emerald-400" : "text-xs font-bold text-wfrp-red"}>
+                      {item.isComplete ? "Ready" : "Missing"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        );
+      case "finish":
+        return (
+          <div className="rounded border border-white/10 bg-black/20 p-6 text-center">
+            <h3 className="text-xl font-bold font-serif text-gray-100">
+              {missingItems.length === 0 ? "Ready to Create Sheet" : "Draft Needs Review"}
+            </h3>
+            <p className="mt-3 text-sm text-gray-400">
+              {missingItems.length === 0
+                ? `${characterName} is ready as a ${selectedSpecies?.name ?? "character"} ${selectedCareer?.tier ?? ""}.`
+                : `${missingItems.length} required ${missingItems.length === 1 ? "field is" : "fields are"} still missing.`}
+            </p>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#121212] text-[#f0f0f0] font-sans selection:bg-wfrp-gold/40 flex flex-col">
+      <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
+      <main className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col gap-4 p-4">
+        <section className="rounded border border-[#303030] bg-[#181818] shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#303030] px-4 py-3">
+            <div>
+              <p className="wfrp-sidebar-kicker">Character Builder</p>
+              <h1 className="text-xl font-bold font-serif tracking-tight">New Character</h1>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="wfrp-action-btn flex items-center gap-2 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+            >
+              <X size={14} />
+              Sheet
+            </button>
+          </div>
+
+          <div className="grid gap-0 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <aside className="border-b border-[#303030] bg-black/15 p-3 lg:border-b-0 lg:border-r">
+              <div className="flex flex-col gap-1">
+                {builderSteps.map((step, index) => {
+                  const isActive = step.id === currentStep.id;
+                  const isComplete = index < currentStepIndex;
+
+                  return (
+                    <button
+                      key={step.id}
+                      type="button"
+                      onClick={() => setCurrentStepIndex(index)}
+                      className={`flex items-center justify-between rounded px-3 py-2 text-left transition-colors ${
+                        isActive
+                          ? "bg-[#2a2417] text-wfrp-gold"
+                          : "text-gray-300 hover:bg-[#222222]"
+                      }`}
+                    >
+                      <span className="truncate text-[12px] font-bold">{step.label}</span>
+                      <span className="ml-3 text-[10px] font-black text-gray-500">
+                        {isComplete ? "Done" : index + 1}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </aside>
+
+            <section className="flex min-h-[520px] flex-col p-4">
+              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-4">
+                <div>
+                  <p className="wfrp-section-meta">
+                    Step {currentStepIndex + 1} of {builderSteps.length}
+                  </p>
+                  <h2 className="mt-1 text-2xl font-bold font-serif">{currentStep.label}</h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400">
+                    {currentStep.summary}
+                  </p>
+                </div>
+                <div className="min-w-36 text-right">
+                  <p className="wfrp-sidebar-kicker">Progress</p>
+                  <p className="text-lg font-black text-wfrp-gold">
+                    {completedCount}/{builderSteps.length - 1}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex-1 py-6">
+                {renderBuilderStep()}
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+                <button
+                  type="button"
+                  onClick={goToPreviousStep}
+                  disabled={isFirstStep}
+                  className="wfrp-action-btn flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronLeft size={14} />
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={goToNextStep}
+                  className="wfrp-action-btn flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.12em] text-gray-100"
+                >
+                  {isLastStep ? "Finish" : "Next"}
+                  {!isLastStep && <ChevronRight size={14} />}
+                </button>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
 function AppScreen() {
   const {
     selectedCharacterId,
@@ -444,6 +831,7 @@ function AppScreen() {
   const [isDiceLogOpen, setIsDiceLogOpen] = useState(false);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isSpellShopOpen, setIsSpellShopOpen] = useState(false);
+  const [isCharacterBuilderOpen, setIsCharacterBuilderOpen] = useState(false);
   const [rollState, setRollState] = useState<RollState>({
     characteristic: null,
     title: null,
@@ -1990,6 +2378,16 @@ function AppScreen() {
     },
   ];
 
+  if (isCharacterBuilderOpen) {
+    return (
+      <CharacterBuilderScreen
+        ruleset={ruleset}
+        onClose={() => setIsCharacterBuilderOpen(false)}
+        onFinish={() => setIsCharacterBuilderOpen(false)}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#121212] text-[#f0f0f0] font-sans selection:bg-wfrp-gold/40 flex flex-col">
       
@@ -2006,35 +2404,41 @@ function AppScreen() {
             availableCharacters={availableCharacters}
             selectedCharacterId={selectedCharacterId}
             xpCurrent={xpCurrent}
+            headerResources={
+              <>
+                <HeaderResourceSlider
+                  label="Wounds"
+                  current={woundsCurrent}
+                  max={characterData.wounds.max}
+                  onAdjust={adjustWounds}
+                  barClassName="bg-wfrp-red"
+                  contentClassName="flex w-20 flex-col gap-1 sm:w-24 lg:w-32"
+                />
+                <HeaderResourceSlider
+                  label="Corruption"
+                  current={corruptionCurrent}
+                  max={maxCorruption}
+                  onAdjust={adjustCorruption}
+                  barClassName="bg-purple-600"
+                  contentClassName="flex w-20 flex-col gap-1 sm:w-24 lg:w-32"
+                />
+              </>
+            }
             onSelectCharacter={setSelectedCharacterId}
-            onCreateCharacter={() => {}}
+            onCreateCharacter={() => {
+              setActiveInfo(null);
+              setIsShopOpen(false);
+              setIsSpellShopOpen(false);
+              setIsDiceLogOpen(false);
+              setRollState((prev) => ({ ...prev, characteristic: null }));
+              setIsCharacterBuilderOpen(true);
+            }}
             onOpenDice={() => {
               setActiveInfo(null);
               setIsShopOpen(false);
               setIsDiceLogOpen(true);
             }}
           />
-
-          <section className="mx-auto w-full max-w-[1500px] rounded border border-[#303030] bg-[#181818] px-3 py-3 shadow-lg">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <HeaderResourceSlider
-                label="Wounds"
-                current={woundsCurrent}
-                max={characterData.wounds.max}
-                onAdjust={adjustWounds}
-                barClassName="bg-wfrp-red"
-                contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-              />
-              <HeaderResourceSlider
-                label="Corruption"
-                current={corruptionCurrent}
-                max={maxCorruption}
-                onAdjust={adjustCorruption}
-                barClassName="bg-purple-600"
-                contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-              />
-            </div>
-          </section>
 
         <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-8">
           {/* Layout for Characteristics and Skills */}
@@ -3078,7 +3482,7 @@ function AppScreen() {
                     {activeMainTab === 'features' && (
                       <div className="flex-1 overflow-y-auto p-4 space-y-1">
                         {characterTalents.map((item, idx) => (
-                        <div key={`${item.name}-${idx}`} className="wfrp-table-row flex justify-between group">
+                        <div key={`${item.name}-${idx}`} className="wfrp-table-row flex">
                            <span 
                               onClick={() => {
                                 openTalentInfo(item.name);
@@ -3087,7 +3491,6 @@ function AppScreen() {
                             >
                               {item.name}
                             </span>
-                          <Info size={14} className="text-gray-700 group-hover:text-wfrp-gold transition-colors" />
                         </div>
                       ))}
                       </div>

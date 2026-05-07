@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { hydrateCharacterProgress } from "../data/persistence";
 import { defaultCharacterId } from "../data/repository";
 import {
   getCareerAdvancementData,
@@ -15,8 +16,13 @@ import type {
 
 export function useGameSession() {
   const [selectedCharacterId, setSelectedCharacterId] = useState(defaultCharacterId);
+  const [isProgressHydrated, setIsProgressHydrated] = useState(false);
+  const [progressHydrationVersion, setProgressHydrationVersion] = useState(0);
 
-  const session = useMemo(() => loadGameSession(selectedCharacterId), [selectedCharacterId]);
+  const session = useMemo(
+    () => loadGameSession(selectedCharacterId),
+    [selectedCharacterId, progressHydrationVersion],
+  );
   const {
     character,
     ruleset,
@@ -46,6 +52,26 @@ export function useGameSession() {
   const [equipmentState, setEquipmentState] = useState(character.equipment);
   const [backgroundText, setBackgroundText] = useState(session.progress?.backgroundText ?? "");
   const [notes, setNotes] = useState(session.progress?.notes ?? []);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function hydrateProgress() {
+      await hydrateCharacterProgress();
+
+      if (!isCancelled) {
+        setIsProgressHydrated(true);
+        setProgressHydrationVersion((version) => version + 1);
+      }
+    }
+
+    setIsProgressHydrated(false);
+    void hydrateProgress();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedCharacterId]);
 
   useEffect(() => {
     setWoundsCurrent(character.wounds.current);
@@ -84,6 +110,10 @@ export function useGameSession() {
   }, [resilienceCurrent]);
 
   useEffect(() => {
+    if (!isProgressHydrated) {
+      return;
+    }
+
     saveGameSessionProgress(selectedCharacterId, {
       woundsCurrent,
       corruptionCurrent,
@@ -122,6 +152,7 @@ export function useGameSession() {
       notes,
     });
   }, [
+    isProgressHydrated,
     selectedCharacterId,
     character.equipment,
     woundsCurrent,

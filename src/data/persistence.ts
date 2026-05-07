@@ -1,37 +1,53 @@
 import type { CharacterProgressData } from "../types";
 
-const STORAGE_KEY = "wfrp-sheet.character-progress.v1";
+const FILE_PROGRESS_ENDPOINT = "/api/character-progress";
 
 type CharacterProgressMap = Record<string, CharacterProgressData>;
 
-function canUseStorage() {
-  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
-}
+let progressCache: CharacterProgressMap = {};
 
 function readProgressMap(): CharacterProgressMap {
-  if (!canUseStorage()) {
-    return {};
-  }
-
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    return {};
-  }
-
-  try {
-    const parsed = JSON.parse(raw) as CharacterProgressMap;
-    return parsed ?? {};
-  } catch {
-    return {};
-  }
+  return progressCache;
 }
 
 function writeProgressMap(progressMap: CharacterProgressMap) {
-  if (!canUseStorage()) {
+  progressCache = progressMap;
+}
+
+async function writeProgressFile(progressMap: CharacterProgressMap) {
+  if (typeof fetch === "undefined") {
     return;
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progressMap));
+  try {
+    await fetch(FILE_PROGRESS_ENDPOINT, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(progressMap),
+    });
+  } catch {
+    // The UI keeps the latest values in memory, but durable saves require the server endpoint.
+  }
+}
+
+export async function hydrateCharacterProgress() {
+  if (typeof fetch === "undefined") {
+    return;
+  }
+
+  try {
+    const response = await fetch(FILE_PROGRESS_ENDPOINT);
+    if (!response.ok) {
+      return;
+    }
+
+    const fileProgressMap = (await response.json()) as CharacterProgressMap;
+    writeProgressMap(fileProgressMap ?? {});
+  } catch {
+    // Keep the current in-memory values if the server cannot be read.
+  }
 }
 
 export function loadCharacterProgress(characterId: string): CharacterProgressData | null {
@@ -42,10 +58,12 @@ export function saveCharacterProgress(characterId: string, progress: CharacterPr
   const progressMap = readProgressMap();
   progressMap[characterId] = progress;
   writeProgressMap(progressMap);
+  void writeProgressFile(progressMap);
 }
 
 export function clearCharacterProgress(characterId: string) {
   const progressMap = readProgressMap();
   delete progressMap[characterId];
   writeProgressMap(progressMap);
+  void writeProgressFile(progressMap);
 }

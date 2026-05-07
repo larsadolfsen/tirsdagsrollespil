@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, Dice5, MoreHorizontal, Plus, Settings } from "lucide-react";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { CharacterSummary } from "../data/repository";
@@ -9,6 +9,7 @@ export function CharacterHeader({
   availableCharacters,
   selectedCharacterId,
   xpCurrent,
+  headerResources,
   onSelectCharacter,
   onCreateCharacter,
   onOpenDice,
@@ -17,6 +18,7 @@ export function CharacterHeader({
   availableCharacters: CharacterSummary[];
   selectedCharacterId: string;
   xpCurrent: number;
+  headerResources?: ReactNode;
   onSelectCharacter: (characterId: string) => void;
   onCreateCharacter: () => void;
   onOpenDice: () => void;
@@ -49,7 +51,7 @@ export function CharacterHeader({
   }, [isCampaignMenuOpen]);
 
   return (
-    <section className="bg-[#181818] px-3 py-2 rounded-t border-b border-[#303030] flex flex-row items-center gap-4">
+    <section className="bg-[#181818] px-3 py-2 rounded-t border-b border-[#303030] flex flex-row flex-wrap items-center gap-4">
       <div className="relative flex-shrink-0">
         <div className="w-12 h-12 rounded-full border border-[#c5a059] p-0.5 overflow-hidden shadow-inner cursor-pointer hover:brightness-110 transition-all">
           <img
@@ -61,7 +63,7 @@ export function CharacterHeader({
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center overflow-hidden">
+      <div className="flex min-w-[160px] flex-1 flex-col justify-center overflow-hidden">
         <h1 className="text-xl font-bold font-serif tracking-tight whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
           {characterData.name}
         </h1>
@@ -70,7 +72,14 @@ export function CharacterHeader({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-6">
+      <div className="ml-auto flex flex-wrap items-center justify-end gap-2 sm:gap-4">
+        {headerResources && (
+          <div className="flex items-center gap-3">
+            {headerResources}
+            <div className="h-8 w-[1px] bg-[#303030] opacity-50" />
+          </div>
+        )}
+
         <div className="flex items-center gap-1 group/campaign transition-colors">
           <div className="relative" ref={campaignMenuRef}>
             <button
