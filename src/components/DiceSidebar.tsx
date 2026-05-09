@@ -5,6 +5,35 @@ import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import { DigitReel } from "./DigitReel";
 import type { RollHistoryItem, RollState } from "./appTypes";
 
+const getUnitsDie = (result: number) => (result === 100 ? 0 : result % 10);
+
+const hasWeaponProperty = (rollState: RollState, property: string) =>
+  rollState.weaponProperties?.includes(property) ?? false;
+
+const calculateAttackDamage = (rollState: RollState) => {
+  if (!rollState.isSuccess || rollState.result === null || rollState.damageBase === null) {
+    return null;
+  }
+
+  const unitsDie = getUnitsDie(rollState.result);
+  const baseSl = rollState.sl ?? 0;
+  const canUseTiringTraits =
+    !hasWeaponProperty(rollState, "Tiring") || rollState.actionId === "charge";
+  const hasDamaging = hasWeaponProperty(rollState, "Damaging") && canUseTiringTraits;
+  const hasImpact = hasWeaponProperty(rollState, "Impact") && canUseTiringTraits;
+  const damageSl = hasDamaging ? Math.max(baseSl, unitsDie) : baseSl;
+  const impactDamage = hasImpact ? unitsDie : 0;
+
+  return {
+    total: rollState.damageBase + damageSl + impactDamage,
+    damageSl,
+    impactDamage,
+    unitsDie,
+    hasDamaging,
+    hasImpact,
+  };
+};
+
 export function DiceSidebar({
   characterData,
   rollState,
@@ -28,6 +57,8 @@ export function DiceSidebar({
   handleReroll: () => void;
   getOutcome: (sl: number, isSuccess: boolean) => string;
 }) {
+  const currentDamage = calculateAttackDamage(rollState);
+
   return (
     <AnimatePresence mode="wait">
       {rollState.characteristic && (
@@ -56,6 +87,7 @@ export function DiceSidebar({
                       (characterData.attributes as Record<string, number>)[
                         rollState.characteristic.key
                       ] + rollState.modifier;
+                    const damage = calculateAttackDamage(rollState);
                     const historyItem: RollHistoryItem = {
                       id: Math.random().toString(36).substring(2, 9),
                       label: rollState.characteristic.label,
@@ -64,9 +96,7 @@ export function DiceSidebar({
                       isSuccess: rollState.isSuccess || false,
                       modifier: rollState.modifier,
                       target,
-                      damage: rollState.isSuccess
-                        ? (rollState.sl || 0) + (rollState.damageBase || 0)
-                        : null,
+                      damage: damage?.total ?? null,
                     };
                     setRollHistory((prev) => [historyItem, ...prev]);
                   }
@@ -126,7 +156,7 @@ export function DiceSidebar({
                           {item.isSuccess ? "Success" : "Failure"}
                         </span>
                       </div>
-                      {item.damage && (
+                      {item.damage !== null && item.damage !== undefined && (
                         <div className="text-[10px] font-bold text-wfrp-red/70 uppercase tracking-widest">
                           Damage: <span className="font-mono">{item.damage}</span>
                         </div>
@@ -227,19 +257,25 @@ export function DiceSidebar({
                         </span>
                       </div>
 
-                      {rollState.isSuccess && rollState.damageBase !== null && (
+                      {currentDamage && (
                         <div className="flex flex-col gap-1 px-1">
                           <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600">
                             Total Damage
                           </span>
                           <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-black font-mono text-wfrp-red/80">
-                              {rollState.sl! + rollState.damageBase}
+                              {currentDamage.total}
                             </span>
                             <span className="text-[10px] font-bold text-gray-600 uppercase">
-                              ({rollState.sl} SL + {rollState.damageBase} Base)
+                              ({currentDamage.damageSl} SL + {rollState.damageBase} Base
+                              {currentDamage.hasImpact ? ` + ${currentDamage.impactDamage} Impact` : ""})
                             </span>
                           </div>
+                          {currentDamage.hasDamaging && (
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                              Damaging used higher of SL or units die ({currentDamage.unitsDie})
+                            </span>
+                          )}
                         </div>
                       )}
 
