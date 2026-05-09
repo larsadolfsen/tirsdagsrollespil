@@ -5,10 +5,41 @@ import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import { DigitReel } from "./DigitReel";
 import type { RollHistoryItem, RollState } from "./appTypes";
 
+const getTensDie = (result: number) => (result === 100 ? 0 : Math.floor(result / 10));
 const getUnitsDie = (result: number) => (result === 100 ? 0 : result % 10);
 
 const hasWeaponProperty = (rollState: RollState, property: string) =>
   rollState.weaponProperties?.includes(property) ?? false;
+
+const calculateRollFlags = (rollState: RollState) => {
+  if (rollState.result === null || rollState.isSuccess === null) {
+    return {
+      isCritical: false,
+      isFumble: false,
+      isDouble: false,
+      hasImpaleCritical: false,
+      hasDangerousFumble: false,
+    };
+  }
+
+  const tensDie = getTensDie(rollState.result);
+  const unitsDie = getUnitsDie(rollState.result);
+  const isDouble = tensDie === unitsDie;
+  const hasImpaleCritical =
+    rollState.isSuccess && hasWeaponProperty(rollState, "Impale") && rollState.result % 10 === 0;
+  const hasDangerousFumble =
+    !rollState.isSuccess &&
+    hasWeaponProperty(rollState, "Dangerous") &&
+    (tensDie === 9 || unitsDie === 9);
+
+  return {
+    isCritical: (rollState.isSuccess && isDouble) || hasImpaleCritical,
+    isFumble: (!rollState.isSuccess && isDouble) || hasDangerousFumble,
+    isDouble,
+    hasImpaleCritical,
+    hasDangerousFumble,
+  };
+};
 
 const calculateAdjustedSl = (rollState: RollState) => {
   const baseSl = rollState.sl ?? 0;
@@ -72,6 +103,7 @@ export function DiceSidebar({
 }) {
   const adjustedSl = calculateAdjustedSl(rollState);
   const currentDamage = calculateAttackDamage(rollState);
+  const rollFlags = calculateRollFlags(rollState);
 
   return (
     <AnimatePresence mode="wait">
@@ -103,6 +135,7 @@ export function DiceSidebar({
                       ] + rollState.modifier;
                     const adjustedHistorySl = calculateAdjustedSl(rollState).total;
                     const damage = calculateAttackDamage(rollState);
+                    const flags = calculateRollFlags(rollState);
                     const historyItem: RollHistoryItem = {
                       id: Math.random().toString(36).substring(2, 9),
                       label: rollState.characteristic.label,
@@ -112,6 +145,8 @@ export function DiceSidebar({
                       modifier: rollState.modifier,
                       target,
                       damage: damage?.total ?? null,
+                      isCritical: flags.isCritical,
+                      isFumble: flags.isFumble,
                     };
                     setRollHistory((prev) => [historyItem, ...prev]);
                   }
@@ -171,6 +206,11 @@ export function DiceSidebar({
                           {item.isSuccess ? "Success" : "Failure"}
                         </span>
                       </div>
+                      {(item.isCritical || item.isFumble) && (
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-wfrp-gold/80">
+                          {item.isCritical ? "Critical" : "Fumble"}
+                        </div>
+                      )}
                       {item.damage !== null && item.damage !== undefined && (
                         <div className="text-[10px] font-bold text-wfrp-red/70 uppercase tracking-widest">
                           Damage: <span className="font-mono">{item.damage}</span>
@@ -271,6 +311,14 @@ export function DiceSidebar({
                           {rollState.isSuccess ? "Critical Impact" : "Fumbled Attempt"}
                         </span>
                       </div>
+
+                      {(rollFlags.isCritical || rollFlags.isFumble) && (
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-wfrp-gold/80 px-1">
+                          {rollFlags.isCritical ? "Critical" : "Fumble"}
+                          {rollFlags.hasImpaleCritical ? " from Impale" : ""}
+                          {rollFlags.hasDangerousFumble ? " from Dangerous" : ""}
+                        </div>
+                      )}
 
                       {(adjustedSl.preciseBonus > 0 || adjustedSl.imprecisePenalty > 0) && (
                         <div className="text-[9px] font-bold uppercase tracking-widest text-gray-500 px-1">
