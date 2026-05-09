@@ -56,8 +56,8 @@ export function useGameSession() {
   const [corruptionCurrent, setCorruptionCurrent] = useState(initialCorruptionCurrent);
   const [fateCurrent, setRawFateCurrent] = useState(initialFateCurrent);
   const [fortuneCurrent, setRawFortuneCurrent] = useState(initialFortuneCurrent);
-  const [resilienceCurrent, setResilienceCurrent] = useState(initialResilienceCurrent);
-  const [resolveCurrent, setResolveCurrent] = useState(initialResolveCurrent);
+  const [resilienceCurrent, setRawResilienceCurrent] = useState(initialResilienceCurrent);
+  const [resolveCurrent, setRawResolveCurrent] = useState(initialResolveCurrent);
   const [xpCurrent, setXpCurrent] = useState(initialXpCurrent);
   const [characterCoins, setCharacterCoins] = useState(character.coins);
   const [currentCareerRank, setCurrentCareerRank] = useState(character.level);
@@ -90,6 +90,27 @@ export function useGameSession() {
     );
   };
 
+  const setResilienceCurrent = (action: SetStateAction<number>) => {
+    setRawResilienceCurrent((previousResilience) => {
+      const nextResilience = clampResource(
+        resolveNumberStateAction(action, previousResilience),
+        baseResourceCaps.resilience,
+      );
+
+      setRawResolveCurrent((previousResolve) =>
+        clampResource(previousResolve, nextResilience),
+      );
+
+      return nextResilience;
+    });
+  };
+
+  const setResolveCurrent = (action: SetStateAction<number>) => {
+    setRawResolveCurrent((previousResolve) =>
+      clampResource(resolveNumberStateAction(action, previousResolve), resilienceCurrent),
+    );
+  };
+
   useEffect(() => {
     let isCancelled = false;
 
@@ -115,8 +136,8 @@ export function useGameSession() {
     setCorruptionCurrent(initialCorruptionCurrent);
     setRawFateCurrent(initialFateCurrent);
     setRawFortuneCurrent(clampResource(initialFortuneCurrent, initialFateCurrent));
-    setResilienceCurrent(initialResilienceCurrent);
-    setResolveCurrent(initialResolveCurrent);
+    setRawResilienceCurrent(initialResilienceCurrent);
+    setRawResolveCurrent(clampResource(initialResolveCurrent, initialResilienceCurrent));
     setXpCurrent(initialXpCurrent);
     setCharacterCoins(character.coins);
     setCurrentCareerRank(character.level);
@@ -143,7 +164,7 @@ export function useGameSession() {
   }, [fateCurrent]);
 
   useEffect(() => {
-    setResolveCurrent((prev) => Math.min(prev, resilienceCurrent));
+    setRawResolveCurrent((prev) => clampResource(prev, resilienceCurrent));
   }, [resilienceCurrent]);
 
   useEffect(() => {
@@ -157,7 +178,7 @@ export function useGameSession() {
       fateCurrent,
       fortuneCurrent: clampResource(fortuneCurrent, fateCurrent),
       resilienceCurrent,
-      resolveCurrent,
+      resolveCurrent: clampResource(resolveCurrent, resilienceCurrent),
       xpCurrent,
       xpBaselineTotal: character.xpTotal,
       coins: characterCoins,
@@ -248,6 +269,7 @@ export function useGameSession() {
   const resourceCaps = {
     ...baseResourceCaps,
     fortune: fateCurrent,
+    resolve: resilienceCurrent,
   };
 
   return {
