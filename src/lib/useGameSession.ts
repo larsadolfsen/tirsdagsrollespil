@@ -15,6 +15,33 @@ import type {
   ResolvedCharacterTalent,
 } from "../data/characters/resolved";
 
+export type FortuneSpendAction =
+  | "reroll-failed-test"
+  | "add-one-sl"
+  | "choose-initiative";
+
+export const fortuneSpendActions: Array<{
+  id: FortuneSpendAction;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "reroll-failed-test",
+    label: "Reroll failed Test",
+    description: "Spend 1 Fortune to reroll a failed Test.",
+  },
+  {
+    id: "add-one-sl",
+    label: "Add +1 SL",
+    description: "Spend 1 Fortune to add +1 SL after a Test is rolled.",
+  },
+  {
+    id: "choose-initiative",
+    label: "Choose Initiative timing",
+    description: "Spend 1 Fortune to choose when to act this Round.",
+  },
+];
+
 const getConsumableCount = (item: ResolvedCharacterEquipment) => {
   if (item.type !== "Consumable") return null;
 
@@ -89,6 +116,19 @@ export function useGameSession() {
       clampResource(resolveNumberStateAction(action, previousFortune), fateCurrent),
     );
   };
+
+  const spendFortune = () => {
+    if (fortuneCurrent <= 0) {
+      return false;
+    }
+
+    setFortuneCurrent((current) => current - 1);
+    return true;
+  };
+
+  const spendFortuneForRerollFailedTest = () => spendFortune();
+  const spendFortuneForAddOneSl = () => spendFortune();
+  const spendFortuneForChooseInitiative = () => spendFortune();
 
   const setResilienceCurrent = (action: SetStateAction<number>) => {
     setRawResilienceCurrent((previousResilience) => {
@@ -288,6 +328,11 @@ export function useGameSession() {
     setFateCurrent,
     fortuneCurrent,
     setFortuneCurrent,
+    fortuneSpendActions,
+    spendFortune,
+    spendFortuneForRerollFailedTest,
+    spendFortuneForAddOneSl,
+    spendFortuneForChooseInitiative,
     resilienceCurrent,
     setResilienceCurrent,
     resolveCurrent,
