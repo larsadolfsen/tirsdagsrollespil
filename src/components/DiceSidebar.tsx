@@ -2,135 +2,14 @@ import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Minus, Plus, X } from "lucide-react";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
+import {
+  calculateAdjustedSl,
+  calculateAttackDamage,
+  calculateRollFlags,
+  getWeaponTraitNotes,
+} from "../lib/rollMechanics";
 import { DigitReel } from "./DigitReel";
 import type { RollHistoryItem, RollState } from "./appTypes";
-
-const getTensDie = (result: number) => (result === 100 ? 0 : Math.floor(result / 10));
-const getUnitsDie = (result: number) => (result === 100 ? 0 : result % 10);
-
-const hasWeaponProperty = (rollState: RollState, property: string) =>
-  rollState.weaponProperties?.includes(property) ?? false;
-
-const calculateRollFlags = (rollState: RollState) => {
-  if (rollState.result === null || rollState.isSuccess === null) {
-    return {
-      isCritical: false,
-      isFumble: false,
-      isDouble: false,
-      hasImpaleCritical: false,
-      hasDangerousFumble: false,
-    };
-  }
-
-  const tensDie = getTensDie(rollState.result);
-  const unitsDie = getUnitsDie(rollState.result);
-  const isDouble = tensDie === unitsDie;
-  const hasImpaleCritical =
-    rollState.isSuccess && hasWeaponProperty(rollState, "Impale") && rollState.result % 10 === 0;
-  const hasDangerousFumble =
-    !rollState.isSuccess &&
-    hasWeaponProperty(rollState, "Dangerous") &&
-    (tensDie === 9 || unitsDie === 9);
-
-  return {
-    isCritical: (rollState.isSuccess && isDouble) || hasImpaleCritical,
-    isFumble: (!rollState.isSuccess && isDouble) || hasDangerousFumble,
-    isDouble,
-    hasImpaleCritical,
-    hasDangerousFumble,
-  };
-};
-
-const calculateAdjustedSl = (rollState: RollState) => {
-  const baseSl = rollState.sl ?? 0;
-  const preciseBonus = rollState.isSuccess && hasWeaponProperty(rollState, "Precise") ? 1 : 0;
-  const imprecisePenalty = hasWeaponProperty(rollState, "Imprecise") ? 1 : 0;
-
-  return {
-    total: baseSl + preciseBonus - imprecisePenalty,
-    baseSl,
-    preciseBonus,
-    imprecisePenalty,
-  };
-};
-
-const calculateAttackDamage = (rollState: RollState) => {
-  if (!rollState.isSuccess || rollState.result === null || rollState.damageBase === null) {
-    return null;
-  }
-
-  const unitsDie = getUnitsDie(rollState.result);
-  const adjustedSl = calculateAdjustedSl(rollState);
-  const canUseTiringTraits =
-    !hasWeaponProperty(rollState, "Tiring") || rollState.actionId === "charge";
-  const hasDamaging = hasWeaponProperty(rollState, "Damaging") && canUseTiringTraits;
-  const hasImpact = hasWeaponProperty(rollState, "Impact") && canUseTiringTraits;
-  const damageSl = hasDamaging ? Math.max(adjustedSl.total, unitsDie) : adjustedSl.total;
-  const impactDamage = hasImpact ? unitsDie : 0;
-
-  return {
-    total: rollState.damageBase + damageSl + impactDamage,
-    damageSl,
-    impactDamage,
-    unitsDie,
-    hasDamaging,
-    hasImpact,
-  };
-};
-
-const getWeaponTraitNotes = (rollState: RollState) => {
-  if (!rollState.weaponProperties?.length || rollState.result === null) {
-    return [];
-  }
-
-  const notes: string[] = [];
-
-  if (rollState.isSuccess && hasWeaponProperty(rollState, "Hack")) {
-    notes.push("Hack: damage a struck piece of armour or shield by 1 point.");
-  }
-
-  if (rollState.isSuccess && hasWeaponProperty(rollState, "Pummel")) {
-    notes.push("Pummel: if the hit location is Head, test to inflict Stunned.");
-  }
-
-  if (rollState.isSuccess && hasWeaponProperty(rollState, "Penetrating")) {
-    notes.push("Penetrating: ignore all non-metal AP, or ignore 1 point of other armour.");
-  }
-
-  if (rollState.isSuccess && hasWeaponProperty(rollState, "Undamaging")) {
-    notes.push("Undamaging: double Armour Points against this hit and do not inflict minimum 1 Wound.");
-  }
-
-  if (rollState.isSuccess && hasWeaponProperty(rollState, "Distract")) {
-    notes.push("Distract: you may forgo damage to push the opponent back 1 yard per winning SL.");
-  }
-
-  if (rollState.isSuccess && hasWeaponProperty(rollState, "Entangle")) {
-    notes.push("Entangle: target gains Entangled with Strength equal to your Strength Characteristic.");
-  }
-
-  if (hasWeaponProperty(rollState, "Fast")) {
-    notes.push("Fast: may affect attack order and can penalise defenders without Fast.");
-  }
-
-  if (hasWeaponProperty(rollState, "Slow")) {
-    notes.push("Slow: you strike last and defenders gain +1 SL against your attacks.");
-  }
-
-  if (hasWeaponProperty(rollState, "Wrap")) {
-    notes.push("Wrap: Melee Tests opposing this attack suffer -1 SL.");
-  }
-
-  if (hasWeaponProperty(rollState, "Trap Blade")) {
-    notes.push("Trap Blade: if you score a defensive Critical against a bladed weapon, you may try to trap it.");
-  }
-
-  if (hasWeaponProperty(rollState, "Unbreakable")) {
-    notes.push("Unbreakable: this weapon is highly resistant to breaking or losing its edge.");
-  }
-
-  return notes;
-};
 
 export function DiceSidebar({
   characterData,
