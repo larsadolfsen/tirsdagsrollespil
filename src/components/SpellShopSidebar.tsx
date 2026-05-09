@@ -40,7 +40,7 @@ function formatSpellSchoolShortLabel(school: string) {
   return formatSpellSchoolLabel(school).replace(/^The Lore of\s+/i, "");
 }
 
-function getSpellSchools(spell: SpellDefinition) {
+function getSpellSchools(spell: SpellDefinition): string[] {
   return spell.schools ?? (spell.school ? [spell.school] : []);
 }
 
@@ -143,7 +143,7 @@ export function SpellShopSidebar({
   }, [filteredStock]);
 
   const categoryOptions = useMemo<Array<{ label: string; value: SpellFilter }>>(() => {
-    const schoolOptions = [...new Set(shopStock.flatMap(getSpellSchools))]
+    const schoolOptions = [...new Set<string>(shopStock.flatMap(getSpellSchools))]
       .sort((firstSchool, secondSchool) =>
         formatSpellSchoolShortLabel(firstSchool).localeCompare(formatSpellSchoolShortLabel(secondSchool)),
       )
