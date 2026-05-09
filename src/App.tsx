@@ -3042,7 +3042,10 @@ function AppScreen() {
                                   rollDamage: weaponDamage,
                                   damage: `+${weaponDamage}`,
                                   range: weaponStats.reach,
-                                  properties: getRelevantWeaponProperties("charge", weaponStats.properties),
+                                  properties: Array.from(new Set([
+                                    ...getRelevantWeaponProperties("charge", weaponStats.properties),
+                                    "Impact",
+                                  ])),
                                   note: "+1 Advantage if Charge conditions are met",
                                 },
                                 {
@@ -3054,7 +3057,22 @@ function AppScreen() {
                                   rollDamage: undefined,
                                   damage: "-",
                                   range: weaponStats.reach,
-                                  properties: getRelevantWeaponProperties("parry", weaponStats.properties),
+                                  properties: Array.from(new Set([
+                                    "Defensive",
+                                    ...getRelevantWeaponProperties("parry", weaponStats.properties),
+                                  ])),
+                                  bonuses: [{ label: "Defensive", value: 1 }],
+                                },
+                                {
+                                  id: "feint",
+                                  name: "Feint",
+                                  char,
+                                  totalValue: totalSkillValue,
+                                  modifier: 0,
+                                  rollDamage: undefined,
+                                  damage: "-",
+                                  range: weaponStats.reach,
+                                  properties: ["Mislead"],
                                 },
                                 {
                                   id: "defend",
@@ -3110,7 +3128,10 @@ function AppScreen() {
                                                   handleRoll(
                                                     { key: action.char, label: rollLabel },
                                                     action.rollDamage,
-                                                    { title: `${weapon.name} ${action.name}` },
+                                                    {
+                                                      bonuses: action.bonuses,
+                                                      title: `${weapon.name} ${action.name}`,
+                                                    },
                                                   );
                                                   if (action.modifier !== 0) {
                                                     setRollState(prev => ({ ...prev, modifier: action.modifier }));
@@ -3178,7 +3199,10 @@ function AppScreen() {
                                                   handleRoll(
                                                     { key: action.char, label: rollLabel },
                                                     action.rollDamage,
-                                                    { title: `${weapon.name} ${action.name}` },
+                                                    {
+                                                      bonuses: action.bonuses,
+                                                      title: `${weapon.name} ${action.name}`,
+                                                    },
                                                   );
                                                   if (action.modifier !== 0) {
                                                     setRollState(prev => ({ ...prev, modifier: action.modifier }));

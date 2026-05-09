@@ -9,6 +9,8 @@ export interface RollHistoryItem {
   modifier: number;
   target: number;
   damage?: number | null;
+  isCritical?: boolean;
+  isFumble?: boolean;
 }
 
 export interface RollState {
@@ -19,6 +21,10 @@ export interface RollState {
   sl: number | null;
   isRolling: boolean;
   damageBase: number | null;
+  actionId?: string | null;
+  weaponProperties?: string[];
+  isCritical?: boolean;
+  isFumble?: boolean;
 }
 
 export interface ActiveInfoState {

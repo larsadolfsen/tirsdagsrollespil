@@ -2,6 +2,12 @@ import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Minus, Plus, X } from "lucide-react";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
+import {
+  calculateAdjustedSl,
+  calculateAttackDamage,
+  calculateRollFlags,
+  getWeaponTraitNotes,
+} from "../lib/rollMechanics";
 import { DigitReel } from "./DigitReel";
 import type { RollHistoryItem, RollState } from "./appTypes";
 
@@ -28,6 +34,11 @@ export function DiceSidebar({
   handleReroll: () => void;
   getOutcome: (sl: number, isSuccess: boolean) => string;
 }) {
+  const adjustedSl = calculateAdjustedSl(rollState);
+  const currentDamage = calculateAttackDamage(rollState);
+  const rollFlags = calculateRollFlags(rollState);
+  const traitNotes = getWeaponTraitNotes(rollState);
+
   return (
     <AnimatePresence mode="wait">
       {rollState.characteristic && (
@@ -56,17 +67,20 @@ export function DiceSidebar({
                       (characterData.attributes as Record<string, number>)[
                         rollState.characteristic.key
                       ] + rollState.modifier;
+                    const adjustedHistorySl = calculateAdjustedSl(rollState).total;
+                    const damage = calculateAttackDamage(rollState);
+                    const flags = calculateRollFlags(rollState);
                     const historyItem: RollHistoryItem = {
                       id: Math.random().toString(36).substring(2, 9),
                       label: rollState.characteristic.label,
                       result: rollState.result,
-                      sl: rollState.sl || 0,
+                      sl: adjustedHistorySl,
                       isSuccess: rollState.isSuccess || false,
                       modifier: rollState.modifier,
                       target,
-                      damage: rollState.isSuccess
-                        ? (rollState.sl || 0) + (rollState.damageBase || 0)
-                        : null,
+                      damage: damage?.total ?? null,
+                      isCritical: flags.isCritical,
+                      isFumble: flags.isFumble,
                     };
                     setRollHistory((prev) => [historyItem, ...prev]);
                   }
@@ -126,7 +140,12 @@ export function DiceSidebar({
                           {item.isSuccess ? "Success" : "Failure"}
                         </span>
                       </div>
-                      {item.damage && (
+                      {(item.isCritical || item.isFumble) && (
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-wfrp-gold/80">
+                          {item.isCritical ? "Critical" : "Fumble"}
+                        </div>
+                      )}
+                      {item.damage !== null && item.damage !== undefined && (
                         <div className="text-[10px] font-bold text-wfrp-red/70 uppercase tracking-widest">
                           Damage: <span className="font-mono">{item.damage}</span>
                         </div>
@@ -222,29 +241,61 @@ export function DiceSidebar({
                         <span
                           className={`font-black uppercase tracking-widest ${rollState.isSuccess ? "text-wfrp-gold" : "text-wfrp-red"}`}
                         >
-                          {rollState.sl! > 0 ? `+${rollState.sl}` : rollState.sl} -{" "}
+                          {adjustedSl.total > 0 ? `+${adjustedSl.total}` : adjustedSl.total} -{" "}
                           {rollState.isSuccess ? "Critical Impact" : "Fumbled Attempt"}
                         </span>
                       </div>
 
-                      {rollState.isSuccess && rollState.damageBase !== null && (
+                      {(rollFlags.isCritical || rollFlags.isFumble) && (
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-wfrp-gold/80 px-1">
+                          {rollFlags.isCritical ? "Critical" : "Fumble"}
+                          {rollFlags.hasImpaleCritical ? " from Impale" : ""}
+                          {rollFlags.hasDangerousFumble ? " from Dangerous" : ""}
+                        </div>
+                      )}
+
+                      {(adjustedSl.preciseBonus > 0 || adjustedSl.imprecisePenalty > 0) && (
+                        <div className="text-[9px] font-bold uppercase tracking-widest text-gray-500 px-1">
+                          Base SL {adjustedSl.baseSl}
+                          {adjustedSl.preciseBonus > 0 ? " + 1 Precise" : ""}
+                          {adjustedSl.imprecisePenalty > 0 ? " - 1 Imprecise" : ""}
+                        </div>
+                      )}
+
+                      {currentDamage && (
                         <div className="flex flex-col gap-1 px-1">
                           <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600">
                             Total Damage
                           </span>
                           <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-black font-mono text-wfrp-red/80">
-                              {rollState.sl! + rollState.damageBase}
+                              {currentDamage.total}
                             </span>
                             <span className="text-[10px] font-bold text-gray-600 uppercase">
-                              ({rollState.sl} SL + {rollState.damageBase} Base)
+                              ({currentDamage.damageSl} SL + {rollState.damageBase} Base
+                              {currentDamage.hasImpact ? ` + ${currentDamage.impactDamage} Impact` : ""})
                             </span>
                           </div>
+                          {currentDamage.hasDamaging && (
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                              Damaging used higher of SL or units die ({currentDamage.unitsDie})
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {traitNotes.length > 0 && (
+                        <div className="mt-2 flex flex-col gap-1 border-l border-white/5 px-2">
+                          {traitNotes.map((note) => (
+                            <div key={note} className="text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                              {note}
+                            </div>
+                          ))}
                         </div>
                       )}
 
                       <div className="mt-2 text-[9px] font-bold text-gray-500 uppercase italic px-1 border-l border-white/5">
-                        {getOutcome(rollState.sl!, rollState.isSuccess!)}
+                        {getOutcome(adjustedSl.total, rollState.isSuccess!)}
                       </div>
                     </div>
                   )}
