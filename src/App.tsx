@@ -3011,8 +3011,8 @@ function AppScreen() {
 
                               const actions = isMelee ? [
                                 { name: 'Attack', char, totalValue: totalSkillValue, modifier: 0, damage: weaponDamage, range: weaponStats.reach, properties: weaponStats.properties },
-                                { name: 'Charge', char, totalValue: totalSkillValue, modifier: 20, damage: weaponDamage, range: weaponStats.reach, properties: weaponStats.properties.concat('Impact').filter((v, i, a) => a.indexOf(v) === i) },
-                                { name: 'Parry', char, totalValue: totalSkillValue, modifier: 0, damage: 0, range: 'Personal', properties: ['Defensive'], bonuses: [{ label: 'Defensive', value: 1 }] },
+                                { name: 'Charge', char, totalValue: totalSkillValue, modifier: 0, damage: weaponDamage, range: weaponStats.reach, properties: weaponStats.properties.concat('Impact').filter((v, i, a) => a.indexOf(v) === i) },
+                                { name: 'Parry', char, totalValue: totalSkillValue, modifier: 0, damage: 0, range: weaponStats.reach, properties: ['Defensive'], bonuses: [{ label: 'Defensive', value: 1 }] },
                                 { name: 'Feint', char, totalValue: totalSkillValue, modifier: 0, damage: 0, range: weaponStats.reach, properties: ['Mislead'] }
                               ] : [
                                 { name: 'Attack', char, totalValue: totalSkillValue, modifier: 0, damage: weaponDamage, range: weaponStats.reach, properties: weaponStats.properties }
