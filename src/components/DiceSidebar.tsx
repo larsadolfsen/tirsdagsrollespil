@@ -78,6 +78,60 @@ const calculateAttackDamage = (rollState: RollState) => {
   };
 };
 
+const getWeaponTraitNotes = (rollState: RollState) => {
+  if (!rollState.weaponProperties?.length || rollState.result === null) {
+    return [];
+  }
+
+  const notes: string[] = [];
+
+  if (rollState.isSuccess && hasWeaponProperty(rollState, "Hack")) {
+    notes.push("Hack: damage a struck piece of armour or shield by 1 point.");
+  }
+
+  if (rollState.isSuccess && hasWeaponProperty(rollState, "Pummel")) {
+    notes.push("Pummel: if the hit location is Head, test to inflict Stunned.");
+  }
+
+  if (rollState.isSuccess && hasWeaponProperty(rollState, "Penetrating")) {
+    notes.push("Penetrating: ignore all non-metal AP, or ignore 1 point of other armour.");
+  }
+
+  if (rollState.isSuccess && hasWeaponProperty(rollState, "Undamaging")) {
+    notes.push("Undamaging: double Armour Points against this hit and do not inflict minimum 1 Wound.");
+  }
+
+  if (rollState.isSuccess && hasWeaponProperty(rollState, "Distract")) {
+    notes.push("Distract: you may forgo damage to push the opponent back 1 yard per winning SL.");
+  }
+
+  if (rollState.isSuccess && hasWeaponProperty(rollState, "Entangle")) {
+    notes.push("Entangle: target gains Entangled with Strength equal to your Strength Characteristic.");
+  }
+
+  if (hasWeaponProperty(rollState, "Fast")) {
+    notes.push("Fast: may affect attack order and can penalise defenders without Fast.");
+  }
+
+  if (hasWeaponProperty(rollState, "Slow")) {
+    notes.push("Slow: you strike last and defenders gain +1 SL against your attacks.");
+  }
+
+  if (hasWeaponProperty(rollState, "Wrap")) {
+    notes.push("Wrap: Melee Tests opposing this attack suffer -1 SL.");
+  }
+
+  if (hasWeaponProperty(rollState, "Trap Blade")) {
+    notes.push("Trap Blade: if you score a defensive Critical against a bladed weapon, you may try to trap it.");
+  }
+
+  if (hasWeaponProperty(rollState, "Unbreakable")) {
+    notes.push("Unbreakable: this weapon is highly resistant to breaking or losing its edge.");
+  }
+
+  return notes;
+};
+
 export function DiceSidebar({
   characterData,
   rollState,
@@ -104,6 +158,7 @@ export function DiceSidebar({
   const adjustedSl = calculateAdjustedSl(rollState);
   const currentDamage = calculateAttackDamage(rollState);
   const rollFlags = calculateRollFlags(rollState);
+  const traitNotes = getWeaponTraitNotes(rollState);
 
   return (
     <AnimatePresence mode="wait">
@@ -347,6 +402,16 @@ export function DiceSidebar({
                               Damaging used higher of SL or units die ({currentDamage.unitsDie})
                             </span>
                           )}
+                        </div>
+                      )}
+
+                      {traitNotes.length > 0 && (
+                        <div className="mt-2 flex flex-col gap-1 border-l border-white/5 px-2">
+                          {traitNotes.map((note) => (
+                            <div key={note} className="text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                              {note}
+                            </div>
+                          ))}
                         </div>
                       )}
 
