@@ -7,6 +7,7 @@ export interface RollHistoryItem {
   sl: number;
   isSuccess: boolean;
   modifier: number;
+  targetBonusSources?: Array<{ label: string; value: number }>;
   target: number;
   damage?: number | null;
   isCritical?: boolean;
@@ -16,6 +17,7 @@ export interface RollHistoryItem {
 export interface RollState {
   characteristic: Characteristic | null;
   modifier: number;
+  targetBonusSources?: Array<{ label: string; value: number }>;
   result: number | null;
   isSuccess: boolean | null;
   sl: number | null;

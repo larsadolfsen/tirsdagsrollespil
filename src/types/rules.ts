@@ -90,7 +90,7 @@ export interface ItemDefinition extends RulesTextDefinition {
   armourLocations?: ArmourLocation[];
 }
 
-export type Availability = "common" | "scarce" | "rare" | "exotic";
+export type Availability = "common" | "average" | "scarce" | "rare" | "exotic" | "n/a";
 
 export type ArmourLocation = "head" | "arms" | "body" | "legs";
 

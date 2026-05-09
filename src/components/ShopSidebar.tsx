@@ -2,11 +2,18 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowDown, ArrowUp, ChevronDown, ListFilter, Search, ShoppingBag, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
-import { itemDefinitions } from "../data/rules/wfrp4e/items";
+import { allItemDefinitions, wfrp4eRuleset } from "../data/rules/wfrp4e";
 import { formatItemValue, getItemPriceInBrass } from "../lib/gameSession";
 import type { ItemDefinition } from "../types";
 
-const shopStock = [...itemDefinitions].sort((firstItem, secondItem) => {
+const weaponAvailabilityById = new Map(
+  wfrp4eRuleset.weapons.map((weapon) => [weapon.id, weapon.availability]),
+);
+const armourAvailabilityById = new Map(
+  wfrp4eRuleset.armours.map((armour) => [armour.id, armour.availability]),
+);
+
+const shopStock = [...allItemDefinitions].sort((firstItem, secondItem) => {
   const typeOrder = firstItem.type.localeCompare(secondItem.type);
   return typeOrder || firstItem.name.localeCompare(secondItem.name);
 });
@@ -32,7 +39,19 @@ function formatFilterLabel(value: string) {
 }
 
 function getItemRarity(item: ItemDefinition) {
-  return item.availability ?? "standard";
+  if (item.availability) {
+    return item.availability;
+  }
+
+  if (item.weaponId) {
+    return weaponAvailabilityById.get(item.weaponId) ?? "n/a";
+  }
+
+  if (item.armourId) {
+    return armourAvailabilityById.get(item.armourId) ?? "n/a";
+  }
+
+  return "n/a";
 }
 
 function getItemSortValue(item: ItemDefinition, sortKey: ItemSortKey) {
@@ -166,7 +185,7 @@ export function ShopSidebar({
   }, []);
 
   const itemAvailabilities = useMemo(() => {
-    return Array.from(new Set(shopStock.map((item) => item.availability ?? "standard"))).sort(
+    return Array.from(new Set(shopStock.map((item) => getItemRarity(item)))).sort(
       (firstAvailability, secondAvailability) => {
         const firstIndex = availabilityOrder.indexOf(firstAvailability);
         const secondIndex = availabilityOrder.indexOf(secondAvailability);
@@ -190,14 +209,14 @@ export function ShopSidebar({
     const availabilityFilteredStock =
       selectedAvailability === "All"
         ? typeFilteredStock
-        : typeFilteredStock.filter((item) => (item.availability ?? "standard") === selectedAvailability);
+        : typeFilteredStock.filter((item) => getItemRarity(item) === selectedAvailability);
 
     if (!normalizedSearchTerm) {
       return availabilityFilteredStock;
     }
 
     return availabilityFilteredStock.filter((item) =>
-      [item.name, item.type, item.description, item.availability]
+      [item.name, item.type, item.description, getItemRarity(item)]
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearchTerm)),
     );
@@ -321,6 +340,7 @@ export function ShopSidebar({
                         <button
                           key={itemType}
                           type="button"
+                          aria-label={`Filter by type ${itemType}`}
                           onClick={() => {
                             setSelectedItemType(itemType);
                             setExpandedItemId(null);
@@ -345,12 +365,13 @@ export function ShopSidebar({
                       const itemCount =
                         availability === "All"
                           ? shopStock.length
-                          : shopStock.filter((item) => (item.availability ?? "standard") === availability).length;
+                          : shopStock.filter((item) => getItemRarity(item) === availability).length;
 
                       return (
                         <button
                           key={availability}
                           type="button"
+                          aria-label={`Filter by rarity ${formatFilterLabel(availability)}`}
                           onClick={() => {
                             setSelectedAvailability(availability);
                             setExpandedItemId(null);
@@ -473,7 +494,7 @@ export function ShopSidebar({
                                 <div>
                                   <span className="wfrp-table-label">Availability</span>
                                   <p className="wfrp-list-cell-strong mt-1 text-gray-200">
-                                    {item.availability ?? "Standard"}
+                                    {formatFilterLabel(getItemRarity(item))}
                                   </p>
                                 </div>
                                 <div>

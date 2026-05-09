@@ -34,6 +34,8 @@ export function DiceSidebar({
   handleReroll: () => void;
   getOutcome: (sl: number, isSuccess: boolean) => string;
 }) {
+  const getTargetBonusTotal = (targetBonusSources = rollState.targetBonusSources ?? []) =>
+    targetBonusSources.reduce((sum, bonus) => sum + bonus.value, 0);
   const adjustedSl = calculateAdjustedSl(rollState);
   const currentDamage = calculateAttackDamage(rollState);
   const rollFlags = calculateRollFlags(rollState);
@@ -66,7 +68,7 @@ export function DiceSidebar({
                     const target =
                       (characterData.attributes as Record<string, number>)[
                         rollState.characteristic.key
-                      ] + rollState.modifier;
+                      ] + rollState.modifier + getTargetBonusTotal();
                     const adjustedHistorySl = calculateAdjustedSl(rollState).total;
                     const damage = calculateAttackDamage(rollState);
                     const flags = calculateRollFlags(rollState);
@@ -77,6 +79,7 @@ export function DiceSidebar({
                       sl: adjustedHistorySl,
                       isSuccess: rollState.isSuccess || false,
                       modifier: rollState.modifier,
+                      targetBonusSources: rollState.targetBonusSources ?? [],
                       target,
                       damage: damage?.total ?? null,
                       isCritical: flags.isCritical,
@@ -109,6 +112,12 @@ export function DiceSidebar({
                       Difficulty {item.modifier >= 0 ? "+" : ""}
                       {item.modifier}
                     </div>
+                    {(item.targetBonusSources ?? []).map((bonus) => (
+                      <div key={`${item.id}-${bonus.label}`} className="text-[11px] text-gray-400 font-bold">
+                        {bonus.label} {bonus.value >= 0 ? "+" : ""}
+                        {bonus.value}
+                      </div>
+                    ))}
                     <div className="text-[11px] text-gray-400 font-bold">Target: {item.target}</div>
 
                     <div className="text-[11px] text-gray-400 font-bold flex items-center h-8 gap-2">
@@ -164,6 +173,13 @@ export function DiceSidebar({
                     {rollState.characteristic.label} Roll
                   </h3>
 
+                  {(rollState.targetBonusSources ?? []).map((bonus) => (
+                    <div key={bonus.label} className="text-[11px] text-gray-400 font-bold">
+                      {bonus.label} {bonus.value >= 0 ? "+" : ""}
+                      {bonus.value}
+                    </div>
+                  ))}
+
                   <div className="flex items-center gap-2 text-[11px] text-gray-400 font-bold">
                     <span>
                       Difficulty {rollState.modifier >= 0 ? "+" : ""}
@@ -198,7 +214,7 @@ export function DiceSidebar({
                     <span className="text-gray-200">
                       {(characterData.attributes as Record<string, number>)[
                         rollState.characteristic.key
-                      ] + rollState.modifier}
+                      ] + rollState.modifier + getTargetBonusTotal()}
                     </span>
                   </div>
 

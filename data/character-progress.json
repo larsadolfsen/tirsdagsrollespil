@@ -74,7 +74,8 @@
       "thano_hammer_1": false,
       "thano_robe_1": false,
       "thano_blanket_1": false,
-      "thano_cup_1": false
+      "thano_cup_1": false,
+      "shop-halberd_item-1778326035823": false
     },
     "equipmentContainers": {
       "thano_dagger_1": null,
@@ -86,10 +87,18 @@
       "thano_hammer_1": "thano_backpack_1",
       "thano_robe_1": "thano_backpack_1",
       "thano_blanket_1": "thano_backpack_1",
-      "thano_cup_1": "thano_backpack_1"
+      "thano_cup_1": "thano_backpack_1",
+      "shop-halberd_item-1778326035823": null
     },
     "consumableCounts": {},
-    "addedEquipment": [],
+    "addedEquipment": [
+      {
+        "id": "shop-halberd_item-1778326035823",
+        "itemId": "halberd_item",
+        "equipped": false,
+        "containerId": null
+      }
+    ],
     "removedEquipmentIds": [],
     "backgroundText": "",
     "notes": []

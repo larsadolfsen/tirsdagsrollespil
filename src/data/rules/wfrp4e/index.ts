@@ -6,6 +6,7 @@ import { careerDefinitions } from "./careers";
 import { itemDefinitions } from "./items";
 import { meleeWeaponItemDefinitions } from "./meleeWeaponItems";
 import { propertyDefinitions } from "./properties";
+import { rangedWeaponItemDefinitions } from "./rangedWeaponItems";
 import { raceDefinitions } from "./races";
 import {
   buildResolvedSkillOptions,
@@ -26,7 +27,11 @@ import {
   weaponDefinitions,
 } from "./weapons";
 
-const allItemDefinitions = [...itemDefinitions, ...meleeWeaponItemDefinitions];
+export const allItemDefinitions = [
+  ...itemDefinitions,
+  ...meleeWeaponItemDefinitions.filter((item) => item.weaponId !== "sword"),
+  ...rangedWeaponItemDefinitions,
+];
 
 export const wfrp4eRuleset: Ruleset = {
   id: "wfrp4e",

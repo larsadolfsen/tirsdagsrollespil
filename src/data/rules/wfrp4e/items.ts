@@ -10,6 +10,7 @@ export const itemDefinitions: ItemDefinition[] = [
     encumbrance: 3,
     value: 2,
     currency: "gc",
+    availability: "common",
   },
   {
     id: "crossbow_item",
@@ -18,8 +19,9 @@ export const itemDefinitions: ItemDefinition[] = [
     type: "Ranged Weapon",
     description: "A powerful mechanical bow that fires heavy bolts.",
     encumbrance: 2,
-    value: 1,
+    value: 5,
     currency: "gc",
+    availability: "common",
   },
   {
     id: "leather_jack_item",
@@ -733,12 +735,13 @@ export const itemDefinitions: ItemDefinition[] = [
   {
     id: "sword_item",
     weaponId: "sword",
-    name: "Sword",
+    name: "Hand Weapon",
     type: "Melee Weapon",
-    description: "A well-made Reikland arming sword.",
+    description: "A common one-handed melee weapon such as a sword, axe, hammer, or mace.",
     encumbrance: 1,
     value: 1,
     currency: "gc",
+    availability: "common",
   },
   {
     id: "dagger_item",
@@ -749,6 +752,8 @@ export const itemDefinitions: ItemDefinition[] = [
     encumbrance: 0,
     value: 16,
     currency: "s",
+    priceLabel: "16/-",
+    availability: "common",
   },
   {
     id: "walking_stick_item",

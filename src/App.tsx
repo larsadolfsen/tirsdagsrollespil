@@ -54,6 +54,7 @@ interface RollHistoryItem {
   sl: number;
   isSuccess: boolean;
   modifier: number;
+  targetBonusSources: RollBonusSource[];
   target: number;
   damage?: number | null;
   hitLocation?: string | null;
@@ -71,6 +72,7 @@ interface RollState {
   baseValueOverride: number | null;
   testType: "dramatic" | "attack" | "channeling";
   modifier: number;
+  targetBonusSources: RollBonusSource[];
   result: number | null;
   isSuccess: boolean | null;
   rawSl: number | null;
@@ -177,7 +179,7 @@ const getRelevantWeaponProperties = (actionId: string, properties: string[]) => 
     return properties.filter((property) => offensiveProperties.includes(property));
   }
 
-  if (actionId === "parry") {
+  if (actionId === "parry" || actionId === "defend") {
     return properties.filter(
       (property) =>
         defensiveProperties.includes(property) ||
@@ -913,6 +915,7 @@ function AppScreen() {
     baseValueOverride: null,
     testType: "dramatic",
     modifier: 0,
+    targetBonusSources: [],
     result: null,
     isSuccess: null,
     rawSl: null,
@@ -1220,6 +1223,7 @@ function AppScreen() {
       baseValueOverride: null,
       testType: "dramatic",
       modifier: 0,
+      targetBonusSources: [],
       result: null,
       isSuccess: null,
       rawSl: null,
@@ -2180,8 +2184,15 @@ function AppScreen() {
     return skill ? baseValue + skill.advances : baseValue;
   };
 
-  const getRollTarget = (state: Pick<RollState, "characteristic" | "modifier"> & { baseValueOverride?: number | null }) => {
-    return getRollBaseValue(state) + state.modifier;
+  const getTargetBonusTotal = (targetBonusSources: RollBonusSource[]) =>
+    targetBonusSources.reduce((sum, bonus) => sum + bonus.value, 0);
+
+  const getRollTarget = (
+    state: Pick<RollState, "characteristic" | "modifier" | "targetBonusSources"> & {
+      baseValueOverride?: number | null;
+    },
+  ) => {
+    return getRollBaseValue(state) + state.modifier + getTargetBonusTotal(state.targetBonusSources);
   };
 
   const getDamageTotal = (state: Pick<RollState, "damageBase" | "sl" | "isSuccess">) => {
@@ -2263,6 +2274,7 @@ function AppScreen() {
       sl: state.sl || 0,
       isSuccess: state.isSuccess || false,
       modifier: state.modifier,
+      targetBonusSources: state.targetBonusSources,
       target: getRollTarget(state),
       damage: getDamageTotal(state),
       hitLocation: state.testType === "attack" ? getHitLocation(state.result) : null,
@@ -2352,6 +2364,7 @@ function AppScreen() {
       baseValueOverride: options?.baseValueOverride ?? null,
       testType: options?.testType ?? (damage === undefined ? "dramatic" : "attack"),
       modifier: 0,
+      targetBonusSources: [],
       result: null,
       isSuccess: null,
       rawSl: null,
@@ -2386,6 +2399,7 @@ function AppScreen() {
       baseValueOverride: 0,
       testType: "dramatic",
       modifier: 0,
+      targetBonusSources: [],
       result: null,
       isSuccess: null,
       rawSl: null,
@@ -2405,7 +2419,7 @@ function AppScreen() {
     const skill = characterSkills.find(s => s.displayName === rollState.characteristic?.label);
     const value = skill ? baseValue + skill.advances : baseValue;
     
-    const target = value + rollState.modifier;
+    const target = value + rollState.modifier + getTargetBonusTotal(rollState.targetBonusSources);
     const roll = Math.floor(Math.random() * 100); 
     const finalRoll = roll === 0 ? 100 : roll;
     
@@ -3042,10 +3056,7 @@ function AppScreen() {
                                   rollDamage: weaponDamage,
                                   damage: `+${weaponDamage}`,
                                   range: weaponStats.reach,
-                                  properties: Array.from(new Set([
-                                    ...getRelevantWeaponProperties("charge", weaponStats.properties),
-                                    "Impact",
-                                  ])),
+                                  properties: getRelevantWeaponProperties("charge", weaponStats.properties),
                                   note: "+1 Advantage if Charge conditions are met",
                                 },
                                 {
@@ -3057,33 +3068,25 @@ function AppScreen() {
                                   rollDamage: undefined,
                                   damage: "-",
                                   range: weaponStats.reach,
-                                  properties: Array.from(new Set([
-                                    "Defensive",
-                                    ...getRelevantWeaponProperties("parry", weaponStats.properties),
-                                  ])),
-                                  bonuses: [{ label: "Defensive", value: 1 }],
-                                },
-                                {
-                                  id: "feint",
-                                  name: "Feint",
-                                  char,
-                                  totalValue: totalSkillValue,
-                                  modifier: 0,
-                                  rollDamage: undefined,
-                                  damage: "-",
-                                  range: weaponStats.reach,
-                                  properties: ["Mislead"],
+                                  properties: getRelevantWeaponProperties("parry", weaponStats.properties),
+                                  bonuses: weaponStats.properties.includes("Defensive")
+                                    ? [{ label: "Defensive", value: 1 }]
+                                    : undefined,
                                 },
                                 {
                                   id: "defend",
                                   name: "Defend",
                                   char,
                                   totalValue: totalSkillValue,
-                                  modifier: 20,
+                                  modifier: 0,
+                                  targetBonusSources: [{ label: "Defense", value: 20 }],
                                   rollDamage: undefined,
                                   damage: "-",
                                   range: "-",
                                   properties: getRelevantWeaponProperties("defend", weaponStats.properties),
+                                  bonuses: weaponStats.properties.includes("Defensive")
+                                    ? [{ label: "Defensive", value: 1 }]
+                                    : undefined,
                                 },
                               ] : [
                                 {
@@ -3133,18 +3136,22 @@ function AppScreen() {
                                                       title: `${weapon.name} ${action.name}`,
                                                     },
                                                   );
-                                                  if (action.modifier !== 0) {
-                                                    setRollState(prev => ({ ...prev, modifier: action.modifier }));
+                                                  if (action.modifier !== 0 || action.targetBonusSources?.length) {
+                                                    setRollState(prev => ({
+                                                      ...prev,
+                                                      modifier: action.modifier,
+                                                      targetBonusSources: action.targetBonusSources ?? [],
+                                                    }));
                                                   }
                                                 }}
                                                 className="wfrp-roll-btn"
                                                 aria-label={`Roll ${action.name} with ${weapon.name}`}
                                               >
-                                                {action.totalValue + action.modifier}
+                                                {action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? [])}
                                               </button>
                                             </div>
                                             <span 
-                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: action.totalValue + action.modifier, weaponName: weapon.name, weaponType: weapon.type } })}
+                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []), weaponName: weapon.name, weaponType: weapon.type } })}
                                               className="wfrp-skill-link truncate"
                                             >
                                               {action.name}
@@ -3204,18 +3211,22 @@ function AppScreen() {
                                                       title: `${weapon.name} ${action.name}`,
                                                     },
                                                   );
-                                                  if (action.modifier !== 0) {
-                                                    setRollState(prev => ({ ...prev, modifier: action.modifier }));
+                                                  if (action.modifier !== 0 || action.targetBonusSources?.length) {
+                                                    setRollState(prev => ({
+                                                      ...prev,
+                                                      modifier: action.modifier,
+                                                      targetBonusSources: action.targetBonusSources ?? [],
+                                                    }));
                                                   }
                                                 }}
                                                 className="wfrp-roll-btn"
                                                 aria-label={`Roll ${action.name} with ${weapon.name}`}
                                               >
-                                                {action.totalValue + action.modifier}
+                                                {action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? [])}
                                               </button>
                                             </div>
                                             <span 
-                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: action.totalValue + action.modifier, weaponName: weapon.name, weaponType: weapon.type } })}
+                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []), weaponName: weapon.name, weaponType: weapon.type } })}
                                               className="wfrp-skill-link truncate"
                                             >
                                               {action.name}
@@ -3271,7 +3282,7 @@ function AppScreen() {
                                <div className="divide-y divide-white/5">
                                  {[
                                    { name: 'Move', char: 'Ag', range: `${characterData.move}`, properties: [], modifier: 0, damage: '-', type: 'other' },
-                                   { name: 'Brace', char: 'S', range: '-', properties: ['Defensive Stance'], modifier: 0, damage: '-', type: 'other' },
+                                   { name: 'Defend', char: 'WS', range: '-', properties: [], modifier: 0, targetBonusSources: [{ label: 'Defense', value: 20 }], damage: '-', type: 'other' },
                                    { name: 'Disengage', char: 'Ag', range: '-', properties: ['Retreat'], modifier: 0, damage: '-', type: 'other' },
                                    { name: 'Grapple', char: 'WS', range: 'Reach', properties: ['Stun'], modifier: 0, damage: 'SB', type: 'melee' }
                                  ]
@@ -3289,19 +3300,27 @@ function AppScreen() {
                                        <div className="flex justify-center">
                                          <button 
                                            onClick={() => {
-                                             handleRoll({ key: action.char, label: action.name }, typeof action.damage === 'number' ? action.damage : (action.damage === 'SB' ? sb : undefined));
-                                             if (action.modifier !== 0) {
-                                               setRollState(prev => ({ ...prev, modifier: action.modifier }));
+                                             handleRoll(
+                                               { key: action.char, label: action.name },
+                                               typeof action.damage === 'number' ? action.damage : (action.damage === 'SB' ? sb : undefined),
+                                               { title: action.name },
+                                             );
+                                             if (action.modifier !== 0 || action.targetBonusSources?.length) {
+                                               setRollState(prev => ({
+                                                 ...prev,
+                                                 modifier: action.modifier,
+                                                 targetBonusSources: action.targetBonusSources ?? [],
+                                               }));
                                              }
                                            }}
                                            className="wfrp-roll-btn"
                                             aria-label={`Execute ${action.name}`}
                                           >
-                                            {totalValue}
+                                            {totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? [])}
                                           </button>
                                        </div>
                                        <span 
-                                         onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue, damage: finalDamage, properties: action.properties } })}
+                                         onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []), damage: finalDamage, properties: action.properties } })}
                                          className="wfrp-skill-link truncate"
                                        >
                                          {action.name}
@@ -4423,9 +4442,19 @@ function AppScreen() {
                         <div className="grid grid-cols-[minmax(72px,1fr)_56px_minmax(0,1fr)] items-center gap-1">
                           <span className="wfrp-list-cell-strong">{item.label}:</span>
                           <span className="wfrp-sidebar-body text-right text-gray-200">
-                            {item.target - item.modifier}
+                            {item.target - item.modifier - getTargetBonusTotal(item.targetBonusSources)}
                           </span>
                           <div />
+
+                          {item.targetBonusSources.map((bonus) => (
+                            <div key={`${item.id}-${bonus.label}`} className="contents">
+                              <span className="wfrp-list-cell-strong">{bonus.label}:</span>
+                              <span className="wfrp-sidebar-body text-right text-gray-200">
+                                {formatSignedSl(bonus.value, bonus.value >= 0 ? "positive" : "negative")}
+                              </span>
+                              <div />
+                            </div>
+                          ))}
 
                           <span className="wfrp-list-cell-strong">Difficulty:</span>
                           <span className="wfrp-sidebar-body text-right text-gray-200">
@@ -4518,6 +4547,16 @@ function AppScreen() {
                           {getRollBaseValue(rollState)}
                         </span>
                         <div />
+
+                        {rollState.targetBonusSources.map((bonus) => (
+                          <div key={bonus.label} className="contents">
+                            <span className="wfrp-list-cell-strong">{bonus.label}:</span>
+                            <span className="wfrp-sidebar-body text-right text-gray-200">
+                              {formatSignedSl(bonus.value, bonus.value >= 0 ? "positive" : "negative")}
+                            </span>
+                            <div />
+                          </div>
+                        ))}
 
                         <span className="wfrp-list-cell-strong">Difficulty:</span>
                         <span className="wfrp-sidebar-body text-right text-gray-200">
