@@ -4,6 +4,7 @@ import { armourDefinitions } from "./armours";
 import { armourQualities, armourFlaws, armourLocations, armourCategories } from "./armourProperties";
 import { careerDefinitions } from "./careers";
 import { itemDefinitions } from "./items";
+import { meleeWeaponItemDefinitions } from "./meleeWeaponItems";
 import { propertyDefinitions } from "./properties";
 import { raceDefinitions } from "./races";
 import {
@@ -25,6 +26,8 @@ import {
   weaponDefinitions,
 } from "./weapons";
 
+const allItemDefinitions = [...itemDefinitions, ...meleeWeaponItemDefinitions];
+
 export const wfrp4eRuleset: Ruleset = {
   id: "wfrp4e",
   name: "Warhammer Fantasy Roleplay 4th Edition",
@@ -35,7 +38,7 @@ export const wfrp4eRuleset: Ruleset = {
   properties: propertyDefinitions,
   talents: talentDefinitions,
   spells: spellDefinitions,
-  items: itemDefinitions,
+  items: allItemDefinitions,
   weapons: weaponDefinitions,
   armours: armourDefinitions,
   careers: careerDefinitions,
