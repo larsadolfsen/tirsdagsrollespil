@@ -298,7 +298,7 @@ export function ShopSidebar({
                 <button
                   type="button"
                   onClick={() => setIsFilterOpen((isOpen) => !isOpen)}
-                  className="wfrp-roll-cta flex h-10 shrink-0 items-center gap-2 px-4"
+                  className="wfrp-action-btn h-10 shrink-0 gap-2 px-4"
                   aria-expanded={isFilterOpen}
                   aria-label="Filter shop goods by item type"
                 >
@@ -501,14 +501,14 @@ export function ShopSidebar({
                                 <button
                                   type="button"
                                   onClick={() => onAddToInventory(item)}
-                                  className="wfrp-roll-cta whitespace-nowrap px-4"
+                                  className="wfrp-action-btn whitespace-nowrap px-4 py-1.5"
                                 >
                                   Add
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => onBuy(item)}
-                                  className="wfrp-roll-cta whitespace-nowrap px-4"
+                                  className="wfrp-action-btn whitespace-nowrap px-4 py-1.5"
                                 >
                                   Buy
                                 </button>

@@ -11,7 +11,6 @@ import {
   Plus,
   Minus,
   Settings,
-  MoreHorizontal,
   Trash2,
   X,
   Dice5
@@ -2869,7 +2868,7 @@ function AppScreen() {
                                         <div className="flex min-w-0 items-center gap-2">
                                           <button
                                             onClick={() => handleRoll({ key: skill.characteristic, label: skill.displayName })}
-                                            className="wfrp-roll-btn w-12 shrink-0"
+                                            className="wfrp-roll-btn"
                                             aria-label={`Roll for ${skill.displayName}`}
                                           >
                                             {totalValue}
@@ -2944,7 +2943,7 @@ function AppScreen() {
                                     <div className="flex justify-center">
                                       <button
                                         onClick={() => handleRoll({ key: 'WP', label: 'Language (Magick)' }, undefined, { testType: 'channeling' })}
-                                        className="wfrp-roll-btn w-12"
+                                        className="wfrp-roll-btn"
                                         aria-label="Roll Channeling"
                                       >
                                         {totalChannelingValue}
@@ -3047,7 +3046,7 @@ function AppScreen() {
                                                     setRollState(prev => ({ ...prev, modifier: action.modifier }));
                                                   }
                                                 }}
-                                                className="wfrp-roll-btn w-12"
+                                                className="wfrp-roll-btn"
                                                 aria-label={`Roll ${action.name} with ${weapon.name}`}
                                               >
                                                 {action.totalValue}
@@ -3111,7 +3110,7 @@ function AppScreen() {
                                                     setRollState(prev => ({ ...prev, modifier: action.modifier }));
                                                   }
                                                 }}
-                                                className="wfrp-roll-btn w-12"
+                                                className="wfrp-roll-btn"
                                                 aria-label={`Roll ${action.name} with ${weapon.name}`}
                                               >
                                                 {action.totalValue}
@@ -3193,7 +3192,7 @@ function AppScreen() {
                                                setRollState(prev => ({ ...prev, modifier: action.modifier }));
                                              }
                                            }}
-                                           className="wfrp-roll-btn w-12"
+                                           className="wfrp-roll-btn"
                                             aria-label={`Execute ${action.name}`}
                                           >
                                             {totalValue}
@@ -3243,7 +3242,7 @@ function AppScreen() {
                               <button
                                 type="button"
                                 onClick={() => setIsSpellShopOpen(true)}
-                                className="wfrp-action-btn inline-flex h-7 items-center gap-1.5 px-3 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+                                className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em]"
                                 aria-label="Add spells"
                               >
                                 <span className="whitespace-nowrap">Add Spells</span>
@@ -3280,7 +3279,7 @@ function AppScreen() {
                                           onClick={() => {
                                             handleRoll({ key: 'WP', label: spell.name }, undefined, { testType: 'channeling' });
                                           }}
-                                          className="wfrp-roll-btn w-12"
+                                          className="wfrp-roll-btn"
                                           aria-label={`Channel ${spell.name}`}
                                         >
                                           {skillValue}
@@ -3373,7 +3372,7 @@ function AppScreen() {
                                   setIsDiceLogOpen(false);
                                   setIsShopOpen(true);
                                 }}
-                                className="wfrp-action-btn inline-flex h-7 items-center gap-1.5 px-3 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+                                className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em]"
                                 aria-label="Add item"
                               >
                                 <span className="whitespace-nowrap">Add item</span>
@@ -4613,7 +4612,7 @@ function AppScreen() {
                           )}
                           {canUseFortuneActions && (
                             <div className="flex flex-col gap-1">
-                              <span className="wfrp-table-label text-gray-500">Fortune</span>
+                              <span className="wfrp-table-label text-gray-500">Spend Fortune</span>
                               <div className="flex flex-row flex-wrap items-center gap-2">
                               <button
                                 onClick={handleReroll}
@@ -4636,38 +4635,16 @@ function AppScreen() {
                           )}
                           {canUseResilienceAction && (
                             <div className="flex flex-col gap-1">
-                              <span className="wfrp-table-label text-gray-500">Resilience</span>
+                              <span className="wfrp-table-label text-gray-500">Spend Resilience</span>
                               <div className="flex flex-row flex-wrap items-center gap-2">
-                                {canUseFortuneActions ? (
-                                  <details className="relative">
-                                    <summary
-                                      className="flex h-[34px] w-[20px] list-none items-center justify-center px-0 py-0 text-gray-400 transition-colors marker:content-none hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-0"
-                                      title="Resilience action"
-                                      aria-label="Resilience actions"
-                                    >
-                                      <MoreHorizontal size={16} />
-                                    </summary>
-                                    <div className="absolute left-0 top-full z-10 mt-2 min-w-max rounded-lg border border-white/10 bg-[#141414] p-1 shadow-xl">
-                                      <button
-                                        onClick={handleIWillNotFail}
-                                        title="Resilience action"
-                                        aria-label="Resilience action: I Will Not Fail!"
-                                        className="wfrp-action-btn w-full px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
-                                      >
-                                        I Will Not Fail!
-                                      </button>
-                                    </div>
-                                  </details>
-                                ) : (
-                                  <button
-                                    onClick={handleIWillNotFail}
-                                    title="Resilience action"
-                                    aria-label="Resilience action: I Will Not Fail!"
-                                    className="wfrp-action-btn px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
-                                  >
-                                    I Will Not Fail!
-                                  </button>
-                                )}
+                                <button
+                                  onClick={handleIWillNotFail}
+                                  title="Resilience action"
+                                  aria-label="Resilience action: I Will Not Fail!"
+                                  className="wfrp-action-btn px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+                                >
+                                  I Will Not Fail!
+                                </button>
                               </div>
                             </div>
                           )}

@@ -41,7 +41,11 @@
 }
 
 @utility wfrp-action-btn {
-  @apply flex items-center justify-center rounded bg-[#121212] border border-[#303030] hover:border-wfrp-gold/50 text-gray-200 hover:text-wfrp-gold transition-all cursor-pointer active:scale-90 shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply inline-flex items-center justify-center rounded border border-[#303030] bg-[#121212] text-[9px] font-bold uppercase tracking-widest text-gray-300 shadow-sm transition-all cursor-pointer active:scale-90 hover:border-wfrp-gold/50 hover:text-wfrp-gold disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+}
+
+@utility wfrp-standard-btn {
+  @apply inline-flex items-center justify-center rounded bg-[#303030] text-[9px] font-bold uppercase tracking-widest text-gray-300 transition-all cursor-pointer active:scale-95 hover:bg-[#404040] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
 @utility wfrp-surface-strong {
@@ -73,7 +77,7 @@
 }
 
 @utility wfrp-stepper-btn {
-  @apply rounded border border-[#303030] p-1 text-gray-400 transition-all cursor-pointer hover:bg-[#303030] focus-visible:outline-none focus-visible:ring-1;
+  @apply inline-flex items-center justify-center rounded border border-[#303030] bg-[#121212] p-1 text-gray-300 shadow-sm transition-all cursor-pointer active:scale-90 hover:border-wfrp-gold/50 hover:text-wfrp-gold disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-1;
 }
 
 @utility wfrp-icon-btn {
@@ -153,7 +157,7 @@
 }
 
 @utility wfrp-roll-btn {
-  @apply wfrp-action-btn h-8 px-2 font-mono font-bold text-sm text-gray-300 min-w-[32px] shadow-sm;
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#303030] bg-[#121212] font-mono text-sm font-bold text-gray-300 shadow-sm transition-all cursor-pointer active:scale-90 hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
 @utility wfrp-property-pill {

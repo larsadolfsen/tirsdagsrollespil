@@ -344,7 +344,7 @@ export function SpellShopSidebar({
                 <button
                   type="button"
                   onClick={() => setIsFilterOpen((isOpen) => !isOpen)}
-                  className="wfrp-roll-cta flex h-10 shrink-0 items-center gap-2 px-4"
+                  className="wfrp-action-btn h-10 shrink-0 gap-2 px-4"
                   aria-expanded={isFilterOpen}
                   aria-label="Filter spells by type"
                 >
@@ -494,7 +494,7 @@ export function SpellShopSidebar({
                                     <button
                                       type="button"
                                       onClick={() => onAddSpell(spell)}
-                                      className="wfrp-roll-cta inline-flex items-center gap-2 whitespace-nowrap px-4"
+                                      className="wfrp-action-btn gap-2 whitespace-nowrap px-4 py-1.5"
                                       aria-label={`Add ${spell.name}`}
                                     >
                                       Add Spell
