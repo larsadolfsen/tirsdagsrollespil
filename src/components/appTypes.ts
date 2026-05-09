@@ -19,6 +19,8 @@ export interface RollState {
   sl: number | null;
   isRolling: boolean;
   damageBase: number | null;
+  actionId?: string | null;
+  weaponProperties?: string[];
 }
 
 export interface ActiveInfoState {
