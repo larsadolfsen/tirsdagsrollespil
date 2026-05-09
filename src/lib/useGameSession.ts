@@ -42,6 +42,27 @@ export const fortuneSpendActions: Array<{
   },
 ];
 
+export type FateSpendAction =
+  | "die-another-day"
+  | "how-did-that-miss";
+
+export const fateSpendActions: Array<{
+  id: FateSpendAction;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "die-another-day",
+    label: "Die Another Day",
+    description: "Spend 1 Fate to avoid death and survive the immediate danger.",
+  },
+  {
+    id: "how-did-that-miss",
+    label: "How Did That Miss?",
+    description: "Spend 1 Fate to avoid all damage from an incoming attack or hazard.",
+  },
+];
+
 export type ResilienceSpendAction =
   | "deny-mutation"
   | "choose-test-result";
@@ -60,6 +81,33 @@ export const resilienceSpendActions: Array<{
     id: "choose-test-result",
     label: "I Will Not Fail!",
     description: "Spend 1 Resilience to choose the result of a Test rather than roll.",
+  },
+];
+
+export type ResolveSpendAction =
+  | "ignore-psychology"
+  | "ignore-critical-wounds"
+  | "remove-prone";
+
+export const resolveSpendActions: Array<{
+  id: ResolveSpendAction;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "ignore-psychology",
+    label: "Ignore Psychology",
+    description: "Spend 1 Resolve to become immune to Psychology until the end of the next round.",
+  },
+  {
+    id: "ignore-critical-wounds",
+    label: "Ignore Critical Wounds",
+    description: "Spend 1 Resolve to ignore Critical Wound modifiers until the beginning of the next round.",
+  },
+  {
+    id: "remove-prone",
+    label: "Remove Prone",
+    description: "Spend 1 Resolve to remove the Prone Condition and regain 1 Wound.",
   },
 ];
 
@@ -138,6 +186,18 @@ export function useGameSession() {
     );
   };
 
+  const spendFate = () => {
+    if (fateCurrent <= 0) {
+      return false;
+    }
+
+    setFateCurrent((current) => current - 1);
+    return true;
+  };
+
+  const spendFateForDieAnotherDay = () => spendFate();
+  const spendFateForHowDidThatMiss = () => spendFate();
+
   const spendFortune = () => {
     if (fortuneCurrent <= 0) {
       return false;
@@ -182,6 +242,29 @@ export function useGameSession() {
     setRawResolveCurrent((previousResolve) =>
       clampResource(resolveNumberStateAction(action, previousResolve), resilienceCurrent),
     );
+  };
+
+  const spendResolve = () => {
+    if (resolveCurrent <= 0) {
+      return false;
+    }
+
+    setResolveCurrent((current) => current - 1);
+    return true;
+  };
+
+  const spendResolveForIgnorePsychology = () => spendResolve();
+  const spendResolveForIgnoreCriticalWounds = () => spendResolve();
+  const spendResolveForRemoveProne = () => {
+    const didSpend = spendResolve();
+
+    if (didSpend) {
+      setWoundsCurrent((current) =>
+        clampResource(current + 1, character.wounds.max + character.wounds.temp),
+      );
+    }
+
+    return didSpend;
   };
 
   useEffect(() => {
@@ -359,6 +442,10 @@ export function useGameSession() {
     setCorruptionCurrent,
     fateCurrent,
     setFateCurrent,
+    fateSpendActions,
+    spendFate,
+    spendFateForDieAnotherDay,
+    spendFateForHowDidThatMiss,
     fortuneCurrent,
     setFortuneCurrent,
     fortuneSpendActions,
@@ -374,6 +461,11 @@ export function useGameSession() {
     spendResilienceForChooseTestResult,
     resolveCurrent,
     setResolveCurrent,
+    resolveSpendActions,
+    spendResolve,
+    spendResolveForIgnorePsychology,
+    spendResolveForIgnoreCriticalWounds,
+    spendResolveForRemoveProne,
     xpCurrent,
     setXpCurrent,
     characterCoins,
