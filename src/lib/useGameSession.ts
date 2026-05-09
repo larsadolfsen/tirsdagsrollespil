@@ -42,6 +42,27 @@ export const fortuneSpendActions: Array<{
   },
 ];
 
+export type ResilienceSpendAction =
+  | "deny-mutation"
+  | "choose-test-result";
+
+export const resilienceSpendActions: Array<{
+  id: ResilienceSpendAction;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "deny-mutation",
+    label: "I Deny You!",
+    description: "Spend 1 Resilience to prevent a mutation.",
+  },
+  {
+    id: "choose-test-result",
+    label: "I Will Not Fail!",
+    description: "Spend 1 Resilience to choose the result of a Test rather than roll.",
+  },
+];
+
 const getConsumableCount = (item: ResolvedCharacterEquipment) => {
   if (item.type !== "Consumable") return null;
 
@@ -144,6 +165,18 @@ export function useGameSession() {
       return nextResilience;
     });
   };
+
+  const spendResilience = () => {
+    if (resilienceCurrent <= 0) {
+      return false;
+    }
+
+    setResilienceCurrent((current) => current - 1);
+    return true;
+  };
+
+  const spendResilienceForDenyMutation = () => spendResilience();
+  const spendResilienceForChooseTestResult = () => spendResilience();
 
   const setResolveCurrent = (action: SetStateAction<number>) => {
     setRawResolveCurrent((previousResolve) =>
@@ -335,6 +368,10 @@ export function useGameSession() {
     spendFortuneForChooseInitiative,
     resilienceCurrent,
     setResilienceCurrent,
+    resilienceSpendActions,
+    spendResilience,
+    spendResilienceForDenyMutation,
+    spendResilienceForChooseTestResult,
     resolveCurrent,
     setResolveCurrent,
     xpCurrent,
