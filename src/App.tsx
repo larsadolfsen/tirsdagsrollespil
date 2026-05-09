@@ -4603,53 +4603,79 @@ function AppScreen() {
                       )}
 
                       {!rollState.isRolling && rollState.result !== null && (
-                        <div className="flex flex-row items-center gap-2">
+                        <div className="flex flex-col gap-2">
                           {canRollCritical && (
-                            <button
-                              onClick={handleRollCritical}
-                              className="wfrp-action-btn px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
-                            >
-                              Roll Critical
-                            </button>
+                            <div className="flex flex-col gap-1">
+                              <span className="wfrp-table-label text-gray-500">Critical</span>
+                              <button
+                                onClick={handleRollCritical}
+                                title="Critical action"
+                                aria-label="Critical action: roll critical"
+                                className="wfrp-action-btn w-fit px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+                              >
+                                Roll Critical
+                              </button>
+                            </div>
                           )}
                           {canUseFortuneActions && (
-                            <>
+                            <div className="flex flex-col gap-1">
+                              <span className="wfrp-table-label text-gray-500">Fortune</span>
+                              <div className="flex flex-row flex-wrap items-center gap-2">
                               <button
                                 onClick={handleReroll}
+                                title="Fortune action"
+                                aria-label="Fortune action: reroll"
                                 className="wfrp-action-btn px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
                               >
                                 Reroll
                               </button>
                               <button
                                 onClick={handleAddSl}
+                                title="Fortune action"
+                                aria-label="Fortune action: add one success level"
                                 className="wfrp-action-btn px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
                               >
                                 +1 SL
                               </button>
-                            </>
-                          )}
-                          {canUseResilienceAction && canUseFortuneActions && (
-                            <details className="relative ml-auto">
-                              <summary className="flex h-[34px] w-[20px] list-none items-center justify-center px-0 py-0 text-gray-400 transition-colors marker:content-none hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-0">
-                                <MoreHorizontal size={16} />
-                              </summary>
-                              <div className="absolute right-0 top-full z-10 mt-2 min-w-max rounded-lg border border-white/10 bg-[#141414] p-1 shadow-xl">
-                                <button
-                                  onClick={handleIWillNotFail}
-                                  className="wfrp-action-btn w-full px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
-                                >
-                                  I Will Not Fail!
-                                </button>
                               </div>
-                            </details>
+                            </div>
                           )}
-                          {canUseResilienceAction && !canUseFortuneActions && (
-                            <button
-                              onClick={handleIWillNotFail}
-                              className="wfrp-action-btn px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
-                            >
-                              I Will Not Fail!
-                            </button>
+                          {canUseResilienceAction && (
+                            <div className="flex flex-col gap-1">
+                              <span className="wfrp-table-label text-gray-500">Resilience</span>
+                              <div className="flex flex-row flex-wrap items-center gap-2">
+                                {canUseFortuneActions ? (
+                                  <details className="relative">
+                                    <summary
+                                      className="flex h-[34px] w-[20px] list-none items-center justify-center px-0 py-0 text-gray-400 transition-colors marker:content-none hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-0"
+                                      title="Resilience action"
+                                      aria-label="Resilience actions"
+                                    >
+                                      <MoreHorizontal size={16} />
+                                    </summary>
+                                    <div className="absolute left-0 top-full z-10 mt-2 min-w-max rounded-lg border border-white/10 bg-[#141414] p-1 shadow-xl">
+                                      <button
+                                        onClick={handleIWillNotFail}
+                                        title="Resilience action"
+                                        aria-label="Resilience action: I Will Not Fail!"
+                                        className="wfrp-action-btn w-full px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+                                      >
+                                        I Will Not Fail!
+                                      </button>
+                                    </div>
+                                  </details>
+                                ) : (
+                                  <button
+                                    onClick={handleIWillNotFail}
+                                    title="Resilience action"
+                                    aria-label="Resilience action: I Will Not Fail!"
+                                    className="wfrp-action-btn px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+                                  >
+                                    I Will Not Fail!
+                                  </button>
+                                )}
+                              </div>
+                            </div>
                           )}
                         </div>
                       )}
