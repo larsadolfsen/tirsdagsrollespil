@@ -296,5 +296,5 @@ export function useGameSession() {
 export type GameSessionHook = ReturnType<typeof useGameSession>;
 export type GameSessionSkillState = ResolvedCharacterSkill;
 export type GameSessionTalentState = ResolvedCharacterTalent;
-export type GameSessionSpellState = ResolvedCharacterTalent;
+export type GameSessionSpellState = ResolvedCharacterSpell;
 export type GameSessionEquipmentState = ResolvedCharacterEquipment;
