@@ -2706,90 +2706,84 @@ function AppScreen() {
 
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex w-full flex-col gap-6 md:w-[28%] xl:w-[24%]">
-            <section className="wfrp-card overflow-hidden p-0!">
-              <div className="wfrp-card-tab-header">
-                <h3 className="wfrp-panel-title">ARMOUR</h3>
-              </div>
-              <div className="wfrp-card-tab-body">
-                <div className="wfrp-subpanel-shell px-3 py-3 space-y-3">
-                  <div className="grid grid-cols-8 gap-2">
-                    {[
-                      { label: "Head", value: armourTotals.head, className: "col-start-4 row-start-1 col-span-2 aspect-square rounded-full" },
-                      { label: "Left arm", value: armourTotals.leftArm, className: "col-start-3 row-start-2 col-span-1 row-span-2 aspect-[1/2] rounded-full rounded-tr-none" },
-                      { label: "Body", value: armourTotals.body, className: "col-start-4 row-start-2 col-span-2 row-span-2 aspect-[2/3] rounded-lg" },
-                      { label: "Right arm", value: armourTotals.rightArm, className: "col-start-6 row-start-2 col-span-1 row-span-2 aspect-[1/2] rounded-full rounded-tl-none" },
-                      { label: "Left leg", value: armourTotals.leftLeg, className: "col-start-4 row-start-4 col-span-1 row-span-2 aspect-[1/2] rounded-b-full rounded-t-lg" },
-                      { label: "Right leg", value: armourTotals.rightLeg, className: "col-start-5 row-start-4 col-span-1 row-span-2 aspect-[1/2] rounded-b-full rounded-t-lg" },
-                    ].map(({ label, value, className }) => (
-                      <div
-                        key={label}
-                        className={`flex flex-col items-center justify-center border border-white/5 bg-black/30 px-1.5 py-2 text-center ${className}`}
-                      >
-                        <div className="text-[8px] font-bold uppercase leading-tight tracking-widest text-gray-500">
-                          {label}
-                        </div>
-                        <div className="mt-1 text-lg font-bold text-gray-100">{value}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex flex-col items-start gap-1">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                      Equipped
-                    </span>
-                    <span className="text-xs font-semibold leading-relaxed text-gray-300">
-                      {equippedArmourNames.length > 0 ? equippedArmourNames.join(", ") : "None"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Reserves Section - Below Skills */}
+            {/* Reserves Section */}
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">
                 <h3 className="wfrp-panel-title">FATE & RESILIENCE</h3>
               </div>
-              <div className="wfrp-card-tab-body space-y-3">
-                <div className="wfrp-subpanel-shell px-3 py-3">
-                  <div className="grid grid-cols-1 gap-3">
-                    <HeaderResourceSlider
-                      label="Fate"
-                      current={fateCurrent}
-                      max={resourceCaps.fate}
-                      onAdjust={adjustFate}
-                      barClassName="bg-[#C98B00]"
-                      contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                    />
-                    <HeaderResourceSlider
-                      label="Fortune"
-                      current={fortuneCurrent}
-                      max={fateCurrent}
-                      onAdjust={adjustFortune}
-                      barClassName="bg-[#C98B00]"
-                      contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                    />
-                  </div>
+              <div className="wfrp-card-tab-body space-y-5 px-4 py-4">
+                <div className="grid grid-cols-1 gap-3">
+                  <HeaderResourceSlider
+                    label="Fate"
+                    current={fateCurrent}
+                    max={resourceCaps.fate}
+                    onAdjust={adjustFate}
+                    barClassName="bg-[#C98B00]"
+                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
+                  />
+                  <HeaderResourceSlider
+                    label="Fortune"
+                    current={fortuneCurrent}
+                    max={fateCurrent}
+                    onAdjust={adjustFortune}
+                    barClassName="bg-[#C98B00]"
+                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
+                  />
                 </div>
 
-                <div className="wfrp-subpanel-shell px-3 py-3">
-                  <div className="grid grid-cols-1 gap-3">
-                    <HeaderResourceSlider
-                      label="Resilience"
-                      current={resilienceCurrent}
-                      max={resourceCaps.resilience}
-                      onAdjust={adjustResilience}
-                      barClassName="bg-[#0088A8]"
-                      contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                    />
-                    <HeaderResourceSlider
-                      label="Resolve"
-                      current={resolveCurrent}
-                      max={Math.min(resourceCaps.resolve, resilienceCurrent)}
-                      onAdjust={adjustResolve}
-                      barClassName="bg-[#0088A8]"
-                      contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                    />
-                  </div>
+                <div className="grid grid-cols-1 gap-3">
+                  <HeaderResourceSlider
+                    label="Resilience"
+                    current={resilienceCurrent}
+                    max={resourceCaps.resilience}
+                    onAdjust={adjustResilience}
+                    barClassName="bg-[#0088A8]"
+                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
+                  />
+                  <HeaderResourceSlider
+                    label="Resolve"
+                    current={resolveCurrent}
+                    max={Math.min(resourceCaps.resolve, resilienceCurrent)}
+                    onAdjust={adjustResolve}
+                    barClassName="bg-[#0088A8]"
+                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="wfrp-card overflow-hidden p-0!">
+              <div className="wfrp-card-tab-header">
+                <h3 className="wfrp-panel-title">ARMOUR</h3>
+              </div>
+              <div className="wfrp-card-tab-body space-y-3 px-4 py-4">
+                <div className="mx-auto grid w-[86%] grid-cols-10 gap-1">
+                  {[
+                    { label: "Head", value: armourTotals.head, className: "col-start-4 row-start-1 col-span-4 aspect-square rounded-full" },
+                    { label: "Left arm", value: armourTotals.leftArm, className: "col-start-2 row-start-2 col-span-2 row-span-2 aspect-[1/2] rounded-full rounded-tr-none" },
+                    { label: "Body", value: armourTotals.body, className: "col-start-4 row-start-2 col-span-4 row-span-2 aspect-square rounded-lg" },
+                    { label: "Right arm", value: armourTotals.rightArm, className: "col-start-8 row-start-2 col-span-2 row-span-2 aspect-[1/2] rounded-full rounded-tl-none" },
+                    { label: "Left leg", value: armourTotals.leftLeg, className: "col-start-4 row-start-4 col-span-2 row-span-2 aspect-[1/2] rounded-b-full rounded-t-lg" },
+                    { label: "Right leg", value: armourTotals.rightLeg, className: "col-start-6 row-start-4 col-span-2 row-span-2 aspect-[1/2] rounded-b-full rounded-t-lg" },
+                  ].map(({ label, value, className }) => (
+                    <div
+                      key={label}
+                      className={`flex flex-col items-center justify-center border border-white/5 bg-black/30 px-3 py-2.5 text-center ${className}`}
+                    >
+                      <div className="text-[8px] font-bold uppercase leading-tight tracking-widest text-gray-500">
+                        {label}
+                      </div>
+                      <div className="mt-1 text-lg font-bold text-gray-100">{value}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col items-start gap-1">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    Equipped
+                  </span>
+                  <span className="text-xs font-semibold leading-relaxed text-gray-300">
+                    {equippedArmourNames.length > 0 ? equippedArmourNames.join(", ") : "None"}
+                  </span>
                 </div>
               </div>
             </section>
