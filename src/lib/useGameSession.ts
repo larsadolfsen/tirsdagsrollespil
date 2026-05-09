@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { SetStateAction } from "react";
 import { hydrateCharacterProgress } from "../data/persistence";
 import { defaultCharacterId } from "../data/repository";
 import {
@@ -21,6 +22,14 @@ const getConsumableCount = (item: ResolvedCharacterEquipment) => {
   return match ? Number(match[1]) : 1;
 };
 
+const clampResource = (value: number, max: number) =>
+  Math.max(0, Math.min(value, max));
+
+const resolveNumberStateAction = (action: SetStateAction<number>, previousValue: number) =>
+  typeof action === "function"
+    ? (action as (previousValue: number) => number)(previousValue)
+    : action;
+
 export function useGameSession() {
   const [selectedCharacterId, setSelectedCharacterId] = useState(defaultCharacterId);
   const [isProgressHydrated, setIsProgressHydrated] = useState(false);
@@ -34,7 +43,7 @@ export function useGameSession() {
     character,
     ruleset,
     rulesIndex,
-    resourceCaps,
+    resourceCaps: baseResourceCaps,
     initialCorruptionCurrent,
     initialFateCurrent,
     initialFortuneCurrent,
@@ -45,8 +54,8 @@ export function useGameSession() {
 
   const [woundsCurrent, setWoundsCurrent] = useState(character.wounds.current);
   const [corruptionCurrent, setCorruptionCurrent] = useState(initialCorruptionCurrent);
-  const [fateCurrent, setFateCurrent] = useState(initialFateCurrent);
-  const [fortuneCurrent, setFortuneCurrent] = useState(initialFortuneCurrent);
+  const [fateCurrent, setRawFateCurrent] = useState(initialFateCurrent);
+  const [fortuneCurrent, setRawFortuneCurrent] = useState(initialFortuneCurrent);
   const [resilienceCurrent, setResilienceCurrent] = useState(initialResilienceCurrent);
   const [resolveCurrent, setResolveCurrent] = useState(initialResolveCurrent);
   const [xpCurrent, setXpCurrent] = useState(initialXpCurrent);
@@ -59,6 +68,27 @@ export function useGameSession() {
   const [equipmentState, setEquipmentState] = useState(character.equipment);
   const [backgroundText, setBackgroundText] = useState(session.progress?.backgroundText ?? "");
   const [notes, setNotes] = useState(session.progress?.notes ?? []);
+
+  const setFateCurrent = (action: SetStateAction<number>) => {
+    setRawFateCurrent((previousFate) => {
+      const nextFate = clampResource(
+        resolveNumberStateAction(action, previousFate),
+        baseResourceCaps.fate,
+      );
+
+      setRawFortuneCurrent((previousFortune) =>
+        clampResource(previousFortune, nextFate),
+      );
+
+      return nextFate;
+    });
+  };
+
+  const setFortuneCurrent = (action: SetStateAction<number>) => {
+    setRawFortuneCurrent((previousFortune) =>
+      clampResource(resolveNumberStateAction(action, previousFortune), fateCurrent),
+    );
+  };
 
   useEffect(() => {
     let isCancelled = false;
@@ -83,8 +113,8 @@ export function useGameSession() {
   useEffect(() => {
     setWoundsCurrent(character.wounds.current);
     setCorruptionCurrent(initialCorruptionCurrent);
-    setFateCurrent(initialFateCurrent);
-    setFortuneCurrent(initialFortuneCurrent);
+    setRawFateCurrent(initialFateCurrent);
+    setRawFortuneCurrent(clampResource(initialFortuneCurrent, initialFateCurrent));
     setResilienceCurrent(initialResilienceCurrent);
     setResolveCurrent(initialResolveCurrent);
     setXpCurrent(initialXpCurrent);
@@ -109,7 +139,7 @@ export function useGameSession() {
   ]);
 
   useEffect(() => {
-    setFortuneCurrent((prev) => Math.min(prev, fateCurrent));
+    setRawFortuneCurrent((prev) => clampResource(prev, fateCurrent));
   }, [fateCurrent]);
 
   useEffect(() => {
@@ -125,7 +155,7 @@ export function useGameSession() {
       woundsCurrent,
       corruptionCurrent,
       fateCurrent,
-      fortuneCurrent,
+      fortuneCurrent: clampResource(fortuneCurrent, fateCurrent),
       resilienceCurrent,
       resolveCurrent,
       xpCurrent,
@@ -215,6 +245,11 @@ export function useGameSession() {
     rulesIndex,
   );
 
+  const resourceCaps = {
+    ...baseResourceCaps,
+    fortune: fateCurrent,
+  };
+
   return {
     selectedCharacterId,
     setSelectedCharacterId,
@@ -261,5 +296,5 @@ export function useGameSession() {
 export type GameSessionHook = ReturnType<typeof useGameSession>;
 export type GameSessionSkillState = ResolvedCharacterSkill;
 export type GameSessionTalentState = ResolvedCharacterTalent;
-export type GameSessionSpellState = ResolvedCharacterSpell;
+export type GameSessionSpellState = ResolvedCharacterTalent;
 export type GameSessionEquipmentState = ResolvedCharacterEquipment;
