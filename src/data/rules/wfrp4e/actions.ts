@@ -38,6 +38,12 @@ export const actionDefinitions: ActionDefinition[] = [
       "The essential art of deflecting a blow with your own weapon or shield. Instead of simply dodging, you catch the opponent's strike and turn it aside, focusing your skill on neutralizing their offense.",
   },
   {
+    id: "defend",
+    name: "Defend",
+    description:
+      "You focus your efforts on staying alive, committing your action to a guarded posture and gaining a defensive skill bonus when resisting attacks.",
+  },
+  {
     id: "grapple",
     name: "Grapple",
     description:

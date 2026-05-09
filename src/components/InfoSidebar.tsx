@@ -433,6 +433,11 @@ export function InfoSidebar({
                 "A standard combat maneuver. Consult the WFRP Core Rulebook for deep tactical situational rules."}
               "
             </RuleDescription>
+            {activeInfo.extra?.note && (
+              <p className="wfrp-sidebar-body mt-3 text-wfrp-gold/80">
+                {activeInfo.extra.note}
+              </p>
+            )}
           </RuleSummaryPanel>
 
           <div className="flex flex-col gap-4">

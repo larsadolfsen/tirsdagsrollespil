@@ -169,6 +169,25 @@ const getConsumableBaseName = (item: ResolvedCharacterEquipment) =>
 const formatConsumableName = (item: ResolvedCharacterEquipment, count: number) =>
   `${getConsumableBaseName(item)} (${count})`;
 
+const offensiveProperties = ["Damaging", "Hack", "Impact", "Impale", "Precise", "Pummel", "Trap-blade", "Wrap"];
+const defensiveProperties = ["Defensive", "Shield"];
+
+const getRelevantWeaponProperties = (actionId: string, properties: string[]) => {
+  if (actionId === "attack" || actionId === "charge") {
+    return properties.filter((property) => offensiveProperties.includes(property));
+  }
+
+  if (actionId === "parry") {
+    return properties.filter(
+      (property) =>
+        defensiveProperties.includes(property) ||
+        property.startsWith("Shield "),
+    );
+  }
+
+  return [];
+};
+
 const PACKS_AND_CONTAINERS_TYPE = "Packs and containers";
 
 const isPacksAndContainersItem = (item: ResolvedCharacterEquipment) =>
@@ -2978,7 +2997,7 @@ function AppScreen() {
                           })()}
                           {/* Weapon Sections */}
                           {equipmentState
-                            .filter(item => item.type.includes('Weapon') && item.equipped)
+                            .filter(item => item.type.includes('Weapon') && !item.containerId)
                             .filter(item => {
                               if (activeActionCategory === 'all') return true;
                               if (activeActionCategory === 'melee') return item.type.includes('Melee');
@@ -3003,12 +3022,63 @@ function AppScreen() {
                               const weaponDamage = sb + (weaponStats.damage.includes("+SB") ? (damageBonus || (weaponStats.damage === "+SB" ? 0 : parseInt(weaponStats.damage.replace("+SB", "")) || 0)) : parseInt(weaponStats.damage) || 0);
 
                               const actions = isMelee ? [
-                                { name: 'Attack', char, totalValue: totalSkillValue, modifier: 0, damage: weaponDamage, range: weaponStats.reach, properties: weaponStats.properties },
-                                { name: 'Charge', char, totalValue: totalSkillValue, modifier: 20, damage: weaponDamage, range: weaponStats.reach, properties: weaponStats.properties.concat('Impact').filter((v, i, a) => a.indexOf(v) === i) },
-                                { name: 'Parry', char, totalValue: totalSkillValue, modifier: 0, damage: 0, range: 'Personal', properties: ['Defensive'], bonuses: [{ label: 'Defensive', value: 1 }] },
-                                { name: 'Feint', char, totalValue: totalSkillValue, modifier: 0, damage: 0, range: weaponStats.reach, properties: ['Mislead'] }
+                                {
+                                  id: "attack",
+                                  name: "Attack",
+                                  char,
+                                  totalValue: totalSkillValue,
+                                  modifier: 0,
+                                  rollDamage: weaponDamage,
+                                  damage: `+${weaponDamage}`,
+                                  range: weaponStats.reach,
+                                  properties: getRelevantWeaponProperties("attack", weaponStats.properties),
+                                },
+                                {
+                                  id: "charge",
+                                  name: "Charge",
+                                  char,
+                                  totalValue: totalSkillValue,
+                                  modifier: 0,
+                                  rollDamage: weaponDamage,
+                                  damage: `+${weaponDamage}`,
+                                  range: weaponStats.reach,
+                                  properties: getRelevantWeaponProperties("charge", weaponStats.properties),
+                                  note: "+1 Advantage if Charge conditions are met",
+                                },
+                                {
+                                  id: "parry",
+                                  name: "Parry",
+                                  char,
+                                  totalValue: totalSkillValue,
+                                  modifier: 0,
+                                  rollDamage: undefined,
+                                  damage: "-",
+                                  range: weaponStats.reach,
+                                  properties: getRelevantWeaponProperties("parry", weaponStats.properties),
+                                },
+                                {
+                                  id: "defend",
+                                  name: "Defend",
+                                  char,
+                                  totalValue: totalSkillValue,
+                                  modifier: 20,
+                                  rollDamage: undefined,
+                                  damage: "-",
+                                  range: "-",
+                                  properties: getRelevantWeaponProperties("defend", weaponStats.properties),
+                                },
                               ] : [
-                                { name: 'Attack', char, totalValue: totalSkillValue, modifier: 0, damage: weaponDamage, range: weaponStats.reach, properties: weaponStats.properties }
+                                {
+                                  id: "attack",
+                                  name: "Attack",
+                                  char,
+                                  totalValue: totalSkillValue,
+                                  modifier: 0,
+                                  rollDamage: weaponDamage,
+                                  damage: `+${weaponDamage}`,
+                                  range: weaponStats.reach,
+                                  properties: getRelevantWeaponProperties("attack", weaponStats.properties),
+                                },
                               ];
 
                               const rangeValue = parseInt(weaponStats.reach);
@@ -3039,8 +3109,8 @@ function AppScreen() {
                                                 onClick={() => {
                                                   handleRoll(
                                                     { key: action.char, label: rollLabel },
-                                                    action.damage,
-                                                    { bonuses: action.bonuses, title: `${weapon.name} ${action.name}` },
+                                                    action.rollDamage,
+                                                    { title: `${weapon.name} ${action.name}` },
                                                   );
                                                   if (action.modifier !== 0) {
                                                     setRollState(prev => ({ ...prev, modifier: action.modifier }));
@@ -3049,31 +3119,35 @@ function AppScreen() {
                                                 className="wfrp-roll-btn"
                                                 aria-label={`Roll ${action.name} with ${weapon.name}`}
                                               >
-                                                {action.totalValue}
+                                                {action.totalValue + action.modifier}
                                               </button>
                                             </div>
                                             <span 
-                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, weaponName: weapon.name, weaponType: weapon.type } })}
+                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: action.totalValue + action.modifier, weaponName: weapon.name, weaponType: weapon.type } })}
                                               className="wfrp-skill-link truncate"
                                             >
                                               {action.name}
                                             </span>
                                             <div className="wfrp-list-cell-strong text-center font-mono">
-                                              {action.damage === 0 ? '-' : `+${action.damage}`}
+                                              {action.damage}
                                             </div>
                                             <div className="wfrp-list-cell-strong">{action.range}</div>
                                             <div className="flex w-full flex-wrap content-start items-center gap-x-1">
                                               {action.properties.map((prop, propIndex) => (
                                                 <span key={prop} className="text-xs font-semibold text-gray-400">
-                                                  <button 
-                                                    onClick={() => {
-                                                      setActiveInfo({ type: 'property', name: prop, extra: { weaponProperties: action.properties } });
-                                                      setRollState(prev => ({ ...prev, characteristic: null }));
-                                                    }}
-                                                    className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
-                                                  >
-                                                    {prop}
-                                                  </button>
+                                                  {rulesIndex.propertyDescriptionByName[prop] ? (
+                                                    <button 
+                                                      onClick={() => {
+                                                        setActiveInfo({ type: 'property', name: prop, extra: { weaponProperties: action.properties } });
+                                                        setRollState(prev => ({ ...prev, characteristic: null }));
+                                                      }}
+                                                      className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
+                                                    >
+                                                      {prop}
+                                                    </button>
+                                                  ) : (
+                                                    <span>{prop}</span>
+                                                  )}
                                                   {propIndex < action.properties.length - 1 ? "," : ""}
                                                 </span>
                                               ))}
@@ -3103,8 +3177,8 @@ function AppScreen() {
                                                 onClick={() => {
                                                   handleRoll(
                                                     { key: action.char, label: rollLabel },
-                                                    action.damage,
-                                                    { bonuses: action.bonuses, title: `${weapon.name} ${action.name}` },
+                                                    action.rollDamage,
+                                                    { title: `${weapon.name} ${action.name}` },
                                                   );
                                                   if (action.modifier !== 0) {
                                                     setRollState(prev => ({ ...prev, modifier: action.modifier }));
@@ -3113,17 +3187,17 @@ function AppScreen() {
                                                 className="wfrp-roll-btn"
                                                 aria-label={`Roll ${action.name} with ${weapon.name}`}
                                               >
-                                                {action.totalValue}
+                                                {action.totalValue + action.modifier}
                                               </button>
                                             </div>
                                             <span 
-                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, weaponName: weapon.name, weaponType: weapon.type } })}
+                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: action.totalValue + action.modifier, weaponName: weapon.name, weaponType: weapon.type } })}
                                               className="wfrp-skill-link truncate"
                                             >
                                               {action.name}
                                             </span>
                                             <div className="wfrp-list-cell-strong text-center font-mono">
-                                              {action.damage === 0 ? '-' : `+${action.damage}`}
+                                              {action.damage}
                                             </div>
                                             <div className="wfrp-list-cell-strong text-center font-mono opacity-50">{rangeBands?.pb ?? "-"}</div>
                                             <div className="wfrp-list-cell-strong text-center font-mono opacity-70">{rangeBands?.s ?? "-"}</div>
@@ -3133,15 +3207,19 @@ function AppScreen() {
                                             <div className="flex w-full flex-wrap content-start items-center gap-x-1">
                                               {action.properties.map((prop, propIndex) => (
                                                 <span key={prop} className="text-xs font-semibold text-gray-400">
-                                                  <button 
-                                                    onClick={() => {
-                                                      setActiveInfo({ type: 'property', name: prop, extra: { weaponProperties: action.properties } });
-                                                      setRollState(prev => ({ ...prev, characteristic: null }));
-                                                    }}
-                                                    className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
-                                                  >
-                                                    {prop}
-                                                  </button>
+                                                  {rulesIndex.propertyDescriptionByName[prop] ? (
+                                                    <button 
+                                                      onClick={() => {
+                                                        setActiveInfo({ type: 'property', name: prop, extra: { weaponProperties: action.properties } });
+                                                        setRollState(prev => ({ ...prev, characteristic: null }));
+                                                      }}
+                                                      className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
+                                                    >
+                                                      {prop}
+                                                    </button>
+                                                  ) : (
+                                                    <span>{prop}</span>
+                                                  )}
                                                   {propIndex < action.properties.length - 1 ? "," : ""}
                                                 </span>
                                               ))}
