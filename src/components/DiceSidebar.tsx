@@ -10,18 +10,31 @@ const getUnitsDie = (result: number) => (result === 100 ? 0 : result % 10);
 const hasWeaponProperty = (rollState: RollState, property: string) =>
   rollState.weaponProperties?.includes(property) ?? false;
 
+const calculateAdjustedSl = (rollState: RollState) => {
+  const baseSl = rollState.sl ?? 0;
+  const preciseBonus = rollState.isSuccess && hasWeaponProperty(rollState, "Precise") ? 1 : 0;
+  const imprecisePenalty = hasWeaponProperty(rollState, "Imprecise") ? 1 : 0;
+
+  return {
+    total: baseSl + preciseBonus - imprecisePenalty,
+    baseSl,
+    preciseBonus,
+    imprecisePenalty,
+  };
+};
+
 const calculateAttackDamage = (rollState: RollState) => {
   if (!rollState.isSuccess || rollState.result === null || rollState.damageBase === null) {
     return null;
   }
 
   const unitsDie = getUnitsDie(rollState.result);
-  const baseSl = rollState.sl ?? 0;
+  const adjustedSl = calculateAdjustedSl(rollState);
   const canUseTiringTraits =
     !hasWeaponProperty(rollState, "Tiring") || rollState.actionId === "charge";
   const hasDamaging = hasWeaponProperty(rollState, "Damaging") && canUseTiringTraits;
   const hasImpact = hasWeaponProperty(rollState, "Impact") && canUseTiringTraits;
-  const damageSl = hasDamaging ? Math.max(baseSl, unitsDie) : baseSl;
+  const damageSl = hasDamaging ? Math.max(adjustedSl.total, unitsDie) : adjustedSl.total;
   const impactDamage = hasImpact ? unitsDie : 0;
 
   return {
@@ -57,6 +70,7 @@ export function DiceSidebar({
   handleReroll: () => void;
   getOutcome: (sl: number, isSuccess: boolean) => string;
 }) {
+  const adjustedSl = calculateAdjustedSl(rollState);
   const currentDamage = calculateAttackDamage(rollState);
 
   return (
@@ -87,12 +101,13 @@ export function DiceSidebar({
                       (characterData.attributes as Record<string, number>)[
                         rollState.characteristic.key
                       ] + rollState.modifier;
+                    const adjustedHistorySl = calculateAdjustedSl(rollState).total;
                     const damage = calculateAttackDamage(rollState);
                     const historyItem: RollHistoryItem = {
                       id: Math.random().toString(36).substring(2, 9),
                       label: rollState.characteristic.label,
                       result: rollState.result,
-                      sl: rollState.sl || 0,
+                      sl: adjustedHistorySl,
                       isSuccess: rollState.isSuccess || false,
                       modifier: rollState.modifier,
                       target,
@@ -252,10 +267,18 @@ export function DiceSidebar({
                         <span
                           className={`font-black uppercase tracking-widest ${rollState.isSuccess ? "text-wfrp-gold" : "text-wfrp-red"}`}
                         >
-                          {rollState.sl! > 0 ? `+${rollState.sl}` : rollState.sl} -{" "}
+                          {adjustedSl.total > 0 ? `+${adjustedSl.total}` : adjustedSl.total} -{" "}
                           {rollState.isSuccess ? "Critical Impact" : "Fumbled Attempt"}
                         </span>
                       </div>
+
+                      {(adjustedSl.preciseBonus > 0 || adjustedSl.imprecisePenalty > 0) && (
+                        <div className="text-[9px] font-bold uppercase tracking-widest text-gray-500 px-1">
+                          Base SL {adjustedSl.baseSl}
+                          {adjustedSl.preciseBonus > 0 ? " + 1 Precise" : ""}
+                          {adjustedSl.imprecisePenalty > 0 ? " - 1 Imprecise" : ""}
+                        </div>
+                      )}
 
                       {currentDamage && (
                         <div className="flex flex-col gap-1 px-1">
@@ -280,7 +303,7 @@ export function DiceSidebar({
                       )}
 
                       <div className="mt-2 text-[9px] font-bold text-gray-500 uppercase italic px-1 border-l border-white/5">
-                        {getOutcome(rollState.sl!, rollState.isSuccess!)}
+                        {getOutcome(adjustedSl.total, rollState.isSuccess!)}
                       </div>
                     </div>
                   )}
