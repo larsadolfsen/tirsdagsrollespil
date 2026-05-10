@@ -1,19 +1,5 @@
 import type { TalentDefinition } from "../../../types";
 
-const simpleTalent = (id: string, name: string, max = "1", tests?: string): TalentDefinition => ({
-  id,
-  name,
-  max,
-  tests,
-  description: `${name} is available as a career talent. Add the full WFRP 4e rule text if detailed automation is needed.`,
-  effects: [
-    {
-      type: "special_rule",
-      rule: `${name} career talent.`,
-    },
-  ],
-});
-
 export const talentDefinitions: TalentDefinition[] = [
   {
     id: "combat_aware",
@@ -245,42 +231,4 @@ export const talentDefinitions: TalentDefinition[] = [
       },
     ],
   },
-  simpleTalent("artistic", "Artistic", "Dexterity Bonus", "Art Tests"),
-  simpleTalent("gunner", "Gunner", "Ballistic Skill Bonus", "Ranged (Blackpowder) Tests"),
-  simpleTalent("tinker", "Tinker", "Dexterity Bonus", "Trade Tests to repair"),
-  simpleTalent("craftsman_engineer", "Craftsman (Engineer)", "Dexterity Bonus", "Trade (Engineer) Tests"),
-  simpleTalent("etiquette_guilder", "Etiquette (Guilder)", "Fellowship Bonus", "Social Tests with guilders"),
-  simpleTalent("marksman", "Marksman", "1", "Ranged Tests"),
-  simpleTalent("orientation", "Orientation", "Initiative Bonus", "Navigation Tests"),
-  simpleTalent("etiquette_scholar", "Etiquette (Scholar)", "Fellowship Bonus", "Social Tests with scholars"),
-  simpleTalent("master_tradesman_engineering", "Master Tradesman (Engineering)", "Dexterity Bonus", "Trade (Engineering) Tests"),
-  simpleTalent("sniper", "Sniper", "Ballistic Skill Bonus", "Ranged Tests at long range"),
-  simpleTalent("super_numerate", "Super Numerate", "Intelligence Bonus", "Evaluate and Gamble Tests"),
-  simpleTalent("magnum_opus", "Magnum Opus", "1"),
-  simpleTalent("rapid_reload", "Rapid Reload", "Dexterity Bonus", "Reloading ranged weapons"),
-  simpleTalent("savant_engineering", "Savant (Engineering)", "Intelligence Bonus", "Lore (Engineering) Tests"),
-  simpleTalent("unshakeable", "Unshakeable", "Willpower Bonus", "Cool Tests"),
-  simpleTalent("arcane_magic_fire", "Arcane Magic (Lore of Fire)", "1"),
-  simpleTalent("detect_artefact", "Detect Artefact", "Initiative Bonus", "Detecting magical artefacts"),
-  simpleTalent("fast_hands", "Fast Hands", "Dexterity Bonus", "Sleight of Hand Tests"),
-  simpleTalent("sixth_sense", "Sixth Sense", "Initiative Bonus", "Intuition Tests"),
-  simpleTalent("dual_wielder", "Dual Wielder", "Weapon Skill Bonus", "Attacks with a weapon in each hand"),
-  simpleTalent("magical_sense", "Magical Sense", "Initiative Bonus", "Perception Tests involving magic"),
-  simpleTalent("menacing", "Menacing", "Strength Bonus", "Intimidate Tests"),
-  simpleTalent("frightening", "Frightening", "Strength Bonus"),
-  simpleTalent("iron_will", "Iron Will", "Willpower Bonus", "Tests to resist influence"),
-  simpleTalent("war_wizard", "War Wizard", "Willpower Bonus"),
-  simpleTalent("bless_any", "Bless (Any)", "1"),
-  simpleTalent("etiquette_cultists", "Etiquette (Cultists)", "Fellowship Bonus", "Social Tests with cultists"),
-  simpleTalent("strong_minded", "Strong-minded", "Willpower Bonus", "Tests to resist manipulation"),
-  simpleTalent("inspiring", "Inspiring", "Fellowship Bonus", "Leadership Tests"),
-  simpleTalent("invoke_any", "Invoke (Any)", "1"),
-  simpleTalent("seasoned_traveller", "Seasoned Traveller", "Intelligence Bonus", "Travel-related Tests"),
-  simpleTalent("holy_visions", "Holy Visions", "1"),
-  simpleTalent("pure_soul", "Pure Soul", "Willpower Bonus", "Tests to resist corruption"),
-  simpleTalent("stout_hearted", "Stout-hearted", "Willpower Bonus", "Cool Tests"),
-  simpleTalent("fearless_any", "Fearless (Any)", "Willpower Bonus", "Fear Tests"),
-  simpleTalent("furious_assault", "Furious Assault", "Weapon Skill Bonus", "Melee Tests"),
-  simpleTalent("holy_hatred", "Holy Hatred", "Willpower Bonus"),
-  simpleTalent("warleader", "Warleader", "Fellowship Bonus", "Leadership Tests in battle"),
 ];

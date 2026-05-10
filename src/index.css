@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@400;700&family=Metamorphous&family=Spectral:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
+@source "./**/*.{ts,tsx}";
+@source "../index.html";
 
 @theme {
   --font-display: "Grenze Gotisch", serif;
