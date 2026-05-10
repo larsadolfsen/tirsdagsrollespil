@@ -22,6 +22,20 @@ const availabilityOrder = ["common", "average", "scarce", "rare", "exotic", "n/a
 type ItemSortKey = "name" | "type" | "rarity" | "price";
 type SortDirection = "asc" | "desc";
 
+function useDebouncedValue<T>(value: T, delayMs = 150) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedValue(value);
+    }, delayMs);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [delayMs, value]);
+
+  return debouncedValue;
+}
+
 function OwnershipDot({ label }: { label: string }) {
   return (
     <span
@@ -139,6 +153,7 @@ export function ShopSidebar({
   onClose: () => void;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const [selectedItemType, setSelectedItemType] = useState("All");
   const [selectedAvailability, setSelectedAvailability] = useState("All");
   const [sortKey, setSortKey] = useState<ItemSortKey>("name");
@@ -201,7 +216,7 @@ export function ShopSidebar({
   }, []);
 
   const filteredStock = useMemo(() => {
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    const normalizedSearchTerm = debouncedSearchTerm.trim().toLowerCase();
     const typeFilteredStock =
       selectedItemType === "All"
         ? shopStock
@@ -220,7 +235,7 @@ export function ShopSidebar({
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearchTerm)),
     );
-  }, [searchTerm, selectedAvailability, selectedItemType]);
+  }, [debouncedSearchTerm, selectedAvailability, selectedItemType]);
 
   const groupedStock = useMemo(() => {
     const sortItems = (stock: typeof shopStock) =>
