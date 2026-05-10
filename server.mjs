@@ -1,5 +1,5 @@
 import express from "express";
-import fs from "node:fs";
+import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -10,35 +10,47 @@ const progressFilePath = path.resolve(
   process.env.WFRP_PROGRESS_FILE ?? path.join(__dirname, "data", "character-progress.json"),
 );
 
-function ensureProgressFile() {
-  fs.mkdirSync(path.dirname(progressFilePath), { recursive: true });
+async function ensureProgressFile() {
+  await fs.mkdir(path.dirname(progressFilePath), { recursive: true });
 
-  if (!fs.existsSync(progressFilePath)) {
-    fs.writeFileSync(progressFilePath, "{}\n", "utf8");
+  try {
+    await fs.access(progressFilePath);
+  } catch {
+    await fs.writeFile(progressFilePath, "{}\n", "utf8");
   }
 }
 
-function writeProgressFile(progress) {
+async function writeProgressFile(progress) {
   const nextContent = `${JSON.stringify(progress, null, 2)}\n`;
-  ensureProgressFile();
+  await ensureProgressFile();
 
-  if (fs.readFileSync(progressFilePath, "utf8") === nextContent) {
+  const currentContent = await fs.readFile(progressFilePath, "utf8");
+
+  if (currentContent === nextContent) {
     return;
   }
 
-  fs.writeFileSync(progressFilePath, nextContent, "utf8");
+  await fs.writeFile(progressFilePath, nextContent, "utf8");
 }
 
 app.use(express.json({ limit: "1mb" }));
 
-app.get("/api/character-progress", (_req, res) => {
-  ensureProgressFile();
-  res.type("application/json").send(fs.readFileSync(progressFilePath, "utf8"));
+app.get("/api/character-progress", async (_req, res, next) => {
+  try {
+    await ensureProgressFile();
+    res.type("application/json").send(await fs.readFile(progressFilePath, "utf8"));
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.put("/api/character-progress", (req, res) => {
-  writeProgressFile(req.body ?? {});
-  res.status(204).end();
+app.put("/api/character-progress", async (req, res, next) => {
+  try {
+    await writeProgressFile(req.body ?? {});
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.use(
