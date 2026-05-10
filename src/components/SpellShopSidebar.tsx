@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowDown, ArrowUp, BookOpen, ChevronDown, ListFilter, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import type { SpellDefinition } from "../types";
 
 const spellCategoryOrder: SpellDefinition["category"][] = ["petty", "arcane", "school"];
@@ -156,6 +157,7 @@ export function SpellShopSidebar({
   onClose: () => void;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const [selectedFilter, setSelectedFilter] = useState<SpellFilter>("All");
   const [sortKey, setSortKey] = useState<SpellSortKey>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -214,7 +216,7 @@ export function SpellShopSidebar({
   );
 
   const filteredStock = useMemo(() => {
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    const normalizedSearchTerm = debouncedSearchTerm.trim().toLowerCase();
     const categoryFilteredStock =
       selectedFilter === "All"
         ? shopStock
@@ -235,7 +237,7 @@ export function SpellShopSidebar({
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearchTerm)),
     );
-  }, [searchTerm, selectedFilter, shopStock]);
+  }, [debouncedSearchTerm, selectedFilter, shopStock]);
 
   const groupedStock = useMemo(() => {
     const sortSpells = (stock: SpellDefinition[]) =>
