@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect, useMemo, useRef } from "react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import {
   Check,
@@ -19,11 +19,7 @@ import {
   Dice5,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { useRef } from "react";
 import { CharacterHeader } from "./components/CharacterHeader";
-import { InfoSidebar } from "./components/InfoSidebar";
-import { ShopSidebar } from "./components/ShopSidebar";
-import { SpellShopSidebar } from "./components/SpellShopSidebar";
 import type { ActiveInfoState } from "./components/appTypes";
 import { GameSessionProvider, useGameSessionContext } from "./context/GameSessionContext";
 import type {
@@ -47,6 +43,16 @@ import {
 import { UI_LABELS } from "./labels";
 import type { ArmourDefinition, ArmourLocation, Characteristic, Ruleset, SkillDefinition } from "./types";
 import type { ItemDefinition, SpellDefinition } from "./types";
+
+const InfoSidebar = lazy(() =>
+  import("./components/InfoSidebar").then((module) => ({ default: module.InfoSidebar })),
+);
+const ShopSidebar = lazy(() =>
+  import("./components/ShopSidebar").then((module) => ({ default: module.ShopSidebar })),
+);
+const SpellShopSidebar = lazy(() =>
+  import("./components/SpellShopSidebar").then((module) => ({ default: module.SpellShopSidebar })),
+);
 
 interface RollHistoryItem {
   id: string;
@@ -922,7 +928,7 @@ function AppScreen() {
     notes,
     setNotes,
   } = useGameSessionContext();
-  const availableCharacters = listCharacters();
+  const availableCharacters = useMemo(() => listCharacters(), []);
   const [activeInfo, setActiveInfo] = useState<ActiveInfoState | null>(null);
   const [activeMainTab, setActiveMainTab] = useState<MainTab>('skills');
   const [activeMobileMainView, setActiveMobileMainView] = useState<MobileTabMenuTarget>("characteristics");
@@ -1231,6 +1237,18 @@ function AppScreen() {
     ? 0
     : Math.round((careerProgressCompletedCount / careerProgressGoalCount) * 100);
   const nextCareerAdvanceCost = nextCareerRankRecord ? getCareerAdvanceCost(displayedCareerRank) : null;
+  const formattedCoins = useMemo(
+    () => formatCharacterCoins(characterData.coins),
+    [characterData.coins],
+  );
+  const ownedShopItemIds = useMemo(
+    () => new Set(equipmentState.map((item) => item.itemId)),
+    [equipmentState],
+  );
+  const knownSpellIds = useMemo(
+    () => new Set(characterData.spells.map((spell) => spell.id)),
+    [characterData.spells],
+  );
 
   useEffect(() => {
     setActiveInfo(null);
@@ -5136,35 +5154,43 @@ function AppScreen() {
           )}
         </AnimatePresence>
 
-        <InfoSidebar
-          activeInfo={activeInfo}
-          setActiveInfo={setActiveInfo}
-          characterData={characterData}
-          characterSkills={characterSkills}
-          advancementTalentNames={advancementTalentNames}
-          ruleset={ruleset}
-          rulesIndex={rulesIndex}
-          getCharacteristicDescription={getCharacteristicDescription}
-          formatSpellDuration={formatSpellDuration}
-          skillListRefs={skillListRefs}
-          propertyListRefs={propertyListRefs}
-          talentListRefs={talentListRefs}
-        />
-        <ShopSidebar
-          isOpen={isShopOpen}
-          coins={formatCharacterCoins(characterData.coins)}
-          ownedItemIds={new Set(equipmentState.map((item) => item.itemId))}
-          onAddToInventory={handleAddShopItem}
-          onBuy={handleAddShopItem}
-          onClose={() => setIsShopOpen(false)}
-        />
-        <SpellShopSidebar
-          isOpen={isSpellShopOpen}
-          spells={ruleset.spells}
-          knownSpellIds={new Set(characterData.spells.map((spell) => spell.id))}
-          onAddSpell={handleAddSpell}
-          onClose={() => setIsSpellShopOpen(false)}
-        />
+        <Suspense fallback={null}>
+          {activeInfo ? (
+            <InfoSidebar
+              activeInfo={activeInfo}
+              setActiveInfo={setActiveInfo}
+              characterData={characterData}
+              characterSkills={characterSkills}
+              advancementTalentNames={advancementTalentNames}
+              ruleset={ruleset}
+              rulesIndex={rulesIndex}
+              getCharacteristicDescription={getCharacteristicDescription}
+              formatSpellDuration={formatSpellDuration}
+              skillListRefs={skillListRefs}
+              propertyListRefs={propertyListRefs}
+              talentListRefs={talentListRefs}
+            />
+          ) : null}
+          {isShopOpen ? (
+            <ShopSidebar
+              isOpen={isShopOpen}
+              coins={formattedCoins}
+              ownedItemIds={ownedShopItemIds}
+              onAddToInventory={handleAddShopItem}
+              onBuy={handleAddShopItem}
+              onClose={() => setIsShopOpen(false)}
+            />
+          ) : null}
+          {isSpellShopOpen ? (
+            <SpellShopSidebar
+              isOpen={isSpellShopOpen}
+              spells={ruleset.spells}
+              knownSpellIds={knownSpellIds}
+              onAddSpell={handleAddSpell}
+              onClose={() => setIsSpellShopOpen(false)}
+            />
+          ) : null}
+        </Suspense>
       </div>
     </div>
   );

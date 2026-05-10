@@ -55,11 +55,23 @@ app.put("/api/character-progress", async (req, res, next) => {
 
 app.use(
   express.static(path.join(__dirname, "dist"), {
+    index: false,
     maxAge: "1d",
+    setHeaders(res, filePath) {
+      if (filePath.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-cache");
+        return;
+      }
+
+      if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      }
+    },
   }),
 );
 
 app.get("*", (_req, res) => {
+  res.setHeader("Cache-Control", "no-cache");
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 

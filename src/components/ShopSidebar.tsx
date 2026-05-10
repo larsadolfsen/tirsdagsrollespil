@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
 import { allItemDefinitions, wfrp4eRuleset } from "../data/rules/wfrp4e";
 import { formatItemValue, getItemPriceInBrass } from "../lib/gameSession";
-import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import type { ItemDefinition } from "../types";
 
 const weaponAvailabilityById = new Map(
@@ -140,7 +139,6 @@ export function ShopSidebar({
   onClose: () => void;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const [selectedItemType, setSelectedItemType] = useState("All");
   const [selectedAvailability, setSelectedAvailability] = useState("All");
   const [sortKey, setSortKey] = useState<ItemSortKey>("name");
@@ -218,7 +216,7 @@ export function ShopSidebar({
   }, []);
 
   const filteredStock = useMemo(() => {
-    const normalizedSearchTerm = debouncedSearchTerm.trim().toLowerCase();
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
     const typeFilteredStock =
       selectedItemType === "All"
         ? shopStock
@@ -237,7 +235,7 @@ export function ShopSidebar({
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearchTerm)),
     );
-  }, [debouncedSearchTerm, selectedAvailability, selectedItemType]);
+  }, [searchTerm, selectedAvailability, selectedItemType]);
 
   const groupedStock = useMemo(() => {
     const sortItems = (stock: typeof shopStock) =>
