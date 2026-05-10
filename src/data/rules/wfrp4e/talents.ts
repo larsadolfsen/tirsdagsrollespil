@@ -8,12 +8,7 @@ export const talentDefinitions: TalentDefinition[] = [
     tests: "Perception during melee",
     description:
       "You are used to scanning the battlefield to make snap decisions informed by the shifting tides of war. You may take a Challenging (+0) Perception Test to ignore Surprise, which is modified by circumstance as normal.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "May take a Challenging (+0) Perception Test to ignore Surprise.",
-      },
-    ],
+    effects: [{ type: "special_rule", rule: "May take a Challenging (+0) Perception Test to ignore Surprise." }],
   },
   {
     id: "strike_to_injure",
@@ -21,13 +16,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Initiative Bonus",
     description:
       "You inflict your level of Strike to Injure in additional Wounds when you cause a Critical Wound.",
-    effects: [
-      {
-        type: "damage_bonus",
-        valuePerLevel: 1,
-        condition: "when_causing_critical_wound",
-      },
-    ],
+    effects: [{ type: "damage_bonus", valuePerLevel: 1, condition: "when_causing_critical_wound" }],
   },
   {
     id: "drilled",
@@ -36,12 +25,7 @@ export const talentDefinitions: TalentDefinition[] = [
     tests: "Melee Tests when beside an ally with Drilled",
     description:
       "You have been trained to fight shoulder-to-shoulder with other soldiers. If an enemy causes you to lose Advantage when standing beside an active ally with the Drilled Talent, you may keep 1 lost Advantage for each time you have taken the Drilled Talent.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "When beside an active ally with Drilled, keep 1 lost Advantage per Talent level when an enemy causes Advantage loss.",
-      },
-    ],
+    effects: [{ type: "special_rule", rule: "When beside an active ally with Drilled, keep 1 lost Advantage per Talent level when an enemy causes Advantage loss." }],
   },
   {
     id: "flee",
@@ -50,28 +34,15 @@ export const talentDefinitions: TalentDefinition[] = [
     tests: "Athletics when Fleeing",
     description:
       "When your life is on the line you are capable of impressive bursts of speed. Your Movement Attribute counts as 1 higher when Fleeing.",
-    effects: [
-      {
-        type: "attribute_bonus",
-        attribute: "movement",
-        valuePerLevel: 1,
-        condition: "when_fleeing",
-      },
-    ],
+    effects: [{ type: "attribute_bonus", attribute: "movement", valuePerLevel: 1, condition: "when_fleeing" }],
   },
   {
     id: "shields_up",
     name: "Shields Up",
     max: "Strength Bonus",
     tests: "Any Test to defend with a shield",
-    description:
-      "You are trained to maximize protection when fighting with a shield or under pressure.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "Apply shield-specific defensive rules when this Talent is used with a shield.",
-      },
-    ],
+    description: "You are trained to maximize protection when fighting with a shield or under pressure.",
+    effects: [{ type: "special_rule", rule: "Apply shield-specific defensive rules when this Talent is used with a shield." }],
   },
   {
     id: "strike_to_stun",
@@ -81,31 +52,16 @@ export const talentDefinitions: TalentDefinition[] = [
     description:
       "You know where to hit an opponent to bring him down fast. You ignore the Called Shot penalty to strike the Head Hit Location when using a melee weapon with the Pummel Quality. Further, you count all improvised weapons as having the Pummel Quality.",
     effects: [
-      {
-        type: "ignore_penalty",
-        penalty: "called_shot_head",
-        condition: "when_using_melee_weapon_with_pummel_quality",
-      },
-      {
-        type: "special_rule",
-        rule: "Improvised weapons count as having the Pummel Quality.",
-      },
+      { type: "ignore_penalty", penalty: "called_shot_head", condition: "when_using_melee_weapon_with_pummel_quality" },
+      { type: "special_rule", rule: "Improvised weapons count as having the Pummel Quality." },
     ],
   },
   {
     id: "warrior_born",
     name: "Warrior Born",
     max: "1",
-    description:
-      "You gain a permanent +5 bonus to your starting Weapon Skill Characteristic. This does not count as Advances.",
-    effects: [
-      {
-        type: "attribute_bonus",
-        attribute: "weaponSkill",
-        valuePerLevel: 5,
-        condition: "starting_characteristic_only",
-      },
-    ],
+    description: "You gain a permanent +5 bonus to your starting Weapon Skill Characteristic. This does not count as Advances.",
+    effects: [{ type: "attribute_bonus", attribute: "weaponSkill", valuePerLevel: 5, condition: "starting_characteristic_only" }],
   },
   {
     id: "doomed",
@@ -113,27 +69,14 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "1",
     description:
       "At the age of 10, a Priest of Morr called a Doomsayer took you aside to foretell your death. Should your character die in a fashion that matches your Dooming, your next character gains a bonus of half the total XP your dead character accrued during play.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "If the character dies in the manner of their Dooming, the next character gains half the dead character's accrued XP.",
-      },
-    ],
+    effects: [{ type: "special_rule", rule: "If the character dies in the manner of their Dooming, the next character gains half the dead character's accrued XP." }],
   },
   {
     id: "suave",
     name: "Suave",
     max: "1",
-    description:
-      "You gain a permanent +5 bonus to your starting Fellowship Characteristic. This does not count towards your Advances.",
-    effects: [
-      {
-        type: "attribute_bonus",
-        attribute: "fellowship",
-        valuePerLevel: 5,
-        condition: "starting_characteristic_only",
-      },
-    ],
+    description: "You gain a permanent +5 bonus to your starting Fellowship Characteristic. This does not count towards your Advances.",
+    effects: [{ type: "attribute_bonus", attribute: "fellowship", valuePerLevel: 5, condition: "starting_characteristic_only" }],
   },
   {
     id: "perfect_pitch",
@@ -142,25 +85,14 @@ export const talentDefinitions: TalentDefinition[] = [
     tests: "Entertain (Sing), Language (Tonal Languages, such as Eltharin, Cathayan, and Magick)",
     description:
       "You have perfect pitch, able to replicate notes perfectly and identify them without even making a Test. Further, add Entertain (Sing) to any Career you enter; if it is already in your Career, you may instead purchase the Skill for 5 XP fewer per Advance.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "Identify and replicate notes without a Test. Add Entertain (Sing) to any Career, or buy it 5 XP cheaper per Advance if already in Career.",
-      },
-    ],
+    effects: [{ type: "special_rule", rule: "Identify and replicate notes without a Test. Add Entertain (Sing) to any Career, or buy it 5 XP cheaper per Advance if already in Career." }],
   },
   {
     id: "read_write",
     name: "Read/Write",
     max: "1",
-    description:
-      "You are one of the rare literate individuals in the Old World. You are assumed to be able to read and write all of the Languages you can speak, if appropriate.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "Can read and write known Languages where appropriate.",
-      },
-    ],
+    description: "You are one of the rare literate individuals in the Old World. You are assumed to be able to read and write all of the Languages you can speak, if appropriate.",
+    effects: [{ type: "special_rule", rule: "Can read and write known Languages where appropriate." }],
   },
   {
     id: "resistance_corruption",
@@ -168,13 +100,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Toughness Bonus",
     tests: "Endurance Tests to resist Corruption",
     description: "You have a hardened spirit when resisting corrupting influences.",
-    effects: [
-      {
-        type: "test_sl_bonus",
-        test: "Endurance Tests to resist Corruption",
-        valuePerLevel: 1,
-      },
-    ],
+    effects: [{ type: "test_sl_bonus", test: "Endurance Tests to resist Corruption", valuePerLevel: 1 }],
   },
   {
     id: "instinctive_diction",
@@ -183,12 +109,7 @@ export const talentDefinitions: TalentDefinition[] = [
     tests: "Language (Magick) when casting",
     description:
       "You instinctively understand the language of Magick and are capable of articulating the most complex phrases rapidly without error. You do not suffer a Miscast if you roll a double on a successful Language (Magick) Test.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "No Miscast from doubles on successful Language (Magick) Tests.",
-      },
-    ],
+    effects: [{ type: "special_rule", rule: "No Miscast from doubles on successful Language (Magick) Tests." }],
   },
   {
     id: "petty_magic",
@@ -196,12 +117,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "1",
     description:
       "You have the spark to cast magic within you and have mastered techniques to control it at a basic level. When you take this Talent, you manifest and permanently memorise a number of spells equal to your Willpower Bonus.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "Learn Petty spells equal to Willpower Bonus. Extra Petty spells may be learned for XP by tier.",
-      },
-    ],
+    effects: [{ type: "special_rule", rule: "Learn Petty spells equal to Willpower Bonus. Extra Petty spells may be learned for XP by tier." }],
   },
   {
     id: "aethyric_attunement",
@@ -210,25 +126,84 @@ export const talentDefinitions: TalentDefinition[] = [
     tests: "Channel (Any)",
     description:
       "Your experience, talent or training lets you more safely manipulate the Winds of Magic. You do not suffer a Miscast if you roll a double on a successful Channel Test.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "No Miscast from doubles on successful Channel Tests.",
-      },
-    ],
+    effects: [{ type: "special_rule", rule: "No Miscast from doubles on successful Channel Tests." }],
   },
   {
     id: "second_sight",
     name: "Second Sight",
     max: "Initiative Bonus",
     tests: "Any Test to detect the Winds of Magic",
-    description:
-      "You can perceive the shifting Winds of Magic that course from the Chaos Gates at the poles of the world. You now have the Sight.",
-    effects: [
-      {
-        type: "special_rule",
-        rule: "Can perceive the Winds of Magic and use the Sight.",
-      },
-    ],
+    description: "You can perceive the shifting Winds of Magic that course from the Chaos Gates at the poles of the world. You now have the Sight.",
+    effects: [{ type: "special_rule", rule: "Can perceive the Winds of Magic and use the Sight." }],
+  },
+  {
+    id: "coolheaded",
+    name: "Coolheaded",
+    max: "1",
+    description: "You keep your nerve under pressure and gain a permanent +5 bonus to your starting Willpower Characteristic. This does not count as Advances.",
+    effects: [{ type: "attribute_bonus", attribute: "willpower", valuePerLevel: 5, condition: "starting_characteristic_only" }],
+  },
+  {
+    id: "magic_resistance",
+    name: "Magic Resistance",
+    max: "Toughness Bonus",
+    tests: "Tests to resist magic",
+    description: "You are naturally resistant to magic and gain a bonus to resist magical effects.",
+    effects: [{ type: "test_sl_bonus", test: "Tests to resist magic", valuePerLevel: 1 }],
+  },
+  {
+    id: "sturdy",
+    name: "Sturdy",
+    max: "Strength Bonus",
+    tests: "Endurance Tests involving encumbrance or fatigue",
+    description: "You are solidly built and used to carrying weight or enduring physical strain.",
+    effects: [{ type: "special_rule", rule: "Apply Sturdy when resisting or managing physical strain, encumbrance, and similar GM-approved situations." }],
+  },
+  {
+    id: "savant_engineering",
+    name: "Savant (Engineering)",
+    max: "Intelligence Bonus",
+    tests: "Lore (Engineering)",
+    description: "You have specialist learning in engineering and gain additional benefit on relevant Lore Tests.",
+    effects: [{ type: "test_sl_bonus", test: "Lore (Engineering)", valuePerLevel: 1 }],
+  },
+  {
+    id: "bless",
+    name: "Bless",
+    max: "1",
+    tests: "Pray Tests to invoke blessings",
+    description: "You are trained to call upon your deity for minor divine blessings.",
+    effects: [{ type: "special_rule", rule: "Allows the character to learn and invoke Blessings appropriate to their cult." }],
+  },
+  {
+    id: "etiquette_cultists",
+    name: "Etiquette (Cultists)",
+    max: "Fellowship Bonus",
+    tests: "Social Tests with cult members",
+    description: "You understand the customs, ranks, and expected behaviour of religious cults.",
+    effects: [{ type: "test_sl_bonus", test: "Social Tests with cult members", valuePerLevel: 1 }],
+  },
+  {
+    id: "gunner",
+    name: "Gunner",
+    max: "Ballistic Skill Bonus",
+    tests: "Ranged Tests with blackpowder or engineering weapons",
+    description: "You are trained in the use and maintenance of blackpowder and similar mechanical weapons.",
+    effects: [{ type: "special_rule", rule: "Use this Talent for blackpowder and engineering weapon handling as directed by the GM." }],
+  },
+  {
+    id: "marksman",
+    name: "Marksman",
+    max: "1",
+    description: "You gain a permanent +5 bonus to your starting Ballistic Skill Characteristic. This does not count as Advances.",
+    effects: [{ type: "attribute_bonus", attribute: "ballisticSkill", valuePerLevel: 5, condition: "starting_characteristic_only" }],
+  },
+  {
+    id: "impassioned_zeal",
+    name: "Impassioned Zeal",
+    max: "Fellowship Bonus",
+    tests: "Charm and Leadership Tests involving speeches or sermons",
+    description: "Your words carry fervour and conviction when you address a crowd or call others to action.",
+    effects: [{ type: "test_sl_bonus", test: "Charm and Leadership Tests involving speeches or sermons", valuePerLevel: 1 }],
   },
 ];
