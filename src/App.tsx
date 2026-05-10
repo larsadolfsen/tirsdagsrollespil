@@ -6,14 +6,17 @@
 import { useState, useEffect } from "react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import {
+  Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Menu,
   Plus,
   Minus,
   Settings,
   Trash2,
   X,
-  Dice5
+  Dice5,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useRef } from "react";
@@ -129,10 +132,28 @@ type InlineSubtabOption<T extends string> = {
 };
 
 type ActionCategory = 'all' | 'melee' | 'ranged' | 'other';
+type MainTab = 'skills' | 'actions' | 'inventory' | 'spells' | 'features' | 'background' | 'notes' | 'career';
+type MobileTabMenuTarget = MainTab | "characteristics";
 type SkillSubtab = 'all' | 'trained' | 'advanced' | 'basic';
 type SpellSubtab = 'all' | 'petty' | 'arcane' | `school:${string}`;
 type InventorySubtab = 'all' | 'wallet' | 'worn' | 'carried' | `container:${string}`;
 type CoinKey = "gc" | "s" | "d";
+
+const mainTabOptions: Array<{ id: MainTab; label: string }> = [
+  { id: "skills", label: "Skills" },
+  { id: "actions", label: "Actions" },
+  { id: "spells", label: "Spells" },
+  { id: "inventory", label: "Inventory" },
+  { id: "features", label: "Talents" },
+  { id: "background", label: "Background" },
+  { id: "notes", label: "Notes" },
+  { id: "career", label: "Advance" },
+];
+
+const mobileTabMenuOptions: Array<{ id: MobileTabMenuTarget; label: string }> = [
+  { id: "characteristics", label: "Characteristics" },
+  ...mainTabOptions,
+];
 
 const formatCoinTotalValue = (coins: { gc: number; s: number; d: number }) => {
   const totalBrass = coins.gc * 240 + coins.s * 12 + coins.d;
@@ -898,7 +919,11 @@ function AppScreen() {
   } = useGameSessionContext();
   const availableCharacters = listCharacters();
   const [activeInfo, setActiveInfo] = useState<ActiveInfoState | null>(null);
-  const [activeMainTab, setActiveMainTab] = useState<'skills' | 'actions' | 'inventory' | 'spells' | 'features' | 'background' | 'notes' | 'career'>('skills');
+  const [activeMainTab, setActiveMainTab] = useState<MainTab>('skills');
+  const [activeMobileMainView, setActiveMobileMainView] = useState<MobileTabMenuTarget>("characteristics");
+  const [isMobileNavigationOpen, setIsMobileNavigationOpen] = useState(false);
+  const [isMobileCharacterListOpen, setIsMobileCharacterListOpen] = useState(false);
+  const [isMobilePortraitMenuOpen, setIsMobilePortraitMenuOpen] = useState(false);
   const [activeActionCategory, setActiveActionCategory] = useState<ActionCategory>('all');
   const [activeSkillSubtab, setActiveSkillSubtab] = useState<SkillSubtab>('trained');
   const [activeSpellSubtab, setActiveSpellSubtab] = useState<SpellSubtab>('all');
@@ -1205,6 +1230,7 @@ function AppScreen() {
   useEffect(() => {
     setActiveInfo(null);
     setActiveMainTab("skills");
+    setActiveMobileMainView("characteristics");
     setActiveActionCategory("all");
     setActiveSkillSubtab("trained");
     setActiveInventorySubtab("all");
@@ -1538,6 +1564,7 @@ function AppScreen() {
       },
     ]);
     setActiveMainTab("inventory");
+    setActiveMobileMainView("inventory");
   };
 
   const handleAddSpell = (spell: SpellDefinition) => {
@@ -1563,6 +1590,7 @@ function AppScreen() {
       ];
     });
     setActiveMainTab("spells");
+    setActiveMobileMainView("spells");
   };
 
   const handleAdjustCoinType = (coinKey: CoinKey, amount: number) => {
@@ -2641,6 +2669,61 @@ function AppScreen() {
     },
   ];
 
+  const handleMobileMainViewSelect = (target: MobileTabMenuTarget) => {
+    setActiveMobileMainView(target);
+
+    if (target === "characteristics") {
+      return;
+    }
+
+    setActiveMainTab(target);
+  };
+
+  const closeMobileNavigation = () => {
+    setIsMobileNavigationOpen(false);
+    setIsMobileCharacterListOpen(false);
+  };
+
+  const openMobileNavigation = (showCharacterList = false) => {
+    setIsMobilePortraitMenuOpen(false);
+    setIsMobileCharacterListOpen(showCharacterList);
+    setIsMobileNavigationOpen(true);
+  };
+
+  const openAdvanceView = () => {
+    setActiveInfo(null);
+    setIsShopOpen(false);
+    setIsSpellShopOpen(false);
+    setIsDiceLogOpen(false);
+    setActiveMainTab("career");
+    setActiveMobileMainView("career");
+  };
+
+  const mobileAddAction =
+    activeMobileMainView === "inventory"
+      ? {
+          label: "Add item",
+          onClick: () => {
+            setActiveInfo(null);
+            setIsDiceLogOpen(false);
+            setIsMobileNavigationOpen(false);
+            setIsMobileCharacterListOpen(false);
+            setIsMobilePortraitMenuOpen(false);
+            setIsShopOpen(true);
+          },
+        }
+      : activeMobileMainView === "spells"
+        ? {
+            label: "Add spell",
+            onClick: () => {
+              setIsMobileNavigationOpen(false);
+              setIsMobileCharacterListOpen(false);
+              setIsMobilePortraitMenuOpen(false);
+              setIsSpellShopOpen(true);
+            },
+          }
+        : null;
+
   if (isCharacterBuilderOpen) {
     return (
       <CharacterBuilderScreen
@@ -2659,41 +2742,119 @@ function AppScreen() {
 
       <div className="flex flex-1 overflow-hidden relative">
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 space-y-4">
+        <main className="flex-1 overflow-y-auto p-0 md:p-4 md:space-y-4">
           
           {/* Compact Horizontal Header */}
-          <CharacterHeader
-            characterData={characterData}
-            availableCharacters={availableCharacters}
-            selectedCharacterId={selectedCharacterId}
-            xpCurrent={xpCurrent}
-            onSelectCharacter={setSelectedCharacterId}
-            onCreateCharacter={() => {
-              setActiveInfo(null);
-              setIsShopOpen(false);
-              setIsSpellShopOpen(false);
-              setIsDiceLogOpen(false);
-              setRollState((prev) => ({ ...prev, characteristic: null }));
-              setIsCharacterBuilderOpen(true);
-            }}
-            onOpenDice={() => {
-              setActiveInfo(null);
-              setIsShopOpen(false);
-              setIsDiceLogOpen(true);
-            }}
-            onOpenAdvance={() => {
-              setActiveInfo(null);
-              setIsShopOpen(false);
-              setIsSpellShopOpen(false);
-              setIsDiceLogOpen(false);
-              setActiveMainTab("career");
-            }}
-          />
+          <div className="hidden md:block">
+            <CharacterHeader
+              characterData={characterData}
+              availableCharacters={availableCharacters}
+              selectedCharacterId={selectedCharacterId}
+              xpCurrent={xpCurrent}
+              onSelectCharacter={setSelectedCharacterId}
+              onCreateCharacter={() => {
+                setActiveInfo(null);
+                setIsShopOpen(false);
+                setIsSpellShopOpen(false);
+                setIsDiceLogOpen(false);
+                setRollState((prev) => ({ ...prev, characteristic: null }));
+                setIsCharacterBuilderOpen(true);
+              }}
+              onOpenDice={() => {
+                setActiveInfo(null);
+                setIsShopOpen(false);
+                setIsDiceLogOpen(true);
+              }}
+              onOpenAdvance={() => {
+                openAdvanceView();
+              }}
+            />
+          </div>
 
-        <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-8">
+          <section className="md:hidden border-b border-[#303030] bg-[#181818] shadow-lg shadow-black/20">
+            <div className="flex h-[60px] items-center">
+              <button
+                type="button"
+                onClick={() => openMobileNavigation(false)}
+                className="flex h-full w-14 shrink-0 items-center justify-center text-gray-400 transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                aria-label="Open navigation drawer"
+                aria-haspopup="dialog"
+                aria-expanded={isMobileNavigationOpen}
+              >
+                <Menu size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => openMobileNavigation(true)}
+                className="flex min-w-0 flex-1 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                aria-label="Change character"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate font-serif text-xl font-bold leading-tight text-gray-100">
+                    {characterData.name}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[9px] font-black uppercase tracking-[0.22em] text-gray-500">
+                    {UI_LABELS.CAMPAIGN_NAME}
+                  </span>
+                </span>
+              </button>
+              <div className="relative mr-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileNavigationOpen(false);
+                    setIsMobileCharacterListOpen(false);
+                    setIsMobilePortraitMenuOpen((isOpen) => !isOpen);
+                  }}
+                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-wfrp-gold/70 bg-black/30 p-0.5 shadow-inner transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                  aria-label="Open character actions"
+                  aria-haspopup="menu"
+                  aria-expanded={isMobilePortraitMenuOpen}
+                >
+                  <img
+                    src="https://picsum.photos/seed/knight/200/200"
+                    alt=""
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full rounded-full object-cover grayscale brightness-90"
+                  />
+                </button>
+                {isMobilePortraitMenuOpen && (
+                  <div
+                    className="absolute right-0 top-[calc(100%+0.5rem)] z-40 min-w-44 overflow-hidden rounded border border-[#303030] bg-[#151515] shadow-2xl"
+                    role="menu"
+                    aria-label="Character actions"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        openAdvanceView();
+                        setIsMobilePortraitMenuOpen(false);
+                      }}
+                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-[#222] hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                      role="menuitem"
+                    >
+                      <span>Advance</span>
+                      <span className="text-xs font-bold text-blue-400">{xpCurrent}/{characterData.xpTotal}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsMobilePortraitMenuOpen(false)}
+                      className="flex w-full items-center gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-[#222] hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                      role="menuitem"
+                    >
+                      <Settings size={14} />
+                      Settings
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+        <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-8 px-4 py-4 md:px-0 md:py-0">
           {/* Layout for Characteristics and Skills */}
           {/* Characteristics Section */}
-          <section>
+          <section className={activeMobileMainView === "characteristics" ? "block" : "hidden md:block"}>
             <div className="grid grid-cols-5 md:grid-cols-10 gap-2 lg:gap-3">
               {(UI_LABELS.CHARACTERISTICS as Characteristic[]).map((c) => {
                 const value = (characterData.attributes as Record<string, number>)[c.key] || 0;
@@ -2734,7 +2895,9 @@ function AppScreen() {
           </section>
 
           <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex w-full flex-col gap-6 md:w-[28%] xl:w-[24%]">
+            <div className={`w-full flex-col gap-6 md:flex md:w-[28%] xl:w-[24%] ${
+              activeMobileMainView === "characteristics" ? "flex" : "hidden"
+            }`}>
             {/* Reserves Section */}
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">
@@ -2835,21 +2998,17 @@ function AppScreen() {
           </div>
 
           {/* Tabbed Info Box - 2/3 width on Desktop/Tablet */}
-          <section className="w-full md:flex-1 wfrp-card flex flex-col overflow-hidden self-start min-h-[500px] p-0!">
-              <ScrollableTabStrip className="flex px-4 bg-[#111] border-b border-[#303030] gap-4 lg:gap-6 overflow-x-auto no-scrollbar">
-                {[
-                  { id: 'skills', label: 'Skills' },
-                  { id: 'actions', label: 'Actions' },
-                  { id: 'spells', label: 'Spells' },
-                  { id: 'inventory', label: 'Inventory' },
-                  { id: 'features', label: 'Talents' },
-                  { id: 'background', label: 'Background' },
-                  { id: 'notes', label: 'Notes' },
-                  { id: 'career', label: 'Advance' }
-                ].map((tab) => (
+          <section className={`w-full flex-col overflow-visible self-start min-h-[500px] p-0! md:flex md:flex-1 md:overflow-hidden md:rounded-lg md:border md:border-[#303030] md:bg-[#181818] md:shadow-lg ${
+            activeMobileMainView === "characteristics" ? "hidden" : "flex"
+          }`}>
+              <ScrollableTabStrip className="hidden md:flex px-4 bg-[#111] border-b border-[#303030] gap-4 lg:gap-6 overflow-x-auto no-scrollbar">
+                {mainTabOptions.map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveMainTab(tab.id as any)}
+                    onClick={() => {
+                      setActiveMainTab(tab.id);
+                      setActiveMobileMainView(tab.id);
+                    }}
                     className={`relative py-3.5 px-0.5 text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
                       activeMainTab === tab.id 
                         ? 'text-white' 
@@ -3372,7 +3531,7 @@ function AppScreen() {
                               <button
                                 type="button"
                                 onClick={() => setIsSpellShopOpen(true)}
-                                className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em]"
+                                className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em] max-md:hidden"
                                 aria-label="Add spells"
                               >
                                 <span className="whitespace-nowrap">Add Spells</span>
@@ -3502,7 +3661,7 @@ function AppScreen() {
                                   setIsDiceLogOpen(false);
                                   setIsShopOpen(true);
                                 }}
-                                className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em]"
+                                className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em] max-md:hidden"
                                 aria-label="Add item"
                               >
                                 <span className="whitespace-nowrap">Add item</span>
@@ -4400,6 +4559,166 @@ function AppScreen() {
           </div>
         </div>
         </main>
+
+        {mobileAddAction && (
+          <button
+            type="button"
+            onClick={mobileAddAction.onClick}
+            className="fixed bottom-6 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-wfrp-gold/50 bg-[#181818] text-wfrp-gold shadow-xl shadow-black/50 transition-colors hover:border-wfrp-gold/70 hover:bg-[#222] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wfrp-gold/60 md:hidden"
+            aria-label={mobileAddAction.label}
+          >
+            <Plus size={24} />
+          </button>
+        )}
+
+        <AnimatePresence>
+          {isMobileNavigationOpen && (
+            <motion.div
+              className="fixed inset-0 z-50 md:hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Navigation drawer"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <button
+                type="button"
+                className="absolute inset-0 bg-black/65"
+                aria-label="Close navigation drawer"
+                onClick={closeMobileNavigation}
+              />
+              <motion.aside
+                className="absolute left-0 top-0 flex h-full w-[min(86vw,340px)] flex-col border-r border-[#3a3324] bg-[#121212] shadow-2xl"
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ type: "spring", damping: 30, stiffness: 260 }}
+              >
+                <div className="border-b border-[#303030] bg-[#181818] px-5 py-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex min-w-0 items-start gap-3">
+                      <Menu size={18} className="mt-1 shrink-0 text-wfrp-gold/70" />
+                      <div className="min-w-0">
+                      <h2 className="truncate font-serif text-2xl font-bold text-wfrp-gold">
+                        {characterData.name}
+                      </h2>
+                      <p className="mt-1 truncate text-[11px] font-bold uppercase tracking-widest text-gray-500">
+                        {UI_LABELS.CAMPAIGN_NAME}
+                      </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileCharacterListOpen((isOpen) => !isOpen)}
+                      className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/5 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                      aria-label="Change character"
+                      aria-expanded={isMobileCharacterListOpen}
+                    >
+                      <ChevronDown
+                        size={20}
+                        className={`transition-transform ${isMobileCharacterListOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                  </div>
+
+                  {isMobileCharacterListOpen && (
+                    <div className="mt-4 overflow-hidden rounded border border-[#303030] bg-black/25 p-1">
+                      {availableCharacters.map((character) => {
+                        const isSelected = character.id === selectedCharacterId;
+
+                        return (
+                          <button
+                            key={character.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedCharacterId(character.id);
+                              closeMobileNavigation();
+                            }}
+                            className={`flex w-full items-center justify-between rounded px-3 py-2.5 text-left transition-colors ${
+                              isSelected
+                                ? "bg-[#2a2417] text-wfrp-gold"
+                                : "text-gray-200 hover:bg-[#222]"
+                            }`}
+                          >
+                            <span className="min-w-0">
+                              <span className="block truncate text-sm font-semibold">{character.name}</span>
+                              <span className="block text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                                {character.rulesetId}
+                              </span>
+                            </span>
+                            <span className="ml-3 flex h-5 w-5 items-center justify-center">
+                              {isSelected ? <Check size={14} /> : null}
+                            </span>
+                          </button>
+                        );
+                      })}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveInfo(null);
+                          setIsShopOpen(false);
+                          setIsSpellShopOpen(false);
+                          setIsDiceLogOpen(false);
+                          setRollState((prev) => ({ ...prev, characteristic: null }));
+                          setIsCharacterBuilderOpen(true);
+                          closeMobileNavigation();
+                        }}
+                        className="mt-1 flex w-full items-center gap-3 rounded px-3 py-2.5 text-left text-sm font-semibold text-gray-400 transition-colors hover:bg-[#222] hover:text-wfrp-gold"
+                      >
+                        <Plus size={16} />
+                        Create character
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 overflow-y-auto py-3">
+                  {mobileTabMenuOptions.map((item) => {
+                    const isActive =
+                      item.id === "characteristics"
+                        ? activeMobileMainView === "characteristics"
+                        : activeMobileMainView === item.id;
+
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => {
+                          handleMobileMainViewSelect(item.id);
+                          closeMobileNavigation();
+                        }}
+                        className={`mx-3 flex h-11 w-[calc(100%-1.5rem)] items-center rounded border px-4 text-left text-[11px] font-black uppercase tracking-widest transition-colors ${
+                          isActive
+                            ? "border-wfrp-gold/50 bg-wfrp-gold/15 text-wfrp-gold"
+                            : "border-transparent text-gray-300 hover:border-[#303030] hover:bg-[#181818] hover:text-wfrp-gold"
+                        }`}
+                        aria-current={isActive ? "page" : undefined}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
+
+                  <div className="my-3 border-t border-[#303030]" />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveInfo(null);
+                      setIsShopOpen(false);
+                      setIsDiceLogOpen(true);
+                      closeMobileNavigation();
+                    }}
+                    className="mx-3 flex h-11 w-[calc(100%-1.5rem)] items-center rounded border border-transparent px-4 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:border-[#303030] hover:bg-[#181818] hover:text-wfrp-gold"
+                  >
+                    Dice
+                  </button>
+                </div>
+              </motion.aside>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence mode="wait">
           {(isDiceLogOpen || rollState.characteristic) && (

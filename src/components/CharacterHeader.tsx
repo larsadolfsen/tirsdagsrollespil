@@ -32,7 +32,7 @@ export function CharacterHeader({
     if (!isCampaignMenuOpen) return;
 
     const handlePointerDown = (event: MouseEvent) => {
-      if (!campaignMenuRef.current?.contains(event.target as Node)) {
+      if (isCampaignMenuOpen && !campaignMenuRef.current?.contains(event.target as Node)) {
         setIsCampaignMenuOpen(false);
       }
     };
@@ -53,9 +53,9 @@ export function CharacterHeader({
   }, [isCampaignMenuOpen]);
 
   return (
-    <section className="bg-[#181818] px-3 py-2 rounded-t border-b border-[#303030] flex flex-row flex-wrap items-center gap-4">
-      <div className="relative flex-shrink-0">
-        <div className="w-12 h-12 rounded-full border border-[#c5a059] p-0.5 overflow-hidden shadow-inner cursor-pointer hover:brightness-110 transition-all">
+    <section className="flex h-[60px] flex-row flex-nowrap items-center gap-2 overflow-visible rounded-t border-b border-[#303030] bg-[#181818] px-3 py-1 sm:h-auto sm:flex-wrap sm:gap-4 sm:py-2">
+      <div className="relative order-3 flex-shrink-0 sm:order-none">
+        <div className="h-10 w-10 overflow-hidden rounded-full border border-[#c5a059] p-0.5 shadow-inner transition-all hover:brightness-110 sm:h-12 sm:w-12">
           <img
             src="https://picsum.photos/seed/knight/200/200"
             alt="Portrait"
@@ -65,16 +65,16 @@ export function CharacterHeader({
         </div>
       </div>
 
-      <div className="flex min-w-[160px] flex-1 flex-col justify-center overflow-hidden">
-        <h1 className="text-xl font-bold font-serif tracking-tight whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
+      <div className="order-2 flex min-w-0 flex-1 flex-col justify-center overflow-hidden sm:order-none sm:min-w-[160px]">
+        <h1 className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-base font-bold leading-tight tracking-tight sm:text-xl">
           {characterData.name}
         </h1>
-        <div className="text-[10px] text-gray-500 font-serif italic whitespace-nowrap">
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-gray-500 sm:text-[10px]">
           {characterData.race} {characterData.career} 1
         </div>
       </div>
 
-      <div className="ml-auto flex flex-wrap items-center justify-end gap-2 sm:gap-4">
+      <div className="order-1 flex flex-wrap items-center justify-start gap-2 sm:order-none sm:ml-auto sm:justify-end sm:gap-4">
         {headerResources && (
           <div className="flex items-center gap-3">
             {headerResources}
@@ -83,7 +83,7 @@ export function CharacterHeader({
         )}
 
         <div className="flex items-center gap-1 group/campaign transition-colors">
-          <div className="relative" ref={campaignMenuRef}>
+          <div className="relative hidden sm:block" ref={campaignMenuRef}>
             <div className="flex overflow-hidden rounded border border-white/5 bg-black/20 transition-colors hover:bg-[#242424]">
               <button
                 onClick={() => setIsCampaignMenuOpen((prev) => !prev)}
@@ -178,8 +178,8 @@ export function CharacterHeader({
               </div>
             )}
           </div>
-          <div className="h-4 w-[1px] bg-[#303030] mx-1 opacity-50" />
-          <div className="flex items-center gap-1">
+          <div className="hidden h-4 w-[1px] bg-[#303030] mx-1 opacity-50 sm:block" />
+          <div className="hidden items-center gap-1 sm:flex">
             <button
               onClick={onOpenDice}
               className="wfrp-icon-btn p-1.5 hover:bg-[#242424]"

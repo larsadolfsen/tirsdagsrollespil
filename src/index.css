@@ -157,7 +157,7 @@
 }
 
 @utility wfrp-roll-btn {
-  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#303030] bg-[#121212] font-mono text-sm font-bold text-gray-300 shadow-sm transition-all cursor-pointer active:scale-90 hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded bg-[#303030] font-mono text-sm font-bold text-gray-300 shadow-sm transition-all cursor-pointer active:scale-95 hover:bg-[#404040] hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
 @utility wfrp-property-pill {
