@@ -66,7 +66,7 @@ const GROUPED_SPECIALISATIONS: Record<string, string[]> = {
   entertain: ["Acting", "Comedy", "Singing", "Storytelling"],
   melee: ["Basic", "Brawling", "Cavalry", "Fencing", "Flail", "Parry", "Polearm", "Two-Handed"],
   animal_training: ["Demigryph", "Dog", "Horse", "Pegasus", "Pigeon", "Wolf"],
-  language: ["Battle Tongue", "Bretonnian", "Classical", "Estalian", "Khazalid", "Magick", "Mootish", "Norsk", "Reikspiel", "Tilean", "Wastelander"],
+  language: ["Battle Tongue", "Bretonnian", "Classical", "Estalian", "Guild", "Khazalid", "Magick", "Mootish", "Norsk", "Reikspiel", "Tilean", "Wastelander"],
   lore: ["Engineering", "Heraldry", "History", "Law", "Magic", "Metallurgy", "Science", "Theology", "Reikland", "The Empire", "War", "Local", "Chaos"],
   channelling: ["Aqshy", "Azyr", "Chamon", "Ghyran", "Ghur", "Hysh", "Shyish", "Ulgu"],
   perform: ["Acrobatics", "Clowning", "Dance", "Firebreathing", "Juggling", "Mountebank", "Sleight of Hand"],
