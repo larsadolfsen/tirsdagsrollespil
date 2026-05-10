@@ -186,6 +186,21 @@ export function ShopSidebar({
     return Array.from(new Set(shopStock.map((item) => item.type)));
   }, []);
 
+  const itemTypeCounts = useMemo(() => {
+    return shopStock.reduce((counts, item) => {
+      counts.set(item.type, (counts.get(item.type) ?? 0) + 1);
+      return counts;
+    }, new Map<string, number>());
+  }, []);
+
+  const itemRarityCounts = useMemo(() => {
+    return shopStock.reduce((counts, item) => {
+      const rarity = getItemRarity(item);
+      counts.set(rarity, (counts.get(rarity) ?? 0) + 1);
+      return counts;
+    }, new Map<string, number>());
+  }, []);
+
   const itemAvailabilities = useMemo(() => {
     return Array.from(new Set(shopStock.map((item) => getItemRarity(item)))).sort(
       (firstAvailability, secondAvailability) => {
@@ -336,7 +351,7 @@ export function ShopSidebar({
                       const itemCount =
                         itemType === "All"
                           ? shopStock.length
-                          : shopStock.filter((item) => item.type === itemType).length;
+                          : itemTypeCounts.get(itemType) ?? 0;
 
                       return (
                         <button
@@ -367,7 +382,7 @@ export function ShopSidebar({
                       const itemCount =
                         availability === "All"
                           ? shopStock.length
-                          : shopStock.filter((item) => getItemRarity(item) === availability).length;
+                          : itemRarityCounts.get(availability) ?? 0;
 
                       return (
                         <button
