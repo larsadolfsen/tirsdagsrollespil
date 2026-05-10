@@ -215,6 +215,25 @@ export function SpellShopSidebar({
     [spells],
   );
 
+  const spellCategoryCounts = useMemo(() => {
+    return shopStock.reduce((counts, spell) => {
+      counts.set(spell.category, (counts.get(spell.category) ?? 0) + 1);
+      return counts;
+    }, new Map<SpellDefinition["category"], number>());
+  }, [shopStock]);
+
+  const spellSchoolCounts = useMemo(() => {
+    return shopStock.reduce((counts, spell) => {
+      if (spell.category !== "school") return counts;
+
+      getSpellSchools(spell).forEach((school) => {
+        counts.set(school, (counts.get(school) ?? 0) + 1);
+      });
+
+      return counts;
+    }, new Map<string, number>());
+  }, [shopStock]);
+
   const filteredStock = useMemo(() => {
     const normalizedSearchTerm = debouncedSearchTerm.trim().toLowerCase();
     const categoryFilteredStock =
@@ -364,12 +383,8 @@ export function SpellShopSidebar({
                         option.value === "All"
                           ? shopStock.length
                           : option.value.startsWith("school:")
-                            ? shopStock.filter(
-                                (spell) =>
-                                  spell.category === "school" &&
-                                  getSpellSchools(spell).includes(option.value.replace(/^school:/, "")),
-                              ).length
-                            : shopStock.filter((spell) => spell.category === option.value).length;
+                            ? spellSchoolCounts.get(option.value.replace(/^school:/, "")) ?? 0
+                            : spellCategoryCounts.get(option.value) ?? 0;
 
                       return (
                         <button
