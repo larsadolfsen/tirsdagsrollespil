@@ -16,6 +16,7 @@ import {
   skillDefinitions,
   skillSpecialisationDefinitions,
 } from "./skills";
+import { sigmarPrayerAndMiracleDefinitions } from "./sigmarPrayers";
 import { spellDefinitions } from "./spells";
 import { talentDefinitions } from "./talents";
 import {
@@ -37,6 +38,7 @@ export const allItemDefinitions = [
 export const allSpellDefinitions = [
   ...spellDefinitions,
   ...additionalFireSpellDefinitions,
+  ...sigmarPrayerAndMiracleDefinitions,
 ];
 
 export const wfrp4eRuleset: Ruleset = {
