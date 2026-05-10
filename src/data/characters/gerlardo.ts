@@ -59,7 +59,7 @@ export const gerlardo: CharacterRecord = {
     { id: "gerlardo_crossbow_1", itemId: "crossbow_item", equipped: false },
     { id: "gerlardo_backpack_1", itemId: "backpack_item", equipped: true },
     { id: "gerlardo_pouch_1", itemId: "pouch_item", equipped: true },
-    { id: "gerlardo_book_engineer_1", itemId: "book_engineer_item", equipped: false, containerId: "gerlardo_backpack_1" },
+    { id: "gerlardo_writing_kit_1", itemId: "writing_kit_item", equipped: false, containerId: "gerlardo_backpack_1" },
     { id: "gerlardo_hammer_1", itemId: "hammer_item", equipped: false, containerId: "gerlardo_backpack_1" },
     { id: "gerlardo_spikes_1", itemId: "spike_item", equipped: false, containerId: "gerlardo_backpack_1" },
   ],
