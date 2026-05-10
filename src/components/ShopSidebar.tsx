@@ -539,14 +539,14 @@ export function ShopSidebar({
                                 <button
                                   type="button"
                                   onClick={() => onAddToInventory(item)}
-                                  className="wfrp-action-btn whitespace-nowrap px-4 py-1.5"
+                                  className="wfrp-standard-btn h-7 whitespace-nowrap px-4"
                                 >
                                   Add
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => onBuy(item)}
-                                  className="wfrp-action-btn whitespace-nowrap px-4 py-1.5"
+                                  className="wfrp-standard-btn h-7 whitespace-nowrap px-4"
                                 >
                                   Buy
                                 </button>

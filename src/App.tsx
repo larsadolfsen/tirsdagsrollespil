@@ -129,7 +129,7 @@ type InlineSubtabOption<T extends string> = {
 };
 
 type ActionCategory = 'all' | 'melee' | 'ranged' | 'other';
-type SkillSubtab = 'all' | 'advanced' | 'basic-trained' | 'basic-untrained';
+type SkillSubtab = 'all' | 'trained' | 'advanced' | 'basic';
 type SpellSubtab = 'all' | 'petty' | 'arcane' | `school:${string}`;
 type InventorySubtab = 'all' | 'wallet' | 'worn' | 'carried' | `container:${string}`;
 type CoinKey = "gc" | "s" | "d";
@@ -900,7 +900,7 @@ function AppScreen() {
   const [activeInfo, setActiveInfo] = useState<ActiveInfoState | null>(null);
   const [activeMainTab, setActiveMainTab] = useState<'skills' | 'actions' | 'inventory' | 'spells' | 'features' | 'background' | 'notes' | 'career'>('skills');
   const [activeActionCategory, setActiveActionCategory] = useState<ActionCategory>('all');
-  const [activeSkillSubtab, setActiveSkillSubtab] = useState<SkillSubtab>('all');
+  const [activeSkillSubtab, setActiveSkillSubtab] = useState<SkillSubtab>('trained');
   const [activeSpellSubtab, setActiveSpellSubtab] = useState<SpellSubtab>('all');
   const [activeInventorySubtab, setActiveInventorySubtab] = useState<InventorySubtab>('all');
   const [activeCareerSubtab, setActiveCareerSubtab] = useState<CareerSubtab>('all');
@@ -1206,7 +1206,7 @@ function AppScreen() {
     setActiveInfo(null);
     setActiveMainTab("skills");
     setActiveActionCategory("all");
-    setActiveSkillSubtab("all");
+    setActiveSkillSubtab("trained");
     setActiveInventorySubtab("all");
     setActiveCareerSubtab("all");
     setActiveInventoryMenu(null);
@@ -2556,6 +2556,23 @@ function AppScreen() {
       advances: skill.advances,
     }))
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
+  const basicVisibleSkillRows = [...trainedBasicSkillRows, ...untrainedBasicSkillRows].sort((a, b) =>
+    a.displayName.localeCompare(b.displayName),
+  );
+  const trainedSkillRows = [...trainedBasicSkillRows, ...advancedSkillRows]
+    .filter((skill) => skill.advances > 0)
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
+  const allSkillRows = [...basicVisibleSkillRows, ...advancedSkillRows].sort((a, b) =>
+    a.displayName.localeCompare(b.displayName),
+  );
+  const visibleSkillRows =
+    activeSkillSubtab === "all"
+      ? allSkillRows
+      : activeSkillSubtab === "trained"
+        ? trainedSkillRows
+        : activeSkillSubtab === "advanced"
+          ? advancedSkillRows
+          : basicVisibleSkillRows;
   const skillSections = [
     { id: "advanced" as const, title: "Advanced", skills: advancedSkillRows },
     { id: "basic-trained" as const, title: "Trained", skills: trainedBasicSkillRows },
@@ -2650,26 +2667,6 @@ function AppScreen() {
             availableCharacters={availableCharacters}
             selectedCharacterId={selectedCharacterId}
             xpCurrent={xpCurrent}
-            headerResources={
-              <>
-                <HeaderResourceSlider
-                  label="Wounds"
-                  current={woundsCurrent}
-                  max={characterData.wounds.max}
-                  onAdjust={adjustWounds}
-                  barClassName="bg-wfrp-red"
-                  contentClassName="flex w-20 flex-col gap-1 sm:w-24 lg:w-32"
-                />
-                <HeaderResourceSlider
-                  label="Corruption"
-                  current={corruptionCurrent}
-                  max={maxCorruption}
-                  onAdjust={adjustCorruption}
-                  barClassName="bg-purple-600"
-                  contentClassName="flex w-20 flex-col gap-1 sm:w-24 lg:w-32"
-                />
-              </>
-            }
             onSelectCharacter={setSelectedCharacterId}
             onCreateCharacter={() => {
               setActiveInfo(null);
@@ -2741,10 +2738,26 @@ function AppScreen() {
             {/* Reserves Section */}
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">
-                <h3 className="wfrp-panel-title">FATE & RESILIENCE</h3>
+                <h3 className="wfrp-panel-title">RESOURCES & RESILIENCE</h3>
               </div>
               <div className="wfrp-card-tab-body space-y-5 px-4 py-4">
                 <div className="grid grid-cols-1 gap-3">
+                  <HeaderResourceSlider
+                    label="Wounds"
+                    current={woundsCurrent}
+                    max={characterData.wounds.max}
+                    onAdjust={adjustWounds}
+                    barClassName="bg-wfrp-red"
+                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
+                  />
+                  <HeaderResourceSlider
+                    label="Corruption"
+                    current={corruptionCurrent}
+                    max={maxCorruption}
+                    onAdjust={adjustCorruption}
+                    barClassName="bg-purple-600"
+                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
+                  />
                   <HeaderResourceSlider
                     label="Fate"
                     current={fateCurrent}
@@ -2869,27 +2882,24 @@ function AppScreen() {
                         <InlineSubtabs<SkillSubtab>
                           options={[
                             { id: 'all', label: 'All' },
+                            { id: 'trained', label: 'Trained' },
                             { id: 'advanced', label: 'Advanced' },
-                            { id: 'basic-trained', label: 'Trained' },
-                            { id: 'basic-untrained', label: 'Untrained' },
+                            { id: 'basic', label: 'Basic' },
                           ]}
                           activeId={activeSkillSubtab}
                           onChange={setActiveSkillSubtab}
                         />
 
                         <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4">
-                          {skillSections
-                            .filter((section) => activeSkillSubtab === 'all' || activeSkillSubtab === section.id)
-                            .map((section) => (
-                              <section key={section.id} className="wfrp-subpanel-shell flex flex-col">
-                                <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_36px_44px_58px] gap-2 items-center">
-                                  <span className="wfrp-table-label text-left">{section.title}</span>
-                                  <span className="wfrp-table-label col-span-2 text-center">Char.</span>
-                                  <span className="wfrp-table-label text-center">Adv</span>
-                                </div>
+                          <section className="wfrp-subpanel-shell flex flex-col">
+                            <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_36px_44px_58px] gap-2 items-center">
+                              <span className="wfrp-table-label text-left">Skill</span>
+                              <span className="wfrp-table-label col-span-2 text-center">Char.</span>
+                              <span className="wfrp-table-label text-center">Adv</span>
+                            </div>
 
-                                <div className="divide-y divide-white/5">
-                                  {section.skills.map((skill) => {
+                            <div className="divide-y divide-white/5">
+                              {visibleSkillRows.map((skill) => {
                                     const charValue = (characterData.attributes as Record<string, number>)[skill.characteristic] || 0;
                                     const totalValue = charValue + skill.advances;
 
@@ -2931,10 +2941,9 @@ function AppScreen() {
                                         </div>
                                       </div>
                                     );
-                                  })}
-                                </div>
-                              </section>
-                            ))}
+                              })}
+                            </div>
+                          </section>
                         </div>
                       </div>
                     )}
