@@ -70,5 +70,12 @@ export const tag: CharacterRecord = {
     { talentId: "bless" },
     { talentId: "etiquette_cultists" },
   ],
-  spells: [],
+  spells: [
+    { spellId: "sigmar-blessing-battle" },
+    { spellId: "sigmar-blessing-courage" },
+    { spellId: "sigmar-blessing-hardiness" },
+    { spellId: "sigmar-blessing-might" },
+    { spellId: "sigmar-blessing-protection" },
+    { spellId: "sigmar-blessing-righteousness" },
+  ],
 };
