@@ -9,6 +9,20 @@ type SpellFilter = "All" | SpellDefinition["category"] | `school:${string}`;
 type SpellSortKey = "name" | "cn" | "type";
 type SortDirection = "asc" | "desc";
 
+function useDebouncedValue<T>(value: T, delayMs = 150) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedValue(value);
+    }, delayMs);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [delayMs, value]);
+
+  return debouncedValue;
+}
+
 function OwnershipDot({ label }: { label: string }) {
   return (
     <span
@@ -156,6 +170,7 @@ export function SpellShopSidebar({
   onClose: () => void;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const [selectedFilter, setSelectedFilter] = useState<SpellFilter>("All");
   const [sortKey, setSortKey] = useState<SpellSortKey>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -214,7 +229,7 @@ export function SpellShopSidebar({
   );
 
   const filteredStock = useMemo(() => {
-    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    const normalizedSearchTerm = debouncedSearchTerm.trim().toLowerCase();
     const categoryFilteredStock =
       selectedFilter === "All"
         ? shopStock
@@ -235,7 +250,7 @@ export function SpellShopSidebar({
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearchTerm)),
     );
-  }, [searchTerm, selectedFilter, shopStock]);
+  }, [debouncedSearchTerm, selectedFilter, shopStock]);
 
   const groupedStock = useMemo(() => {
     const sortSpells = (stock: SpellDefinition[]) =>
