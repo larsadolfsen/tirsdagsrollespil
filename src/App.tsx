@@ -155,6 +155,11 @@ const mobileTabMenuOptions: Array<{ id: MobileTabMenuTarget; label: string }> = 
   ...mainTabOptions,
 ];
 
+const mobilePageTitleByView: Record<MobileTabMenuTarget, string> = mobileTabMenuOptions.reduce(
+  (titles, option) => ({ ...titles, [option.id]: option.label }),
+  {} as Record<MobileTabMenuTarget, string>,
+);
+
 const formatCoinTotalValue = (coins: { gc: number; s: number; d: number }) => {
   const totalBrass = coins.gc * 240 + coins.s * 12 + coins.d;
   const gc = Math.floor(totalBrass / 240);
@@ -449,7 +454,7 @@ function InlineSubtabs<T extends string>({
   return (
     <div className="flex items-center gap-2 border-b border-white/5 bg-black/20">
       <div className="min-w-0 flex-1">
-        <ScrollableTabStrip className="flex items-center gap-2 p-3 lg:p-4 overflow-x-auto no-scrollbar">
+        <ScrollableTabStrip className="flex items-center justify-start gap-2 py-3 pr-3 pl-0 !pl-0 md:p-3 md:!pl-3 lg:p-4 lg:!pl-4 overflow-x-auto no-scrollbar">
           {options.map((option) => (
             <button
               key={option.id}
@@ -2851,7 +2856,11 @@ function AppScreen() {
             </div>
           </section>
 
-        <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-8 px-4 py-4 md:px-0 md:py-0">
+        <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 px-4 py-4 md:gap-8 md:px-0 md:py-0">
+          <h1 className="font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100 md:hidden">
+            {mobilePageTitleByView[activeMobileMainView]}
+          </h1>
+
           {/* Layout for Characteristics and Skills */}
           {/* Characteristics Section */}
           <section className={activeMobileMainView === "characteristics" ? "block" : "hidden md:block"}>
@@ -3539,8 +3548,8 @@ function AppScreen() {
                             }
                           />
                           <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                            <div className="wfrp-subpanel-shell flex flex-col overflow-hidden">
-                              <div className="grid grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
+                            <div className="wfrp-subpanel flex flex-col overflow-x-auto shadow-sm">
+                              <div className="grid min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
                                 <span className="wfrp-table-label text-center">Channel</span>
                                 <span className="wfrp-table-label text-left">Spell</span>
                                 <span className="wfrp-table-label text-center">CN</span>
@@ -3561,7 +3570,7 @@ function AppScreen() {
                                   return (
                                     <div
                                       key={spell.name}
-                                      className="grid grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-2 items-center"
+                                      className="grid min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-2 items-center"
                                     >
                                       <div className="flex justify-center">
                                         <button
@@ -3760,7 +3769,7 @@ function AppScreen() {
                                     )
                                   : undefined
                               }
-                              className={`wfrp-subpanel-shell ${
+                              className={`wfrp-subpanel overflow-x-auto shadow-sm ${
                                 isActiveDropTarget
                                   ? "border-wfrp-gold/50 bg-wfrp-gold/5"
                                   : canDropHere
@@ -3768,7 +3777,7 @@ function AppScreen() {
                                     : ""
                               }`}
                             >
-                               <div className="grid grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 wfrp-list-header">
+                               <div className="grid min-w-[640px] grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 wfrp-list-header">
                                  <span className="flex min-w-0 items-center gap-2 text-left">
                                    <span className="truncate">{section.title}</span>
                                    {"subtitle" in section && section.subtitle ? (
@@ -3789,7 +3798,7 @@ function AppScreen() {
                                     ["s", "Silver Shillings", "ss"],
                                     ["d", "Brass Pennies", "bp"],
                                   ] as const).map(([key, name, label]) => (
-                                    <div key={key} className="wfrp-table-row flex border-0 group">
+                                    <div key={key} className="wfrp-table-row flex min-w-[640px] border-0 group">
                                       <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 items-center">
                                         <div className="flex flex-col">
                                           <span className="wfrp-skill-link flex items-center gap-1.5">
@@ -3856,7 +3865,7 @@ function AppScreen() {
                                   draggable={!isPacksAndContainersItem(item)}
                                   onDragStart={(event) => handleInventoryDragStart(item, event)}
                                   onDragEnd={handleInventoryDragEnd}
-                                  className={`wfrp-table-row flex border-0 group ${
+                                  className={`wfrp-table-row flex min-w-[640px] border-0 group ${
                                     inventoryDrag?.itemId === item.id ? "opacity-45" : ""
                                   } ${
                                     isPacksAndContainersItem(item) ? "" : "cursor-grab active:cursor-grabbing"

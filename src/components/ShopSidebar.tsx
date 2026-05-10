@@ -287,9 +287,9 @@ export function ShopSidebar({
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="wfrp-sidebar-shell w-[620px]"
+          className="wfrp-sidebar-shell w-[min(86vw,340px)] md:w-[400px]"
         >
-          <div className="wfrp-sidebar-header p-4">
+          <div className="wfrp-sidebar-header p-3">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded border border-wfrp-gold/30 bg-black/20 text-wfrp-gold">
                 <ShoppingBag size={18} />
@@ -310,9 +310,9 @@ export function ShopSidebar({
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto bg-black/10 p-4 no-scrollbar">
-            <div className="flex flex-col gap-4">
-              <div className="wfrp-subpanel rounded-lg p-4">
+          <div className="flex-1 overflow-y-auto bg-black/10 p-3 no-scrollbar">
+            <div className="flex flex-col gap-3">
+              <div className="wfrp-subpanel p-3">
                 <div className="flex items-center justify-between gap-4">
                   <span className="wfrp-table-label">Coin</span>
                   <span className="wfrp-list-cell-strong font-mono text-gray-100">{coins}</span>
@@ -436,10 +436,8 @@ export function ShopSidebar({
               )}
 
               <div className="wfrp-subpanel-shell">
-                <div className="grid grid-cols-[1fr_132px_96px_84px_18px] gap-3 wfrp-list-header">
+                <div className="grid grid-cols-[minmax(0,1fr)_76px_18px] gap-2 wfrp-list-header">
                   <SortHeaderButton activeSortKey={sortKey} label="Item" sortDirection={sortDirection} sortKey="name" onSort={handleSort} />
-                  <SortHeaderButton activeSortKey={sortKey} label="Type" sortDirection={sortDirection} sortKey="type" onSort={handleSort} />
-                  <SortHeaderButton activeSortKey={sortKey} label="Rarity" sortDirection={sortDirection} sortKey="rarity" onSort={handleSort} />
                   <SortHeaderButton align="right" activeSortKey={sortKey} label="Price" sortDirection={sortDirection} sortKey="price" onSort={handleSort} />
                   <span aria-hidden="true" />
                 </div>
@@ -466,7 +464,7 @@ export function ShopSidebar({
                                 currentId === item.id ? null : item.id,
                               )
                             }
-                            className="wfrp-table-row grid w-full grid-cols-[1fr_132px_96px_84px_18px] gap-3 border-0 text-left"
+                            className="wfrp-table-row grid w-full grid-cols-[minmax(0,1fr)_76px_18px] gap-2 border-0 text-left"
                             aria-expanded={expandedItemId === item.id}
                           >
                             <div className="min-w-0">
@@ -476,14 +474,15 @@ export function ShopSidebar({
                                 </span>
                                 {isOwned ? <OwnershipDot label="Already owned" /> : null}
                               </div>
-                            </div>
-
-                            <div className="wfrp-list-cell-strong min-w-0 truncate text-left">
-                              {item.type}
-                            </div>
-
-                            <div className="wfrp-list-cell-strong min-w-0 truncate text-left">
-                              {formatFilterLabel(getItemRarity(item))}
+                              <div className="mt-1 flex min-w-0 items-center gap-2">
+                                <span className="truncate text-[9px] font-black uppercase tracking-widest text-gray-600">
+                                  {item.type}
+                                </span>
+                                <span className="h-1 w-1 shrink-0 rounded-full bg-white/10" />
+                                <span className="truncate text-[9px] font-black uppercase tracking-widest text-gray-600">
+                                  {formatFilterLabel(getItemRarity(item))}
+                                </span>
+                              </div>
                             </div>
 
                             <div className="wfrp-list-cell-strong text-right font-mono">

@@ -325,9 +325,9 @@ export function SpellShopSidebar({
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="wfrp-sidebar-shell w-[620px]"
+          className="wfrp-sidebar-shell w-[360px] max-w-[calc(100vw-1rem)]"
         >
-          <div className="wfrp-sidebar-header p-4">
+          <div className="wfrp-sidebar-header p-3">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded border border-wfrp-gold/30 bg-black/20 text-wfrp-gold">
                 <BookOpen size={18} />
@@ -348,8 +348,8 @@ export function SpellShopSidebar({
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto bg-black/10 p-4 no-scrollbar">
-            <div className="flex flex-col gap-4">
+          <div className="flex-1 overflow-y-auto bg-black/10 p-3 no-scrollbar">
+            <div className="flex flex-col gap-3">
               <div ref={filterRef} className="relative flex gap-2">
                 <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded border border-white/5 bg-black/30 px-3 text-gray-500 focus-within:border-wfrp-gold/40">
                   <Search size={14} />
@@ -426,10 +426,9 @@ export function SpellShopSidebar({
               )}
 
               <div className="wfrp-subpanel-shell">
-                <div className="grid grid-cols-[1fr_46px_78px_18px] gap-3 wfrp-list-header">
+                <div className="grid grid-cols-[minmax(0,1fr)_42px_18px] gap-2 wfrp-list-header">
                   <SortHeaderButton activeSortKey={sortKey} label="Spell" sortDirection={sortDirection} sortKey="name" onSort={handleSort} />
                   <SortHeaderButton align="center" activeSortKey={sortKey} label="CN" sortDirection={sortDirection} sortKey="cn" onSort={handleSort} />
-                  <SortHeaderButton activeSortKey={sortKey} label="Type" sortDirection={sortDirection} sortKey="type" onSort={handleSort} />
                   <span aria-hidden="true" />
                 </div>
 
@@ -455,7 +454,7 @@ export function SpellShopSidebar({
                                   currentId === spell.id ? null : spell.id,
                                 )
                               }
-                              className="wfrp-table-row grid w-full grid-cols-[1fr_46px_78px_18px] gap-3 border-0 text-left"
+                              className="wfrp-table-row grid w-full grid-cols-[minmax(0,1fr)_42px_18px] gap-2 border-0 text-left"
                               aria-expanded={expandedSpellId === spell.id}
                             >
                               <div className="min-w-0">
@@ -465,14 +464,13 @@ export function SpellShopSidebar({
                                   </span>
                                   {isKnown ? <OwnershipDot label="Known spell" /> : null}
                                 </div>
+                                <span className="mt-1 block max-w-full truncate text-[9px] font-black uppercase tracking-widest text-gray-600">
+                                  {getSpellTypeLabel(spell)}
+                                </span>
                               </div>
 
                               <div className="wfrp-list-cell-strong text-center font-mono">
                                 {spell.cn}
-                              </div>
-
-                              <div className="wfrp-list-cell-strong truncate text-left">
-                                {getSpellTypeLabel(spell)}
                               </div>
 
                               <ChevronDown
