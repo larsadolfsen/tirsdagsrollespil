@@ -14,6 +14,11 @@ export interface TalentEffectContext {
   conditionTags?: string[];
 }
 
+export interface TalentSlBonusSource {
+  label: string;
+  value: number;
+}
+
 const normalize = (value?: string) => value?.trim().toLowerCase();
 
 const conditionMatches = (effectCondition: string | undefined, conditionTags: string[] = []) => {
@@ -79,12 +84,19 @@ export function getApplicableTalentEffects(params: {
   });
 }
 
-export function getTalentSlBonus(effects: ActiveTalentEffect[]) {
+export function getTalentSlBonusSources(effects: ActiveTalentEffect[]): TalentSlBonusSource[] {
   return effects
     .filter((entry): entry is ActiveTalentEffect & { effect: Extract<TalentEffect, { type: "test_sl_bonus" }> } =>
       entry.effect.type === "test_sl_bonus",
     )
-    .reduce((total, entry) => total + entry.effect.valuePerLevel * entry.level, 0);
+    .map((entry) => ({
+      label: entry.talentName,
+      value: entry.effect.valuePerLevel * entry.level,
+    }));
+}
+
+export function getTalentSlBonus(effects: ActiveTalentEffect[]) {
+  return getTalentSlBonusSources(effects).reduce((total, source) => total + source.value, 0);
 }
 
 export function getTalentDamageBonus(effects: ActiveTalentEffect[]) {
