@@ -3,9 +3,12 @@
 @source "../index.html";
 
 @theme {
-  --font-display: "Libre Caslon Display", Georgia, serif;
-  --font-serif: "Libre Caslon Display", Georgia, serif;
-  --font-sans: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --font-display-face: "Libre Caslon Display", Georgia, serif;
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-body);
+  --font-display: var(--font-display-face);
+  --font-serif: var(--font-display-face);
 
   --color-wfrp-red: #8b0000;
   --color-wfrp-gold: #c5a059;
