@@ -20,7 +20,7 @@ export function InlineSubtabs<T extends string>({
   return (
     <div className="flex items-center gap-2 border-b border-white/5 bg-black/20">
       <div className="min-w-0 flex-1">
-        <ScrollableTabStrip className="flex items-center justify-start gap-2 py-3 pr-3 pl-0 !pl-0 md:p-3 md:!pl-3 lg:p-4 lg:!pl-4 overflow-x-auto no-scrollbar">
+        <ScrollableTabStrip className="flex items-center justify-start gap-2 py-3 pr-0 pl-0 !pr-0 !pl-0 md:p-3 md:!pr-3 md:!pl-3 lg:p-4 lg:!pr-4 lg:!pl-4 overflow-x-auto no-scrollbar">
           {options.map((option) => (
             <button
               key={option.id}
@@ -38,7 +38,7 @@ export function InlineSubtabs<T extends string>({
         </ScrollableTabStrip>
       </div>
       {trailingContent ? (
-        <div className="shrink-0 pr-3 lg:pr-4">
+        <div className="shrink-0 pr-0 md:pr-3 lg:pr-4">
           {trailingContent}
         </div>
       ) : null}
