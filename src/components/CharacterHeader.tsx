@@ -53,32 +53,34 @@ export function CharacterHeader({
   }, [isCampaignMenuOpen]);
 
   return (
-    <section className="flex h-[60px] flex-row flex-nowrap items-center gap-2 overflow-visible rounded-t border-b border-[#303030] bg-[#181818] px-3 py-1 sm:h-auto sm:flex-wrap sm:gap-4 sm:py-2">
-      <div className="relative order-3 flex-shrink-0 sm:order-none">
-        <div className="h-10 w-10 overflow-hidden rounded-full border border-[#c5a059] p-0.5 shadow-inner transition-all hover:brightness-110 sm:h-12 sm:w-12">
-          <img
-            src="https://picsum.photos/seed/knight/200/200"
-            alt="Portrait"
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover grayscale brightness-90"
-          />
+    <section className="flex min-h-[60px] flex-col gap-2 overflow-visible rounded-t border-b border-[#303030] bg-[#181818] px-3 py-2 sm:min-h-0 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+      <div className="flex min-w-0 items-center gap-2 sm:contents">
+        <div className="relative order-3 flex-shrink-0 sm:order-none">
+          <div className="h-10 w-10 overflow-hidden rounded-full border border-[#c5a059] p-0.5 shadow-inner transition-all hover:brightness-110 sm:h-12 sm:w-12">
+            <img
+              src="https://picsum.photos/seed/knight/200/200"
+              alt="Portrait"
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover grayscale brightness-90"
+            />
+          </div>
+        </div>
+
+        <div className="order-2 flex min-w-0 flex-1 flex-col justify-center overflow-hidden sm:order-none sm:min-w-[160px]">
+          <h1 className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-base font-bold leading-tight tracking-tight sm:text-xl">
+            {characterData.name}
+          </h1>
+          <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-gray-500 sm:text-[10px]">
+            {characterData.race} {characterData.career} 1
+          </div>
         </div>
       </div>
 
-      <div className="order-2 flex min-w-0 flex-1 flex-col justify-center overflow-hidden sm:order-none sm:min-w-[160px]">
-        <h1 className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-base font-bold leading-tight tracking-tight sm:text-xl">
-          {characterData.name}
-        </h1>
-        <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-gray-500 sm:text-[10px]">
-          {characterData.race} {characterData.career} 1
-        </div>
-      </div>
-
-      <div className="order-1 flex flex-wrap items-center justify-start gap-2 sm:order-none sm:ml-auto sm:justify-end sm:gap-4">
+      <div className="order-1 flex min-w-0 flex-wrap items-center justify-start gap-2 sm:order-none sm:ml-auto sm:justify-end sm:gap-4">
         {headerResources && (
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-1 pr-1 no-scrollbar sm:max-w-[min(100%,58rem)] sm:gap-3 sm:overflow-visible sm:pb-0 sm:pr-0">
             {headerResources}
-            <div className="h-8 w-[1px] bg-[#303030] opacity-50" />
+            <div className="h-8 w-[1px] shrink-0 bg-[#303030] opacity-50" />
           </div>
         )}
 
