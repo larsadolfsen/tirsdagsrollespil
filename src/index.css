@@ -222,6 +222,15 @@ body {
   @apply bg-wfrp-bg text-wfrp-body-text font-sans selection:bg-wfrp-gold selection:text-wfrp-dark;
 }
 
+.wfrp-card .wfrp-stat-tile {
+  text-align: center;
+}
+
+.wfrp-card .wfrp-stat-tile > * {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Raise low-contrast muted text on dark panels reported by PageSpeed mobile contrast audit. */
 .text-gray-500,
 .text-gray-600,
