@@ -34,6 +34,7 @@ export interface CharacterRecord {
   id: string;
   rulesetId: string;
   name: string;
+  aka?: string[];
   race: string;
   career: CharacterCareerRecord;
   wounds: {
