@@ -1,0 +1,9 @@
+export { ActionsTab } from "./ActionsTab";
+export { BackgroundTab } from "./BackgroundTab";
+export { CareerTab } from "./CareerTab";
+export { InventoryTab } from "./InventoryTab";
+export { NotesTab } from "./NotesTab";
+export { SkillsTab } from "./SkillsTab";
+export { SpellsTab } from "./SpellsTab";
+export { TalentsTab } from "./TalentsTab";
+export { TabLoadingFallback } from "./TabLoadingFallback";
