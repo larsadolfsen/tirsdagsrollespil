@@ -1,9 +1,20 @@
+import { useMemo, useState } from "react";
 import { HeaderResourceSlider } from "./ui";
+import { useGameSessionContext } from "../context/GameSessionContext";
 import type { CoinKey } from "../tabs/tabTypes";
 import type { Key } from "react";
 
 type ResourceAdjuster = (delta: number) => void;
 type CoinAdjuster = (coinKey: CoinKey, amount: number) => void;
+
+type CorruptionCheckSkillName = "Cool" | "Endurance";
+
+type CorruptionCheckResult = {
+  skillName: CorruptionCheckSkillName;
+  target: number;
+  roll: number;
+  isSuccess: boolean;
+};
 
 type CharacterResourcesCardsProps = {
   woundsCurrent: number;
@@ -34,6 +45,7 @@ const coinRows = [
   ["d", "Brass Pennies", "bg-wfrp-coin-brass"],
 ] as const satisfies ReadonlyArray<readonly [CoinKey, string, string]>;
 const coinAdjustments = [-10, -1, 1, 10] as const;
+const corruptionCheckSkillNames = ["Cool", "Endurance"] as const satisfies readonly CorruptionCheckSkillName[];
 
 export function CharacterResourcesCards({
   woundsCurrent,
@@ -56,6 +68,33 @@ export function CharacterResourcesCards({
   coins,
   onAdjustCoin,
 }: CharacterResourcesCardsProps) {
+  const { characterData, characterSkills } = useGameSessionContext();
+  const [corruptionCheckResult, setCorruptionCheckResult] = useState<CorruptionCheckResult | null>(null);
+  const corruptionCheckSkills = useMemo(() => {
+    return corruptionCheckSkillNames.map((skillName) => {
+      const skill = characterSkills.find((entry) => entry.baseName === skillName);
+      const characteristic = skill?.characteristic ?? (skillName === "Cool" ? "WP" : "T");
+      const characteristicValue = Number(characterData.attributes[characteristic] ?? 0);
+      const target = characteristicValue + (skill?.advances ?? 0);
+
+      return {
+        skillName,
+        target,
+      };
+    });
+  }, [characterData.attributes, characterSkills]);
+
+  const rollCorruptionCheck = (skillName: CorruptionCheckSkillName, target: number) => {
+    const roll = Math.floor(Math.random() * 100) + 1;
+
+    setCorruptionCheckResult({
+      skillName,
+      target,
+      roll,
+      isSuccess: roll <= target,
+    });
+  };
+
   return (
     <>
       <section className="wfrp-card overflow-hidden p-0!">
@@ -80,6 +119,36 @@ export function CharacterResourcesCards({
               barClassName="bg-purple-600"
               contentClassName={sliderContentClassName}
             />
+            <div className="rounded border border-white/5 bg-black/10 px-3 py-2">
+              <div className="mb-2 text-[8px] font-bold uppercase tracking-[0.18em] text-gray-500">
+                Corruption Check
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {corruptionCheckSkills.map(({ skillName, target }) => (
+                  <div key={skillName} className="flex items-center justify-between gap-2">
+                    <span className="truncate text-[10px] font-bold uppercase tracking-tight text-gray-400">
+                      {skillName}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => rollCorruptionCheck(skillName, target)}
+                      className="wfrp-roll-btn h-7 min-w-10"
+                      aria-label={`Roll ${skillName} corruption check`}
+                    >
+                      {target}
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {corruptionCheckResult && (
+                <div className="mt-2 text-[10px] font-bold text-gray-400">
+                  {corruptionCheckResult.skillName}: {corruptionCheckResult.roll} / {corruptionCheckResult.target}{" "}
+                  <span className={corruptionCheckResult.isSuccess ? "text-wfrp-gold" : "text-wfrp-red"}>
+                    {corruptionCheckResult.isSuccess ? "Success" : "Failure"}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
