@@ -143,7 +143,6 @@ export function CharacterHeader({
                 <div className="p-1">
                   {availableCharacters.map((character) => {
                     const isSelected = character.id === selectedCharacterId;
-                    const aka = formatAka(character.aka);
 
                     return (
                       <button
@@ -161,15 +160,7 @@ export function CharacterHeader({
                         aria-checked={isSelected}
                       >
                         <div className="min-w-0">
-                          <div className="truncate text-[12px] font-semibold">{character.name}</div>
-                          {aka && (
-                            <div className="truncate text-[10px] text-gray-400">
-                              {aka}
-                            </div>
-                          )}
-                          <div className="text-[9px] uppercase tracking-[0.18em] text-gray-500">
-                            {character.rulesetId}
-                          </div>
+                          <div className="truncate">{character.name}</div>
                         </div>
                         <span className="ml-3 flex h-4 w-4 items-center justify-center">
                           {isSelected ? <Check size={12} /> : null}
