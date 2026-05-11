@@ -3,7 +3,8 @@ import type { CharacterRecord } from "../../types";
 export const gerlardo: CharacterRecord = {
   id: "gerlardo",
   rulesetId: "wfrp4e",
-  name: "Gerhard Lehrmann",
+  name: "Gerhard Lehrman",
+  aka: ["Gerlardo"],
   race: "Human",
   career: {
     careerId: "engineer_engineer",
