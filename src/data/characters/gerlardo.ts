@@ -1,9 +1,9 @@
 import type { CharacterRecord } from "../../types";
 
-export const gerlardo: CharacterRecord = {
-  id: "gerlardo",
+export const gerhardLehrmann: CharacterRecord = {
+  id: "gerhard_lehrmann",
   rulesetId: "wfrp4e",
-  name: "Gerhard Lehrman",
+  name: "Gerhard Lehrmann",
   aka: ["Gerlardo"],
   race: "Human",
   career: {
@@ -51,18 +51,18 @@ export const gerlardo: CharacterRecord = {
     { skillId: "language", specialisationId: "language_guild", advances: 2 },
   ],
   equipment: [
-    { id: "gerlardo_mail_coat_1", itemId: "mail_coat_item", equipped: true },
-    { id: "gerlardo_leather_leggings_1", itemId: "leather_leggings_item", equipped: true },
-    { id: "gerlardo_leather_skullcap_1", itemId: "leather_skullcap_item", equipped: true },
-    { id: "gerlardo_sword_1", itemId: "sword_item", equipped: true },
-    { id: "gerlardo_zweihander_1", itemId: "zweihander_item", equipped: false },
-    { id: "gerlardo_pistol_1", itemId: "pistol_item", equipped: false },
-    { id: "gerlardo_crossbow_1", itemId: "crossbow_item", equipped: false },
-    { id: "gerlardo_backpack_1", itemId: "backpack_item", equipped: true },
-    { id: "gerlardo_pouch_1", itemId: "pouch_item", equipped: true },
-    { id: "gerlardo_writing_kit_1", itemId: "writing_kit_item", equipped: false, containerId: "gerlardo_backpack_1" },
-    { id: "gerlardo_hammer_1", itemId: "hammer_item", equipped: false, containerId: "gerlardo_backpack_1" },
-    { id: "gerlardo_spikes_1", itemId: "spike_item", equipped: false, containerId: "gerlardo_backpack_1" },
+    { id: "gerhard_lehrmann_mail_coat_1", itemId: "mail_coat_item", equipped: true },
+    { id: "gerhard_lehrmann_leather_leggings_1", itemId: "leather_leggings_item", equipped: true },
+    { id: "gerhard_lehrmann_leather_skullcap_1", itemId: "leather_skullcap_item", equipped: true },
+    { id: "gerhard_lehrmann_sword_1", itemId: "sword_item", equipped: true },
+    { id: "gerhard_lehrmann_zweihander_1", itemId: "zweihander_item", equipped: false },
+    { id: "gerhard_lehrmann_pistol_1", itemId: "pistol_item", equipped: false },
+    { id: "gerhard_lehrmann_crossbow_1", itemId: "crossbow_item", equipped: false },
+    { id: "gerhard_lehrmann_backpack_1", itemId: "backpack_item", equipped: true },
+    { id: "gerhard_lehrmann_pouch_1", itemId: "pouch_item", equipped: true },
+    { id: "gerhard_lehrmann_writing_kit_1", itemId: "writing_kit_item", equipped: false, containerId: "gerhard_lehrmann_backpack_1" },
+    { id: "gerhard_lehrmann_hammer_1", itemId: "hammer_item", equipped: false, containerId: "gerhard_lehrmann_backpack_1" },
+    { id: "gerhard_lehrmann_spikes_1", itemId: "spike_item", equipped: false, containerId: "gerhard_lehrmann_backpack_1" },
   ],
   talents: [
     { talentId: "magic_resistance" },
