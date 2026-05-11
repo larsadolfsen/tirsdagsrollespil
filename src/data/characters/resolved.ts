@@ -116,6 +116,11 @@ export interface ResolvedCharacterRecord {
 const byId = <T extends { id: string }>(items: T[]) =>
   Object.fromEntries(items.map((item) => [item.id, item]));
 
+export const getCharacteristicBonus = (value: number) => Math.floor(value / 10);
+
+export const calculateMaxCorruption = (attributes: Record<string, number>) =>
+  getCharacteristicBonus(attributes.WP ?? 0) + getCharacteristicBonus(attributes.T ?? 0);
+
 export function resolveCharacterRecord(
   character: CharacterRecord,
   ruleset: Ruleset,
@@ -154,7 +159,7 @@ export function resolveCharacterRecord(
     resolve: character.resolve ?? raceDefinition?.resilience,
     move: character.move ?? raceDefinition?.movement,
     corruption: character.corruption,
-    maxCorruption: character.maxCorruption,
+    maxCorruption: calculateMaxCorruption(character.attributes),
     xpTotal: character.xpTotal,
     coins: character.coins,
     attributes: character.attributes,
