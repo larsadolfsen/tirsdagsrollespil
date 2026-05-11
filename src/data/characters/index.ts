@@ -1,6 +1,6 @@
 import type { CharacterRecord } from "../../types";
 import { karlMuller } from "./karl-muller";
-import { gerhardLehrmann } from "./gerlardo";
+import { gerhardLehrmann } from "./gerhard-lehrmann";
 import { thanoVoss } from "./thano-voss";
 
 export const characterRecords: CharacterRecord[] = [thanoVoss, karlMuller, gerhardLehrmann];
