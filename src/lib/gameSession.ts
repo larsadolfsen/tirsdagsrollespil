@@ -13,6 +13,7 @@ import type {
   ResolvedCharacterSkill,
   ResolvedCharacterSpell,
 } from "../data/characters/resolved";
+import { calculateMaxCorruption } from "../data/characters/resolved";
 import {
   buildResolvedSkillOptions,
   getSkillDisplayName,
@@ -349,6 +350,8 @@ function applyCharacterProgress(
     })
     .filter((item): item is ResolvedCharacterEquipment => Boolean(item));
 
+  const maxCorruption = calculateMaxCorruption(attributes);
+
   return {
     ...character,
     wounds: {
@@ -356,6 +359,7 @@ function applyCharacterProgress(
       current: progress.woundsCurrent ?? character.wounds.current,
     },
     corruption: progress.corruptionCurrent ?? character.corruption,
+    maxCorruption,
     coins: progress.coins ?? character.coins,
     level: resolvedRank?.rank ?? character.level,
     status: resolvedRank?.status ?? character.status,
@@ -406,7 +410,7 @@ export function loadGameSession(characterId?: string): GameSession {
     rulesIndex,
     progress,
     resourceCaps: {
-      corruption: baseCharacter.maxCorruption,
+      corruption: character.maxCorruption,
       fate: baseCharacter.fate,
       resilience: baseCharacter.resilience,
       resolve: baseCharacter.resolve,
