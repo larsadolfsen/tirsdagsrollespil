@@ -12,6 +12,7 @@ import { rulesetById, rulesets } from "./rules";
 export interface CharacterSummary {
   id: string;
   name: string;
+  aka: string[];
   rulesetId: string;
 }
 
@@ -34,6 +35,7 @@ export function listCharacters(): CharacterSummary[] {
   return Object.values(characterRecordById).map((character) => ({
     id: character.id,
     name: character.name,
+    aka: character.aka ?? [],
     rulesetId: character.rulesetId,
   }));
 }
