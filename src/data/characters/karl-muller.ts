@@ -3,7 +3,7 @@ import type { CharacterRecord } from "../../types";
 export const tag: CharacterRecord = {
   id: "tag",
   rulesetId: "wfrp4e",
-  name: "Karl Müller",
+  name: "Tag",
   race: "Human",
   career: {
     careerId: "warrior_priest_novitiate",
@@ -70,12 +70,5 @@ export const tag: CharacterRecord = {
     { talentId: "bless" },
     { talentId: "etiquette_cultists" },
   ],
-  spells: [
-    { spellId: "sigmar-blessing-battle" },
-    { spellId: "sigmar-blessing-courage" },
-    { spellId: "sigmar-blessing-hardiness" },
-    { spellId: "sigmar-blessing-might" },
-    { spellId: "sigmar-blessing-protection" },
-    { spellId: "sigmar-blessing-righteousness" },
-  ],
+  spells: [],
 };

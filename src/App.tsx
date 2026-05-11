@@ -8,8 +8,6 @@ import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, ReactN
 import {
   Check,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Menu,
   Plus,
   Minus,
@@ -20,12 +18,42 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { CharacterHeader } from "./components/CharacterHeader";
+import {
+  HeaderResourceSlider,
+  InlineSubtabs,
+  PanelSectionHeader,
+  ResourceCounterBar,
+  ScrollableTabStrip,
+} from "./components/ui";
 import type { ActiveInfoState } from "./components/appTypes";
 import { GameSessionProvider, useGameSessionContext } from "./context/GameSessionContext";
+import { LazyTabPanel } from "./tabs/LazyTabPanel";
+import {
+  formatCoinTotalValue,
+  formatConsumableName,
+  getConsumableBaseName,
+  getConsumableCount,
+  getInventoryEncumbrance,
+  isBackpackContainerItem,
+  isPacksAndContainersItem,
+  isWearableInventoryItem,
+  isWornInventoryItem,
+  sortEquipmentByName,
+} from "./tabs/inventory/inventoryUtils";
+import {
+  filterSpellsBySubtab,
+  formatSpellDuration as formatSpellDurationValue,
+  formatSpellRange as formatSpellRangeValue,
+  formatSpellTarget as formatSpellTargetValue,
+  getSpellSubtabOptions,
+} from "./tabs/spells/spellUtils";
+import {
+  getCharacterTalentRows,
+  getTalentMaxDisplay as getTalentMaxDisplayValue,
+} from "./tabs/talents/talentUtils";
 import type {
   ResolvedCharacterEquipment,
   ResolvedCharacterSkill,
-  ResolvedCharacterTalent,
 } from "./data/characters/resolved";
 import { listCharacters } from "./data/repository";
 import { skillCharacteristicById } from "./data/rules/wfrp4e";
@@ -33,7 +61,6 @@ import {
   formatCharacterCoins,
   formatItemValue,
   getCharacterSkillKey,
-  getWeaponStats,
 } from "./lib/gameSession";
 import {
   formatTalentEffect,
@@ -41,6 +68,21 @@ import {
   getTalentSlBonus,
 } from "./lib/talentEffects";
 import { UI_LABELS } from "./labels";
+import {
+  mainTabOptions,
+  mobilePageTitleByView,
+  mobileTabMenuOptions,
+} from "./tabs/tabOptions";
+import type {
+  ActionCategory,
+  CareerSubtab,
+  CoinKey,
+  InventorySubtab,
+  MainTab,
+  MobileTabMenuTarget,
+  SkillSubtab,
+  SpellSubtab,
+} from "./tabs/tabTypes";
 import type { ArmourDefinition, ArmourLocation, Characteristic, Ruleset, SkillDefinition } from "./types";
 import type { ItemDefinition, SpellDefinition } from "./types";
 
@@ -53,6 +95,17 @@ const ShopSidebar = lazy(() =>
 const SpellShopSidebar = lazy(() =>
   import("./components/SpellShopSidebar").then((module) => ({ default: module.SpellShopSidebar })),
 );
+const CharacterBuilderScreen = lazy(() =>
+  import("./components/CharacterBuilderScreen").then((module) => ({ default: module.CharacterBuilderScreen })),
+);
+const SkillsTab = lazy(() => import("./tabs/SkillsTab").then((module) => ({ default: module.SkillsTab })));
+const ActionsTab = lazy(() => import("./tabs/ActionsTab").then((module) => ({ default: module.ActionsTab })));
+const InventoryTab = lazy(() => import("./tabs/InventoryTab").then((module) => ({ default: module.InventoryTab })));
+const SpellsTab = lazy(() => import("./tabs/SpellsTab").then((module) => ({ default: module.SpellsTab })));
+const TalentsTab = lazy(() => import("./tabs/TalentsTab").then((module) => ({ default: module.TalentsTab })));
+const BackgroundTab = lazy(() => import("./tabs/BackgroundTab").then((module) => ({ default: module.BackgroundTab })));
+const NotesTab = lazy(() => import("./tabs/NotesTab").then((module) => ({ default: module.NotesTab })));
+const CareerTab = lazy(() => import("./tabs/CareerTab").then((module) => ({ default: module.CareerTab })));
 
 interface RollHistoryItem {
   id: string;
@@ -105,788 +158,11 @@ interface InventoryDragState {
   itemId: string;
 }
 
-type ResourceCounterBarProps = {
-  label: string;
-  current: number;
-  max: number;
-  onAdjust: (delta: number) => void;
-  barClassName: string;
-  counterToneClassName: string;
-  minusRingClassName: string;
-  plusRingClassName: string;
-  contentClassName?: string;
-};
-
-type HeaderResourceSliderProps = {
-  label: string;
-  current: number;
-  max: number;
-  onAdjust: (delta: number) => void;
-  barClassName: string;
-  contentClassName?: string;
-};
-
 type RollActionButton = {
   id: string;
   label: string;
   onClick: () => void;
 };
-
-type InlineSubtabOption<T extends string> = {
-  id: T;
-  label: string;
-};
-
-type ActionCategory = 'all' | 'melee' | 'ranged' | 'other';
-type MainTab = 'skills' | 'actions' | 'inventory' | 'spells' | 'features' | 'background' | 'notes' | 'career';
-type MobileTabMenuTarget = MainTab | "characteristics";
-type SkillSubtab = 'all' | 'trained' | 'advanced' | 'basic';
-type SpellSubtab = 'all' | 'petty' | 'arcane' | `school:${string}`;
-type InventorySubtab = 'all' | 'wallet' | 'worn' | 'carried' | `container:${string}`;
-type CoinKey = "gc" | "s" | "d";
-
-const mainTabOptions: Array<{ id: MainTab; label: string }> = [
-  { id: "skills", label: "Skills" },
-  { id: "actions", label: "Actions" },
-  { id: "spells", label: "Spells" },
-  { id: "inventory", label: "Inventory" },
-  { id: "features", label: "Talents" },
-  { id: "background", label: "Background" },
-  { id: "notes", label: "Notes" },
-  { id: "career", label: "Advance" },
-];
-
-const mobileTabMenuOptions: Array<{ id: MobileTabMenuTarget; label: string }> = [
-  { id: "characteristics", label: "Characteristics" },
-  ...mainTabOptions,
-];
-
-const mobilePageTitleByView: Record<MobileTabMenuTarget, string> = mobileTabMenuOptions.reduce(
-  (titles, option) => ({ ...titles, [option.id]: option.label }),
-  {} as Record<MobileTabMenuTarget, string>,
-);
-
-const formatCoinTotalValue = (coins: { gc: number; s: number; d: number }) => {
-  const totalBrass = coins.gc * 240 + coins.s * 12 + coins.d;
-  const gc = Math.floor(totalBrass / 240);
-  const remainingAfterGold = totalBrass % 240;
-  const ss = Math.floor(remainingAfterGold / 12);
-  const b = remainingAfterGold % 12;
-  const parts = [
-    gc > 0 ? `${gc}gc` : null,
-    ss > 0 ? `${ss}ss` : null,
-    b > 0 ? `${b}bp` : null,
-  ].filter(Boolean);
-
-  return parts.length > 0 ? parts.join(" ") : "0bp";
-};
-
-const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
-  [...items].sort((first, second) => {
-    const nameComparison = first.name.localeCompare(second.name, undefined, {
-      sensitivity: "base",
-    });
-
-    return nameComparison || first.id.localeCompare(second.id);
-  });
-
-const getConsumableCount = (item: ResolvedCharacterEquipment) => {
-  if (item.type !== "Consumable") return null;
-
-  const match = item.name.match(/\((\d+)\)\s*$/);
-  return match ? Number(match[1]) : 1;
-};
-
-const getConsumableBaseName = (item: ResolvedCharacterEquipment) =>
-  item.name.replace(/\s*\(\d+\)\s*$/, "");
-
-const formatConsumableName = (item: ResolvedCharacterEquipment, count: number) =>
-  `${getConsumableBaseName(item)} (${count})`;
-
-const offensiveProperties = ["Damaging", "Hack", "Impact", "Impale", "Precise", "Pummel", "Trap-blade", "Wrap"];
-const defensiveProperties = ["Defensive", "Shield"];
-
-const getRelevantWeaponProperties = (actionId: string, properties: string[]) => {
-  if (actionId === "attack" || actionId === "charge") {
-    return properties.filter((property) => offensiveProperties.includes(property));
-  }
-
-  if (actionId === "parry" || actionId === "defend") {
-    return properties.filter(
-      (property) =>
-        defensiveProperties.includes(property) ||
-        property.startsWith("Shield "),
-    );
-  }
-
-  return [];
-};
-
-const PACKS_AND_CONTAINERS_TYPE = "Packs and containers";
-
-const isPacksAndContainersItem = (item: ResolvedCharacterEquipment) =>
-  item.type === PACKS_AND_CONTAINERS_TYPE || item.type === "Container";
-
-const isBackpackContainerItem = (item: ResolvedCharacterEquipment) =>
-  isPacksAndContainersItem(item) &&
-  (item.itemId === "backpack_item" || item.name.toLowerCase() === "backpack");
-
-const isWearableInventoryItem = (item: ResolvedCharacterEquipment) =>
-  item.type === "Clothing" ||
-  item.type === "Jewellery" ||
-  item.type === "Jewelry" ||
-  item.type === "Armor" ||
-  isBackpackContainerItem(item);
-
-const isWornInventoryItem = (item: ResolvedCharacterEquipment) =>
-  !item.containerId &&
-  isWearableInventoryItem(item) &&
-  (item.type !== "Armor" || item.equipped) &&
-  (!isPacksAndContainersItem(item) || item.equipped);
-
-const getInventoryEncumbrance = (item: ResolvedCharacterEquipment) => {
-  const encumbrance = Number(item.encumbrance || 0);
-  return isWornInventoryItem(item) ? Math.max(0, encumbrance - 1) : encumbrance;
-};
-
-type CareerSubtab = 'all' | 'careers' | 'characteristics' | 'skills' | 'talents';
-type BuilderStepId =
-  | "species"
-  | "career"
-  | "attributes"
-  | "skills-talents"
-  | "trappings"
-  | "details"
-  | "review"
-  | "finish";
-
-const builderSteps: Array<{ id: BuilderStepId; label: string; summary: string }> = [
-  { id: "species", label: "Species", summary: "Choose or roll species and track any creation XP bonus." },
-  { id: "career", label: "Class and Career", summary: "Pick the class, career path, and starting rank." },
-  { id: "attributes", label: "Attributes", summary: "Generate characteristics and apply the chosen method." },
-  { id: "skills-talents", label: "Skills and Talents", summary: "Select creation advances, talents, and required options." },
-  { id: "trappings", label: "Trappings", summary: "Confirm starting equipment, coin, and containers." },
-  { id: "details", label: "Details", summary: "Add appearance, background, ambitions, and party context." },
-  { id: "review", label: "Review", summary: "Validate missing fields before creating the sheet." },
-  { id: "finish", label: "Finish", summary: "Mark the builder complete and open the ready character sheet." },
-];
-
-const formatSpellSchoolLabel = (school: string) => {
-  const normalizedSchool = school
-    .replace(/^the\s+lore\s+of\s+/i, "")
-    .replace(/^lore\s+of\s+/i, "")
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  const titledSchool = normalizedSchool
-    .split(" ")
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-
-  return `The Lore of ${titledSchool}`;
-};
-
-function ResourceCounterBar({
-  label,
-  current,
-  max,
-  onAdjust,
-  barClassName,
-  counterToneClassName,
-  minusRingClassName,
-  plusRingClassName,
-  contentClassName,
-}: ResourceCounterBarProps) {
-  const percent = max > 0 ? (current / max) * 100 : 0;
-  const counterClassName = `text-[10px] font-bold ${counterToneClassName}`;
-
-  return (
-    <div className="flex items-center gap-2">
-      <button
-        onClick={() => onAdjust(-1)}
-        className={`wfrp-stepper-btn ${minusRingClassName}`}
-        aria-label={`Decrease current ${label.toLowerCase()}`}
-      >
-        <Minus size={10} />
-      </button>
-
-      <div className={contentClassName ?? "flex w-24 flex-col gap-1 lg:w-36"}>
-        <div className="flex items-end justify-between leading-none">
-          <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
-            {label}
-          </span>
-          <span className={counterClassName}>
-            {current} / {max}
-          </span>
-        </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#303030] shadow-inner">
-          <div
-            className={`h-full rounded-full transition-all duration-500 ease-out ${barClassName}`}
-            style={{ width: `${percent}%` }}
-            role="progressbar"
-            aria-valuenow={current}
-            aria-valuemin={0}
-            aria-valuemax={max}
-            aria-label={`${label} remaining`}
-          />
-        </div>
-      </div>
-
-      <button
-        onClick={() => onAdjust(1)}
-        className={`wfrp-stepper-btn ${plusRingClassName}`}
-        aria-label={`Increase current ${label.toLowerCase()}`}
-      >
-        <Plus size={10} />
-      </button>
-    </div>
-  );
-}
-
-function HeaderResourceSlider({
-  label,
-  current,
-  max,
-  onAdjust,
-  barClassName,
-  contentClassName,
-}: HeaderResourceSliderProps) {
-  return (
-    <ResourceCounterBar
-      label={label}
-      current={current}
-      max={max}
-      onAdjust={onAdjust}
-      barClassName={barClassName}
-      counterToneClassName="text-gray-200"
-      minusRingClassName="focus-visible:ring-wfrp-red/50"
-      plusRingClassName="focus-visible:ring-green-600/50"
-      contentClassName={contentClassName}
-    />
-  );
-}
-
-function ScrollableTabStrip({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className: string;
-}) {
-  const stripRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  useEffect(() => {
-    const element = stripRef.current;
-    if (!element) return;
-
-    const updateScrollState = () => {
-      const maxScrollLeft = element.scrollWidth - element.clientWidth;
-      setCanScrollLeft(element.scrollLeft > 4);
-      setCanScrollRight(maxScrollLeft - element.scrollLeft > 4);
-    };
-
-    updateScrollState();
-    element.addEventListener("scroll", updateScrollState, { passive: true });
-    window.addEventListener("resize", updateScrollState);
-
-    return () => {
-      element.removeEventListener("scroll", updateScrollState);
-      window.removeEventListener("resize", updateScrollState);
-    };
-  }, [children]);
-
-  const scrollTabsLeft = () => {
-    stripRef.current?.scrollBy({
-      left: -Math.max(stripRef.current.clientWidth * 0.65, 160),
-      behavior: "smooth",
-    });
-  };
-
-  const scrollTabsRight = () => {
-    stripRef.current?.scrollBy({
-      left: Math.max(stripRef.current.clientWidth * 0.65, 160),
-      behavior: "smooth",
-    });
-  };
-
-  return (
-    <div className="relative">
-      <div ref={stripRef} className={`${className} pl-12 pr-12`}>
-        {children}
-      </div>
-      {canScrollLeft && (
-        <>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-[#111] via-[#111]/95 to-transparent" />
-          <button
-            onClick={scrollTabsLeft}
-            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded border border-white/10 bg-[#1a1a1a]/95 p-1.5 text-gray-300 shadow-lg transition-colors hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
-            aria-label="Show previous tabs"
-          >
-            <ChevronLeft size={14} />
-          </button>
-        </>
-      )}
-      {canScrollRight && (
-        <>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-[#111] via-[#111]/95 to-transparent" />
-          <button
-            onClick={scrollTabsRight}
-            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded border border-white/10 bg-[#1a1a1a]/95 p-1.5 text-gray-300 shadow-lg transition-colors hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
-            aria-label="Show more tabs"
-          >
-            <ChevronRight size={14} />
-          </button>
-        </>
-      )}
-    </div>
-  );
-}
-
-function InlineSubtabs<T extends string>({
-  options,
-  activeId,
-  onChange,
-  trailingContent,
-}: {
-  options: InlineSubtabOption<T>[];
-  activeId: T;
-  onChange: (id: T) => void;
-  trailingContent?: ReactNode;
-}) {
-  return (
-    <div className="flex items-center gap-2 border-b border-white/5 bg-black/20">
-      <div className="min-w-0 flex-1">
-        <ScrollableTabStrip className="flex items-center justify-start gap-2 py-3 pr-3 pl-0 !pl-0 md:p-3 md:!pl-3 lg:p-4 lg:!pl-4 overflow-x-auto no-scrollbar">
-          {options.map((option) => (
-            <button
-              key={option.id}
-              onClick={() => onChange(option.id)}
-              className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
-                activeId === option.id
-                  ? 'bg-[#333] text-white shadow-lg'
-                  : 'bg-black/40 text-gray-400 hover:bg-[#222] hover:text-gray-200'
-              }`}
-              aria-pressed={activeId === option.id}
-            >
-              {option.label}
-            </button>
-          ))}
-        </ScrollableTabStrip>
-      </div>
-      {trailingContent ? (
-        <div className="shrink-0 pr-3 lg:pr-4">
-          {trailingContent}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function PanelSectionHeader({
-  title,
-  meta,
-}: {
-  title: string;
-  meta?: string;
-}) {
-  return (
-    <div className="wfrp-section-head">
-      <h3 className="wfrp-panel-title">{title}</h3>
-      {meta ? <span className="wfrp-section-meta">{meta}</span> : null}
-    </div>
-  );
-}
-
-function AdvancementSection({
-  title,
-  meta,
-  hideHeader = false,
-  children,
-}: {
-  title: string;
-  meta?: string;
-  hideHeader?: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <section className="space-y-3">
-      {!hideHeader && <PanelSectionHeader title={title} meta={meta} />}
-      {children}
-    </section>
-  );
-}
-
-function CharacterBuilderScreen({
-  ruleset,
-  onClose,
-  onFinish,
-}: {
-  ruleset: Ruleset;
-  onClose: () => void;
-  onFinish: () => void;
-}) {
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [selectedSpeciesId, setSelectedSpeciesId] = useState(ruleset.races[0]?.id ?? "");
-  const [selectedCareerId, setSelectedCareerId] = useState(ruleset.careers[0]?.id ?? "");
-  const [characterName, setCharacterName] = useState("");
-  const [ambition, setAmbition] = useState("");
-  const [background, setBackground] = useState("");
-  const currentStep = builderSteps[currentStepIndex];
-  const selectedSpecies = ruleset.races.find((race) => race.id === selectedSpeciesId) ?? ruleset.races[0] ?? null;
-  const selectedCareer = ruleset.careers.find((career) => career.id === selectedCareerId) ?? ruleset.careers[0] ?? null;
-  const selectedCareerSkills = selectedCareer
-    ? selectedCareer.skillIds
-        .map((skillId) => ruleset.skills.find((skill) => skill.id === skillId)?.name)
-        .filter((name): name is string => Boolean(name))
-    : [];
-  const selectedCareerTalents = selectedCareer
-    ? selectedCareer.talentIds
-        .map((talentId) => ruleset.talents.find((talent) => talent.id === talentId)?.name)
-        .filter((name): name is string => Boolean(name))
-    : [];
-  const validationItems = [
-    { label: "Species", isComplete: Boolean(selectedSpecies) },
-    { label: "Career", isComplete: Boolean(selectedCareer) },
-    { label: "Name", isComplete: characterName.trim().length > 0 },
-    { label: "Background", isComplete: background.trim().length > 0 },
-    { label: "Ambition", isComplete: ambition.trim().length > 0 },
-  ];
-  const missingItems = validationItems.filter((item) => !item.isComplete);
-  const completedCount = currentStepIndex;
-  const isFirstStep = currentStepIndex === 0;
-  const isLastStep = currentStepIndex === builderSteps.length - 1;
-
-  const goToPreviousStep = () => {
-    setCurrentStepIndex((current) => Math.max(0, current - 1));
-  };
-
-  const goToNextStep = () => {
-    if (isLastStep) {
-      onFinish();
-      return;
-    }
-
-    setCurrentStepIndex((current) => Math.min(builderSteps.length - 1, current + 1));
-  };
-
-  const renderBuilderStep = () => {
-    switch (currentStep.id) {
-      case "species":
-        return (
-          <div className="grid gap-3 md:grid-cols-2">
-            {ruleset.races.map((race) => (
-              <button
-                key={race.id}
-                type="button"
-                onClick={() => setSelectedSpeciesId(race.id)}
-                className={`rounded border p-4 text-left transition-colors ${
-                  race.id === selectedSpeciesId
-                    ? "border-wfrp-gold bg-[#2a2417]"
-                    : "border-white/10 bg-black/20 hover:border-white/20"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="wfrp-panel-title text-gray-100">{race.name}</h3>
-                  <span className="wfrp-table-label text-wfrp-gold">M {race.movement}</span>
-                </div>
-                <div className="mt-3 grid grid-cols-3 gap-2 text-[11px] text-gray-300">
-                  <span>Fate {race.fate}</span>
-                  <span>Res {race.resilience}</span>
-                  <span>Extra {race.extraPoints}</span>
-                </div>
-                <p className="mt-3 text-xs text-gray-500">Wounds: {race.woundsFormula}</p>
-              </button>
-            ))}
-          </div>
-        );
-      case "career":
-        return (
-          <div className="grid gap-4 lg:grid-cols-[minmax(220px,0.8fr)_minmax(0,1.2fr)]">
-            <div className="flex flex-col gap-2">
-              {ruleset.careers.map((career) => (
-                <button
-                  key={career.id}
-                  type="button"
-                  onClick={() => setSelectedCareerId(career.id)}
-                  className={`rounded border px-3 py-2 text-left transition-colors ${
-                    career.id === selectedCareerId
-                      ? "border-wfrp-gold bg-[#2a2417] text-wfrp-gold"
-                      : "border-white/10 bg-black/20 text-gray-200 hover:border-white/20"
-                  }`}
-                >
-                  <div className="text-sm font-bold">{career.name}</div>
-                  <div className="wfrp-table-label text-gray-500">{career.tier}</div>
-                </button>
-              ))}
-            </div>
-            {selectedCareer && (
-              <div className="rounded border border-white/10 bg-black/20 p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-bold font-serif">{selectedCareer.name}</h3>
-                    <p className="wfrp-section-meta">{selectedCareer.tier}</p>
-                  </div>
-                  <span className="wfrp-table-label text-wfrp-gold">{selectedCareer.ranks[0]?.status}</span>
-                </div>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <div>
-                    <p className="wfrp-panel-title text-gray-400">Career Skills</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {selectedCareerSkills.map((skill) => (
-                        <span key={skill} className="rounded border border-white/10 bg-black/30 px-2 py-1 text-xs text-gray-300">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="wfrp-panel-title text-gray-400">Talent Options</p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {selectedCareerTalents.map((talent) => (
-                        <span key={talent} className="rounded border border-white/10 bg-black/30 px-2 py-1 text-xs text-gray-300">
-                          {talent}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      case "attributes":
-        return (
-          <div className="rounded border border-white/10 bg-black/20 p-4">
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-              {UI_LABELS.CHARACTERISTICS.map((characteristic) => (
-                <div key={characteristic.key} className="rounded border border-white/10 bg-black/25 p-3">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">{characteristic.label}</p>
-                  <p className="mt-1 text-lg font-black text-wfrp-gold">
-                    {selectedSpecies?.attributeRolls[characteristic.key] ?? "-"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      case "skills-talents":
-        return (
-          <div className="grid gap-4 md:grid-cols-2">
-            <section className="rounded border border-white/10 bg-black/20 p-4">
-              <h3 className="wfrp-panel-title text-gray-300">Skill Choices</h3>
-              <div className="mt-3 flex flex-col gap-2">
-                {selectedCareerSkills.map((skill) => (
-                  <div key={skill} className="flex items-center justify-between rounded border border-white/10 bg-black/25 px-3 py-2">
-                    <span className="text-sm text-gray-200">{skill}</span>
-                    <span className="wfrp-table-label text-gray-500">Career</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-            <section className="rounded border border-white/10 bg-black/20 p-4">
-              <h3 className="wfrp-panel-title text-gray-300">Talent Pool</h3>
-              <div className="mt-3 flex flex-col gap-2">
-                {selectedCareerTalents.map((talent) => (
-                  <div key={talent} className="rounded border border-white/10 bg-black/25 px-3 py-2 text-sm text-gray-200">
-                    {talent}
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
-        );
-      case "trappings":
-        return (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {ruleset.items.slice(0, 12).map((item) => (
-              <div key={item.id} className="rounded border border-white/10 bg-black/20 p-3">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-sm font-bold text-gray-100">{item.name}</h3>
-                  <span className="wfrp-table-label text-gray-500">{item.type}</span>
-                </div>
-                <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-gray-500">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        );
-      case "details":
-        return (
-          <div className="grid gap-4">
-            <label className="flex flex-col gap-2">
-              <span className="wfrp-panel-title text-gray-400">Name</span>
-              <input
-                value={characterName}
-                onChange={(event) => setCharacterName(event.target.value)}
-                className="rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-100 outline-none focus:border-wfrp-gold/60"
-                placeholder="Character name"
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="wfrp-panel-title text-gray-400">Background</span>
-              <textarea
-                value={background}
-                onChange={(event) => setBackground(event.target.value)}
-                className="min-h-28 rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-100 outline-none focus:border-wfrp-gold/60"
-                placeholder="Origin, appearance, reputation, or notable history"
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="wfrp-panel-title text-gray-400">Ambition</span>
-              <input
-                value={ambition}
-                onChange={(event) => setAmbition(event.target.value)}
-                className="rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-100 outline-none focus:border-wfrp-gold/60"
-                placeholder="Short-term or long-term ambition"
-              />
-            </label>
-          </div>
-        );
-      case "review":
-        return (
-          <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
-            <section className="rounded border border-white/10 bg-black/20 p-4">
-              <h3 className="wfrp-panel-title text-gray-300">Character Draft</h3>
-              <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div><dt className="wfrp-table-label text-gray-500">Name</dt><dd className="text-sm text-gray-100">{characterName || "Unnamed"}</dd></div>
-                <div><dt className="wfrp-table-label text-gray-500">Species</dt><dd className="text-sm text-gray-100">{selectedSpecies?.name ?? "-"}</dd></div>
-                <div><dt className="wfrp-table-label text-gray-500">Career</dt><dd className="text-sm text-gray-100">{selectedCareer?.name ?? "-"}</dd></div>
-                <div><dt className="wfrp-table-label text-gray-500">Tier</dt><dd className="text-sm text-gray-100">{selectedCareer?.tier ?? "-"}</dd></div>
-              </dl>
-            </section>
-            <section className="rounded border border-white/10 bg-black/20 p-4">
-              <h3 className="wfrp-panel-title text-gray-300">Validation</h3>
-              <div className="mt-3 flex flex-col gap-2">
-                {validationItems.map((item) => (
-                  <div key={item.label} className="flex items-center justify-between rounded border border-white/10 bg-black/25 px-3 py-2">
-                    <span className="text-sm text-gray-200">{item.label}</span>
-                    <span className={item.isComplete ? "text-xs font-bold text-emerald-400" : "text-xs font-bold text-wfrp-red"}>
-                      {item.isComplete ? "Ready" : "Missing"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
-        );
-      case "finish":
-        return (
-          <div className="rounded border border-white/10 bg-black/20 p-6 text-center">
-            <h3 className="text-xl font-bold font-serif text-gray-100">
-              {missingItems.length === 0 ? "Ready to Create Sheet" : "Draft Needs Review"}
-            </h3>
-            <p className="mt-3 text-sm text-gray-400">
-              {missingItems.length === 0
-                ? `${characterName} is ready as a ${selectedSpecies?.name ?? "character"} ${selectedCareer?.tier ?? ""}.`
-                : `${missingItems.length} required ${missingItems.length === 1 ? "field is" : "fields are"} still missing.`}
-            </p>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-[#121212] text-[#f0f0f0] font-sans selection:bg-wfrp-gold/40 flex flex-col">
-      <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
-      <main className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col gap-4 p-4">
-        <section className="rounded border border-[#303030] bg-[#181818] shadow-lg">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#303030] px-4 py-3">
-            <div>
-              <p className="wfrp-sidebar-kicker">Character Builder</p>
-              <h1 className="text-xl font-bold font-serif tracking-tight">New Character</h1>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="wfrp-action-btn flex items-center gap-2 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
-            >
-              <X size={14} />
-              Sheet
-            </button>
-          </div>
-
-          <div className="grid gap-0 lg:grid-cols-[280px_minmax(0,1fr)]">
-            <aside className="border-b border-[#303030] bg-black/15 p-3 lg:border-b-0 lg:border-r">
-              <div className="flex flex-col gap-1">
-                {builderSteps.map((step, index) => {
-                  const isActive = step.id === currentStep.id;
-                  const isComplete = index < currentStepIndex;
-
-                  return (
-                    <button
-                      key={step.id}
-                      type="button"
-                      onClick={() => setCurrentStepIndex(index)}
-                      className={`flex items-center justify-between rounded px-3 py-2 text-left transition-colors ${
-                        isActive
-                          ? "bg-[#2a2417] text-wfrp-gold"
-                          : "text-gray-300 hover:bg-[#222222]"
-                      }`}
-                    >
-                      <span className="truncate text-[12px] font-bold">{step.label}</span>
-                      <span className="ml-3 text-[10px] font-black text-gray-500">
-                        {isComplete ? "Done" : index + 1}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </aside>
-
-            <section className="flex min-h-[520px] flex-col p-4">
-              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-4">
-                <div>
-                  <p className="wfrp-section-meta">
-                    Step {currentStepIndex + 1} of {builderSteps.length}
-                  </p>
-                  <h2 className="mt-1 text-2xl font-bold font-serif">{currentStep.label}</h2>
-                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400">
-                    {currentStep.summary}
-                  </p>
-                </div>
-                <div className="min-w-36 text-right">
-                  <p className="wfrp-sidebar-kicker">Progress</p>
-                  <p className="text-lg font-black text-wfrp-gold">
-                    {completedCount}/{builderSteps.length - 1}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex-1 py-6">
-                {renderBuilderStep()}
-              </div>
-
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-                <button
-                  type="button"
-                  onClick={goToPreviousStep}
-                  disabled={isFirstStep}
-                  className="wfrp-action-btn flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <ChevronLeft size={14} />
-                  Back
-                </button>
-                <button
-                  type="button"
-                  onClick={goToNextStep}
-                  className="wfrp-action-btn flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.12em] text-gray-100"
-                >
-                  {isLastStep ? "Finish" : "Next"}
-                  {!isLastStep && <ChevronRight size={14} />}
-                </button>
-              </div>
-            </section>
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-}
 
 function AppScreen() {
   const {
@@ -1033,7 +309,6 @@ function AppScreen() {
     null;
   const nextCareerRankRecord =
     characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank + 1) ?? null;
-  const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
   const advancementCharacteristics = UI_LABELS.CHARACTERISTICS.map(({ key, label }) => ({
     key,
     label,
@@ -1062,35 +337,8 @@ function AppScreen() {
     const pendingAdvances = pendingSkillAdvances[skillName] ?? 0;
     return baseAdvances + pendingAdvances;
   };
-  const spellSchoolOptions = [...new Set<string>(
-    characterData.spells
-      .filter((spell) => spell.category === "school" && spell.school)
-      .map((spell) => spell.school as string),
-  )].sort((first, second) =>
-    formatSpellSchoolLabel(first).localeCompare(formatSpellSchoolLabel(second), undefined, {
-      sensitivity: "base",
-    }),
-  );
-  const spellSubtabOptions: InlineSubtabOption<SpellSubtab>[] = [
-    { id: "all", label: "All" },
-    { id: "petty", label: "Petty" },
-    { id: "arcane", label: "Arcane" },
-    ...spellSchoolOptions.map((school) => ({
-      id: `school:${school}` as SpellSubtab,
-      label: formatSpellSchoolLabel(school),
-    })),
-  ];
-  const filteredSpells = characterData.spells.filter((spell) => {
-    if (activeSpellSubtab === "all") {
-      return true;
-    }
-
-    if (activeSpellSubtab === "petty" || activeSpellSubtab === "arcane") {
-      return spell.category === activeSpellSubtab;
-    }
-
-    return spell.category === "school" && spell.school === activeSpellSubtab.replace(/^school:/, "");
-  });
+  const spellSubtabOptions = getSpellSubtabOptions(characterData.spells);
+  const filteredSpells = filterSpellsBySubtab(characterData.spells, activeSpellSubtab);
   const getCareerSkillAdvanceTotal = (careerSkillName: string) => {
     const skillDefinition = skillDefinitionByName.get(careerSkillName);
 
@@ -1136,56 +384,13 @@ function AppScreen() {
       (!option.specialisationId || option.specialisationId.endsWith("_basic") || skillDefinition?.grouped)
     );
   };
-  const characteristicKeyByTalentMaxName: Record<string, string> = {
-    "Weapon Skill": "WS",
-    "Ballistic Skill": "BS",
-    Strength: "S",
-    Toughness: "T",
-    Initiative: "I",
-    Agility: "Ag",
-    Dexterity: "Dex",
-    Intelligence: "Int",
-    Willpower: "WP",
-    Fellowship: "Fel",
-  };
-  const getTalentMaxDisplay = (max: string) => {
-    const numericMax = Number.parseInt(max, 10);
-
-    if (Number.isFinite(numericMax) && `${numericMax}` === max.trim()) {
-      return numericMax;
-    }
-
-    const bonusMatch = max.match(/^(.+?)\s+Bonus$/i);
-    if (!bonusMatch) {
-      return max;
-    }
-
-    const characteristicKey = characteristicKeyByTalentMaxName[bonusMatch[1]];
-    if (!characteristicKey) {
-      return max;
-    }
-
-    return Math.floor(((characterData.attributes as Record<string, number>)[characteristicKey] ?? 0) / 10);
-  };
+  const getTalentMaxDisplay = (max: string) =>
+    getTalentMaxDisplayValue(max, characterData.attributes as Record<string, number>);
   const advancementTalentNames = [...new Set([
     ...careerAdvancementData.talents,
     ...characterTalents.map((talent) => talent.name),
   ])];
-  const characterTalentRows = Array.from<{ talent: ResolvedCharacterTalent; count: number }>(
-    characterTalents
-      .reduce<Map<string, { talent: ResolvedCharacterTalent; count: number }>>((rows, talent) => {
-        const current = rows.get(talent.name);
-
-        if (current) {
-          current.count += 1;
-          return rows;
-        }
-
-        rows.set(talent.name, { talent, count: 1 });
-        return rows;
-      }, new Map())
-      .values(),
-  ).sort((first, second) => first.talent.name.localeCompare(second.talent.name));
+  const characterTalentRows = getCharacterTalentRows(characterTalents);
   const hasCareerTalentRequirement = careerAdvancementData.talents.some((talentName) =>
     characterTalents.some((talent) => talent.name === talentName) ||
     (pendingTalentPurchases[talentName] ?? 0) > 0,
@@ -1886,27 +1091,9 @@ function AppScreen() {
     handleInventoryDragEnd();
   };
 
-  const formatSpellRange = (range: string) =>
-    range
-      .replace(/Willpower Bonus/gi, `${wpb}`)
-      .replace(/Willpower/gi, `${wp}`)
-      .replace(/\s+/g, " ")
-      .trim();
-
-  const formatSpellTarget = (target: string) =>
-    target
-      .replace(/Willpower Bonus/gi, `${wpb}`)
-      .replace(/Willpower/gi, `${wp}`)
-      .replace(/\(\s*(\d+)\s+yards\s*\)/gi, "($1 yards)")
-      .replace(/\s+/g, " ")
-      .trim();
-
-  const formatSpellDuration = (duration: string) =>
-    duration
-      .replace(/Willpower Bonus/gi, `${wpb}`)
-      .replace(/Willpower/gi, `${wp}`)
-      .replace(/\s+/g, " ")
-      .trim();
+  const formatSpellRange = (range: string) => formatSpellRangeValue(range, wp, wpb);
+  const formatSpellTarget = (target: string) => formatSpellTargetValue(target, wp, wpb);
+  const formatSpellDuration = (duration: string) => formatSpellDurationValue(duration, wp, wpb);
 
   const adjustWounds = (delta: number) => {
     setWoundsCurrent(prev => Math.min(Math.max(0, prev + delta), characterData.wounds.max));
@@ -2749,11 +1936,13 @@ function AppScreen() {
 
   if (isCharacterBuilderOpen) {
     return (
-      <CharacterBuilderScreen
-        ruleset={ruleset}
-        onClose={() => setIsCharacterBuilderOpen(false)}
-        onFinish={() => setIsCharacterBuilderOpen(false)}
-      />
+      <Suspense fallback={<div className="min-h-screen bg-[#121212]" />}>
+        <CharacterBuilderScreen
+          ruleset={ruleset}
+          onClose={() => setIsCharacterBuilderOpen(false)}
+          onFinish={() => setIsCharacterBuilderOpen(false)}
+        />
+      </Suspense>
     );
   }
 
@@ -3063,1522 +2252,186 @@ function AppScreen() {
                     exit={{ opacity: 0, y: -5 }}
                     className="flex-1 flex flex-col min-h-0"
                   >
-                    {activeMainTab === 'skills' && (
-                      <div className="flex flex-col h-full">
-                        <InlineSubtabs<SkillSubtab>
-                          options={[
-                            { id: 'all', label: 'All' },
-                            { id: 'trained', label: 'Trained' },
-                            { id: 'advanced', label: 'Advanced' },
-                            { id: 'basic', label: 'Basic' },
-                          ]}
-                          activeId={activeSkillSubtab}
-                          onChange={setActiveSkillSubtab}
+                    <LazyTabPanel>
+                      {activeMainTab === 'skills' && (
+                        <SkillsTab
+                          activeSkillSubtab={activeSkillSubtab}
+                          setActiveSkillSubtab={setActiveSkillSubtab}
+                          visibleSkillRows={visibleSkillRows}
+                          attributes={characterData.attributes as Record<string, number>}
+                          handleRoll={handleRoll}
+                          openSkillInfo={(skillName) => {
+                            setActiveInfo({ type: 'skill', name: skillName });
+                            setRollState(prev => ({ ...prev, characteristic: null }));
+                          }}
                         />
+                      )}
 
-                        <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4">
-                          <section className="wfrp-subpanel-shell flex flex-col">
-                            <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_36px_44px_58px] gap-2 items-center">
-                              <span className="wfrp-table-label text-left">Skill</span>
-                              <span className="wfrp-table-label col-span-2 text-center">Char.</span>
-                              <span className="wfrp-table-label text-center">Adv</span>
-                            </div>
-
-                            <div className="divide-y divide-white/5">
-                              {visibleSkillRows.map((skill) => {
-                                    const charValue = (characterData.attributes as Record<string, number>)[skill.characteristic] || 0;
-                                    const totalValue = charValue + skill.advances;
-
-                                    return (
-                                      <div
-                                        key={skill.key}
-                                        className="grid grid-cols-[minmax(0,1fr)_36px_44px_58px] items-center gap-2 wfrp-table-row group"
-                                      >
-                                        <div className="flex min-w-0 items-center gap-2">
-                                          <button
-                                            onClick={() => handleRoll({ key: skill.characteristic, label: skill.displayName })}
-                                            className="wfrp-roll-btn"
-                                            aria-label={`Roll for ${skill.displayName}`}
-                                          >
-                                            {totalValue}
-                                          </button>
-
-                                          <span
-                                            onClick={() => {
-                                              setActiveInfo({ type: 'skill', name: skill.displayName });
-                                              setRollState(prev => ({ ...prev, characteristic: null }));
-                                            }}
-                                            className="wfrp-skill-link min-w-0 truncate"
-                                          >
-                                            {skill.displayName}
-                                          </span>
-                                        </div>
-
-                                        <div className="wfrp-list-cell-strong text-center font-mono">
-                                          {skill.characteristic}
-                                        </div>
-
-                                        <div className="wfrp-list-cell-strong text-center font-mono">
-                                          {charValue}
-                                        </div>
-
-                                        <div className="wfrp-list-cell-strong text-center font-mono">
-                                          {skill.advances === 0 ? '-' : skill.advances}
-                                        </div>
-                                      </div>
-                                    );
-                              })}
-                            </div>
-                          </section>
-                        </div>
-                      </div>
-                    )}
-
-                    {activeMainTab === 'actions' && (
-                      <div className="flex flex-col h-full">
-                        {/* Sub Tabs */}
-                        <InlineSubtabs<ActionCategory>
-                          options={[
-                            { id: 'all', label: 'All' },
-                            { id: 'melee', label: 'Melee' },
-                            { id: 'ranged', label: 'Ranged' },
-                            { id: 'other', label: 'Other' },
-                          ]}
-                          activeId={activeActionCategory}
-                          onChange={setActiveActionCategory}
+                      {activeMainTab === 'actions' && (
+                        <ActionsTab
+                          activeActionCategory={activeActionCategory}
+                          setActiveActionCategory={setActiveActionCategory}
+                          characterData={characterData}
+                          characterSkills={characterSkills}
+                          equipmentState={equipmentState}
+                          rulesIndex={rulesIndex}
+                          getCharacteristicLabel={getCharacteristicLabel}
+                          getTargetBonusTotal={getTargetBonusTotal}
+                          handleRoll={handleRoll}
+                          setRollAdjustments={(modifier, targetBonusSources) => {
+                            setRollState(prev => ({
+                              ...prev,
+                              modifier,
+                              targetBonusSources,
+                            }));
+                          }}
+                          setActiveInfo={setActiveInfo}
+                          clearRollCharacteristic={() => {
+                            setRollState(prev => ({ ...prev, characteristic: null }));
+                          }}
                         />
+                      )}
 
-                        <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4">
-                          {characterData.spells.length > 0 && (activeActionCategory === 'all' || activeActionCategory === 'other') && (() => {
-                            const baseWP = (characterData.attributes as Record<string, number>)['WP'] || 0;
-                            const channellingSkill = characterSkills.find(s => s.baseName === 'Channelling');
-                            const totalChannelingValue = channellingSkill ? baseWP + channellingSkill.advances : baseWP;
-                              const channelingAction = {
-                              name: 'Language (Magick)',
-                              char: 'WP' as const,
-                              properties: ['Spellcasting'],
-                            };
-
-                            return (
-                            <div className="wfrp-subpanel-shell flex flex-col">
-                                <div className="grid grid-cols-[60px_1fr_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
-                                  <span className="wfrp-table-label col-span-2 text-left">Channeling</span>
-                                  <span className="wfrp-table-label text-left">Notes</span>
-                                </div>
-
-                                <div className="divide-y divide-white/5">
-                                  <div className="grid grid-cols-[60px_1fr_1fr] items-center gap-2 lg:gap-4 wfrp-table-row group">
-                                    <div className="flex justify-center">
-                                      <button
-                                        onClick={() => handleRoll({ key: 'WP', label: 'Language (Magick)' }, undefined, { testType: 'channeling' })}
-                                        className="wfrp-roll-btn"
-                                        aria-label="Roll Channeling"
-                                      >
-                                        {totalChannelingValue}
-                                      </button>
-                                    </div>
-                                    <span
-                                      onClick={() => setActiveInfo({ type: 'attack', name: 'Channeling', extra: { ...channelingAction, totalValue: totalChannelingValue, weaponName: 'Channeling', weaponType: 'Character Action' } })}
-                                      className="wfrp-skill-link truncate"
-                                    >
-                                      {channelingAction.name}
-                                    </span>
-                                    <div className="flex w-full flex-wrap content-start items-center gap-x-1">
-                                      {channelingAction.properties.map((prop, propIndex) => (
-                                        <span key={prop} className="text-xs font-semibold text-gray-400">
-                                          <button
-                                            onClick={() => {
-                                              setActiveInfo({ type: 'property', name: prop, extra: { weaponProperties: channelingAction.properties } });
-                                              setRollState(prev => ({ ...prev, characteristic: null }));
-                                            }}
-                                            className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
-                                          >
-                                            {prop === "Spellcasting" ? "Spell Focus" : prop}
-                                          </button>
-                                          {propIndex < channelingAction.properties.length - 1 ? "," : ""}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })()}
-                          {/* Weapon Sections */}
-                          {equipmentState
-                            .filter(item => item.type.includes('Weapon') && !item.containerId)
-                            .filter(item => {
-                              if (activeActionCategory === 'all') return true;
-                              if (activeActionCategory === 'melee') return item.type.includes('Melee');
-                              if (activeActionCategory === 'ranged') return item.type.includes('Ranged');
-                              return false;
-                            })
-                            .map((weapon) => {
-                              const isMelee = weapon.type.includes('Melee');
-                              const char = isMelee ? 'WS' : 'BS';
-                              const specificSkill = characterSkills.find(s => s.displayName.includes(weapon.name));
-                              const basicSkill = characterSkills.find(s => s.displayName === (isMelee ? 'Melee (Basic)' : 'Ranged (Basic)'));
-                              const skillToUse = specificSkill || basicSkill;
-                              const rollLabel = skillToUse?.displayName ?? getCharacteristicLabel(char);
-                              
-                              const baseValue = (characterData.attributes as Record<string, number>)[char] || 0;
-                              const strValue = (characterData.attributes as Record<string, number>)['S'] || 0;
-                              const sb = Math.floor(strValue / 10);
-                              const totalSkillValue = skillToUse ? baseValue + skillToUse.advances : baseValue;
-                              
-                               const weaponStats = getWeaponStats(weapon, rulesIndex);
-                              const damageBonus = parseInt(weaponStats.damage.replace("+SB+", "")) || 0;
-                              const weaponDamage = sb + (weaponStats.damage.includes("+SB") ? (damageBonus || (weaponStats.damage === "+SB" ? 0 : parseInt(weaponStats.damage.replace("+SB", "")) || 0)) : parseInt(weaponStats.damage) || 0);
-
-                              const actions = isMelee ? [
-                                {
-                                  id: "attack",
-                                  name: "Attack",
-                                  char,
-                                  totalValue: totalSkillValue,
-                                  modifier: 0,
-                                  rollDamage: weaponDamage,
-                                  damage: `+${weaponDamage}`,
-                                  range: weaponStats.reach,
-                                  properties: getRelevantWeaponProperties("attack", weaponStats.properties),
-                                },
-                                {
-                                  id: "charge",
-                                  name: "Charge",
-                                  char,
-                                  totalValue: totalSkillValue,
-                                  modifier: 0,
-                                  rollDamage: weaponDamage,
-                                  damage: `+${weaponDamage}`,
-                                  range: weaponStats.reach,
-                                  properties: getRelevantWeaponProperties("charge", weaponStats.properties),
-                                  note: "+1 Advantage if Charge conditions are met",
-                                },
-                                {
-                                  id: "parry",
-                                  name: "Parry",
-                                  char,
-                                  totalValue: totalSkillValue,
-                                  modifier: 0,
-                                  rollDamage: undefined,
-                                  damage: "-",
-                                  range: weaponStats.reach,
-                                  properties: getRelevantWeaponProperties("parry", weaponStats.properties),
-                                  bonuses: weaponStats.properties.includes("Defensive")
-                                    ? [{ label: "Defensive", value: 1 }]
-                                    : undefined,
-                                },
-                                {
-                                  id: "defend",
-                                  name: "Defend",
-                                  char,
-                                  totalValue: totalSkillValue,
-                                  modifier: 0,
-                                  targetBonusSources: [{ label: "Defense", value: 20 }],
-                                  rollDamage: undefined,
-                                  damage: "-",
-                                  range: "-",
-                                  properties: getRelevantWeaponProperties("defend", weaponStats.properties),
-                                  bonuses: weaponStats.properties.includes("Defensive")
-                                    ? [{ label: "Defensive", value: 1 }]
-                                    : undefined,
-                                },
-                              ] : [
-                                {
-                                  id: "attack",
-                                  name: "Attack",
-                                  char,
-                                  totalValue: totalSkillValue,
-                                  modifier: 0,
-                                  rollDamage: weaponDamage,
-                                  damage: `+${weaponDamage}`,
-                                  range: weaponStats.reach,
-                                  properties: getRelevantWeaponProperties("attack", weaponStats.properties),
-                                },
-                              ];
-
-                              const rangeValue = parseInt(weaponStats.reach);
-                              const rangeBands = !isMelee && !isNaN(rangeValue) ? {
-                                pb: Math.floor(rangeValue / 10),
-                                s: Math.floor(rangeValue / 2),
-                                a: rangeValue,
-                                l: rangeValue * 2,
-                                e: rangeValue * 3
-                              } : null;
-
-                              return (
-                                <div key={weapon.name} className="wfrp-subpanel-shell flex flex-col">
-                                  {isMelee ? (
-                                    <>
-                                      <div className="grid grid-cols-[60px_1fr_60px_80px_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
-                                        <span className="wfrp-table-label col-span-2 text-left">{weapon.name}</span>
-                                        <span className="wfrp-table-label text-left">Dmg</span>
-                                        <span className="wfrp-table-label text-left">Reach</span>
-                                        <span className="wfrp-table-label text-left">Properties</span>
-                                      </div>
-
-                                      <div className="divide-y divide-white/5">
-                                        {actions.map((action, idx) => (
-                                          <div key={idx} className="grid grid-cols-[60px_1fr_60px_80px_1fr] items-center gap-2 lg:gap-4 wfrp-table-row group">
-                                            <div className="flex justify-center">
-                                              <button 
-                                                onClick={() => {
-                                                  handleRoll(
-                                                    { key: action.char, label: rollLabel },
-                                                    action.rollDamage,
-                                                    {
-                                                      bonuses: action.bonuses,
-                                                      title: `${weapon.name} ${action.name}`,
-                                                    },
-                                                  );
-                                                  if (action.modifier !== 0 || action.targetBonusSources?.length) {
-                                                    setRollState(prev => ({
-                                                      ...prev,
-                                                      modifier: action.modifier,
-                                                      targetBonusSources: action.targetBonusSources ?? [],
-                                                    }));
-                                                  }
-                                                }}
-                                                className="wfrp-roll-btn"
-                                                aria-label={`Roll ${action.name} with ${weapon.name}`}
-                                              >
-                                                {action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? [])}
-                                              </button>
-                                            </div>
-                                            <span 
-                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []), weaponName: weapon.name, weaponType: weapon.type } })}
-                                              className="wfrp-skill-link truncate"
-                                            >
-                                              {action.name}
-                                            </span>
-                                            <div className="wfrp-list-cell-strong text-center font-mono">
-                                              {action.damage}
-                                            </div>
-                                            <div className="wfrp-list-cell-strong">{action.range}</div>
-                                            <div className="flex w-full flex-wrap content-start items-center gap-x-1">
-                                              {action.properties.map((prop, propIndex) => (
-                                                <span key={prop} className="text-xs font-semibold text-gray-400">
-                                                  {rulesIndex.propertyDescriptionByName[prop] ? (
-                                                    <button 
-                                                      onClick={() => {
-                                                        setActiveInfo({ type: 'property', name: prop, extra: { weaponProperties: action.properties } });
-                                                        setRollState(prev => ({ ...prev, characteristic: null }));
-                                                      }}
-                                                      className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
-                                                    >
-                                                      {prop}
-                                                    </button>
-                                                  ) : (
-                                                    <span>{prop}</span>
-                                                  )}
-                                                  {propIndex < action.properties.length - 1 ? "," : ""}
-                                                </span>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div className="grid grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] gap-2 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
-                                        <span className="wfrp-table-label col-span-2 text-left">{weapon.name}</span>
-                                        <span className="wfrp-table-label text-left">Dmg</span>
-                                        <span className="wfrp-table-label text-left">PB</span>
-                                        <span className="wfrp-table-label text-left">S</span>
-                                        <span className="wfrp-table-label text-left">A</span>
-                                        <span className="wfrp-table-label text-left">L</span>
-                                        <span className="wfrp-table-label text-left">E</span>
-                                        <span className="wfrp-table-label text-left">Properties</span>
-                                      </div>
-
-                                      <div className="divide-y divide-white/5">
-                                        {actions.map((action, idx) => (
-                                          <div key={idx} className="grid grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] items-center gap-2 wfrp-table-row group">
-                                            <div className="flex justify-center">
-                                              <button 
-                                                onClick={() => {
-                                                  handleRoll(
-                                                    { key: action.char, label: rollLabel },
-                                                    action.rollDamage,
-                                                    {
-                                                      bonuses: action.bonuses,
-                                                      title: `${weapon.name} ${action.name}`,
-                                                    },
-                                                  );
-                                                  if (action.modifier !== 0 || action.targetBonusSources?.length) {
-                                                    setRollState(prev => ({
-                                                      ...prev,
-                                                      modifier: action.modifier,
-                                                      targetBonusSources: action.targetBonusSources ?? [],
-                                                    }));
-                                                  }
-                                                }}
-                                                className="wfrp-roll-btn"
-                                                aria-label={`Roll ${action.name} with ${weapon.name}`}
-                                              >
-                                                {action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? [])}
-                                              </button>
-                                            </div>
-                                            <span 
-                                              onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []), weaponName: weapon.name, weaponType: weapon.type } })}
-                                              className="wfrp-skill-link truncate"
-                                            >
-                                              {action.name}
-                                            </span>
-                                            <div className="wfrp-list-cell-strong text-center font-mono">
-                                              {action.damage}
-                                            </div>
-                                            <div className="wfrp-list-cell-strong text-center font-mono opacity-50">{rangeBands?.pb ?? "-"}</div>
-                                            <div className="wfrp-list-cell-strong text-center font-mono opacity-70">{rangeBands?.s ?? "-"}</div>
-                                            <div className="wfrp-list-cell-strong text-center font-mono text-wfrp-gold">{rangeBands?.a ?? "-"}</div>
-                                            <div className="wfrp-list-cell-strong text-center font-mono opacity-70">{rangeBands?.l ?? "-"}</div>
-                                            <div className="wfrp-list-cell-strong text-center font-mono opacity-50">{rangeBands?.e ?? "-"}</div>
-                                            <div className="flex w-full flex-wrap content-start items-center gap-x-1">
-                                              {action.properties.map((prop, propIndex) => (
-                                                <span key={prop} className="text-xs font-semibold text-gray-400">
-                                                  {rulesIndex.propertyDescriptionByName[prop] ? (
-                                                    <button 
-                                                      onClick={() => {
-                                                        setActiveInfo({ type: 'property', name: prop, extra: { weaponProperties: action.properties } });
-                                                        setRollState(prev => ({ ...prev, characteristic: null }));
-                                                      }}
-                                                      className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
-                                                    >
-                                                      {prop}
-                                                    </button>
-                                                  ) : (
-                                                    <span>{prop}</span>
-                                                  )}
-                                                  {propIndex < action.properties.length - 1 ? "," : ""}
-                                                </span>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </>
-                                  )}
-                                </div>
-                              );
-                            })
-                          }
-                          
-                          {/* Universal Maneuvers */}
-                          {(activeActionCategory === 'all' || activeActionCategory === 'other') && (
-                            <div className="wfrp-subpanel-shell flex flex-col opacity-80 hover:opacity-100 transition-opacity">
-                               <div className="grid grid-cols-[60px_1fr_60px_80px_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
-                                 <span className="wfrp-table-label col-span-2 text-left">Maneuvers</span>
-                                 <span className="wfrp-table-label text-left">Dmg</span>
-                                 <span className="wfrp-table-label text-left">Reach</span>
-                                 <span className="wfrp-table-label text-left">Notes</span>
-                               </div>
-
-                               <div className="divide-y divide-white/5">
-                                 {[
-                                   { name: 'Move', char: 'Ag', range: `${characterData.move}`, properties: [], modifier: 0, damage: '-', type: 'other' },
-                                   { name: 'Defend', char: 'WS', range: '-', properties: [], modifier: 0, targetBonusSources: [{ label: 'Defense', value: 20 }], damage: '-', type: 'other' },
-                                   { name: 'Disengage', char: 'Ag', range: '-', properties: ['Retreat'], modifier: 0, damage: '-', type: 'other' },
-                                   { name: 'Grapple', char: 'WS', range: 'Reach', properties: ['Stun'], modifier: 0, damage: 'SB', type: 'melee' }
-                                 ]
-                                 .filter(a => activeActionCategory === 'all' || a.type === activeActionCategory)
-                                 .map((action) => {
-                                   const baseValue = (characterData.attributes as Record<string, number>)[action.char] || 0;
-                                   const skill = characterSkills.find(s => s.displayName.includes(action.name));
-                                   const totalValue = skill ? baseValue + skill.advances : baseValue;
-                                   const strValue = (characterData.attributes as Record<string, number>)['S'] || 0;
-                                   const sb = Math.floor(strValue / 10);
-                                   const finalDamage = action.damage === 'SB' ? `+${sb}` : action.damage;
-
-                                   return (
-                                     <div key={action.name} className="grid grid-cols-[60px_1fr_60px_80px_1fr] items-center gap-2 lg:gap-4 wfrp-table-row group">
-                                       <div className="flex justify-center">
-                                         <button 
-                                           onClick={() => {
-                                             handleRoll(
-                                               { key: action.char, label: action.name },
-                                               typeof action.damage === 'number' ? action.damage : (action.damage === 'SB' ? sb : undefined),
-                                               { title: action.name },
-                                             );
-                                             if (action.modifier !== 0 || action.targetBonusSources?.length) {
-                                               setRollState(prev => ({
-                                                 ...prev,
-                                                 modifier: action.modifier,
-                                                 targetBonusSources: action.targetBonusSources ?? [],
-                                               }));
-                                             }
-                                           }}
-                                           className="wfrp-roll-btn"
-                                            aria-label={`Execute ${action.name}`}
-                                          >
-                                            {totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? [])}
-                                          </button>
-                                       </div>
-                                       <span 
-                                         onClick={() => setActiveInfo({ type: 'attack', name: action.name, extra: { ...action, totalValue: totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []), damage: finalDamage, properties: action.properties } })}
-                                         className="wfrp-skill-link truncate"
-                                       >
-                                         {action.name}
-                                       </span>
-                                       <div className="wfrp-list-cell-strong text-center font-mono">{finalDamage}</div>
-                                       <div className="wfrp-list-cell-strong">{action.range}</div>
-                                       <div className="flex w-full flex-wrap content-start items-center gap-x-1">
-                                         {action.properties.map((prop, propIndex) => (
-                                           <span key={prop} className="text-xs font-semibold text-gray-400">
-                                             <button 
-                                               onClick={() => {
-                                                 setActiveInfo({ type: 'property', name: prop });
-                                                 setRollState(prev => ({ ...prev, characteristic: null }));
-                                               }}
-                                               className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
-                                             >
-                                               {prop}
-                                             </button>
-                                             {propIndex < action.properties.length - 1 ? "," : ""}
-                                           </span>
-                                         ))}
-                                       </div>
-                                     </div>
-                                   );
-                                 })}
-                               </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {activeMainTab === 'spells' && (
-                       <div className="flex flex-col h-full overflow-hidden">
-                          <InlineSubtabs
-                            options={spellSubtabOptions}
-                            activeId={activeSpellSubtab}
-                            onChange={setActiveSpellSubtab}
-                            trailingContent={
-                              <button
-                                type="button"
-                                onClick={() => setIsSpellShopOpen(true)}
-                                className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em] max-md:hidden"
-                                aria-label="Add spells"
-                              >
-                                <span className="whitespace-nowrap">Add Spells</span>
-                              </button>
-                            }
-                          />
-                          <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                            <div className="wfrp-subpanel flex flex-col overflow-x-auto shadow-sm">
-                              <div className="grid min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
-                                <span className="wfrp-table-label text-center">Channel</span>
-                                <span className="wfrp-table-label text-left">Spell</span>
-                                <span className="wfrp-table-label text-center">CN</span>
-                                <span className="wfrp-table-label text-left">Range</span>
-                                <span className="wfrp-table-label text-left">Target</span>
-                                <span className="wfrp-table-label text-left">Duration</span>
-                              </div>
-
-                              <div className="flex flex-col divide-y divide-white/5">
-                                {filteredSpells.map((spell) => {
-                                  const baseWP = (characterData.attributes as Record<string, number>)['WP'] || 0;
-                                  const chnSkill = characterSkills.find(s => s.baseName === 'Channelling');
-                                  const skillValue = chnSkill ? baseWP + chnSkill.advances : baseWP;
-                                  const spellRange = formatSpellRange(spell.range);
-                                  const spellTarget = formatSpellTarget(spell.target);
-                                  const spellDuration = formatSpellDuration(spell.duration);
-
-                                  return (
-                                    <div
-                                      key={spell.name}
-                                      className="grid min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-2 items-center"
-                                    >
-                                      <div className="flex justify-center">
-                                        <button
-                                          onClick={() => {
-                                            handleRoll({ key: 'WP', label: spell.name }, undefined, { testType: 'channeling' });
-                                          }}
-                                          className="wfrp-roll-btn"
-                                          aria-label={`Channel ${spell.name}`}
-                                        >
-                                          {skillValue}
-                                        </button>
-                                      </div>
-
-                                      <button
-                                        onClick={() => {
-                                          setActiveInfo({
-                                            type: 'spell',
-                                            name: spell.name,
-                                            extra: { ...spell, range: spellRange, target: spellTarget, duration: spellDuration },
-                                          });
-                                          setRollState(prev => ({ ...prev, characteristic: null }));
-                                        }}
-                                        className="wfrp-skill-link truncate text-left"
-                                      >
-                                        {spell.name}
-                                      </button>
-
-                                      <div className="wfrp-list-cell-strong text-center">
-                                        {spell.cn}
-                                      </div>
-
-                                      <div className="wfrp-list-cell-strong truncate">
-                                        {spellRange}
-                                      </div>
-
-                                      <div className="wfrp-list-cell-strong truncate">
-                                        {spellTarget}
-                                      </div>
-
-                                      <div className="wfrp-list-cell-strong">
-                                        {spellDuration}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                    )}
-                    {activeMainTab === 'inventory' && (
-                      <div className="flex flex-col h-full overflow-hidden">
-                        <InlineSubtabs<InventorySubtab>
-                          options={[
-                            { id: 'all', label: 'All' },
-                            { id: 'wallet', label: 'Wallet' },
-                            { id: 'carried', label: 'Ready' },
-                            { id: 'worn', label: 'Worn' },
-                            ...containers.map((container) => ({
-                              id: `container:${container.id}` as InventorySubtab,
-                              label: container.name,
-                            })),
-                          ]}
-                          activeId={activeInventorySubtab}
-                          onChange={setActiveInventorySubtab}
-                          trailingContent={
-                            <div className="flex items-center gap-4">
-                              <div className="hidden w-32 flex-col gap-1 sm:flex lg:w-40">
-                                <div className="flex items-end justify-between leading-none">
-                                  <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
-                                    Encumbrance
-                                  </span>
-                                  <span className="font-mono text-[10px] font-bold text-gray-200">
-                                    {totalEncumbrance} / {carryCapacity}
-                                  </span>
-                                </div>
-                                <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#303030] shadow-inner">
-                                  <div
-                                    className={`h-full transition-all duration-500 ease-out ${
-                                      totalEncumbrance > carryCapacity
-                                        ? "bg-wfrp-red"
-                                        : "bg-wfrp-gold"
-                                    }`}
-                                    style={{ width: `${encumbrancePercent}%` }}
-                                    role="progressbar"
-                                    aria-valuenow={totalEncumbrance}
-                                    aria-valuemin={0}
-                                    aria-valuemax={carryCapacity}
-                                    aria-label="Current encumbrance"
-                                  />
-                                </div>
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActiveInfo(null);
-                                  setIsDiceLogOpen(false);
-                                  setIsShopOpen(true);
-                                }}
-                                className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em] max-md:hidden"
-                                aria-label="Add item"
-                              >
-                                <span className="whitespace-nowrap">Add item</span>
-                              </button>
-                            </div>
-                          }
-                        />
-
-                        <div className="flex-1 overflow-y-auto p-2 space-y-4">
-                          {[
-                            {
-                              id: "wallet",
-                              title: "Wallet",
-                              subtitle: formatCoinTotalValue(characterData.coins),
-                              items: [] as ResolvedCharacterEquipment[],
-                              dropContainerId: null,
-                              alwaysVisible: true,
-                              acceptsDrops: false,
-                            },
-                            {
-                              id: "carried",
-                              title: 'Ready',
-                              items: carriedItems,
-                              dropContainerId: null,
-                              dropCarried: true,
-                              alwaysVisible:
-                                activeInventorySubtab === 'carried' ||
-                                carriedItems.length > 0 ||
-                                Boolean(inventoryDrag),
-                            },
-                            {
-                              id: "worn",
-                              title: "Worn",
-                              items: wornItems,
-                              dropContainerId: null,
-                              dropWorn: true,
-                              alwaysVisible: true,
-                            },
-                            ...containers.map((container) => ({
-                              id: container.id,
-                              title: container.name,
-                              subtitle: `${getContainerUsedEncumbrance(container.id)} / ${container.carries ?? 0} enc`,
-                              items: getContainerContents(container.id),
-                              dropContainerId: container.id,
-                              alwaysVisible: true,
-                            })),
-                          ]
-                            .filter((section) => {
-                              if (!section.alwaysVisible) return false;
-                              if (activeInventorySubtab === 'all') return true;
-                              if (activeInventorySubtab === 'wallet') return section.id === 'wallet';
-                              if (activeInventorySubtab === 'worn') return section.id === 'worn';
-                              if (activeInventorySubtab === 'carried') return section.id === 'carried';
-                              return activeInventorySubtab === `container:${section.id}`;
-                            })
-                            .map((section) => {
-                              const isActiveDropTarget = inventoryDropTarget === section.id;
-                              const acceptsDrops = section.acceptsDrops !== false;
-                              const dropsToWorn = "dropWorn" in section && section.dropWorn === true;
-                              const dropsToCarried = "dropCarried" in section && section.dropCarried === true;
-                              const canDropHere = acceptsDrops && inventoryDrag
-                                ? canDropInventoryItem(
-                                    inventoryDrag.itemId,
-                                    section.dropContainerId,
-                                    dropsToWorn,
-                                    dropsToCarried,
-                                  )
-                                : false;
-
-                              return (
-                            <div
-                              key={section.id}
-                              onDragOver={(event) =>
-                                acceptsDrops
-                                  ? handleInventoryDragOver(
-                                      section.id,
-                                      section.dropContainerId,
-                                      event,
-                                      dropsToWorn,
-                                      dropsToCarried,
-                                    )
-                                  : undefined
-                              }
-                              onDragLeave={() =>
-                                setInventoryDropTarget((current) =>
-                                  current === section.id ? null : current,
-                                )
-                              }
-                              onDrop={(event) =>
-                                acceptsDrops
-                                  ? handleInventoryDrop(
-                                      section.dropContainerId,
-                                      event,
-                                      dropsToWorn,
-                                      dropsToCarried,
-                                    )
-                                  : undefined
-                              }
-                              className={`wfrp-subpanel overflow-x-auto shadow-sm ${
-                                isActiveDropTarget
-                                  ? "border-wfrp-gold/50 bg-wfrp-gold/5"
-                                  : canDropHere
-                                    ? "border-wfrp-gold/20"
-                                    : ""
-                              }`}
-                            >
-                               <div className="grid min-w-[640px] grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 wfrp-list-header">
-                                 <span className="flex min-w-0 items-center gap-2 text-left">
-                                   <span className="truncate">{section.title}</span>
-                                   {"subtitle" in section && section.subtitle ? (
-                                     <span className="truncate font-mono text-[9px] font-bold uppercase tracking-wider text-gray-600">
-                                       {section.subtitle}
-                                     </span>
-                                   ) : null}
-                                 </span>
-                                 <span className="text-left">Type</span>
-                                 <span className="text-center">Enc</span>
-                                 <span className="text-center">Value</span>
-                                 <span className="text-right">Actions</span>
-                               </div>
-                               {section.id === "wallet" && (
-                                <>
-                                  {([
-                                    ["gc", "Gold Crowns", "gc"],
-                                    ["s", "Silver Shillings", "ss"],
-                                    ["d", "Brass Pennies", "bp"],
-                                  ] as const).map(([key, name, label]) => (
-                                    <div key={key} className="wfrp-table-row flex min-w-[640px] border-0 group">
-                                      <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 items-center">
-                                        <div className="flex flex-col">
-                                          <span className="wfrp-skill-link flex items-center gap-1.5">
-                                            {name}
-                                          </span>
-                                        </div>
-
-                                        <div className="wfrp-list-cell-strong truncate">
-                                          Currency
-                                        </div>
-
-                                        <div className="wfrp-list-cell-strong text-center font-mono">
-                                          -
-                                        </div>
-
-                                        <div className="wfrp-list-cell-strong text-center font-mono">
-                                          {characterData.coins[key]}{label}
-                                        </div>
-
-                                        <div className="flex justify-end gap-1 pr-1">
-                                          <button
-                                            type="button"
-                                            onClick={() => handleAdjustCoinType(key, -10)}
-                                            className="wfrp-stepper-btn inline-flex h-5 min-w-7 items-center justify-center px-1.5 py-0 leading-none focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
-                                            aria-label={`Decrease ${name.toLowerCase()} by 10`}
-                                            disabled={characterData.coins[key] <= 0}
-                                          >
-                                            <span className="font-mono text-[10px] font-bold leading-none">-10</span>
-                                          </button>
-                                          <button
-                                            type="button"
-                                            onClick={() => handleAdjustCoinType(key, -1)}
-                                            className="wfrp-stepper-btn inline-flex h-5 min-w-7 items-center justify-center px-1.5 py-0 leading-none focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
-                                            aria-label={`Decrease ${name.toLowerCase()} by 1`}
-                                            disabled={characterData.coins[key] <= 0}
-                                          >
-                                            <span className="font-mono text-[10px] font-bold leading-none">-1</span>
-                                          </button>
-                                          <button
-                                            type="button"
-                                            onClick={() => handleAdjustCoinType(key, 1)}
-                                            className="wfrp-stepper-btn inline-flex h-5 min-w-7 items-center justify-center px-1.5 py-0 leading-none focus-visible:ring-green-600/50"
-                                            aria-label={`Increase ${name.toLowerCase()} by 1`}
-                                          >
-                                            <span className="font-mono text-[10px] font-bold leading-none">+1</span>
-                                          </button>
-                                          <button
-                                            type="button"
-                                            onClick={() => handleAdjustCoinType(key, 10)}
-                                            className="wfrp-stepper-btn inline-flex h-5 min-w-7 items-center justify-center px-1.5 py-0 leading-none focus-visible:ring-green-600/50"
-                                            aria-label={`Increase ${name.toLowerCase()} by 10`}
-                                          >
-                                            <span className="font-mono text-[10px] font-bold leading-none">+10</span>
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </>
-                               )}
-                               {section.items.map((item: ResolvedCharacterEquipment) => (
-                                <div
-                                  key={item.id}
-                                  draggable={!isPacksAndContainersItem(item)}
-                                  onDragStart={(event) => handleInventoryDragStart(item, event)}
-                                  onDragEnd={handleInventoryDragEnd}
-                                  className={`wfrp-table-row flex min-w-[640px] border-0 group ${
-                                    inventoryDrag?.itemId === item.id ? "opacity-45" : ""
-                                  } ${
-                                    isPacksAndContainersItem(item) ? "" : "cursor-grab active:cursor-grabbing"
-                                  }`}
-                                >
-                                  <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 items-center">
-                                    <div className="flex flex-col">
-                                      <span 
-                                        onClick={() => {
-                                          setActiveInfo({ type: 'equipment', name: item.name });
-                                          setRollState(prev => ({ ...prev, characteristic: null }));
-                                        }}
-                                        className="wfrp-skill-link flex items-center gap-1.5"
-                                      >
-                                        {item.name}
-                                      </span>
-                                    </div>
-
-                                    <div className="wfrp-list-cell-strong truncate">
-                                      {item.type}
-                                    </div>
-
-                                    <div className="wfrp-list-cell-strong text-center font-mono">
-                                      {getInventoryEncumbrance(item) || '-'}
-                                    </div>
-
-                                    <div className="wfrp-list-cell-strong text-center font-mono">
-                                      {formatItemValue(item)}
-                                    </div>
-
-                                    <div className="relative flex items-center justify-end gap-1 pr-1">
-                                      {item.type === "Consumable" && (
-                                        <button
-                                          type="button"
-                                          onClick={() => handleConsumeItem(item.id)}
-                                          className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
-                                          aria-label={`Use one ${getConsumableBaseName(item).toLowerCase()}`}
-                                        >
-                                          <Minus size={10} />
-                                        </button>
-                                      )}
-                                      <button
-                                        type="button"
-                                        onClick={(event) => handleToggleInventoryMenu(item.id, event, "drop")}
-                                        className="wfrp-stepper-btn inline-flex h-5 min-w-12 items-center justify-center px-1.5 py-0 focus-visible:ring-wfrp-gold/50"
-                                        aria-label={`Drop ${item.name}`}
-                                      >
-                                        <span className="font-mono text-[10px] font-bold leading-none">Drop</span>
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={(event) => handleToggleInventoryMenu(item.id, event, "move")}
-                                        className="wfrp-stepper-btn inline-flex h-5 min-w-12 items-center justify-center px-1.5 py-0 focus-visible:ring-wfrp-gold/50"
-                                        aria-label={`Move ${item.name}`}
-                                      >
-                                        <span className="font-mono text-[10px] font-bold leading-none">Move</span>
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                              {section.items.length === 0 && section.id !== "wallet" && (
-                                <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-700">
-                                  {canDropHere ? "Drop here" : "Empty"}
-                                </div>
-                              )}
-                            </div>
-                              );
-                            })}
-                        </div>
-                        {activeInventoryMenu && (
-                          <div
-                            ref={inventoryMenuRef}
-                            className="fixed z-50 min-w-[152px] overflow-hidden rounded border border-white/10 bg-[#141414] py-1 shadow-xl"
-                            style={{ top: activeInventoryMenu.top, left: activeInventoryMenu.left }}
-                          >
-                            {(() => {
-                              const activeItem = equipmentState.find((item) => item.id === activeInventoryMenu.id);
-                              if (!activeItem) return null;
-
-                              const stowableContainers = equipmentState.filter(
-                                (item) =>
-                                  isPacksAndContainersItem(item) &&
-                                  item.id !== activeItem.id &&
-                                  item.id !== activeItem.containerId &&
-                                  canStoreInContainer(activeItem.id, item.id),
-                              );
-                              const canMoveToWorn = canDropInventoryItem(activeItem.id, null, true);
-                              const canMoveToCarried = isWornInventoryItem(activeItem)
-                                ? canDropInventoryItem(activeItem.id, null, false, true)
-                                : canDropInventoryItem(activeItem.id, null);
-
-                              return (
-                                <>
-                                  {activeInventoryMenu.mode === "drop" ? (
-                                    <button
-                                      onClick={() => handleDropItem(activeItem.id)}
-                                      className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
-                                    >
-                                      Confirm
-                                    </button>
-                                  ) : (
-                                    <>
-                                      {canMoveToWorn && (
-                                    <button
-                                      onClick={() => handleWearItem(activeItem.id)}
-                                      className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
-                                    >
-                                      Wear
-                                    </button>
-                                      )}
-                                      {canMoveToCarried && (
-                                    <button
-                                      onClick={() => {
-                                        if (isWornInventoryItem(activeItem)) {
-                                          handleUnwearItem(activeItem.id);
-                                        } else {
-                                          handleCarryItem(activeItem.id);
-                                        }
-                                      }}
-                                      className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
-                                    >
-                                      Ready
-                                    </button>
-                                      )}
-                                      {stowableContainers.map((container) => (
-                                      <button
-                                        key={container.id}
-                                        onClick={() => handleStoreItem(activeItem.id, container.id)}
-                                        className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
-                                      >
-                                        {container.name}
-                                      </button>
-                                      ))}
-                                    </>
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                      {activeMainTab === 'spells' && (
+                        <SpellsTab
+                        spellSubtabOptions={spellSubtabOptions}
+                        activeSpellSubtab={activeSpellSubtab}
+                        setActiveSpellSubtab={setActiveSpellSubtab}
+                        filteredSpells={filteredSpells}
+                        attributes={characterData.attributes as Record<string, number>}
+                        characterSkills={characterSkills}
+                        formatSpellRange={formatSpellRange}
+                        formatSpellTarget={formatSpellTarget}
+                        formatSpellDuration={formatSpellDuration}
+                        handleRoll={handleRoll}
+                        openSpellInfo={(spell, formattedSpell) => {
+                          setActiveInfo({
+                            type: 'spell',
+                            name: spell.name,
+                            extra: { ...spell, ...formattedSpell },
+                          });
+                          setRollState(prev => ({ ...prev, characteristic: null }));
+                        }}
+                        openSpellShop={() => setIsSpellShopOpen(true)}
+                      />
+                      )}
+                      {activeMainTab === 'inventory' && (
+                        <InventoryTab
+                        activeInventorySubtab={activeInventorySubtab}
+                        setActiveInventorySubtab={setActiveInventorySubtab}
+                        characterData={characterData}
+                        equipmentState={equipmentState}
+                        totalEncumbrance={totalEncumbrance}
+                        carryCapacity={carryCapacity}
+                        encumbrancePercent={encumbrancePercent}
+                        containers={containers}
+                        wornItems={wornItems}
+                        carriedItems={carriedItems}
+                        inventoryDrag={inventoryDrag}
+                        inventoryDropTarget={inventoryDropTarget}
+                        setInventoryDropTarget={setInventoryDropTarget}
+                        activeInventoryMenu={activeInventoryMenu}
+                        inventoryMenuRef={inventoryMenuRef}
+                        getContainerUsedEncumbrance={getContainerUsedEncumbrance}
+                        getContainerContents={getContainerContents}
+                        canDropInventoryItem={canDropInventoryItem}
+                        canStoreInContainer={canStoreInContainer}
+                        handleInventoryDragOver={handleInventoryDragOver}
+                        handleInventoryDrop={handleInventoryDrop}
+                        handleInventoryDragStart={handleInventoryDragStart}
+                        handleInventoryDragEnd={handleInventoryDragEnd}
+                        handleAdjustCoinType={handleAdjustCoinType}
+                        handleConsumeItem={handleConsumeItem}
+                        handleToggleInventoryMenu={handleToggleInventoryMenu}
+                        handleDropItem={handleDropItem}
+                        handleWearItem={handleWearItem}
+                        handleUnwearItem={handleUnwearItem}
+                        handleCarryItem={handleCarryItem}
+                        handleStoreItem={handleStoreItem}
+                        formatItemValue={formatItemValue}
+                        openShop={() => {
+                          setActiveInfo(null);
+                          setIsDiceLogOpen(false);
+                          setIsShopOpen(true);
+                        }}
+                        openEquipmentInfo={(itemName) => {
+                          setActiveInfo({ type: 'equipment', name: itemName });
+                          setRollState(prev => ({ ...prev, characteristic: null }));
+                        }}
+                      />
+                      )}
                     
-                    {activeMainTab === 'features' && (
-                      <div className="flex-1 overflow-y-auto p-2">
-                        {characterTalentRows.length > 0 ? (
-                          <div className="wfrp-subpanel-shell flex flex-col">
-                            <div className="wfrp-subpanel-header grid grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)] gap-2 items-center">
-                              <span className="wfrp-table-label text-left">Talent</span>
-                              <span className="wfrp-table-label text-center">Taken</span>
-                              <span className="wfrp-table-label text-left">Description</span>
-                            </div>
-                            <div className="divide-y divide-white/5">
-                              {characterTalentRows.map(({ talent, count }) => (
-                                <button
-                                  key={talent.name}
-                                  type="button"
-                                  onClick={() => openTalentInfo(talent.name)}
-                                  className="group grid w-full grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)] items-start gap-2 wfrp-table-row cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40"
-                                  aria-label={`Open ${talent.name} talent rule`}
-                                >
-                                  <span className="min-w-0 text-xs font-semibold text-gray-400 transition-colors group-hover:text-wfrp-gold">
-                                    {talent.name}
-                                  </span>
-                                  <span className="min-w-0 text-center text-xs leading-relaxed text-gray-500">
-                                    {count}/{getTalentMaxDisplay(talent.max)}
-                                  </span>
-                                  <span className="min-w-0 text-xs leading-relaxed text-gray-500">
-                                    {talent.effects?.length
-                                      ? talent.effects.map(formatTalentEffect).join("; ")
-                                      : talent.description}
-                                  </span>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="rounded border border-white/10 bg-black/20 px-4 py-6 text-center text-sm text-gray-500">
-                            No talents bought yet.
-                          </div>
-                        )}
-                      </div>
-                    )}
+                      {activeMainTab === 'features' && (
+                        <TalentsTab
+                        characterTalentRows={characterTalentRows}
+                        openTalentInfo={openTalentInfo}
+                        getTalentMaxDisplay={getTalentMaxDisplay}
+                        formatTalentEffect={formatTalentEffect}
+                      />
+                      )}
 
-                    {activeMainTab === 'career' && (
-                      <div className="flex flex-col h-full min-h-0">
-                        <ScrollableTabStrip className="sticky top-0 z-10 flex items-center gap-2 p-3 lg:p-4 bg-[#0c0c0c] border-b border-white/5 overflow-x-auto no-scrollbar">
-                          {[
-                            { id: 'all', label: 'All' },
-                            { id: 'careers', label: 'Careers' },
-                            { id: 'characteristics', label: 'Characteristics' },
-                            { id: 'skills', label: 'Skills' },
-                            { id: 'talents', label: 'Talents' },
-                          ].map((option) => (
-                            <button
-                              key={option.id}
-                              onClick={() => setActiveCareerSubtab(option.id as CareerSubtab)}
-                              className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
-                                activeCareerSubtab === option.id
-                                  ? 'bg-[#333] text-white shadow-lg'
-                                  : 'bg-black/40 text-gray-400 hover:bg-[#222] hover:text-gray-200'
-                              }`}
-                              aria-pressed={activeCareerSubtab === option.id}
-                            >
-                              {option.label}
-                            </button>
-                          ))}
-                          <div className="ml-auto flex-shrink-0">
-                            <button
-                              onClick={saveCareerChanges}
-                              disabled={!hasPendingCareerChanges}
-                              className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
-                              aria-label="Save career changes"
-                            >
-                              Save
-                            </button>
-                          </div>
-                        </ScrollableTabStrip>
+                      {activeMainTab === 'career' && (
+                        <CareerTab
+                        activeCareerSubtab={activeCareerSubtab}
+                        setActiveCareerSubtab={setActiveCareerSubtab}
+                        saveCareerChanges={saveCareerChanges}
+                        hasPendingCareerChanges={hasPendingCareerChanges}
+                        characterData={characterData}
+                        displayedCareerRank={displayedCareerRank}
+                        displayedCareerRankRecord={displayedCareerRankRecord}
+                        careerAdvancementData={careerAdvancementData}
+                        advancementProgress={advancementProgress}
+                        nextCareerAdvanceCost={nextCareerAdvanceCost}
+                        pendingCareerRank={pendingCareerRank}
+                        pendingAvailableXp={pendingAvailableXp}
+                        nextCareerRankRecord={nextCareerRankRecord}
+                        decreasePendingCareerRank={decreasePendingCareerRank}
+                        increasePendingCareerRank={increasePendingCareerRank}
+                        advancementCharacteristics={advancementCharacteristics}
+                        availableCareerCharacteristicKeys={availableCareerCharacteristicKeys}
+                        getCharacteristicAdvanceCost={getCharacteristicAdvanceCost}
+                        getCharacteristicLabel={getCharacteristicLabel}
+                        removePendingCharacteristicAdvance={removePendingCharacteristicAdvance}
+                        purchaseCharacteristicAdvance={purchaseCharacteristicAdvance}
+                        advancementSkillSections={advancementSkillSections}
+                        removePendingSkillAdvance={removePendingSkillAdvance}
+                        purchaseSkillAdvance={purchaseSkillAdvance}
+                        advancementTalentNames={advancementTalentNames}
+                        characterTalents={characterTalents}
+                        pendingTalentPurchases={pendingTalentPurchases}
+                        getTalentPurchaseCost={getTalentPurchaseCost}
+                        removePendingTalentPurchase={removePendingTalentPurchase}
+                        purchaseTalent={purchaseTalent}
+                        openTalentInfo={openTalentInfo}
+                        setActiveInfo={setActiveInfo}
+                        clearRollCharacteristic={() => setRollState((prev) => ({ ...prev, characteristic: null }))}
+                      />
+                      )}
+                      {activeMainTab === 'background' && (
+                        <BackgroundTab
+                        backgroundText={backgroundText}
+                        setBackgroundText={setBackgroundText}
+                      />
+                      )}
 
-                        <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4 no-scrollbar">
-                          {(activeCareerSubtab === 'all' || activeCareerSubtab === 'careers') && (
-                            <AdvancementSection title="Careers" meta="Current Path" hideHeader>
-                            <div className="wfrp-subpanel-shell flex flex-col">
-                              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px] gap-2 lg:gap-3 items-center">
-                                <span className="wfrp-table-label text-left">Careers</span>
-                                <span className="wfrp-table-label text-left">Progress</span>
-                                <span className="wfrp-table-label text-left">Tier</span>
-                                <span className="wfrp-table-label text-center">Cost</span>
-                                <span className="wfrp-table-label text-right">Advance</span>
-                              </div>
-                              <div className="divide-y divide-white/5">
-                                <div className="grid grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row">
-                                  <div className="min-w-0">
-                                    <button
-                                      onClick={() => {
-                                        setActiveInfo({
-                                          type: 'career',
-                                          name: `${characterData.career} ${toRoman(displayedCareerRank)}`,
-                                          extra: {
-                                            careerName: characterData.career,
-                                            tierName: displayedCareerRankRecord?.name ?? characterData.tier,
-                                            tierStatus: displayedCareerRankRecord?.status ?? characterData.status,
-                                            rank: displayedCareerRank,
-                                            careerSkills: careerAdvancementData.skills,
-                                            careerTalents: careerAdvancementData.talents,
-                                          },
-                                        });
-                                        setRollState(prev => ({ ...prev, characteristic: null }));
-                                      }}
-                                      className="wfrp-skill-link truncate text-left"
-                                    >
-                                      {characterData.career} {toRoman(displayedCareerRank)}
-                                    </button>
-                                  </div>
-                                  <div className="min-w-0">
-                                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden shadow-inner">
-                                      <div
-                                        className="h-full bg-white/30 transition-all duration-500"
-                                        style={{ width: `${advancementProgress}%` }}
-                                        role="progressbar"
-                                        aria-valuenow={advancementProgress}
-                                        aria-valuemin={0}
-                                        aria-valuemax={100}
-                                        aria-label="Career step progress"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="wfrp-list-cell-strong text-left truncate">
-                                    {displayedCareerRankRecord?.name ?? characterData.tier}
-                                  </div>
-                                  <div className="wfrp-list-cell-strong text-center font-mono">
-                                    {nextCareerAdvanceCost ?? '-'}
-                                  </div>
-                                  <div className="flex justify-end gap-1">
-                                    <button
-                                      onClick={decreasePendingCareerRank}
-                                      disabled={pendingCareerRank === null}
-                                      className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
-                                      aria-label={`Decrease career rank for ${characterData.career}`}
-                                    >
-                                      <Minus size={10} />
-                                    </button>
-                                    <button
-                                      onClick={increasePendingCareerRank}
-                                      disabled={!nextCareerRankRecord || nextCareerAdvanceCost === null || pendingAvailableXp < nextCareerAdvanceCost}
-                                      className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
-                                      aria-label={`Increase career rank for ${characterData.career}`}
-                                    >
-                                      <Plus size={12} />
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            </AdvancementSection>
-                          )}
-
-                          {(activeCareerSubtab === 'all' || activeCareerSubtab === 'characteristics') && (
-                            <AdvancementSection title="Characteristics" meta="Scaffolded" hideHeader>
-                            <div className="wfrp-subpanel-shell flex flex-col">
-                              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_64px_72px_62px_74px] gap-2 lg:gap-3 items-center">
-                                <span className="wfrp-table-label text-left">Characteristics</span>
-                                <span className="wfrp-table-label text-left">Base</span>
-                                <span className="wfrp-table-label text-center">Advances</span>
-                                <span className="wfrp-table-label text-center">Cost</span>
-                                <span className="wfrp-table-label text-right">Advance</span>
-                              </div>
-                              <div className="divide-y divide-white/5">
-                                {advancementCharacteristics.map((item) => {
-                                  const totalAdvances = item.advances + item.pendingAdvances;
-                                  const advancesDisplay =
-                                    item.advances === 0
-                                      ? item.pendingAdvances > 0
-                                        ? `+${item.pendingAdvances}`
-                                        : '-'
-                                      : `${item.advances}${item.pendingAdvances > 0 ? ` +${item.pendingAdvances}` : ''}`;
-                                  const isAvailable = availableCareerCharacteristicKeys.includes(item.key);
-                                  const nextCharacteristicCost = getCharacteristicAdvanceCost(totalAdvances);
-
-                                  return (
-                                    <div
-                                      key={item.key}
-                                      className={`grid grid-cols-[minmax(0,1fr)_64px_72px_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row ${
-                                        !isAvailable ? 'opacity-70' : ''
-                                      }`}
-                                    >
-                                      <div className="min-w-0">
-                                        <button
-                                          onClick={() => {
-                                            setActiveInfo({
-                                              type: 'characteristic',
-                                              name: `${item.label} (${item.key})`,
-                                              extra: {
-                                                key: item.key,
-                                                label: getCharacteristicLabel(item.key),
-                                                advances: item.advances,
-                                                pendingAdvances: item.pendingAdvances,
-                                                currentValue: item.value,
-                                                nextCost: isAvailable ? nextCharacteristicCost : null,
-                                                availableFromRank: careerAdvancementData.characteristics.find((entry) => entry.key === item.key)?.availableFromRank ?? null,
-                                              },
-                                            });
-                                            setRollState(prev => ({ ...prev, characteristic: null }));
-                                          }}
-                                          className="wfrp-skill-link truncate text-left"
-                                        >
-                                          {item.label} ({item.key})
-                                        </button>
-                                      </div>
-                                      <div className="wfrp-list-cell-strong text-left font-mono">
-                                        {item.value}
-                                      </div>
-                                      <div className="wfrp-list-cell-strong text-center font-mono">
-                                        {advancesDisplay}
-                                      </div>
-                                      <div className="wfrp-list-cell-strong text-center font-mono">
-                                        {isAvailable ? nextCharacteristicCost : '-'}
-                                      </div>
-                                      <div className="flex justify-end gap-1">
-                                        <button
-                                          onClick={() => removePendingCharacteristicAdvance(item.key)}
-                                          disabled={item.pendingAdvances === 0 || !isAvailable}
-                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
-                                          aria-label={`Decrease ${item.label}`}
-                                        >
-                                          <Minus size={10} />
-                                        </button>
-                                        <button
-                                          onClick={() => purchaseCharacteristicAdvance(item.key)}
-                                          disabled={!isAvailable || pendingAvailableXp < nextCharacteristicCost}
-                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
-                                          aria-label={`Increase ${item.label}`}
-                                        >
-                                          <Plus size={12} />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                            </AdvancementSection>
-                          )}
-
-                          {(activeCareerSubtab === 'all' || activeCareerSubtab === 'skills') && (
-                            <AdvancementSection title="Skills" hideHeader>
-                            <div className="flex flex-col gap-3">
-                              {advancementSkillSections.map((section) => (
-                                <div key={section.id} className="wfrp-subpanel-shell flex flex-col">
-                                  <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_56px_62px_62px_74px] gap-2 lg:gap-3 items-center">
-                                    <span className="wfrp-table-label text-left">{section.title}</span>
-                                    <span className="wfrp-table-label text-center">Base</span>
-                                    <span className="wfrp-table-label text-center">Advances</span>
-                                    <span className="wfrp-table-label text-center">Cost</span>
-                                    <span className="wfrp-table-label text-right">Advance</span>
-                                  </div>
-                                  <div className="divide-y divide-white/5">
-                                    {section.skills.length === 0 ? (
-                                      <div className="px-3 py-4 text-[10px] italic text-gray-600">
-                                        No {section.title.toLowerCase()} skills listed.
-                                      </div>
-                                    ) : (
-                                      section.skills.map((skillRow) => {
-                                        const canPurchase =
-                                          skillRow.isCareerSkill && pendingAvailableXp >= skillRow.nextSkillCost;
-                                        const advancesDisplay =
-                                          skillRow.baseAdvances === 0
-                                            ? skillRow.pendingAdvances > 0
-                                              ? `+${skillRow.pendingAdvances}`
-                                              : '-'
-                                            : `${skillRow.baseAdvances}${skillRow.pendingAdvances > 0 ? ` +${skillRow.pendingAdvances}` : ''}`;
-
-                                        return (
-                                          <div
-                                            key={skillRow.skillName}
-                                            className={`grid grid-cols-[minmax(0,1fr)_56px_62px_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row group ${
-                                              !skillRow.isCareerSkill ? 'opacity-70' : ''
-                                            }`}
-                                          >
-                                            <div className="min-w-0">
-                                              <button
-                                                onClick={() => {
-                                                  setActiveInfo({ type: 'skill', name: skillRow.skillName });
-                                                  setRollState(prev => ({ ...prev, characteristic: null }));
-                                                }}
-                                                className="wfrp-skill-link truncate text-left"
-                                              >
-                                                {skillRow.skillName} ({skillRow.characteristicKey || '-'})
-                                              </button>
-                                            </div>
-                                            <div className="wfrp-list-cell-strong text-center font-mono">
-                                              {skillRow.baseCharacteristicValue === 0 ? '-' : skillRow.baseCharacteristicValue}
-                                            </div>
-                                            <div className="wfrp-list-cell-strong text-center font-mono">
-                                              {advancesDisplay}
-                                            </div>
-                                            <div className="wfrp-list-cell-strong text-center font-mono">
-                                              {skillRow.isCareerSkill ? skillRow.nextSkillCost : '-'}
-                                            </div>
-                                            <div className="flex justify-end gap-1">
-                                              <button
-                                                onClick={() => removePendingSkillAdvance(skillRow.skillName)}
-                                                disabled={skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
-                                                className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
-                                                aria-label={`Decrease skill advances for ${skillRow.skillName}`}
-                                              >
-                                                <Minus size={10} />
-                                              </button>
-                                              <button
-                                                onClick={() => purchaseSkillAdvance(skillRow.skillName)}
-                                                disabled={!canPurchase}
-                                                className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
-                                                aria-label={`Advance skill ${skillRow.skillName}`}
-                                              >
-                                                <Plus size={12} />
-                                              </button>
-                                            </div>
-                                          </div>
-                                        );
-                                      })
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                            </AdvancementSection>
-                          )}
-
-                          {(activeCareerSubtab === 'all' || activeCareerSubtab === 'talents') && (
-                            <AdvancementSection title="Talents" hideHeader>
-                            <div className="wfrp-subpanel-shell flex flex-col">
-                              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_72px_62px_74px] gap-2 lg:gap-3 items-center">
-                                <span className="wfrp-table-label text-left">Talents</span>
-                                <span className="wfrp-table-label text-center">Taken</span>
-                                <span className="wfrp-table-label text-center">Cost</span>
-                                <span className="wfrp-table-label text-right">Advance</span>
-                              </div>
-                              <div className="divide-y divide-white/5">
-                                {advancementTalentNames.map((talentName) => {
-                                  const takenCount = characterTalents.filter((talent) => talent.name === talentName).length;
-                                  const pendingTakenCount = pendingTalentPurchases[talentName] ?? 0;
-                                  const isCareerTalent = careerAdvancementData.talents.includes(talentName);
-                                  const nextTalentCost = getTalentPurchaseCost(takenCount + pendingTakenCount);
-                                  const canPurchase = isCareerTalent && pendingAvailableXp >= nextTalentCost;
-                                  const takenDisplay =
-                                    takenCount === 0
-                                      ? pendingTakenCount > 0
-                                        ? `+${pendingTakenCount}`
-                                        : '-'
-                                      : `${takenCount}${pendingTakenCount > 0 ? ` +${pendingTakenCount}` : ''}`;
-
-                                  return (
-                                    <div
-                                      key={talentName}
-                                      className={`grid grid-cols-[minmax(0,1fr)_72px_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row group ${
-                                        !isCareerTalent && takenCount === 0 ? 'opacity-70' : ''
-                                      }`}
-                                    >
-                                      <div className="min-w-0">
-                                        <button
-                                          onClick={() => openTalentInfo(talentName)}
-                                          className="wfrp-skill-link truncate text-left"
-                                        >
-                                          {talentName}
-                                        </button>
-                                      </div>
-                                      <div className="wfrp-list-cell-strong text-center font-mono">
-                                        {takenDisplay}
-                                      </div>
-                                      <div className="wfrp-list-cell-strong text-center font-mono">
-                                        {isCareerTalent ? nextTalentCost : '-'}
-                                      </div>
-                                      <div className="flex justify-end gap-1">
-                                        <button
-                                          onClick={() => removePendingTalentPurchase(talentName)}
-                                          disabled={pendingTakenCount === 0}
-                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
-                                          aria-label={`Decrease talent purchases for ${talentName}`}
-                                        >
-                                          <Minus size={10} />
-                                        </button>
-                                        <button
-                                          onClick={() => purchaseTalent(talentName)}
-                                          disabled={!canPurchase}
-                                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
-                                          aria-label={`Purchase talent ${talentName}`}
-                                        >
-                                          <Plus size={12} />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                            </AdvancementSection>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {activeMainTab === 'background' && (
-                      <div className="flex-1 overflow-y-auto p-3 lg:p-4 flex flex-col gap-4">
-                        <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
-                          <div className="flex items-center justify-between gap-3">
-                            <h3 className="wfrp-panel-title">
-                              Background Editor
-                              <div className="wfrp-panel-rule" />
-                            </h3>
-                            <span className="wfrp-table-label text-right">
-                              {backgroundText.trim().length} Characters
-                            </span>
-                          </div>
-                          <textarea
-                            value={backgroundText}
-                            onChange={(event) => setBackgroundText(event.target.value)}
-                            rows={18}
-                            className="min-h-[420px] w-full resize-y rounded border border-white/10 bg-black/30 px-4 py-3 text-sm leading-7 text-gray-200 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                            placeholder="Write the character's history, relationships, goals, appearance, reputation, and anything the table should remember."
-                            aria-label="Character background editor"
-                          />
-                        </section>
-                      </div>
-                    )}
-
-                    {activeMainTab === 'notes' && (
-                       <div className="flex-1 overflow-y-auto p-3 lg:p-4 flex flex-col gap-4">
-                          {sortedNotes.length > 0 && (
-                            <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
-                              <input
-                                value={noteSearch}
-                                onChange={(event) => setNoteSearch(event.target.value)}
-                                className="h-9 rounded border border-white/10 bg-black/30 px-3 text-sm text-gray-200 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                                placeholder="Search notes or #hashtags"
-                              />
-                            </section>
-                          )}
-
-                          <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
-                            <div className="flex items-center justify-between gap-3">
-                              <h3 className="wfrp-panel-title">
-                                Campaign Journal
-                                <div className="wfrp-panel-rule" />
-                              </h3>
-                              <span className="wfrp-table-label text-right">
-                                {sortedNotes.length} {sortedNotes.length === 1 ? "Entry" : "Entries"}
-                              </span>
-                            </div>
-                            <input
-                              value={newNoteTitle}
-                              onChange={(event) => setNewNoteTitle(event.target.value)}
-                              className="h-10 rounded border border-white/10 bg-black/30 px-3 text-sm font-semibold text-gray-100 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                              placeholder="Entry title"
-                            />
-                            <textarea
-                              value={newNoteText}
-                              onChange={(event) => setNewNoteText(event.target.value)}
-                              rows={4}
-                              className="min-h-28 resize-y rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                              placeholder="Write a note... Use #tags to create a chip."
-                            />
-                            <div className="flex justify-end">
-                              <button
-                                type="button"
-                                onClick={addNote}
-                                disabled={!newNoteTitle.trim() || !newNoteText.trim()}
-                                className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
-                              >
-                                Add Note
-                              </button>
-                            </div>
-                            {noteHashtags.length > 0 && (
-                              <div className="flex flex-wrap gap-2 border-t border-white/5 pt-3">
-                                {noteHashtags.map((tag) => {
-                                  const tagSearch = `#${tag}`;
-                                  const isActive = noteSearch.trim().toLowerCase() === tagSearch;
-
-                                  return (
-                                    <button
-                                      key={tag}
-                                      type="button"
-                                      onClick={() => setNoteSearch(isActive ? "" : tagSearch)}
-                                      className={`rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${
-                                        isActive
-                                          ? "border-wfrp-gold/60 bg-wfrp-gold/15 text-wfrp-gold"
-                                          : "border-white/10 bg-black/25 text-gray-400 hover:text-gray-200 hover:border-white/20"
-                                      }`}
-                                    >
-                                      #{tag}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </section>
-
-                          {sortedNotes.length === 0 ? (
-                            <div className="min-h-48 border border-dashed border-white/5 rounded-lg flex flex-col items-center justify-center text-gray-700 gap-2">
-                              <span className="text-[9px] font-black uppercase tracking-widest">No Notes</span>
-                              <p className="text-[10px] italic">Entries will appear here by date written.</p>
-                            </div>
-                          ) : noteGroups.length === 0 ? (
-                            <div className="min-h-48 border border-dashed border-white/5 rounded-lg flex flex-col items-center justify-center text-gray-700 gap-2">
-                              <span className="text-[9px] font-black uppercase tracking-widest">No Matches</span>
-                              <p className="text-[10px] italic">Try another word or hashtag.</p>
-                            </div>
-                          ) : (
-                            <div className="flex flex-col gap-3">
-                              {noteGroups.map((group) => (
-                                <section
-                                  key={group.dayKey}
-                                  className="rounded-lg border border-white/10 bg-black/25 p-4 shadow-inner"
-                                >
-                                  <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-3">
-                                    <time className="wfrp-panel-title text-gray-300" dateTime={group.date}>
-                                      {formatNoteDay(group.date)}
-                                    </time>
-                                    <span className="wfrp-table-label text-gray-500">
-                                      {group.notes.length} {group.notes.length === 1 ? "Note" : "Notes"}
-                                    </span>
-                                  </div>
-                                  <div className="mt-3 flex flex-col gap-3">
-                                    {group.notes.map((note) => (
-                                      <article key={note.id} className="rounded border border-white/5 bg-black/20 p-3">
-                                        <div className="flex items-start justify-between gap-3">
-                                          <div className="min-w-0 flex-1">
-                                            <h4 className="truncate text-sm font-bold uppercase tracking-wide text-gray-100">
-                                              {note.title ?? "Untitled Entry"}
-                                            </h4>
-                                            <time className="mt-1 block wfrp-table-label text-gray-500" dateTime={note.createdAt}>
-                                              {formatNoteDate(note.createdAt)}
-                                            </time>
-                                          </div>
-                                          <button
-                                            type="button"
-                                            onClick={() => deleteNote(note.id)}
-                                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-white/10 bg-black/20 text-gray-500 transition-colors hover:border-white/20 hover:text-wfrp-red focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-red/40"
-                                            aria-label={`Delete note from ${formatNoteDate(note.createdAt)}`}
-                                          >
-                                            <Trash2 size={12} />
-                                          </button>
-                                        </div>
-                                        <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-gray-200">
-                                          {note.text}
-                                        </p>
-                                      </article>
-                                    ))}
-                                  </div>
-                                </section>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                    )}
+                      {activeMainTab === 'notes' && (
+                        <NotesTab
+                        sortedNotes={sortedNotes}
+                        noteGroups={noteGroups}
+                        noteHashtags={noteHashtags}
+                        noteSearch={noteSearch}
+                        setNoteSearch={setNoteSearch}
+                        newNoteTitle={newNoteTitle}
+                        setNewNoteTitle={setNewNoteTitle}
+                        newNoteText={newNoteText}
+                        setNewNoteText={setNewNoteText}
+                        addNote={addNote}
+                        deleteNote={deleteNote}
+                        formatNoteDay={formatNoteDay}
+                        formatNoteDate={formatNoteDate}
+                      />
+                      )}
+                    </LazyTabPanel>
                   </motion.div>
                 </AnimatePresence>
               </div>

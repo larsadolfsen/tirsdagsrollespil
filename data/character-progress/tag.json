@@ -1,0 +1,78 @@
+{
+  "xpCurrent": 790,
+  "xpBaselineTotal": 790,
+  "coins": {
+    "gc": 0,
+    "s": 0,
+    "d": 0
+  },
+  "careerCurrentRank": 1,
+  "characteristicAdvances": {},
+  "skills": {
+    "charm": 3,
+    "cool": 10,
+    "dodge": 5,
+    "endurance": 5,
+    "gossip": 5,
+    "haggle": 3,
+    "intuition": 5,
+    "leadership": 5,
+    "melee:melee_basic": 20,
+    "melee:melee_polearm": 5,
+    "perception": 5,
+    "heal": 10,
+    "lore:lore_theology": 5,
+    "pray:pray_sigmar": 10
+  },
+  "talentIds": [
+    "doomed",
+    "suave",
+    "read_write",
+    "coolheaded",
+    "bless",
+    "etiquette_cultists"
+  ],
+  "spellIds": [
+    "sigmar-blessing-battle",
+    "sigmar-blessing-courage",
+    "sigmar-blessing-hardiness",
+    "sigmar-blessing-might",
+    "sigmar-blessing-protection",
+    "sigmar-blessing-righteousness"
+  ],
+  "equipment": {
+    "tag_plate_breastplate_1": true,
+    "tag_leather_jack_1": true,
+    "tag_leather_skullcap_1": true,
+    "tag_warhammer_1": true,
+    "tag_quarter_staff_1": false,
+    "tag_dagger_1": true,
+    "tag_backpack_1": true,
+    "tag_pouch_1": true,
+    "tag_writing_kit_1": false,
+    "tag_rations_1": false,
+    "tag_robe_1": false,
+    "tag_cup_1": false,
+    "tag_hammer_1": false
+  },
+  "equipmentContainers": {
+    "tag_plate_breastplate_1": null,
+    "tag_leather_jack_1": null,
+    "tag_leather_skullcap_1": null,
+    "tag_warhammer_1": null,
+    "tag_quarter_staff_1": null,
+    "tag_dagger_1": null,
+    "tag_backpack_1": null,
+    "tag_pouch_1": null,
+    "tag_writing_kit_1": "tag_backpack_1",
+    "tag_rations_1": "tag_backpack_1",
+    "tag_robe_1": "tag_backpack_1",
+    "tag_cup_1": "tag_backpack_1",
+    "tag_hammer_1": "tag_backpack_1"
+  },
+  "consumableCounts": {
+    "tag_rations_1": 5
+  },
+  "addedEquipment": [],
+  "removedEquipmentIds": []
+}
