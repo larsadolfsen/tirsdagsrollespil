@@ -52,11 +52,11 @@
 }
 
 @utility wfrp-table-header {
-  @apply px-4 py-2 border-b border-white/5 bg-black/40 text-[8px] font-bold text-gray-700 uppercase tracking-widest items-center;
+  @apply px-2 py-2 sm:px-4 border-b border-white/5 bg-black/40 text-[8px] font-bold text-gray-700 uppercase tracking-widest items-center;
 }
 
 @utility wfrp-table-row {
-  @apply px-3 py-2 sm:px-3 items-center border-b border-white/5 last:border-0 transition-colors;
+  @apply px-2 py-2 sm:px-3 items-center border-b border-white/5 last:border-0 transition-colors;
   &:hover {
     @apply bg-white/[0.02];
   }
@@ -151,7 +151,7 @@
 }
 
 @utility wfrp-subpanel-header {
-  @apply border-b border-white/5 bg-black/10 px-3 py-1;
+  @apply border-b border-white/5 bg-black/10 px-2 py-1 sm:px-3;
 }
 
 @utility wfrp-panel-copy {
@@ -163,7 +163,7 @@
 }
 
 @utility wfrp-list-header {
-  @apply px-4 py-2 border-b border-white/5 bg-black/30 text-[9px] font-black text-gray-500 uppercase tracking-widest items-center;
+  @apply px-2 py-2 sm:px-4 border-b border-white/5 bg-black/30 text-[9px] font-black text-gray-500 uppercase tracking-widest items-center;
 }
 
 @utility wfrp-list-group {
