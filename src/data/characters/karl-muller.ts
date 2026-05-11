@@ -17,7 +17,6 @@ export const karlMuller: CharacterRecord = {
   resolve: 3,
   move: 4,
   corruption: 4,
-  maxCorruption: 100,
   xpTotal: 790,
   coins: { gc: 0, s: 0, d: 0 },
   attributes: {
