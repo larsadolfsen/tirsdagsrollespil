@@ -351,9 +351,11 @@ function applyCharacterProgress(
     .filter((item): item is ResolvedCharacterEquipment => Boolean(item));
 
   const maxCorruption = calculateMaxCorruption(attributes);
+  const characterName = progress.characterName?.trim() || character.name;
 
   return {
     ...character,
+    name: characterName,
     wounds: {
       ...character.wounds,
       current: progress.woundsCurrent ?? character.wounds.current,
