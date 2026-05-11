@@ -17,6 +17,14 @@ export const formatCoinTotalValue = (coins: { gc: number; s: number; d: number }
   return parts.length > 0 ? parts.join(" ") : "0bp";
 };
 
+export const getCoinCount = (coins: { gc: number; s: number; d: number }) =>
+  coins.gc + coins.s + coins.d;
+
+export const getCoinEncumbrance = (coins: { gc: number; s: number; d: number }) => {
+  const coinCount = getCoinCount(coins);
+  return coinCount > 0 ? Math.ceil(coinCount / 200) : 0;
+};
+
 export const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
   [...items].sort((first, second) => {
     const nameComparison = first.name.localeCompare(second.name, undefined, {

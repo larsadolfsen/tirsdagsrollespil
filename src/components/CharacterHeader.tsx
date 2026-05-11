@@ -53,10 +53,10 @@ export function CharacterHeader({
   }, [isCampaignMenuOpen]);
 
   return (
-    <section className="flex min-h-[60px] flex-col gap-2 overflow-visible rounded-t border-b border-[#303030] bg-[#181818] px-3 py-2 sm:min-h-0 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+    <section className="flex min-h-[60px] flex-col gap-2 overflow-visible rounded-t border-b border-wfrp-border bg-wfrp-surface px-3 py-2 sm:min-h-0 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
       <div className="flex min-w-0 items-center gap-2 sm:contents">
         <div className="relative order-3 flex-shrink-0 sm:order-none">
-          <div className="h-10 w-10 overflow-hidden rounded-full border border-[#c5a059] p-0.5 shadow-inner transition-all hover:brightness-110 sm:h-12 sm:w-12">
+          <div className="h-10 w-10 overflow-hidden rounded-full border border-wfrp-gold p-0.5 shadow-inner transition-all hover:brightness-110 sm:h-12 sm:w-12">
             <img
               src="https://picsum.photos/seed/knight/200/200"
               alt="Portrait"
@@ -80,13 +80,13 @@ export function CharacterHeader({
         {headerResources && (
           <div className="flex min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-1 pr-1 no-scrollbar sm:max-w-[min(100%,58rem)] sm:gap-3 sm:overflow-visible sm:pb-0 sm:pr-0">
             {headerResources}
-            <div className="h-8 w-[1px] shrink-0 bg-[#303030] opacity-50" />
+            <div className="h-8 w-[1px] shrink-0 bg-wfrp-border opacity-50" />
           </div>
         )}
 
         <div className="flex items-center gap-1 group/campaign transition-colors">
           <div className="relative hidden sm:block" ref={campaignMenuRef}>
-            <div className="flex overflow-hidden rounded border border-white/5 bg-black/20 transition-colors hover:bg-[#242424]">
+            <div className="flex overflow-hidden rounded border border-white/5 bg-black/20 transition-colors hover:bg-wfrp-surface-muted-hover">
               <button
                 onClick={() => setIsCampaignMenuOpen((prev) => !prev)}
                 className="flex items-center gap-2 px-2 py-0.5 text-left transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
@@ -107,13 +107,13 @@ export function CharacterHeader({
                   className={`text-gray-500 transition-transform ${isCampaignMenuOpen ? "rotate-180 text-wfrp-gold" : "group-hover/campaign:text-wfrp-gold"}`}
                 />
               </button>
-              <div className="my-1 h-5 w-[1px] bg-[#303030] opacity-60" />
+              <div className="my-1 h-5 w-[1px] bg-wfrp-border opacity-60" />
               <button
                 onClick={() => {
                   onOpenAdvance();
                   setIsCampaignMenuOpen(false);
                 }}
-                className="flex min-w-9 flex-col items-center px-2 py-0.5 transition-colors hover:bg-[#242424] cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                className="flex min-w-9 flex-col items-center px-2 py-0.5 transition-colors hover:bg-wfrp-surface-muted-hover cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                 aria-label="Open Advance tab"
               >
                 <span className="text-[8px] font-bold text-gray-500 uppercase leading-none">Exp</span>
@@ -125,11 +125,11 @@ export function CharacterHeader({
 
             {isCampaignMenuOpen && (
               <div
-                className="absolute right-0 top-[calc(100%+0.5rem)] z-30 min-w-[240px] overflow-hidden rounded-md border border-[#3a3324] bg-[#151515] shadow-[0_14px_40px_rgba(0,0,0,0.45)]"
+                className="absolute right-0 top-[calc(100%+0.5rem)] z-30 min-w-[240px] overflow-hidden rounded-md border border-wfrp-brass-border bg-wfrp-popover shadow-wfrp-popover"
                 role="menu"
                 aria-label="Character selection"
               >
-                <div className="border-b border-[#2f2f2f] px-3 py-2 text-[9px] font-bold uppercase tracking-[0.24em] text-gray-500">
+                <div className="border-b border-wfrp-border-muted px-3 py-2 text-[9px] font-bold uppercase tracking-[0.24em] text-gray-500">
                   Characters
                 </div>
                 <div className="p-1">
@@ -145,8 +145,8 @@ export function CharacterHeader({
                         }}
                         className={`flex w-full items-center justify-between rounded px-3 py-2 text-left transition-colors ${
                           isSelected
-                            ? "bg-[#2a2417] text-wfrp-gold"
-                            : "text-gray-200 hover:bg-[#222222]"
+                            ? "bg-wfrp-gold-surface text-wfrp-gold"
+                            : "text-gray-200 hover:bg-wfrp-surface-raised"
                         }`}
                         role="menuitemradio"
                         aria-checked={isSelected}
@@ -164,13 +164,13 @@ export function CharacterHeader({
                     );
                   })}
                 </div>
-                <div className="border-t border-[#2f2f2f] p-1">
+                <div className="border-t border-wfrp-border-muted p-1">
                   <button
                     onClick={() => {
                       onCreateCharacter();
                       setIsCampaignMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-[12px] font-semibold text-gray-400 transition-colors hover:bg-[#222222] hover:text-wfrp-gold"
+                    className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-[12px] font-semibold text-gray-400 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold"
                     role="menuitem"
                   >
                     <Plus size={12} />
@@ -180,24 +180,24 @@ export function CharacterHeader({
               </div>
             )}
           </div>
-          <div className="hidden h-4 w-[1px] bg-[#303030] mx-1 opacity-50 sm:block" />
+          <div className="hidden h-4 w-[1px] bg-wfrp-border mx-1 opacity-50 sm:block" />
           <div className="hidden items-center gap-1 sm:flex">
             <button
               onClick={onOpenDice}
-              className="wfrp-icon-btn p-1.5 hover:bg-[#242424]"
+              className="wfrp-icon-btn p-1.5 hover:bg-wfrp-surface-muted-hover"
               aria-label="Toggle tactical navigation dice"
             >
               <Dice5 size={14} />
             </button>
-            <div className="h-4 w-[1px] bg-[#303030] opacity-50" />
+            <div className="h-4 w-[1px] bg-wfrp-border opacity-50" />
             <button
-              className="wfrp-icon-btn p-1.5 hover:bg-[#242424]"
+              className="wfrp-icon-btn p-1.5 hover:bg-wfrp-surface-muted-hover"
               aria-label="Settings"
             >
               <Settings size={14} />
             </button>
             <button
-              className="wfrp-icon-btn p-1.5 hover:bg-[#242424]"
+              className="wfrp-icon-btn p-1.5 hover:bg-wfrp-surface-muted-hover"
               aria-label="More options"
             >
               <MoreHorizontal size={14} />

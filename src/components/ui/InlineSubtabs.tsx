@@ -27,8 +27,8 @@ export function InlineSubtabs<T extends string>({
               onClick={() => onChange(option.id)}
               className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
                 activeId === option.id
-                  ? "bg-[#333] text-white shadow-lg"
-                  : "bg-black/40 text-gray-400 hover:bg-[#222] hover:text-gray-200"
+                  ? "bg-wfrp-tab-active text-white shadow-lg"
+                  : "bg-black/40 text-gray-400 hover:bg-wfrp-surface-raised hover:text-gray-200"
               }`}
               aria-pressed={activeId === option.id}
             >

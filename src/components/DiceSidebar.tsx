@@ -89,7 +89,7 @@ export function DiceSidebar({
                   }
                   setRollState((prev) => ({ ...prev, characteristic: null }));
                 }}
-                className="wfrp-icon-btn p-1 rounded-full hover:bg-[#303030] cursor-pointer"
+                className="wfrp-icon-btn p-1 rounded-full hover:bg-wfrp-border cursor-pointer"
                 aria-label="Close dice log"
               >
                 <X size={18} />

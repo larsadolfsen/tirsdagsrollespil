@@ -1,6 +1,6 @@
 import type { CharacterRecord } from "../../types";
 
-export const tag: CharacterRecord = {
+export const karlMuller: CharacterRecord = {
   id: "tag",
   rulesetId: "wfrp4e",
   name: "Tag",

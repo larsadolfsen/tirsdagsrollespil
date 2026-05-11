@@ -89,7 +89,7 @@ export function CharacterBuilderScreen({
                 onClick={() => setSelectedSpeciesId(race.id)}
                 className={`rounded border p-4 text-left transition-colors ${
                   race.id === selectedSpeciesId
-                    ? "border-wfrp-gold bg-[#2a2417]"
+                    ? "border-wfrp-gold bg-wfrp-gold-surface"
                     : "border-white/10 bg-black/20 hover:border-white/20"
                 }`}
               >
@@ -118,7 +118,7 @@ export function CharacterBuilderScreen({
                   onClick={() => setSelectedCareerId(career.id)}
                   className={`rounded border px-3 py-2 text-left transition-colors ${
                     career.id === selectedCareerId
-                      ? "border-wfrp-gold bg-[#2a2417] text-wfrp-gold"
+                      ? "border-wfrp-gold bg-wfrp-gold-surface text-wfrp-gold"
                       : "border-white/10 bg-black/20 text-gray-200 hover:border-white/20"
                   }`}
                 >
@@ -295,11 +295,11 @@ export function CharacterBuilderScreen({
   };
 
   return (
-    <div className="min-h-screen bg-[#121212] text-[#f0f0f0] font-sans selection:bg-wfrp-gold/40 flex flex-col">
+    <div className="min-h-screen bg-wfrp-dark text-wfrp-page-text font-sans selection:bg-wfrp-gold/40 flex flex-col">
       <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
       <main className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col gap-4 p-4">
-        <section className="rounded border border-[#303030] bg-[#181818] shadow-lg">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#303030] px-4 py-3">
+        <section className="rounded border border-wfrp-border bg-wfrp-surface shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-wfrp-border px-4 py-3">
             <div>
               <p className="wfrp-sidebar-kicker">Character Builder</p>
               <h1 className="text-xl font-bold font-serif tracking-tight">New Character</h1>
@@ -315,7 +315,7 @@ export function CharacterBuilderScreen({
           </div>
 
           <div className="grid gap-0 lg:grid-cols-[280px_minmax(0,1fr)]">
-            <aside className="border-b border-[#303030] bg-black/15 p-3 lg:border-b-0 lg:border-r">
+            <aside className="border-b border-wfrp-border bg-black/15 p-3 lg:border-b-0 lg:border-r">
               <div className="flex flex-col gap-1">
                 {builderSteps.map((step, index) => {
                   const isActive = step.id === currentStep.id;
@@ -328,8 +328,8 @@ export function CharacterBuilderScreen({
                       onClick={() => setCurrentStepIndex(index)}
                       className={`flex items-center justify-between rounded px-3 py-2 text-left transition-colors ${
                         isActive
-                          ? "bg-[#2a2417] text-wfrp-gold"
-                          : "text-gray-300 hover:bg-[#222222]"
+                          ? "bg-wfrp-gold-surface text-wfrp-gold"
+                          : "text-gray-300 hover:bg-wfrp-surface-raised"
                       }`}
                     >
                       <span className="truncate text-[12px] font-bold">{step.label}</span>

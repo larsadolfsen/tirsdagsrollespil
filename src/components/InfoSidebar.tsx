@@ -220,7 +220,7 @@ function RuleSidebarShell({
             </div>
             <button
               onClick={onClose}
-              className="wfrp-icon-btn p-1 rounded-full hover:bg-[#303030]"
+              className="wfrp-icon-btn p-1 rounded-full hover:bg-wfrp-border"
               aria-label="Close sidebar"
             >
               <X size={20} className="cursor-pointer" />

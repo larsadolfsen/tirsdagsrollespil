@@ -25,7 +25,7 @@ type SortDirection = "asc" | "desc";
 function OwnershipDot({ label }: { label: string }) {
   return (
     <span
-      className="h-1 w-1 shrink-0 rounded-full bg-wfrp-gold shadow-[0_0_4px_rgba(214,168,86,0.65)]"
+      className="h-1 w-1 shrink-0 rounded-full bg-wfrp-gold shadow-wfrp-gold-glow"
       aria-label={label}
     />
   );
@@ -301,7 +301,7 @@ export function ShopSidebar({
             </div>
             <button
               onClick={onClose}
-              className="wfrp-icon-btn rounded-full p-1 hover:bg-[#303030]"
+              className="wfrp-icon-btn rounded-full p-1 hover:bg-wfrp-border"
               aria-label="Close shop"
             >
               <X size={20} className="cursor-pointer" />
@@ -341,7 +341,7 @@ export function ShopSidebar({
                 </button>
 
                 {isFilterOpen && (
-                  <div className="absolute right-0 top-12 z-20 max-h-[70vh] w-64 overflow-y-auto rounded border border-white/10 bg-[#151515] p-2 shadow-xl shadow-black/40 no-scrollbar">
+                  <div className="absolute right-0 top-12 z-20 max-h-[70vh] w-64 overflow-y-auto rounded border border-white/10 bg-wfrp-popover p-2 shadow-xl shadow-black/40 no-scrollbar">
                     <div className="px-2 pb-1 text-[9px] font-black uppercase tracking-widest text-gray-700">
                       Type
                     </div>

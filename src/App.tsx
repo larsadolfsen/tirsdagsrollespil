@@ -18,8 +18,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { CharacterHeader } from "./components/CharacterHeader";
+import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
-  HeaderResourceSlider,
   InlineSubtabs,
   PanelSectionHeader,
   ResourceCounterBar,
@@ -31,6 +31,7 @@ import { LazyTabPanel } from "./tabs/LazyTabPanel";
 import {
   formatCoinTotalValue,
   formatConsumableName,
+  getCoinEncumbrance,
   getConsumableBaseName,
   getConsumableCount,
   getInventoryEncumbrance,
@@ -866,7 +867,7 @@ function AppScreen() {
   const totalEncumbrance = equipmentState.reduce((sum, item) => {
     if (item.containerId) return sum;
     return sum + getInventoryEncumbrance(item);
-  }, 0);
+  }, getCoinEncumbrance(characterData.coins));
   const carryCapacity = Math.max(sb + tb, 1);
   const encumbrancePercent = Math.min((totalEncumbrance / carryCapacity) * 100, 100);
   const containers = equipmentState.filter(isPacksAndContainersItem);
@@ -1936,7 +1937,7 @@ function AppScreen() {
 
   if (isCharacterBuilderOpen) {
     return (
-      <Suspense fallback={<div className="min-h-screen bg-[#121212]" />}>
+      <Suspense fallback={<div className="min-h-screen bg-wfrp-dark" />}>
         <CharacterBuilderScreen
           ruleset={ruleset}
           onClose={() => setIsCharacterBuilderOpen(false)}
@@ -1947,7 +1948,7 @@ function AppScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-[#121212] text-[#f0f0f0] font-sans selection:bg-wfrp-gold/40 flex flex-col">
+    <div className="min-h-screen bg-wfrp-dark text-wfrp-page-text font-sans selection:bg-wfrp-gold/40 flex flex-col">
       
       {/* Top Accent Line */}
       <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
@@ -1983,7 +1984,7 @@ function AppScreen() {
             />
           </div>
 
-          <section className="md:hidden border-b border-[#303030] bg-[#181818] shadow-lg shadow-black/20">
+          <section className="md:hidden border-b border-wfrp-border bg-wfrp-surface shadow-lg shadow-black/20">
             <div className="flex h-[60px] items-center">
               <button
                 type="button"
@@ -2032,7 +2033,7 @@ function AppScreen() {
                 </button>
                 {isMobilePortraitMenuOpen && (
                   <div
-                    className="absolute right-0 top-[calc(100%+0.5rem)] z-40 min-w-44 overflow-hidden rounded border border-[#303030] bg-[#151515] shadow-2xl"
+                    className="absolute right-0 top-[calc(100%+0.5rem)] z-40 min-w-44 overflow-hidden rounded border border-wfrp-border bg-wfrp-popover shadow-2xl"
                     role="menu"
                     aria-label="Character actions"
                   >
@@ -2042,7 +2043,7 @@ function AppScreen() {
                         openAdvanceView();
                         setIsMobilePortraitMenuOpen(false);
                       }}
-                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-[#222] hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                       role="menuitem"
                     >
                       <span>Advance</span>
@@ -2051,7 +2052,7 @@ function AppScreen() {
                     <button
                       type="button"
                       onClick={() => setIsMobilePortraitMenuOpen(false)}
-                      className="flex w-full items-center gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-[#222] hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                      className="flex w-full items-center gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                       role="menuitem"
                     >
                       <Settings size={14} />
@@ -2087,7 +2088,7 @@ function AppScreen() {
                     <div className="relative">
                       <button 
                         onClick={() => handleRoll(c)}
-                        className="w-[60px] lg:w-[80px] h-[80px] lg:h-[100px] flex flex-col items-center justify-center bg-[#181818] border-2 border-[#303030] rounded-lg shadow-lg hover:border-wfrp-gold/60 hover:bg-[#1e1e1e] transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                        className="w-[60px] lg:w-[80px] h-[80px] lg:h-[100px] flex flex-col items-center justify-center bg-wfrp-surface border-2 border-wfrp-border rounded-lg shadow-lg hover:border-wfrp-gold/60 hover:bg-wfrp-surface-hover transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                         aria-label={`Roll for ${c.label}`}
                       >
                         <div className="text-xl lg:text-3xl font-bold tracking-tight transition-colors group-hover/char:text-wfrp-gold">
@@ -2098,7 +2099,7 @@ function AppScreen() {
                         </div>
                       </button>
 
-                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-2 border-[#303030] bg-[#181818] flex items-center justify-center z-10 transition-colors group-hover/char:border-wfrp-gold/40">
+                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-2 border-wfrp-border bg-wfrp-surface flex items-center justify-center z-10 transition-colors group-hover/char:border-wfrp-gold/40">
                         <span className="text-[11px] font-bold text-gray-400 group-hover/char:text-wfrp-gold/60">
                           {bonus}
                         </span>
@@ -2114,67 +2115,27 @@ function AppScreen() {
             <div className={`w-full flex-col gap-6 md:flex md:w-[28%] xl:w-[24%] ${
               activeMobileMainView === "characteristics" ? "flex" : "hidden"
             }`}>
-            {/* Reserves Section */}
-            <section className="wfrp-card overflow-hidden p-0!">
-              <div className="wfrp-card-tab-header">
-                <h3 className="wfrp-panel-title">RESOURCES & RESILIENCE</h3>
-              </div>
-              <div className="wfrp-card-tab-body space-y-5 px-4 py-4">
-                <div className="grid grid-cols-1 gap-3">
-                  <HeaderResourceSlider
-                    label="Wounds"
-                    current={woundsCurrent}
-                    max={characterData.wounds.max}
-                    onAdjust={adjustWounds}
-                    barClassName="bg-wfrp-red"
-                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                  />
-                  <HeaderResourceSlider
-                    label="Corruption"
-                    current={corruptionCurrent}
-                    max={maxCorruption}
-                    onAdjust={adjustCorruption}
-                    barClassName="bg-purple-600"
-                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                  />
-                  <HeaderResourceSlider
-                    label="Fate"
-                    current={fateCurrent}
-                    max={resourceCaps.fate}
-                    onAdjust={adjustFate}
-                    barClassName="bg-[#C98B00]"
-                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                  />
-                  <HeaderResourceSlider
-                    label="Fortune"
-                    current={fortuneCurrent}
-                    max={fateCurrent}
-                    onAdjust={adjustFortune}
-                    barClassName="bg-[#C98B00]"
-                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-3">
-                  <HeaderResourceSlider
-                    label="Resilience"
-                    current={resilienceCurrent}
-                    max={resourceCaps.resilience}
-                    onAdjust={adjustResilience}
-                    barClassName="bg-[#0088A8]"
-                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                  />
-                  <HeaderResourceSlider
-                    label="Resolve"
-                    current={resolveCurrent}
-                    max={Math.min(resourceCaps.resolve, resilienceCurrent)}
-                    onAdjust={adjustResolve}
-                    barClassName="bg-[#0088A8]"
-                    contentClassName="flex min-w-0 flex-1 flex-col gap-1"
-                  />
-                </div>
-              </div>
-            </section>
+            <CharacterResourcesCards
+              woundsCurrent={woundsCurrent}
+              woundsMax={characterData.wounds.max}
+              onAdjustWounds={adjustWounds}
+              corruptionCurrent={corruptionCurrent}
+              corruptionMax={maxCorruption}
+              onAdjustCorruption={adjustCorruption}
+              fateCurrent={fateCurrent}
+              fateMax={resourceCaps.fate}
+              onAdjustFate={adjustFate}
+              fortuneCurrent={fortuneCurrent}
+              onAdjustFortune={adjustFortune}
+              resilienceCurrent={resilienceCurrent}
+              resilienceMax={resourceCaps.resilience}
+              onAdjustResilience={adjustResilience}
+              resolveCurrent={resolveCurrent}
+              resolveMax={Math.min(resourceCaps.resolve, resilienceCurrent)}
+              onAdjustResolve={adjustResolve}
+              coins={characterData.coins}
+              onAdjustCoin={handleAdjustCoinType}
+            />
 
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">
@@ -2214,10 +2175,10 @@ function AppScreen() {
           </div>
 
           {/* Tabbed Info Box - 2/3 width on Desktop/Tablet */}
-          <section className={`w-full flex-col overflow-visible self-start min-h-[500px] p-0! md:flex md:flex-1 md:overflow-hidden md:rounded-lg md:border md:border-[#303030] md:bg-[#181818] md:shadow-lg ${
+          <section className={`w-full flex-col overflow-visible self-start min-h-[500px] p-0! md:flex md:flex-1 md:overflow-hidden md:rounded-lg md:border md:border-wfrp-border md:bg-wfrp-surface md:shadow-lg ${
             activeMobileMainView === "characteristics" ? "hidden" : "flex"
           }`}>
-              <ScrollableTabStrip className="hidden md:flex px-4 bg-[#111] border-b border-[#303030] gap-4 lg:gap-6 overflow-x-auto no-scrollbar">
+              <ScrollableTabStrip className="hidden md:flex px-4 bg-wfrp-surface-subtle border-b border-wfrp-border gap-4 lg:gap-6 overflow-x-auto no-scrollbar">
                 {mainTabOptions.map((tab) => (
                   <button
                     key={tab.id}
@@ -2243,7 +2204,7 @@ function AppScreen() {
                 ))}
               </ScrollableTabStrip>
 
-              <div className="flex-1 flex flex-col min-h-0 bg-[#0c0c0c]/50">
+              <div className="flex-1 flex flex-col min-h-0 bg-wfrp-bg/50">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeMainTab}
@@ -2340,7 +2301,6 @@ function AppScreen() {
                         handleInventoryDrop={handleInventoryDrop}
                         handleInventoryDragStart={handleInventoryDragStart}
                         handleInventoryDragEnd={handleInventoryDragEnd}
-                        handleAdjustCoinType={handleAdjustCoinType}
                         handleConsumeItem={handleConsumeItem}
                         handleToggleInventoryMenu={handleToggleInventoryMenu}
                         handleDropItem={handleDropItem}
@@ -2444,7 +2404,7 @@ function AppScreen() {
           <button
             type="button"
             onClick={mobileAddAction.onClick}
-            className="fixed bottom-6 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-wfrp-gold/50 bg-[#181818] text-wfrp-gold shadow-xl shadow-black/50 transition-colors hover:border-wfrp-gold/70 hover:bg-[#222] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wfrp-gold/60 md:hidden"
+            className="fixed bottom-6 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-wfrp-gold/50 bg-wfrp-surface text-wfrp-gold shadow-xl shadow-black/50 transition-colors hover:border-wfrp-gold/70 hover:bg-wfrp-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wfrp-gold/60 md:hidden"
             aria-label={mobileAddAction.label}
           >
             <Plus size={24} />
@@ -2469,13 +2429,13 @@ function AppScreen() {
                 onClick={closeMobileNavigation}
               />
               <motion.aside
-                className="absolute left-0 top-0 flex h-full w-[min(86vw,340px)] flex-col border-r border-[#3a3324] bg-[#121212] shadow-2xl"
+                className="absolute left-0 top-0 flex h-full w-[min(86vw,340px)] flex-col border-r border-wfrp-brass-border bg-wfrp-dark shadow-2xl"
                 initial={{ x: "-100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ type: "spring", damping: 30, stiffness: 260 }}
               >
-                <div className="border-b border-[#303030] bg-[#181818] px-5 py-5">
+                <div className="border-b border-wfrp-border bg-wfrp-surface px-5 py-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex min-w-0 items-start gap-3">
                       <Menu size={18} className="mt-1 shrink-0 text-wfrp-gold/70" />
@@ -2503,7 +2463,7 @@ function AppScreen() {
                   </div>
 
                   {isMobileCharacterListOpen && (
-                    <div className="mt-4 overflow-hidden rounded border border-[#303030] bg-black/25 p-1">
+                    <div className="mt-4 overflow-hidden rounded border border-wfrp-border bg-black/25 p-1">
                       {availableCharacters.map((character) => {
                         const isSelected = character.id === selectedCharacterId;
 
@@ -2517,8 +2477,8 @@ function AppScreen() {
                             }}
                             className={`flex w-full items-center justify-between rounded px-3 py-2.5 text-left transition-colors ${
                               isSelected
-                                ? "bg-[#2a2417] text-wfrp-gold"
-                                : "text-gray-200 hover:bg-[#222]"
+                                ? "bg-wfrp-gold-surface text-wfrp-gold"
+                                : "text-gray-200 hover:bg-wfrp-surface-raised"
                             }`}
                           >
                             <span className="min-w-0">
@@ -2544,7 +2504,7 @@ function AppScreen() {
                           setIsCharacterBuilderOpen(true);
                           closeMobileNavigation();
                         }}
-                        className="mt-1 flex w-full items-center gap-3 rounded px-3 py-2.5 text-left text-sm font-semibold text-gray-400 transition-colors hover:bg-[#222] hover:text-wfrp-gold"
+                        className="mt-1 flex w-full items-center gap-3 rounded px-3 py-2.5 text-left text-sm font-semibold text-gray-400 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold"
                       >
                         <Plus size={16} />
                         Create character
@@ -2571,7 +2531,7 @@ function AppScreen() {
                         className={`mx-3 flex h-11 w-[calc(100%-1.5rem)] items-center rounded border px-4 text-left text-[11px] font-black uppercase tracking-widest transition-colors ${
                           isActive
                             ? "border-wfrp-gold/50 bg-wfrp-gold/15 text-wfrp-gold"
-                            : "border-transparent text-gray-300 hover:border-[#303030] hover:bg-[#181818] hover:text-wfrp-gold"
+                            : "border-transparent text-gray-300 hover:border-wfrp-border hover:bg-wfrp-surface hover:text-wfrp-gold"
                         }`}
                         aria-current={isActive ? "page" : undefined}
                       >
@@ -2580,7 +2540,7 @@ function AppScreen() {
                     );
                   })}
 
-                  <div className="my-3 border-t border-[#303030]" />
+                  <div className="my-3 border-t border-wfrp-border" />
 
                   <button
                     type="button"
@@ -2590,7 +2550,7 @@ function AppScreen() {
                       setIsDiceLogOpen(true);
                       closeMobileNavigation();
                     }}
-                    className="mx-3 flex h-11 w-[calc(100%-1.5rem)] items-center rounded border border-transparent px-4 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:border-[#303030] hover:bg-[#181818] hover:text-wfrp-gold"
+                    className="mx-3 flex h-11 w-[calc(100%-1.5rem)] items-center rounded border border-transparent px-4 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:border-wfrp-border hover:bg-wfrp-surface hover:text-wfrp-gold"
                   >
                     Dice
                   </button>
@@ -2626,7 +2586,7 @@ function AppScreen() {
                       setIsDiceLogOpen(false);
                       setRollState(prev => ({ ...prev, characteristic: null }));
                     }}
-                    className="wfrp-icon-btn p-1 rounded-full hover:bg-[#303030] cursor-pointer"
+                    className="wfrp-icon-btn p-1 rounded-full hover:bg-wfrp-border cursor-pointer"
                     aria-label="Close dice log"
                   >
                     <X size={18} />

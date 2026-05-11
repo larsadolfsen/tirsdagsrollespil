@@ -60,7 +60,7 @@ export function ResourceCounterBar({
             {safeCurrent} / {safeMax}
           </span>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#303030] shadow-inner">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-wfrp-border shadow-inner">
           <div
             className={`h-full rounded-full transition-all duration-500 ease-out ${barClassName}`}
             style={{ width: `${percent}%` }}

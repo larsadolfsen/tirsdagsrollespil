@@ -2,10 +2,13 @@ import { Minus } from "lucide-react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, RefObject } from "react";
 import { InlineSubtabs } from "../components/ui";
 import type { ResolvedCharacterEquipment, ResolvedCharacterRecord } from "../data/characters/resolved";
-import type { CoinKey, InventorySubtab } from "./tabTypes";
+import type { InventorySubtab } from "./tabTypes";
 import {
   formatCoinTotalValue,
+  getCoinCount,
+  getCoinEncumbrance,
   getConsumableBaseName,
+  getConsumableCount,
   getInventoryEncumbrance,
   isPacksAndContainersItem,
   isWornInventoryItem,
@@ -60,7 +63,6 @@ export function InventoryTab({
   handleInventoryDrop,
   handleInventoryDragStart,
   handleInventoryDragEnd,
-  handleAdjustCoinType,
   handleConsumeItem,
   handleToggleInventoryMenu,
   handleDropItem,
@@ -111,7 +113,6 @@ export function InventoryTab({
   ) => void;
   handleInventoryDragStart: (item: ResolvedCharacterEquipment, event: ReactDragEvent<HTMLDivElement>) => void;
   handleInventoryDragEnd: () => void;
-  handleAdjustCoinType: (coinKey: CoinKey, amount: number) => void;
   handleConsumeItem: (itemId: string) => void;
   handleToggleInventoryMenu: (
     itemId: string,
@@ -127,16 +128,10 @@ export function InventoryTab({
   openShop: () => void;
   openEquipmentInfo: (itemName: string) => void;
 }) {
+  const walletCoinCount = getCoinCount(characterData.coins);
+  const walletEncumbrance = getCoinEncumbrance(characterData.coins);
+
   const sections: InventorySection[] = [
-    {
-      id: "wallet",
-      title: "Wallet",
-      subtitle: formatCoinTotalValue(characterData.coins),
-      items: [],
-      dropContainerId: null,
-      alwaysVisible: true,
-      acceptsDrops: false,
-    },
     {
       id: "carried",
       title: "Ready",
@@ -146,6 +141,7 @@ export function InventoryTab({
       alwaysVisible:
         activeInventorySubtab === "carried" ||
         carriedItems.length > 0 ||
+        walletCoinCount > 0 ||
         Boolean(inventoryDrag),
     },
     {
@@ -171,7 +167,6 @@ export function InventoryTab({
       <InlineSubtabs<InventorySubtab>
         options={[
           { id: "all", label: "All" },
-          { id: "wallet", label: "Wallet" },
           { id: "carried", label: "Ready" },
           { id: "worn", label: "Worn" },
           ...containers.map((container) => ({
@@ -192,7 +187,7 @@ export function InventoryTab({
                   {totalEncumbrance} / {carryCapacity}
                 </span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#303030] shadow-inner">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-wfrp-border shadow-inner">
                 <div
                   className={`h-full transition-all duration-500 ease-out ${
                     totalEncumbrance > carryCapacity ? "bg-wfrp-red" : "bg-wfrp-gold"
@@ -223,7 +218,6 @@ export function InventoryTab({
           .filter((section) => {
             if (!section.alwaysVisible) return false;
             if (activeInventorySubtab === "all") return true;
-            if (activeInventorySubtab === "wallet") return section.id === "wallet";
             if (activeInventorySubtab === "worn") return section.id === "worn";
             if (activeInventorySubtab === "carried") return section.id === "carried";
             return activeInventorySubtab === `container:${section.id}`;
@@ -279,7 +273,7 @@ export function InventoryTab({
                       : ""
                 }`}
               >
-                <div className="grid min-w-[640px] grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 wfrp-list-header">
+                <div className="grid min-w-[700px] grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 wfrp-list-header">
                   <span className="flex min-w-0 items-center gap-2 text-left">
                     <span className="truncate">{section.title}</span>
                     {section.subtitle ? (
@@ -289,54 +283,33 @@ export function InventoryTab({
                     ) : null}
                   </span>
                   <span className="text-left">Type</span>
+                  <span className="text-center">Qty</span>
                   <span className="text-center">Enc</span>
                   <span className="text-center">Value</span>
                   <span className="text-right">Actions</span>
                 </div>
 
-                {section.id === "wallet" && (
-                  <>
-                    {([
-                      ["gc", "Gold Crowns", "gc"],
-                      ["s", "Silver Shillings", "ss"],
-                      ["d", "Brass Pennies", "bp"],
-                    ] as const).map(([key, name, label]) => (
-                      <div key={key} className="wfrp-table-row flex min-w-[640px] border-0 group">
-                        <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 items-center">
-                          <div className="flex flex-col">
-                            <span className="wfrp-skill-link flex items-center gap-1.5">
-                              {name}
-                            </span>
-                          </div>
-                          <div className="wfrp-list-cell-strong truncate">Currency</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">-</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">
-                            {characterData.coins[key]}{label}
-                          </div>
-                          <div className="flex justify-end gap-1 pr-1">
-                            {[-10, -1, 1, 10].map((amount) => (
-                              <button
-                                key={amount}
-                                type="button"
-                                onClick={() => handleAdjustCoinType(key, amount)}
-                                className={`wfrp-stepper-btn inline-flex h-5 min-w-7 items-center justify-center px-1.5 py-0 leading-none ${
-                                  amount < 0
-                                    ? "focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
-                                    : "focus-visible:ring-green-600/50"
-                                }`}
-                                aria-label={`${amount < 0 ? "Decrease" : "Increase"} ${name.toLowerCase()} by ${Math.abs(amount)}`}
-                                disabled={amount < 0 && characterData.coins[key] <= 0}
-                              >
-                                <span className="font-mono text-[10px] font-bold leading-none">
-                                  {amount > 0 ? `+${amount}` : amount}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
+                {section.id === "carried" && (
+                  <div className="wfrp-table-row flex min-w-[700px] border-0 group">
+                    <div className="flex-1 grid grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center">
+                      <div className="flex flex-col">
+                        <span className="wfrp-list-cell-strong flex items-center gap-1.5 text-gray-200">
+                          Coins
+                        </span>
                       </div>
-                    ))}
-                  </>
+                      <div className="wfrp-list-cell-strong truncate">Currency</div>
+                      <div className="wfrp-list-cell-strong text-center font-mono">
+                        {walletCoinCount}
+                      </div>
+                      <div className="wfrp-list-cell-strong text-center font-mono">
+                        {walletEncumbrance || "-"}
+                      </div>
+                      <div className="wfrp-list-cell-strong text-center font-mono">
+                        {formatCoinTotalValue(characterData.coins)}
+                      </div>
+                      <div className="wfrp-list-cell-strong pr-1 text-right font-mono">-</div>
+                    </div>
+                  </div>
                 )}
 
                 {section.items.map((item) => (
@@ -345,13 +318,13 @@ export function InventoryTab({
                     draggable={!isPacksAndContainersItem(item)}
                     onDragStart={(event) => handleInventoryDragStart(item, event)}
                     onDragEnd={handleInventoryDragEnd}
-                    className={`wfrp-table-row flex min-w-[640px] border-0 group ${
+                    className={`wfrp-table-row flex min-w-[700px] border-0 group ${
                       inventoryDrag?.itemId === item.id ? "opacity-45" : ""
                     } ${
                       isPacksAndContainersItem(item) ? "" : "cursor-grab active:cursor-grabbing"
                     }`}
                   >
-                    <div className="flex-1 grid grid-cols-[1fr_140px_60px_60px_132px] gap-2 lg:gap-4 items-center">
+                    <div className="flex-1 grid grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center">
                       <div className="flex flex-col">
                         <span
                           onClick={() => openEquipmentInfo(item.name)}
@@ -361,6 +334,9 @@ export function InventoryTab({
                         </span>
                       </div>
                       <div className="wfrp-list-cell-strong truncate">{item.type}</div>
+                      <div className="wfrp-list-cell-strong text-center font-mono">
+                        {getConsumableCount(item) ?? 1}
+                      </div>
                       <div className="wfrp-list-cell-strong text-center font-mono">
                         {getInventoryEncumbrance(item) || "-"}
                       </div>
@@ -399,7 +375,7 @@ export function InventoryTab({
                   </div>
                 ))}
 
-                {section.items.length === 0 && section.id !== "wallet" && (
+                {section.items.length === 0 && section.id !== "carried" && (
                   <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-700">
                     {canDropHere ? "Drop here" : "Empty"}
                   </div>
@@ -412,7 +388,7 @@ export function InventoryTab({
       {activeInventoryMenu && (
         <div
           ref={inventoryMenuRef}
-          className="fixed z-50 min-w-[152px] overflow-hidden rounded border border-white/10 bg-[#141414] py-1 shadow-xl"
+          className="fixed z-50 min-w-[152px] overflow-hidden rounded border border-white/10 bg-wfrp-menu py-1 shadow-xl"
           style={{ top: activeInventoryMenu.top, left: activeInventoryMenu.left }}
         >
           {(() => {

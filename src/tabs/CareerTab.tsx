@@ -124,15 +124,15 @@ export function CareerTab({
 }: CareerTabProps) {
   return (
     <div className="flex flex-col h-full min-h-0">
-      <ScrollableTabStrip className="sticky top-0 z-10 flex items-center gap-2 p-3 lg:p-4 bg-[#0c0c0c] border-b border-white/5 overflow-x-auto no-scrollbar">
+      <ScrollableTabStrip className="sticky top-0 z-10 flex items-center gap-2 p-3 lg:p-4 bg-wfrp-bg border-b border-white/5 overflow-x-auto no-scrollbar">
         {careerSubtabOptions.map((option) => (
           <button
             key={option.id}
             onClick={() => setActiveCareerSubtab(option.id)}
             className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
               activeCareerSubtab === option.id
-                ? "bg-[#333] text-white shadow-lg"
-                : "bg-black/40 text-gray-400 hover:bg-[#222] hover:text-gray-200"
+                ? "bg-wfrp-tab-active text-white shadow-lg"
+                : "bg-black/40 text-gray-400 hover:bg-wfrp-surface-raised hover:text-gray-200"
             }`}
             aria-pressed={activeCareerSubtab === option.id}
           >
