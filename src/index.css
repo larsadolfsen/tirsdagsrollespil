@@ -196,3 +196,10 @@
 body {
   @apply bg-[#0c0c0c] text-[#d4d4d4] font-sans selection:bg-wfrp-gold selection:text-wfrp-dark;
 }
+
+/* Raise low-contrast muted text on dark panels reported by PageSpeed mobile contrast audit. */
+.text-gray-500,
+.text-gray-600,
+.text-gray-700 {
+  color: #9ca3af;
+}
