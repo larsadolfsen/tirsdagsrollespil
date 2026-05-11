@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowDown, ArrowUp, BookOpen, ChevronDown, ListFilter, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
+import { formatSpellSchoolLabel, formatSpellSchoolShortLabel } from "../tabs/spells/spellUtils";
 import type { SpellDefinition } from "../types";
 
 const spellCategoryOrder: SpellDefinition["category"][] = ["petty", "arcane", "school"];
@@ -28,27 +29,6 @@ function formatSpellCategoryLabel(category: SpellDefinition["category"]) {
   }
 
   return "Schools";
-}
-
-function formatSpellSchoolLabel(school: string) {
-  const normalizedSchool = school
-    .replace(/^the\s+lore\s+of\s+/i, "")
-    .replace(/^lore\s+of\s+/i, "")
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  const titledSchool = normalizedSchool
-    .split(" ")
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-
-  return `The Lore of ${titledSchool}`;
-}
-
-function formatSpellSchoolShortLabel(school: string) {
-  return formatSpellSchoolLabel(school).replace(/^The Lore of\s+/i, "");
 }
 
 function getSpellSchools(spell: SpellDefinition): string[] {

@@ -3,6 +3,11 @@ import { preloadPriorityTabs } from "./preloadTabs";
 
 let hasScheduledPriorityTabPreload = false;
 
+type IdleCallbackWindow = Window & {
+  requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
+
 export function usePriorityTabPreload() {
   useEffect(() => {
     if (hasScheduledPriorityTabPreload) {
@@ -17,12 +22,14 @@ export function usePriorityTabPreload() {
       });
     };
 
-    if ("requestIdleCallback" in window) {
-      const idleCallbackId = window.requestIdleCallback(preload, { timeout: 1500 });
-      return () => window.cancelIdleCallback(idleCallbackId);
+    const browserWindow = window as IdleCallbackWindow;
+
+    if (browserWindow.requestIdleCallback) {
+      const idleCallbackId = browserWindow.requestIdleCallback(preload, { timeout: 1500 });
+      return () => browserWindow.cancelIdleCallback?.(idleCallbackId);
     }
 
-    const timeoutId = window.setTimeout(preload, 800);
-    return () => window.clearTimeout(timeoutId);
+    const timeoutId = browserWindow.setTimeout(preload, 800);
+    return () => browserWindow.clearTimeout(timeoutId);
   }, []);
 }

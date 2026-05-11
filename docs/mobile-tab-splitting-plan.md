@@ -10,23 +10,16 @@ Goal: keep the mobile first load focused on the app shell, character header, cha
 - Added shared tab types and options.
 - Added `LazyTabPanel` scaffold.
 - Added extraction targets for `CharacteristicsView` and `MobileTabMenu`.
+- Extracted real tab implementations for Background, Notes, Talents, Skills, Actions, Inventory, Spells, and Career.
+- Wired lazy tab rendering in `App.tsx` so tab modules split into separate chunks.
+- Extracted `CharacterBuilderScreen`.
+- Moved shared spell and talent display helpers plus spell tab filtering into tab utility modules.
 
 ## Next steps
 
-1. Replace tab type aliases and tab option constants in `App.tsx` with imports from `src/tabs`.
-2. Replace duplicated shared UI helper implementations in `App.tsx` with imports from `src/components/ui`.
-3. Extract the real `BackgroundTab` implementation.
-4. Extract the real `NotesTab` implementation.
-5. Extract the real `TalentsTab` implementation.
-6. Extract the real `SkillsTab` implementation.
-7. Extract the real `ActionsTab` implementation.
-8. Extract the real `InventoryTab` implementation and switch to `inventoryUtils`.
-9. Extract the real `SpellsTab` implementation and switch to `spellUtils`.
-10. Extract the real `CareerTab` implementation and `CharacterBuilderScreen`.
-11. Wire `LazyTabPanel` into `App.tsx` for non-characteristics views.
-12. Move heavy imports out of `App.tsx`, especially rule data, motion, inventory helpers, spell helpers, and talent helpers.
-13. Run `npm run lint` and `npm run build`.
-14. Re-test mobile PageSpeed.
+1. Move heavy imports out of `App.tsx`, especially rule data, motion, inventory helpers, spell helpers, and talent helpers.
+2. Run `npm run lint` and `npm run build`.
+3. Re-test mobile PageSpeed.
 
 ## Preferred extraction order
 
