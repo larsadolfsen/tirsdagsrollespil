@@ -77,6 +77,14 @@ function splitCharacterState(characterState) {
   };
 }
 
+function joinCharacterState({ sheet, notes, backgroundText }) {
+  return {
+    ...(sheet ?? {}),
+    backgroundText: typeof backgroundText === "string" ? backgroundText : "",
+    notes: Array.isArray(notes) ? notes : [],
+  };
+}
+
 async function readJsonFile(filePath, fallback) {
   try {
     return JSON.parse(await fs.readFile(filePath, "utf8"));
@@ -124,6 +132,30 @@ async function writeTextFile(filePath, nextContent) {
   await fs.writeFile(filePath, nextContent, "utf8");
 }
 
+async function readCharacterDirectoryState(characterId) {
+  const [sheet, notes, backgroundText] = await Promise.all([
+    readJsonFile(characterSheetPath(characterId), null),
+    readJsonFile(characterNotesPath(characterId), []),
+    readTextFile(characterBackgroundPath(characterId), ""),
+  ]);
+
+  if (!sheet) {
+    return null;
+  }
+
+  return joinCharacterState({ sheet, notes, backgroundText });
+}
+
+async function writeCharacterDirectoryState(characterId, characterState) {
+  const { sheet, notes, backgroundText } = splitCharacterState(characterState ?? {});
+
+  await Promise.all([
+    writeJsonFile(characterSheetPath(characterId), sheet),
+    writeJsonFile(characterNotesPath(characterId), notes),
+    writeTextFile(characterBackgroundPath(characterId), backgroundText),
+  ]);
+}
+
 async function readCharacterDirectoryMap() {
   try {
     const entries = await fs.readdir(characterDataDirectory, { withFileTypes: true });
@@ -131,25 +163,12 @@ async function readCharacterDirectoryMap() {
       entries
         .filter((entry) => entry.isDirectory() && isSafeCharacterId(entry.name))
         .map(async (entry) => {
-          const characterId = entry.name;
-          const [sheet, notes, backgroundText] = await Promise.all([
-            readJsonFile(characterSheetPath(characterId), {}),
-            readJsonFile(characterNotesPath(characterId), []),
-            readTextFile(characterBackgroundPath(characterId), ""),
-          ]);
-
-          return [
-            characterId,
-            {
-              ...(sheet ?? {}),
-              backgroundText,
-              notes: Array.isArray(notes) ? notes : [],
-            },
-          ];
+          const characterState = await readCharacterDirectoryState(entry.name);
+          return characterState ? [entry.name, characterState] : null;
         }),
     );
 
-    return Object.fromEntries(characterEntries);
+    return Object.fromEntries(characterEntries.filter(Boolean));
   } catch (error) {
     if (error?.code === "ENOENT") {
       return {};
@@ -214,6 +233,11 @@ async function readLegacyProgressMap() {
   );
 }
 
+async function readLegacyCharacterProgress(characterId) {
+  const legacyProgressMap = await readLegacyProgressMap();
+  return legacyProgressMap[characterId] ?? null;
+}
+
 async function readCharacterProgressMap() {
   const [legacyProgressMap, characterDirectoryMap] = await Promise.all([
     readLegacyProgressMap(),
@@ -224,6 +248,10 @@ async function readCharacterProgressMap() {
     ...legacyProgressMap,
     ...characterDirectoryMap,
   };
+}
+
+async function readCharacterProgress(characterId) {
+  return (await readCharacterDirectoryState(characterId)) ?? (await readLegacyCharacterProgress(characterId));
 }
 
 async function writeCharacterProgressMap(progressMap) {
@@ -246,18 +274,45 @@ async function writeCharacterProgressMap(progressMap) {
         throw new Error(`Unsafe character id "${characterId}".`);
       }
 
-      const { sheet, notes, backgroundText } = splitCharacterState(characterState ?? {});
-
-      await Promise.all([
-        writeJsonFile(characterSheetPath(characterId), sheet),
-        writeJsonFile(characterNotesPath(characterId), notes),
-        writeTextFile(characterBackgroundPath(characterId), backgroundText),
-      ]);
+      await writeCharacterDirectoryState(characterId, characterState);
     }),
   );
 }
 
 app.use(express.json({ limit: "1mb" }));
+
+app.get("/api/character-progress/:characterId", async (req, res, next) => {
+  try {
+    const characterProgress = await readCharacterProgress(req.params.characterId);
+
+    if (!characterProgress) {
+      res.status(404).json(null);
+      return;
+    }
+
+    res.json(characterProgress);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put("/api/character-progress/:characterId", async (req, res, next) => {
+  try {
+    await writeCharacterDirectoryState(req.params.characterId, req.body ?? {});
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/character-progress/:characterId", async (req, res, next) => {
+  try {
+    await fs.rm(characterDirectoryPath(req.params.characterId), { recursive: true, force: true });
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.get("/api/character-progress", async (_req, res, next) => {
   try {
