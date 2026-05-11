@@ -271,7 +271,7 @@ export function useGameSession() {
     let isCancelled = false;
 
     async function hydrateProgress() {
-      await hydrateCharacterProgress();
+      await hydrateCharacterProgress(selectedCharacterId);
 
       if (!isCancelled) {
         setIsProgressHydrated(true);
