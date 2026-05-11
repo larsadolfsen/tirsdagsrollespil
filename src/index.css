@@ -1,12 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@400;700&family=Metamorphous&family=Spectral:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 @source "./**/*.{ts,tsx}";
 @source "../index.html";
 
 @theme {
-  --font-display: "Grenze Gotisch", serif;
-  --font-serif: "Spectral", serif;
-  --font-magic: "Metamorphous", serif;
+  --font-display: "Libre Caslon Display", Georgia, serif;
+  --font-serif: "Libre Caslon Display", Georgia, serif;
+  --font-sans: "Source Sans 3", system-ui, sans-serif;
 
   --color-wfrp-red: #8b0000;
   --color-wfrp-gold: #c5a059;
@@ -195,5 +194,5 @@
 }
 
 body {
-  @apply bg-[#0c0c0c] text-[#d4d4d4] font-serif selection:bg-wfrp-gold selection:text-wfrp-dark;
+  @apply bg-[#0c0c0c] text-[#d4d4d4] font-sans selection:bg-wfrp-gold selection:text-wfrp-dark;
 }
