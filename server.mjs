@@ -6,40 +6,49 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
-const progressFilePath = path.resolve(
-  process.env.WFRP_PROGRESS_FILE ?? path.join(__dirname, "data", "character-progress.json"),
+const stateDataDirectory = path.resolve(
+  process.env.WFRP_DATA_DIR ?? path.join(__dirname, "data"),
 );
-const stateDataDirectory = path.dirname(progressFilePath);
-const statusDirectoryPath = path.resolve(
+const characterDataDirectory = path.resolve(
+  process.env.WFRP_CHARACTERS_DIR ?? path.join(stateDataDirectory, "characters"),
+);
+const legacyProgressFilePath = path.resolve(
+  process.env.WFRP_PROGRESS_FILE ?? path.join(stateDataDirectory, "character-progress.json"),
+);
+const legacyStatusDirectoryPath = path.resolve(
   process.env.WFRP_STATUS_DIR ?? path.join(stateDataDirectory, "character-status"),
 );
-const progressDirectoryPath = path.resolve(
+const legacyProgressDirectoryPath = path.resolve(
   process.env.WFRP_PROGRESS_DIR ?? path.join(stateDataDirectory, "character-progress"),
 );
-const notesDirectoryPath = path.resolve(
+const legacyNotesDirectoryPath = path.resolve(
   process.env.WFRP_NOTES_DIR ?? path.join(stateDataDirectory, "character-notes"),
 );
 
-const STATUS_KEYS = [
-  "woundsCurrent",
-  "corruptionCurrent",
-  "fateCurrent",
-  "fortuneCurrent",
-  "resilienceCurrent",
-  "resolveCurrent",
-];
 const NOTES_KEYS = ["backgroundText", "notes"];
 
 function isSafeCharacterId(characterId) {
   return /^[a-zA-Z0-9_-]+$/.test(characterId);
 }
 
-function characterFilePath(directoryPath, characterId) {
+function characterDirectoryPath(characterId) {
   if (!isSafeCharacterId(characterId)) {
     throw new Error(`Unsafe character id "${characterId}".`);
   }
 
-  return path.join(directoryPath, `${characterId}.json`);
+  return path.join(characterDataDirectory, characterId);
+}
+
+function characterSheetPath(characterId) {
+  return path.join(characterDirectoryPath(characterId), "sheet.json");
+}
+
+function characterNotesPath(characterId) {
+  return path.join(characterDirectoryPath(characterId), "notes.json");
+}
+
+function characterBackgroundPath(characterId) {
+  return path.join(characterDirectoryPath(characterId), "background.md");
 }
 
 function pickKeys(source, keys) {
@@ -58,21 +67,14 @@ function omitKeys(source, keys) {
 }
 
 function splitCharacterState(characterState) {
-  const status = pickKeys(characterState, STATUS_KEYS);
-  const notes = pickKeys(characterState, NOTES_KEYS);
-  const progress = omitKeys(characterState, [...STATUS_KEYS, ...NOTES_KEYS]);
+  const notesState = pickKeys(characterState, NOTES_KEYS);
+  const sheet = omitKeys(characterState, NOTES_KEYS);
 
-  return { status, progress, notes };
-}
-
-async function ensureProgressFile() {
-  await fs.mkdir(path.dirname(progressFilePath), { recursive: true });
-
-  try {
-    await fs.access(progressFilePath);
-  } catch {
-    await fs.writeFile(progressFilePath, "{}\n", "utf8");
-  }
+  return {
+    sheet,
+    notes: Array.isArray(notesState.notes) ? notesState.notes : [],
+    backgroundText: typeof notesState.backgroundText === "string" ? notesState.backgroundText : "",
+  };
 }
 
 async function readJsonFile(filePath, fallback) {
@@ -87,8 +89,24 @@ async function readJsonFile(filePath, fallback) {
   }
 }
 
+async function readTextFile(filePath, fallback = "") {
+  try {
+    return await fs.readFile(filePath, "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      return fallback;
+    }
+
+    throw error;
+  }
+}
+
 async function writeJsonFile(filePath, value) {
   const nextContent = `${JSON.stringify(value, null, 2)}\n`;
+  await writeTextFile(filePath, nextContent);
+}
+
+async function writeTextFile(filePath, nextContent) {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
 
   try {
@@ -106,7 +124,42 @@ async function writeJsonFile(filePath, value) {
   await fs.writeFile(filePath, nextContent, "utf8");
 }
 
-async function readCharacterStateDirectory(directoryPath) {
+async function readCharacterDirectoryMap() {
+  try {
+    const entries = await fs.readdir(characterDataDirectory, { withFileTypes: true });
+    const characterEntries = await Promise.all(
+      entries
+        .filter((entry) => entry.isDirectory() && isSafeCharacterId(entry.name))
+        .map(async (entry) => {
+          const characterId = entry.name;
+          const [sheet, notes, backgroundText] = await Promise.all([
+            readJsonFile(characterSheetPath(characterId), {}),
+            readJsonFile(characterNotesPath(characterId), []),
+            readTextFile(characterBackgroundPath(characterId), ""),
+          ]);
+
+          return [
+            characterId,
+            {
+              ...(sheet ?? {}),
+              backgroundText,
+              notes: Array.isArray(notes) ? notes : [],
+            },
+          ];
+        }),
+    );
+
+    return Object.fromEntries(characterEntries);
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      return {};
+    }
+
+    throw error;
+  }
+}
+
+async function readLegacyCharacterStateDirectory(directoryPath) {
   try {
     const entries = await fs.readdir(directoryPath, { withFileTypes: true });
     const characterStateEntries = await Promise.all(
@@ -134,41 +187,15 @@ async function readCharacterStateDirectory(directoryPath) {
   }
 }
 
-async function replaceCharacterStateDirectory(directoryPath, nextStateByCharacterId) {
-  await fs.mkdir(directoryPath, { recursive: true });
-
-  const existingEntries = await fs.readdir(directoryPath, { withFileTypes: true });
-  await Promise.all(
-    existingEntries
-      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
-      .map(async (entry) => {
-        const characterId = entry.name.replace(/\.json$/, "");
-
-        if (!Object.prototype.hasOwnProperty.call(nextStateByCharacterId, characterId)) {
-          await fs.unlink(path.join(directoryPath, entry.name));
-        }
-      }),
-  );
-
-  await Promise.all(
-    Object.entries(nextStateByCharacterId).map(([characterId, state]) =>
-      writeJsonFile(characterFilePath(directoryPath, characterId), state ?? {}),
-    ),
-  );
-}
-
 async function readLegacyProgressMap() {
-  await ensureProgressFile();
-  return readJsonFile(progressFilePath, {});
-}
-
-async function readCharacterProgressMap() {
-  const legacyProgressMap = await readLegacyProgressMap();
-  const statusMap = await readCharacterStateDirectory(statusDirectoryPath);
-  const progressMap = await readCharacterStateDirectory(progressDirectoryPath);
-  const notesMap = await readCharacterStateDirectory(notesDirectoryPath);
+  const [singleFileMap, statusMap, progressMap, notesMap] = await Promise.all([
+    readJsonFile(legacyProgressFilePath, {}),
+    readLegacyCharacterStateDirectory(legacyStatusDirectoryPath),
+    readLegacyCharacterStateDirectory(legacyProgressDirectoryPath),
+    readLegacyCharacterStateDirectory(legacyNotesDirectoryPath),
+  ]);
   const characterIds = new Set([
-    ...Object.keys(legacyProgressMap),
+    ...Object.keys(singleFileMap),
     ...Object.keys(statusMap),
     ...Object.keys(progressMap),
     ...Object.keys(notesMap),
@@ -178,7 +205,7 @@ async function readCharacterProgressMap() {
     [...characterIds].map((characterId) => [
       characterId,
       {
-        ...(legacyProgressMap[characterId] ?? {}),
+        ...(singleFileMap[characterId] ?? {}),
         ...(progressMap[characterId] ?? {}),
         ...(statusMap[characterId] ?? {}),
         ...(notesMap[characterId] ?? {}),
@@ -187,27 +214,47 @@ async function readCharacterProgressMap() {
   );
 }
 
-async function writeCharacterProgressMap(progressMap) {
-  const statusMap = {};
-  const splitProgressMap = {};
-  const notesMap = {};
-
-  for (const [characterId, characterState] of Object.entries(progressMap ?? {})) {
-    if (!isSafeCharacterId(characterId)) {
-      throw new Error(`Unsafe character id "${characterId}".`);
-    }
-
-    const { status, progress, notes } = splitCharacterState(characterState ?? {});
-    statusMap[characterId] = status;
-    splitProgressMap[characterId] = progress;
-    notesMap[characterId] = notes;
-  }
-
-  await Promise.all([
-    replaceCharacterStateDirectory(statusDirectoryPath, statusMap),
-    replaceCharacterStateDirectory(progressDirectoryPath, splitProgressMap),
-    replaceCharacterStateDirectory(notesDirectoryPath, notesMap),
+async function readCharacterProgressMap() {
+  const [legacyProgressMap, characterDirectoryMap] = await Promise.all([
+    readLegacyProgressMap(),
+    readCharacterDirectoryMap(),
   ]);
+
+  return {
+    ...legacyProgressMap,
+    ...characterDirectoryMap,
+  };
+}
+
+async function writeCharacterProgressMap(progressMap) {
+  await fs.mkdir(characterDataDirectory, { recursive: true });
+
+  const existingEntries = await fs.readdir(characterDataDirectory, { withFileTypes: true });
+  await Promise.all(
+    existingEntries
+      .filter((entry) => entry.isDirectory())
+      .map(async (entry) => {
+        if (!Object.prototype.hasOwnProperty.call(progressMap ?? {}, entry.name)) {
+          await fs.rm(path.join(characterDataDirectory, entry.name), { recursive: true, force: true });
+        }
+      }),
+  );
+
+  await Promise.all(
+    Object.entries(progressMap ?? {}).map(async ([characterId, characterState]) => {
+      if (!isSafeCharacterId(characterId)) {
+        throw new Error(`Unsafe character id "${characterId}".`);
+      }
+
+      const { sheet, notes, backgroundText } = splitCharacterState(characterState ?? {});
+
+      await Promise.all([
+        writeJsonFile(characterSheetPath(characterId), sheet),
+        writeJsonFile(characterNotesPath(characterId), notes),
+        writeTextFile(characterBackgroundPath(characterId), backgroundText),
+      ]);
+    }),
+  );
 }
 
 app.use(express.json({ limit: "1mb" }));
