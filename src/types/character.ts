@@ -48,7 +48,6 @@ export interface CharacterRecord {
   resolve: number;
   move: number;
   corruption: number;
-  maxCorruption: number;
   xpTotal: number;
   coins: CharacterCoins;
   attributes: Record<string, number>;
