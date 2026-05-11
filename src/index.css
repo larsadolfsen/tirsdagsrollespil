@@ -5,6 +5,7 @@
 @theme {
   --font-body: "Source Sans 3", system-ui, sans-serif;
   --font-display-face: "Libre Caslon Display", Georgia, serif;
+  --font-dice: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-sans: var(--font-body);
   --font-mono: var(--font-body);
   --font-display: var(--font-display-face);
@@ -186,7 +187,8 @@
 }
 
 @utility wfrp-roll-btn {
-  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded bg-wfrp-border font-mono text-sm font-bold text-gray-300 shadow-sm transition-all cursor-pointer active:scale-95 hover:bg-wfrp-control-hover hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded bg-wfrp-border text-sm font-bold text-gray-300 shadow-sm transition-all cursor-pointer active:scale-95 hover:bg-wfrp-control-hover hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  font-family: var(--font-dice);
 }
 
 @utility wfrp-property-pill {
