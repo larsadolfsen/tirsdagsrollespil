@@ -224,7 +224,10 @@
 }
 
 body {
-  @apply bg-wfrp-bg text-base font-normal leading-normal text-wfrp-body-text font-sans selection:bg-wfrp-gold selection:text-wfrp-dark;
+  @apply bg-wfrp-bg font-sans selection:bg-wfrp-gold selection:text-wfrp-dark;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-400);
 }
 
 .wfrp-card .wfrp-stat-tile {
