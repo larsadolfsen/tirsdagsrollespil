@@ -1,10 +1,20 @@
 import { useEffect } from "react";
 import { preloadPriorityTabs } from "./preloadTabs";
 
+let hasScheduledPriorityTabPreload = false;
+
 export function usePriorityTabPreload() {
   useEffect(() => {
+    if (hasScheduledPriorityTabPreload) {
+      return;
+    }
+
+    hasScheduledPriorityTabPreload = true;
+
     const preload = () => {
-      void preloadPriorityTabs();
+      void preloadPriorityTabs().catch(() => {
+        hasScheduledPriorityTabPreload = false;
+      });
     };
 
     if ("requestIdleCallback" in window) {
