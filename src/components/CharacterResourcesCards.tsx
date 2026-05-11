@@ -249,11 +249,11 @@ export function CharacterResourcesCards({
                       className={`h-2 w-2 shrink-0 rounded-full shadow-sm ring-1 ring-white/15 ${coinClassName}`}
                       aria-hidden="true"
                     />
-                    <span className="truncate text-[9px] font-bold uppercase tracking-tight text-gray-400">
+                    <span className="truncate">
                       {coinName}
                     </span>
                   </span>
-                  <span className="shrink-0 text-[10px] font-bold text-gray-200">
+                  <span className="shrink-0">
                     {coins[coinKey]}
                   </span>
                 </div>
