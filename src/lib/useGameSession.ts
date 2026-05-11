@@ -155,6 +155,7 @@ export function useGameSession() {
   const [resilienceCurrent, setRawResilienceCurrent] = useState(initialResilienceCurrent);
   const [resolveCurrent, setRawResolveCurrent] = useState(initialResolveCurrent);
   const [xpCurrent, setXpCurrent] = useState(initialXpCurrent);
+  const [xpTotal, setXpTotal] = useState(character.xpTotal);
   const [characterCoins, setCharacterCoins] = useState(character.coins);
   const [currentCareerRank, setCurrentCareerRank] = useState(character.level);
   const [currentCharacteristicAdvances, setCurrentCharacteristicAdvances] = useState(character.characteristicAdvances);
@@ -295,6 +296,7 @@ export function useGameSession() {
     setRawResilienceCurrent(initialResilienceCurrent);
     setRawResolveCurrent(clampResource(initialResolveCurrent, initialResilienceCurrent));
     setXpCurrent(initialXpCurrent);
+    setXpTotal(character.xpTotal);
     setCharacterCoins(character.coins);
     setCurrentCareerRank(character.level);
     setCurrentCharacteristicAdvances(character.characteristicAdvances);
@@ -336,7 +338,7 @@ export function useGameSession() {
       resilienceCurrent,
       resolveCurrent: clampResource(resolveCurrent, resilienceCurrent),
       xpCurrent,
-      xpBaselineTotal: character.xpTotal,
+      xpBaselineTotal: xpTotal,
       coins: characterCoins,
       careerCurrentRank: currentCareerRank,
       characteristicAdvances: currentCharacteristicAdvances,
@@ -381,6 +383,7 @@ export function useGameSession() {
     resilienceCurrent,
     resolveCurrent,
     xpCurrent,
+    xpTotal,
     characterCoins,
     currentCareerRank,
     currentCharacteristicAdvances,
@@ -398,6 +401,7 @@ export function useGameSession() {
     null;
   const characterData = {
     ...character,
+    xpTotal,
     attributes: Object.fromEntries(
       Object.entries(character.attributes).map(([key, value]) => {
         const baseAdvances = character.characteristicAdvances[key] ?? 0;
@@ -468,6 +472,8 @@ export function useGameSession() {
     spendResolveForRemoveProne,
     xpCurrent,
     setXpCurrent,
+    xpTotal,
+    setXpTotal,
     characterCoins,
     setCharacterCoins,
     currentCareerRank,
