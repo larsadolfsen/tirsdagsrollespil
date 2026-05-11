@@ -179,8 +179,7 @@
 }
 
 @utility wfrp-skill-link {
-  @apply inline-block text-base font-normal leading-normal text-wfrp-body-text hover:text-wfrp-gold transition-colors text-left cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/30 rounded px-1 -ml-1;
-  font-family: var(--font-body);
+  @apply inline-block hover:text-wfrp-gold transition-colors text-left cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/30 rounded px-1 -ml-1;
 }
 
 @utility wfrp-list-cell-strong {
@@ -225,7 +224,7 @@
 }
 
 body {
-  @apply bg-wfrp-bg text-wfrp-body-text font-sans selection:bg-wfrp-gold selection:text-wfrp-dark;
+  @apply bg-wfrp-bg text-base font-normal leading-normal text-wfrp-body-text font-sans selection:bg-wfrp-gold selection:text-wfrp-dark;
 }
 
 .wfrp-card .wfrp-stat-tile {
