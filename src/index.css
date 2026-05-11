@@ -224,7 +224,8 @@
 }
 
 body {
-  @apply bg-wfrp-bg font-sans selection:bg-wfrp-gold selection:text-wfrp-dark;
+  @apply bg-wfrp-bg selection:bg-wfrp-gold selection:text-wfrp-dark;
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: var(--font-weight-semibold);
   color: var(--color-gray-400);
