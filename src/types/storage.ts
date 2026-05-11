@@ -7,6 +7,7 @@ export interface CharacterProgressData {
   resolveCurrent?: number;
   xpCurrent: number;
   xpBaselineTotal?: number;
+  characterName?: string;
   coins?: {
     gc: number;
     s: number;
