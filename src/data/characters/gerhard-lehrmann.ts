@@ -17,7 +17,6 @@ export const gerhardLehrmann: CharacterRecord = {
   resolve: 3,
   move: 3,
   corruption: 2,
-  maxCorruption: 100,
   xpTotal: 1050,
   coins: { gc: 0, s: 0, d: 0 },
   attributes: {
