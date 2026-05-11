@@ -4,6 +4,8 @@ import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { CharacterSummary } from "../data/repository";
 import { UI_LABELS } from "../labels";
 
+const formatAka = (aka: string[]) => (aka.length > 0 ? `aka ${aka.join(", ")}` : null);
+
 export function CharacterHeader({
   characterData,
   availableCharacters,
@@ -27,6 +29,7 @@ export function CharacterHeader({
 }) {
   const [isCampaignMenuOpen, setIsCampaignMenuOpen] = useState(false);
   const campaignMenuRef = useRef<HTMLDivElement>(null);
+  const characterAka = formatAka(characterData.aka);
 
   useEffect(() => {
     if (!isCampaignMenuOpen) return;
@@ -70,6 +73,11 @@ export function CharacterHeader({
           <h1 className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-base font-bold leading-tight tracking-tight sm:text-xl">
             {characterData.name}
           </h1>
+          {characterAka && (
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-gray-400 sm:text-[10px]">
+              {characterAka}
+            </div>
+          )}
           <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-gray-500 sm:text-[10px]">
             {characterData.race} {characterData.career} 1
           </div>
@@ -135,6 +143,7 @@ export function CharacterHeader({
                 <div className="p-1">
                   {availableCharacters.map((character) => {
                     const isSelected = character.id === selectedCharacterId;
+                    const aka = formatAka(character.aka);
 
                     return (
                       <button
@@ -153,6 +162,11 @@ export function CharacterHeader({
                       >
                         <div className="min-w-0">
                           <div className="truncate text-[12px] font-semibold">{character.name}</div>
+                          {aka && (
+                            <div className="truncate text-[10px] text-gray-400">
+                              {aka}
+                            </div>
+                          )}
                           <div className="text-[9px] uppercase tracking-[0.18em] text-gray-500">
                             {character.rulesetId}
                           </div>
