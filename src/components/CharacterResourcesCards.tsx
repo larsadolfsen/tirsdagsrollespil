@@ -42,6 +42,30 @@ const coinRows = [
 const coinAdjustments = [-10, -1, 1, 10] as const;
 const corruptionCheckSkillNames = ["Cool", "Endurance"] as const satisfies readonly CorruptionCheckSkillName[];
 
+const clickSharedSkillRoll = (skillName: CorruptionCheckSkillName) => {
+  const rollButton = [...document.querySelectorAll<HTMLButtonElement>("button")]
+    .find((button) => button.getAttribute("aria-label") === `Roll for ${skillName}`);
+
+  if (rollButton) {
+    rollButton.click();
+    return;
+  }
+
+  const skillsTabButton = [...document.querySelectorAll<HTMLButtonElement>("button")]
+    .find((button) => button.textContent?.trim() === "Skills");
+
+  if (!skillsTabButton) {
+    return;
+  }
+
+  skillsTabButton.click();
+  window.setTimeout(() => {
+    [...document.querySelectorAll<HTMLButtonElement>("button")]
+      .find((button) => button.getAttribute("aria-label") === `Roll for ${skillName}`)
+      ?.click();
+  }, 0);
+};
+
 export function CharacterResourcesCards({
   woundsCurrent,
   woundsMax,
@@ -93,9 +117,7 @@ export function CharacterResourcesCards({
       return;
     }
 
-    document
-      .querySelector<HTMLButtonElement>(`button[aria-label="Roll for ${skillName}"]`)
-      ?.click();
+    clickSharedSkillRoll(skillName);
   };
 
   return (
@@ -134,7 +156,7 @@ export function CharacterResourcesCards({
                         type="button"
                         onClick={() => openCorruptionCheck(skill)}
                         className="wfrp-roll-btn"
-                        aria-label={`Roll for ${skill.skillName}`}
+                        aria-label={`Open ${skill.skillName} corruption check`}
                       >
                         {skill.target}
                       </button>
