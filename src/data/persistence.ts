@@ -1,6 +1,7 @@
 import type { CharacterProgressData } from "../types";
 
-const FILE_PROGRESS_ENDPOINT = "/api/character-progress";
+const characterProgressEndpoint = (characterId: string) =>
+  `/api/character-progress/${encodeURIComponent(characterId)}`;
 
 type CharacterProgressMap = Record<string, CharacterProgressData>;
 
@@ -14,37 +15,54 @@ function writeProgressMap(progressMap: CharacterProgressMap) {
   progressCache = progressMap;
 }
 
-async function writeProgressFile(progressMap: CharacterProgressMap) {
+async function writeCharacterProgressFile(characterId: string, progress: CharacterProgressData) {
   if (typeof fetch === "undefined") {
     return;
   }
 
   try {
-    await fetch(FILE_PROGRESS_ENDPOINT, {
+    await fetch(characterProgressEndpoint(characterId), {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(progressMap),
+      body: JSON.stringify(progress),
     });
   } catch {
     // The UI keeps the latest values in memory, but durable saves require the server endpoint.
   }
 }
 
-export async function hydrateCharacterProgress() {
+async function deleteCharacterProgressFile(characterId: string) {
   if (typeof fetch === "undefined") {
     return;
   }
 
   try {
-    const response = await fetch(FILE_PROGRESS_ENDPOINT);
+    await fetch(characterProgressEndpoint(characterId), {
+      method: "DELETE",
+    });
+  } catch {
+    // The UI keeps the latest values in memory, but durable saves require the server endpoint.
+  }
+}
+
+export async function hydrateCharacterProgress(characterId: string) {
+  if (typeof fetch === "undefined") {
+    return;
+  }
+
+  try {
+    const response = await fetch(characterProgressEndpoint(characterId));
     if (!response.ok) {
       return;
     }
 
-    const fileProgressMap = (await response.json()) as CharacterProgressMap;
-    writeProgressMap(fileProgressMap ?? {});
+    const characterProgress = (await response.json()) as CharacterProgressData | null;
+    writeProgressMap({
+      ...readProgressMap(),
+      ...(characterProgress ? { [characterId]: characterProgress } : {}),
+    });
   } catch {
     // Keep the current in-memory values if the server cannot be read.
   }
@@ -55,15 +73,16 @@ export function loadCharacterProgress(characterId: string): CharacterProgressDat
 }
 
 export function saveCharacterProgress(characterId: string, progress: CharacterProgressData) {
-  const progressMap = readProgressMap();
-  progressMap[characterId] = progress;
-  writeProgressMap(progressMap);
-  void writeProgressFile(progressMap);
+  writeProgressMap({
+    ...readProgressMap(),
+    [characterId]: progress,
+  });
+  void writeCharacterProgressFile(characterId, progress);
 }
 
 export function clearCharacterProgress(characterId: string) {
-  const progressMap = readProgressMap();
+  const progressMap = { ...readProgressMap() };
   delete progressMap[characterId];
   writeProgressMap(progressMap);
-  void writeProgressFile(progressMap);
+  void deleteCharacterProgressFile(characterId);
 }
