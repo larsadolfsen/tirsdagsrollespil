@@ -88,6 +88,7 @@ export interface ResolvedCharacterRecord {
   id: string;
   rulesetId: string;
   name: string;
+  aka: string[];
   race: string;
   wounds: CharacterRecord["wounds"];
   fate: number;
@@ -144,6 +145,7 @@ export function resolveCharacterRecord(
     id: character.id,
     rulesetId: character.rulesetId,
     name: character.name,
+    aka: character.aka ?? [],
     race: character.race,
     wounds: character.wounds,
     fate: character.fate ?? raceDefinition?.fate,
