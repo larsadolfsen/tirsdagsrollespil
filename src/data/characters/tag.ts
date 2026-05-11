@@ -3,7 +3,7 @@ import type { CharacterRecord } from "../../types";
 export const tag: CharacterRecord = {
   id: "tag",
   rulesetId: "wfrp4e",
-  name: "Tag",
+  name: "Karl Müller",
   race: "Human",
   career: {
     careerId: "warrior_priest_novitiate",
