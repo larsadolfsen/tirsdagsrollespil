@@ -8,6 +8,7 @@ export { SkillsTab } from "./SkillsTab";
 export { SpellsTab } from "./SpellsTab";
 export { TalentsTab } from "./TalentsTab";
 export { TabLoadingFallback } from "./TabLoadingFallback";
+export { preloadPriorityTabs, preloadTab, preloadTabs } from "./preloadTabs";
 export { mainTabOptions, mobilePageTitleByView, mobileTabMenuOptions } from "./tabOptions";
 export type {
   ActionCategory,
