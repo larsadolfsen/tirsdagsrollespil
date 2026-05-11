@@ -1,8 +1,6 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { HeaderResourceSlider } from "./ui";
-import { DiceRoller } from "./DiceRoller";
 import { useGameSessionContext } from "../context/GameSessionContext";
-import type { RollHistoryItem, RollState } from "./appTypes";
 import type { CoinKey } from "../tabs/tabTypes";
 import type { Characteristic } from "../types";
 import type { Key } from "react";
@@ -32,6 +30,7 @@ type CharacterResourcesCardsProps = {
   onAdjustResolve: ResourceAdjuster;
   coins: Record<CoinKey, number>;
   onAdjustCoin: CoinAdjuster;
+  onOpenRoll?: (characteristic: { key: Characteristic["key"]; label: string }) => void;
 };
 
 const sliderContentClassName = "flex min-w-0 flex-1 flex-col gap-1";
@@ -42,19 +41,6 @@ const coinRows = [
 ] as const satisfies ReadonlyArray<readonly [CoinKey, string, string]>;
 const coinAdjustments = [-10, -1, 1, 10] as const;
 const corruptionCheckSkillNames = ["Cool", "Endurance"] as const satisfies readonly CorruptionCheckSkillName[];
-const emptyRollState: RollState = {
-  characteristic: null,
-  modifier: 0,
-  targetBonusSources: [],
-  result: null,
-  isSuccess: null,
-  sl: null,
-  isRolling: false,
-  damageBase: null,
-};
-
-const rollD100 = () => Math.floor(Math.random() * 100) + 1;
-const calculateSl = (target: number, result: number) => Math.floor(target / 10) - Math.floor(result / 10);
 
 export function CharacterResourcesCards({
   woundsCurrent,
@@ -76,11 +62,9 @@ export function CharacterResourcesCards({
   onAdjustResolve,
   coins,
   onAdjustCoin,
+  onOpenRoll,
 }: CharacterResourcesCardsProps) {
   const { characterData, characterSkills } = useGameSessionContext();
-  const [rollState, setRollState] = useState<RollState>(emptyRollState);
-  const [rollHistory, setRollHistory] = useState<RollHistoryItem[]>([]);
-  const activeRollerRef = useRef<HTMLDivElement | null>(null);
   const corruptionCheckSkills = useMemo(() => {
     return corruptionCheckSkillNames.map((skillName) => {
       const skill = characterSkills.find((entry) => entry.baseName === skillName);
@@ -92,7 +76,6 @@ export function CharacterResourcesCards({
       return {
         skillName,
         characteristic,
-        advances,
         target,
       };
     });
@@ -101,58 +84,18 @@ export function CharacterResourcesCards({
   const openCorruptionCheck = ({
     skillName,
     characteristic,
-    advances,
   }: {
     skillName: CorruptionCheckSkillName;
     characteristic: Characteristic["key"];
-    advances: number;
   }) => {
-    setRollState({
-      ...emptyRollState,
-      characteristic: {
-        key: characteristic,
-        label: `${skillName} Corruption Check`,
-      },
-      targetBonusSources: advances > 0 ? [{ label: skillName, value: advances }] : [],
-    });
-  };
-
-  const executeRoll = () => {
-    if (!rollState.characteristic) {
+    if (onOpenRoll) {
+      onOpenRoll({ key: characteristic, label: skillName });
       return;
     }
 
-    setRollState((current) => {
-      if (!current.characteristic) {
-        return current;
-      }
-
-      const target =
-        Number(characterData.attributes[current.characteristic.key] ?? 0) +
-        current.modifier +
-        (current.targetBonusSources ?? []).reduce((sum, bonus) => sum + bonus.value, 0);
-      const result = rollD100();
-      const sl = calculateSl(target, result);
-
-      return {
-        ...current,
-        result,
-        isSuccess: result <= target,
-        sl,
-        isRolling: false,
-      };
-    });
-  };
-
-  const handleReroll = () => {
-    setRollState((current) => ({
-      ...current,
-      result: null,
-      isSuccess: null,
-      sl: null,
-      isRolling: false,
-    }));
-    window.setTimeout(executeRoll, 0);
+    document
+      .querySelector<HTMLButtonElement>(`button[aria-label="Roll for ${skillName}"]`)
+      ?.click();
   };
 
   return (
@@ -179,7 +122,7 @@ export function CharacterResourcesCards({
               barClassName="bg-purple-600"
               contentClassName={sliderContentClassName}
             />
-            <div className="rounded border border-white/5 bg-black/10 px-3 py-2">
+            <div className="px-1 pt-1">
               <div className="mb-2 text-[8px] font-bold uppercase tracking-[0.18em] text-gray-500">
                 Corruption Check
               </div>
@@ -191,7 +134,7 @@ export function CharacterResourcesCards({
                         type="button"
                         onClick={() => openCorruptionCheck(skill)}
                         className="wfrp-roll-btn"
-                        aria-label={`Open ${skill.skillName} corruption check`}
+                        aria-label={`Roll for ${skill.skillName}`}
                       >
                         {skill.target}
                       </button>
@@ -308,23 +251,6 @@ export function CharacterResourcesCards({
           ))}
         </div>
       </section>
-
-      <DiceRoller
-        characterData={characterData}
-        rollState={rollState}
-        setRollState={setRollState}
-        rollHistory={rollHistory}
-        setRollHistory={setRollHistory}
-        activeRollerRef={activeRollerRef}
-        fortuneCurrent={fortuneCurrent}
-        executeRoll={executeRoll}
-        handleReroll={handleReroll}
-        getOutcome={(sl, isSuccess) =>
-          isSuccess
-            ? `Corruption check passed with ${sl} SL.`
-            : `Corruption check failed with ${sl} SL.`
-        }
-      />
     </>
   );
 }
