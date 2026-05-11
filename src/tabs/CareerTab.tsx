@@ -123,9 +123,10 @@ export function CareerTab({
   setActiveInfo,
   clearRollCharacteristic,
 }: CareerTabProps) {
-  const { setXpCurrent } = useGameSessionContext();
+  const { setXpCurrent, setXpTotal } = useGameSessionContext();
   const addCurrentXp = (amount: number) => {
     setXpCurrent((current) => Math.max(0, current + amount));
+    setXpTotal((current) => Math.max(0, current + amount));
   };
 
   return (
@@ -157,14 +158,14 @@ export function CareerTab({
         <button
           onClick={() => addCurrentXp(10)}
           className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-          aria-label="Add 10 current XP"
+          aria-label="Add 10 current and total XP"
         >
           +10
         </button>
         <button
           onClick={() => addCurrentXp(100)}
           className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-          aria-label="Add 100 current XP"
+          aria-label="Add 100 current and total XP"
         >
           +100
         </button>
