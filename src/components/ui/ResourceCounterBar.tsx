@@ -10,6 +10,7 @@ type ResourceCounterBarProps = {
   minusRingClassName: string;
   plusRingClassName: string;
   contentClassName?: string;
+  className?: string;
 };
 
 type HeaderResourceSliderProps = {
@@ -19,6 +20,7 @@ type HeaderResourceSliderProps = {
   onAdjust: (delta: number) => void;
   barClassName: string;
   contentClassName?: string;
+  className?: string;
 };
 
 export function ResourceCounterBar({
@@ -31,27 +33,31 @@ export function ResourceCounterBar({
   minusRingClassName,
   plusRingClassName,
   contentClassName,
+  className,
 }: ResourceCounterBarProps) {
-  const percent = max > 0 ? (current / max) * 100 : 0;
+  const safeMax = Math.max(0, max);
+  const safeCurrent = Math.min(Math.max(0, current), safeMax);
+  const percent = safeMax > 0 ? (safeCurrent / safeMax) * 100 : 0;
   const counterClassName = `text-[10px] font-bold ${counterToneClassName}`;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={className ?? "flex items-center gap-1.5 sm:gap-2"}>
       <button
         onClick={() => onAdjust(-1)}
-        className={`wfrp-stepper-btn ${minusRingClassName}`}
+        className={`wfrp-stepper-btn shrink-0 ${minusRingClassName}`}
         aria-label={`Decrease current ${label.toLowerCase()}`}
+        disabled={safeCurrent <= 0}
       >
         <Minus size={10} />
       </button>
 
-      <div className={contentClassName ?? "flex w-24 flex-col gap-1 lg:w-36"}>
-        <div className="flex items-end justify-between leading-none">
-          <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
+      <div className={contentClassName ?? "flex w-20 min-w-0 flex-col gap-1 sm:w-24 lg:w-36"}>
+        <div className="flex items-end justify-between gap-2 leading-none">
+          <span className="truncate text-[9px] font-bold uppercase tracking-tight text-gray-400">
             {label}
           </span>
-          <span className={counterClassName}>
-            {current} / {max}
+          <span className={`${counterClassName} shrink-0`}>
+            {safeCurrent} / {safeMax}
           </span>
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#303030] shadow-inner">
@@ -59,9 +65,9 @@ export function ResourceCounterBar({
             className={`h-full rounded-full transition-all duration-500 ease-out ${barClassName}`}
             style={{ width: `${percent}%` }}
             role="progressbar"
-            aria-valuenow={current}
+            aria-valuenow={safeCurrent}
             aria-valuemin={0}
-            aria-valuemax={max}
+            aria-valuemax={safeMax}
             aria-label={`${label} remaining`}
           />
         </div>
@@ -69,8 +75,9 @@ export function ResourceCounterBar({
 
       <button
         onClick={() => onAdjust(1)}
-        className={`wfrp-stepper-btn ${plusRingClassName}`}
+        className={`wfrp-stepper-btn shrink-0 ${plusRingClassName}`}
         aria-label={`Increase current ${label.toLowerCase()}`}
+        disabled={safeMax > 0 && safeCurrent >= safeMax}
       >
         <Plus size={10} />
       </button>
@@ -85,6 +92,7 @@ export function HeaderResourceSlider({
   onAdjust,
   barClassName,
   contentClassName,
+  className,
 }: HeaderResourceSliderProps) {
   return (
     <ResourceCounterBar
@@ -97,6 +105,7 @@ export function HeaderResourceSlider({
       minusRingClassName="focus-visible:ring-wfrp-red/50"
       plusRingClassName="focus-visible:ring-green-600/50"
       contentClassName={contentClassName}
+      className={className}
     />
   );
 }
