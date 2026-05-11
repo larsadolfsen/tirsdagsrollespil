@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
 import { AdvancementSection, ScrollableTabStrip } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
+import { useGameSessionContext } from "../context/GameSessionContext";
 import type {
   ResolvedCharacterRecord,
   ResolvedCharacterTalent,
@@ -122,6 +123,11 @@ export function CareerTab({
   setActiveInfo,
   clearRollCharacteristic,
 }: CareerTabProps) {
+  const { setXpCurrent } = useGameSessionContext();
+  const addCurrentXp = (amount: number) => {
+    setXpCurrent((current) => Math.max(0, current + amount));
+  };
+
   return (
     <div className="flex flex-col h-full min-h-0">
       <ScrollableTabStrip className="sticky top-0 z-10 flex items-center gap-2 p-3 lg:p-4 bg-wfrp-bg border-b border-white/5 overflow-x-auto no-scrollbar">
@@ -139,7 +145,27 @@ export function CareerTab({
             {option.label}
           </button>
         ))}
-        <div className="ml-auto flex-shrink-0">
+        <div className="ml-auto flex flex-shrink-0 items-center gap-2">
+          <div className="flex items-center justify-center gap-1.5 rounded bg-black/40 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-gray-300">
+            <span className="text-gray-500">XP</span>
+            <span className="font-mono text-white">{pendingAvailableXp}</span>
+            <span className="text-gray-600">/</span>
+            <span className="font-mono text-gray-300">{characterData.xpTotal}</span>
+          </div>
+          <button
+            onClick={() => addCurrentXp(10)}
+            className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+            aria-label="Add 10 current XP"
+          >
+            +10
+          </button>
+          <button
+            onClick={() => addCurrentXp(100)}
+            className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+            aria-label="Add 100 current XP"
+          >
+            +100
+          </button>
           <button
             onClick={saveCareerChanges}
             disabled={!hasPendingCareerChanges}
