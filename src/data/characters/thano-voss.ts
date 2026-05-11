@@ -16,7 +16,6 @@ export const thanoVoss: CharacterRecord = {
   resolve: 2,
   move: 4,
   corruption: 0,
-  maxCorruption: 100,
   xpTotal: 1050,
   coins: {
     gc: 100,
