@@ -19,6 +19,6 @@ export function preloadTabs(tabs: MainTab[]) {
   return Promise.all(tabs.map((tab) => preloadTab(tab)));
 }
 
-export function preloadDesktopPriorityTabs() {
-  return preloadTabs(["skills", "actions", "inventory"]);
+export function preloadPriorityTabs() {
+  return preloadTabs(["skills", "actions", "inventory", "spells"]);
 }
