@@ -224,10 +224,10 @@
 }
 
 body {
-  @apply bg-wfrp-bg selection:bg-wfrp-gold selection:text-wfrp-dark;
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   color: var(--color-gray-400);
+  background-color: var(--color-wfrp-bg);
 }
 
 .wfrp-card .wfrp-stat-tile {
