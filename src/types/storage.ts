@@ -8,6 +8,7 @@ export interface CharacterProgressData {
   xpCurrent: number;
   xpBaselineTotal?: number;
   characterName?: string;
+  portraitDataUrl?: string;
   coins?: {
     gc: number;
     s: number;
