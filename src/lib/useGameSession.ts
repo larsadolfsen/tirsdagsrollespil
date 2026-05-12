@@ -156,6 +156,7 @@ export function useGameSession() {
   const [resolveCurrent, setRawResolveCurrent] = useState(initialResolveCurrent);
   const [xpCurrent, setXpCurrent] = useState(initialXpCurrent);
   const [xpTotal, setXpTotal] = useState(character.xpTotal);
+  const [characterName, setCharacterName] = useState(character.name);
   const [characterCoins, setCharacterCoins] = useState(character.coins);
   const [currentCareerRank, setCurrentCareerRank] = useState(character.level);
   const [currentCharacteristicAdvances, setCurrentCharacteristicAdvances] = useState(character.characteristicAdvances);
@@ -297,6 +298,7 @@ export function useGameSession() {
     setRawResolveCurrent(clampResource(initialResolveCurrent, initialResilienceCurrent));
     setXpCurrent(initialXpCurrent);
     setXpTotal(character.xpTotal);
+    setCharacterName(character.name);
     setCharacterCoins(character.coins);
     setCurrentCareerRank(character.level);
     setCurrentCharacteristicAdvances(character.characteristicAdvances);
@@ -339,6 +341,7 @@ export function useGameSession() {
       resolveCurrent: clampResource(resolveCurrent, resilienceCurrent),
       xpCurrent,
       xpBaselineTotal: xpTotal,
+      characterName,
       coins: characterCoins,
       careerCurrentRank: currentCareerRank,
       characteristicAdvances: currentCharacteristicAdvances,
@@ -384,6 +387,7 @@ export function useGameSession() {
     resolveCurrent,
     xpCurrent,
     xpTotal,
+    characterName,
     characterCoins,
     currentCareerRank,
     currentCharacteristicAdvances,
@@ -401,6 +405,7 @@ export function useGameSession() {
     null;
   const characterData = {
     ...character,
+    name: characterName,
     xpTotal,
     attributes: Object.fromEntries(
       Object.entries(character.attributes).map(([key, value]) => {
@@ -474,6 +479,8 @@ export function useGameSession() {
     setXpCurrent,
     xpTotal,
     setXpTotal,
+    characterName,
+    setCharacterName,
     characterCoins,
     setCharacterCoins,
     currentCareerRank,
