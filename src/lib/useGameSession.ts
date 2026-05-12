@@ -157,6 +157,7 @@ export function useGameSession() {
   const [xpCurrent, setXpCurrent] = useState(initialXpCurrent);
   const [xpTotal, setXpTotal] = useState(character.xpTotal);
   const [characterName, setCharacterName] = useState(character.name);
+  const [portraitDataUrl, setPortraitDataUrl] = useState(session.progress?.portraitDataUrl ?? "");
   const [characterCoins, setCharacterCoins] = useState(character.coins);
   const [currentCareerRank, setCurrentCareerRank] = useState(character.level);
   const [currentCharacteristicAdvances, setCurrentCharacteristicAdvances] = useState(character.characteristicAdvances);
@@ -299,6 +300,7 @@ export function useGameSession() {
     setXpCurrent(initialXpCurrent);
     setXpTotal(character.xpTotal);
     setCharacterName(character.name);
+    setPortraitDataUrl(session.progress?.portraitDataUrl ?? "");
     setCharacterCoins(character.coins);
     setCurrentCareerRank(character.level);
     setCurrentCharacteristicAdvances(character.characteristicAdvances);
@@ -342,6 +344,7 @@ export function useGameSession() {
       xpCurrent,
       xpBaselineTotal: xpTotal,
       characterName,
+      portraitDataUrl,
       coins: characterCoins,
       careerCurrentRank: currentCareerRank,
       characteristicAdvances: currentCharacteristicAdvances,
@@ -388,6 +391,7 @@ export function useGameSession() {
     xpCurrent,
     xpTotal,
     characterName,
+    portraitDataUrl,
     characterCoins,
     currentCareerRank,
     currentCharacteristicAdvances,
@@ -481,6 +485,8 @@ export function useGameSession() {
     setXpTotal,
     characterName,
     setCharacterName,
+    portraitDataUrl,
+    setPortraitDataUrl,
     characterCoins,
     setCharacterCoins,
     currentCareerRank,
