@@ -1,8 +1,9 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Dice5, MoreHorizontal, Plus, Settings } from "lucide-react";
+import { Check, ChevronDown, Dice5, MoreHorizontal, Plus, Settings, X } from "lucide-react";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { CharacterSummary } from "../data/repository";
 import { UI_LABELS } from "../labels";
+import { useGameSessionContext } from "../context/GameSessionContext";
 
 const formatAka = (aka: string[]) => (aka.length > 0 ? `aka ${aka.join(", ")}` : null);
 
@@ -27,8 +28,12 @@ export function CharacterHeader({
   onOpenDice: () => void;
   onOpenAdvance: () => void;
 }) {
+  const { setCharacterName } = useGameSessionContext();
   const [isCampaignMenuOpen, setIsCampaignMenuOpen] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [draftName, setDraftName] = useState(characterData.name);
   const campaignMenuRef = useRef<HTMLDivElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const characterAka = formatAka(characterData.aka);
 
   useEffect(() => {
@@ -55,6 +60,43 @@ export function CharacterHeader({
     };
   }, [isCampaignMenuOpen]);
 
+  useEffect(() => {
+    if (!isEditingName) {
+      setDraftName(characterData.name);
+    }
+  }, [characterData.name, isEditingName]);
+
+  useEffect(() => {
+    if (!isEditingName) return;
+
+    nameInputRef.current?.focus();
+    nameInputRef.current?.select();
+  }, [isEditingName]);
+
+  const startEditingName = () => {
+    setDraftName(characterData.name);
+    setIsEditingName(true);
+  };
+
+  const cancelEditingName = () => {
+    setDraftName(characterData.name);
+    setIsEditingName(false);
+  };
+
+  const saveEditingName = () => {
+    const nextName = draftName.trim();
+
+    if (!nextName) {
+      setDraftName(characterData.name);
+      setIsEditingName(false);
+      return;
+    }
+
+    setCharacterName(nextName);
+    setDraftName(nextName);
+    setIsEditingName(false);
+  };
+
   return (
     <section className="flex min-h-[60px] flex-col gap-2 overflow-visible rounded-t border-b border-wfrp-border bg-wfrp-surface px-3 py-2 sm:min-h-0 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
       <div className="flex min-w-0 items-center gap-2 sm:contents">
@@ -70,9 +112,53 @@ export function CharacterHeader({
         </div>
 
         <div className="order-2 flex min-w-0 flex-1 flex-col justify-center overflow-hidden sm:order-none sm:min-w-[160px]">
-          <h1 className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-base font-bold leading-tight tracking-tight sm:text-xl">
-            {characterData.name}
-          </h1>
+          {isEditingName ? (
+            <div className="flex min-w-0 items-center gap-1">
+              <input
+                ref={nameInputRef}
+                value={draftName}
+                onChange={(event) => setDraftName(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    saveEditingName();
+                  }
+
+                  if (event.key === "Escape") {
+                    event.preventDefault();
+                    cancelEditingName();
+                  }
+                }}
+                className="min-w-0 flex-1 rounded border border-wfrp-border bg-black/40 px-2 py-0.5 font-serif text-base font-bold leading-tight tracking-tight text-gray-100 outline-none focus:border-wfrp-gold/60 sm:text-xl"
+                aria-label="Edit character name"
+              />
+              <button
+                type="button"
+                onClick={saveEditingName}
+                className="wfrp-icon-btn p-1 hover:bg-wfrp-surface-muted-hover"
+                aria-label="Save character name"
+              >
+                <Check size={13} />
+              </button>
+              <button
+                type="button"
+                onClick={cancelEditingName}
+                className="wfrp-icon-btn p-1 hover:bg-wfrp-surface-muted-hover"
+                aria-label="Cancel character name edit"
+              >
+                <X size={13} />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={startEditingName}
+              className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-left font-serif text-base font-bold leading-tight tracking-tight transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:text-xl"
+              aria-label="Edit character name"
+            >
+              {characterData.name}
+            </button>
+          )}
           {characterAka && (
             <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-gray-400 sm:text-[10px]">
               {characterAka}
