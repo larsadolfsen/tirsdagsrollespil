@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { InlineSubtabs } from "../components/ui";
+import { SheetDataHeader, SheetDataPanel, SheetDataRow, SheetDataTable } from "../components/wfrp";
 import type { ActiveInfoState } from "../components/appTypes";
 import type {
   ResolvedCharacterEquipment,
@@ -48,6 +49,10 @@ const mobileActionInfoButtonClass =
   "min-h-8 rounded border border-white/10 px-2 text-[10px] font-black uppercase tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden";
 const mobileActionDetailsClass =
   "mt-2 grid grid-cols-2 gap-2 rounded border border-white/5 bg-black/20 p-2 md:hidden";
+const channelingGridClass = "md:grid-cols-[60px_1fr_1fr] md:gap-2 lg:gap-4";
+const weaponActionGridClass = "md:grid-cols-[60px_1fr_60px_80px_1fr] md:gap-2 lg:gap-4";
+const rangedActionGridClass =
+  "md:grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] md:gap-2";
 
 const getRelevantWeaponProperties = (actionId: string, properties: string[]) => {
   if (actionId === "attack" || actionId === "charge") {
@@ -157,14 +162,14 @@ export function ActionsTab({
           });
 
           return (
-            <div className="wfrp-subpanel-shell flex flex-col">
-              <div className="hidden grid-cols-[60px_1fr_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center md:grid">
+            <SheetDataPanel>
+              <SheetDataHeader className={`hidden ${channelingGridClass} md:grid`}>
                 <span className="wfrp-table-label col-span-2 text-left">Channeling</span>
                 <span className="wfrp-table-label text-left">Notes</span>
-              </div>
+              </SheetDataHeader>
 
-              <div className="divide-y divide-white/5">
-                <div className="wfrp-table-row group md:grid md:grid-cols-[60px_1fr_1fr] md:items-center md:gap-2 lg:gap-4">
+              <SheetDataTable>
+                <SheetDataRow className={`block group md:grid ${channelingGridClass}`}>
                   <details className="group/details md:contents">
                     <summary className={mobileActionSummaryClass}>
                       <div className="flex justify-center">
@@ -212,9 +217,9 @@ export function ActionsTab({
                       <MobileDetail label="Notes" value="Spell Focus" />
                     </div>
                   </details>
-                </div>
-              </div>
-            </div>
+                </SheetDataRow>
+              </SheetDataTable>
+            </SheetDataPanel>
           );
         })()}
 
@@ -325,17 +330,17 @@ export function ActionsTab({
             } : null;
 
             return (
-              <div key={weapon.name} className="wfrp-subpanel-shell flex flex-col">
+              <SheetDataPanel key={weapon.name}>
                 {isMelee ? (
                   <>
-                    <div className="hidden grid-cols-[60px_1fr_60px_80px_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center md:grid">
+                    <SheetDataHeader className={`hidden ${weaponActionGridClass} md:grid`}>
                       <span className="wfrp-table-label col-span-2 text-left">{weapon.name}</span>
                       <span className="wfrp-table-label text-left">Dmg</span>
                       <span className="wfrp-table-label text-left">Reach</span>
                       <span className="wfrp-table-label text-left">Properties</span>
-                    </div>
+                    </SheetDataHeader>
 
-                    <div className="divide-y divide-white/5">
+                    <SheetDataTable>
                       {actions.map((action, idx) => {
                         const totalActionValue = action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
                         const openActionInfo = () => setActiveInfo({
@@ -350,7 +355,7 @@ export function ActionsTab({
                         });
 
                         return (
-                          <div key={idx} className="wfrp-table-row group md:grid md:grid-cols-[60px_1fr_60px_80px_1fr] md:items-center md:gap-2 lg:gap-4">
+                          <SheetDataRow key={idx} className={`block group md:grid ${weaponActionGridClass}`}>
                             <details className="group/details md:contents">
                               <summary className={mobileActionSummaryClass}>
                                 <div className="flex justify-center">
@@ -404,14 +409,14 @@ export function ActionsTab({
                                 <MobileDetail label="Properties" value={action.properties.length ? action.properties.join(", ") : "-"} />
                               </div>
                             </details>
-                          </div>
+                          </SheetDataRow>
                         );
                       })}
-                    </div>
+                    </SheetDataTable>
                   </>
                 ) : (
                   <>
-                    <div className="hidden grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] gap-2 px-4 py-1 bg-black/10 border-b border-white/5 items-center md:grid">
+                    <SheetDataHeader className={`hidden ${rangedActionGridClass} md:grid`}>
                       <span className="wfrp-table-label col-span-2 text-left">{weapon.name}</span>
                       <span className="wfrp-table-label text-left">Dmg</span>
                       <span className="wfrp-table-label text-left">PB</span>
@@ -420,9 +425,9 @@ export function ActionsTab({
                       <span className="wfrp-table-label text-left">L</span>
                       <span className="wfrp-table-label text-left">E</span>
                       <span className="wfrp-table-label text-left">Properties</span>
-                    </div>
+                    </SheetDataHeader>
 
-                    <div className="divide-y divide-white/5">
+                    <SheetDataTable>
                       {actions.map((action, idx) => {
                         const totalActionValue = action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
                         const openActionInfo = () => setActiveInfo({
@@ -437,7 +442,7 @@ export function ActionsTab({
                         });
 
                         return (
-                          <div key={idx} className="wfrp-table-row group md:grid md:grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] md:items-center md:gap-2">
+                          <SheetDataRow key={idx} className={`block group md:grid ${rangedActionGridClass}`}>
                             <details className="group/details md:contents">
                               <summary className={mobileActionSummaryClass}>
                                 <div className="flex justify-center">
@@ -496,26 +501,26 @@ export function ActionsTab({
                                 <MobileDetail label="Properties" value={action.properties.length ? action.properties.join(", ") : "-"} />
                               </div>
                             </details>
-                          </div>
+                          </SheetDataRow>
                         );
                       })}
-                    </div>
+                    </SheetDataTable>
                   </>
                 )}
-              </div>
+              </SheetDataPanel>
             );
           })}
 
         {(activeActionCategory === "all" || activeActionCategory === "other") && (
-          <div className="wfrp-subpanel-shell flex flex-col opacity-80 hover:opacity-100 transition-opacity">
-            <div className="hidden grid-cols-[60px_1fr_60px_80px_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center md:grid">
+          <SheetDataPanel className="opacity-80 transition-opacity hover:opacity-100">
+            <SheetDataHeader className={`hidden ${weaponActionGridClass} md:grid`}>
               <span className="wfrp-table-label col-span-2 text-left">Maneuvers</span>
               <span className="wfrp-table-label text-left">Dmg</span>
               <span className="wfrp-table-label text-left">Reach</span>
               <span className="wfrp-table-label text-left">Notes</span>
-            </div>
+            </SheetDataHeader>
 
-            <div className="divide-y divide-white/5">
+            <SheetDataTable>
               {[
                 { name: "Move", char: "Ag" as Characteristic["key"], range: `${characterData.move}`, properties: [], modifier: 0, damage: "-", type: "other" },
                 { name: "Defend", char: "WS" as Characteristic["key"], range: "-", properties: [], modifier: 0, targetBonusSources: [{ label: "Defense", value: 20 }], damage: "-", type: "other" },
@@ -543,7 +548,7 @@ export function ActionsTab({
                   });
 
                   return (
-                    <div key={action.name} className="wfrp-table-row group md:grid md:grid-cols-[60px_1fr_60px_80px_1fr] md:items-center md:gap-2 lg:gap-4">
+                    <SheetDataRow key={action.name} className={`block group md:grid ${weaponActionGridClass}`}>
                       <details className="group/details md:contents">
                         <summary className={mobileActionSummaryClass}>
                           <div className="flex justify-center">
@@ -591,11 +596,11 @@ export function ActionsTab({
                           <MobileDetail label="Properties" value={action.properties.length ? action.properties.join(", ") : "-"} />
                         </div>
                       </details>
-                    </div>
+                    </SheetDataRow>
                   );
                 })}
-            </div>
-          </div>
+            </SheetDataTable>
+          </SheetDataPanel>
         )}
       </div>
     </div>
