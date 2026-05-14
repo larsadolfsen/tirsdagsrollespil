@@ -10,6 +10,8 @@ type SkillRow = {
   advances: number;
 };
 
+const desktopSkillGridClass = "md:grid-cols-[56px_minmax(0,1fr)_56px_56px_56px]";
+
 export function SkillsTab({
   activeSkillSubtab,
   setActiveSkillSubtab,
@@ -40,9 +42,10 @@ export function SkillsTab({
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4">
         <SheetDataPanel>
-          <SheetDataHeader className="hidden grid-cols-[minmax(0,1fr)_36px_44px_58px] md:grid">
-            <span className="wfrp-table-label text-left">Skill</span>
-            <span className="wfrp-table-label col-span-2 text-center">Char.</span>
+          <SheetDataHeader className={`hidden ${desktopSkillGridClass} md:grid`}>
+            <span className="wfrp-table-label col-span-2 text-left">Skill</span>
+            <span className="wfrp-table-label text-center">Char.</span>
+            <span className="wfrp-table-label text-center">Base</span>
             <span className="wfrp-table-label text-center">Adv</span>
           </SheetDataHeader>
 
@@ -54,11 +57,11 @@ export function SkillsTab({
               return (
                 <SheetDataRow
                   key={skill.key}
-                  className="block group md:grid md:grid-cols-[minmax(0,1fr)_36px_44px_58px]"
+                  className={`block group md:grid ${desktopSkillGridClass}`}
                 >
                   <details className="group/details md:contents">
                     <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
-                      <div className="flex justify-center">
+                      <div className="flex justify-center md:justify-start">
                         <button
                           onClick={(event) => {
                             event.preventDefault();
