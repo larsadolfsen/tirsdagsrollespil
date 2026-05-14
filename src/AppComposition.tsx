@@ -6,8 +6,6 @@
 import { lazy, Suspense, useState, useEffect, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import {
-  Check,
-  ChevronDown,
   Menu,
   Plus,
   Settings,
@@ -16,6 +14,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { CharacterHeader } from "./components/CharacterHeader";
 import { DiceLogSidebar } from "./components/DiceLogSidebar";
+import { MobileTabMenu } from "./components/MobileTabMenu";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useMobileNavigation } from "./hooks/useMobileNavigation";
 import { useDiceRoller } from "./hooks/useDiceRoller";
@@ -1500,154 +1499,35 @@ export function AppComposition() {
           </button>
         )}
 
-        <AnimatePresence>
-          {isMobileNavigationOpen && (
-            <motion.div
-              className="fixed inset-0 z-50 md:hidden"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Navigation drawer"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <button
-                type="button"
-                className="absolute inset-0 bg-black/65"
-                aria-label="Close navigation drawer"
-                onClick={closeMobileNavigation}
-              />
-              <motion.aside
-                className="absolute left-0 top-0 flex h-full w-[min(86vw,340px)] flex-col border-r border-wfrp-brass-border bg-wfrp-dark shadow-2xl"
-                initial={{ x: "-100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "-100%" }}
-                transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              >
-                <div className="border-b border-wfrp-border bg-wfrp-surface px-5 py-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <Menu size={18} className="mt-1 shrink-0 text-wfrp-gold/70" />
-                      <div className="min-w-0">
-                      <h2 className="truncate font-serif text-2xl font-bold text-wfrp-gold">
-                        {characterData.name}
-                      </h2>
-                      <p className="mt-1 truncate text-[11px] font-bold uppercase tracking-widest text-gray-500">
-                        {UI_LABELS.CAMPAIGN_NAME}
-                      </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setIsMobileCharacterListOpen((isOpen) => !isOpen)}
-                      className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/5 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                      aria-label="Change character"
-                      aria-expanded={isMobileCharacterListOpen}
-                    >
-                      <ChevronDown
-                        size={20}
-                        className={`transition-transform ${isMobileCharacterListOpen ? "rotate-180" : ""}`}
-                      />
-                    </button>
-                  </div>
-
-                  {isMobileCharacterListOpen && (
-                    <div className="mt-4 overflow-hidden rounded border border-wfrp-border bg-black/25 p-1">
-                      {availableCharacters.map((character) => {
-                        const isSelected = character.id === selectedCharacterId;
-
-                        return (
-                          <button
-                            key={character.id}
-                            type="button"
-                            onClick={() => {
-                              setSelectedCharacterId(character.id);
-                              closeMobileNavigation();
-                            }}
-                            className={`flex w-full items-center justify-between rounded px-3 py-2.5 text-left transition-colors ${
-                              isSelected
-                                ? "bg-wfrp-gold-surface text-wfrp-gold"
-                                : "text-gray-200 hover:bg-wfrp-surface-raised"
-                            }`}
-                          >
-                            <span className="min-w-0">
-                              <span className="block truncate text-sm font-semibold">{character.name}</span>
-                              <span className="block text-[9px] font-bold uppercase tracking-widest text-gray-500">
-                                {character.rulesetId}
-                              </span>
-                            </span>
-                            <span className="ml-3 flex h-5 w-5 items-center justify-center">
-                              {isSelected ? <Check size={14} /> : null}
-                            </span>
-                          </button>
-                        );
-                      })}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActiveInfo(null);
-                          setIsShopOpen(false);
-                          setIsSpellShopOpen(false);
-                          setIsDiceLogOpen(false);
-                          setRollState((prev) => ({ ...prev, characteristic: null }));
-                          setIsCharacterBuilderOpen(true);
-                          closeMobileNavigation();
-                        }}
-                        className="mt-1 flex w-full items-center gap-3 rounded px-3 py-2.5 text-left text-sm font-semibold text-gray-400 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold"
-                      >
-                        <Plus size={16} />
-                        Create character
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex-1 overflow-y-auto py-3">
-                  {mobileTabMenuOptions.map((item) => {
-                    const isActive =
-                      item.id === "characteristics"
-                        ? activeMobileMainView === "characteristics"
-                        : activeMobileMainView === item.id;
-
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => {
-                          handleMobileMainViewSelect(item.id);
-                          closeMobileNavigation();
-                        }}
-                        className={`mx-3 flex h-11 w-[calc(100%-1.5rem)] items-center rounded border px-4 text-left text-[11px] font-black uppercase tracking-widest transition-colors ${
-                          isActive
-                            ? "border-wfrp-gold/50 bg-wfrp-gold/15 text-wfrp-gold"
-                            : "border-transparent text-gray-300 hover:border-wfrp-border hover:bg-wfrp-surface hover:text-wfrp-gold"
-                        }`}
-                        aria-current={isActive ? "page" : undefined}
-                      >
-                        {item.label}
-                      </button>
-                    );
-                  })}
-
-                  <div className="my-3 border-t border-wfrp-border" />
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveInfo(null);
-                      setIsShopOpen(false);
-                      setIsDiceLogOpen(true);
-                      closeMobileNavigation();
-                    }}
-                    className="mx-3 flex h-11 w-[calc(100%-1.5rem)] items-center rounded border border-transparent px-4 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:border-wfrp-border hover:bg-wfrp-surface hover:text-wfrp-gold"
-                  >
-                    Dice
-                  </button>
-                </div>
-              </motion.aside>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <MobileTabMenu
+          activeMobileMainView={activeMobileMainView}
+          availableCharacters={availableCharacters}
+          campaignName={UI_LABELS.CAMPAIGN_NAME}
+          characterName={characterData.name}
+          closeMobileNavigation={closeMobileNavigation}
+          handleMobileMainViewSelect={handleMobileMainViewSelect}
+          isMobileCharacterListOpen={isMobileCharacterListOpen}
+          isMobileNavigationOpen={isMobileNavigationOpen}
+          mobileTabMenuOptions={mobileTabMenuOptions}
+          onCreateCharacter={() => {
+            setActiveInfo(null);
+            setIsShopOpen(false);
+            setIsSpellShopOpen(false);
+            setIsDiceLogOpen(false);
+            setRollState((prev) => ({ ...prev, characteristic: null }));
+            setIsCharacterBuilderOpen(true);
+            closeMobileNavigation();
+          }}
+          onOpenDiceLog={() => {
+            setActiveInfo(null);
+            setIsShopOpen(false);
+            setIsDiceLogOpen(true);
+            closeMobileNavigation();
+          }}
+          selectedCharacterId={selectedCharacterId}
+          setIsMobileCharacterListOpen={setIsMobileCharacterListOpen}
+          setSelectedCharacterId={setSelectedCharacterId}
+        />
 
         <DiceLogSidebar
           activeRollerRef={activeRollerRef}
