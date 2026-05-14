@@ -30,7 +30,7 @@ type CharacterResourcesCardsProps = {
   onAdjustResolve: ResourceAdjuster;
   coins: Record<CoinKey, number>;
   onAdjustCoin: CoinAdjuster;
-  onOpenRoll?: (characteristic: { key: Characteristic["key"]; label: string }) => void;
+  onOpenCorruptionCheck?: (characteristic: { key: Characteristic["key"]; label: string }) => void;
 };
 
 const sliderContentClassName = "flex min-w-0 flex-1 flex-col gap-1";
@@ -86,7 +86,7 @@ export function CharacterResourcesCards({
   onAdjustResolve,
   coins,
   onAdjustCoin,
-  onOpenRoll,
+  onOpenCorruptionCheck,
 }: CharacterResourcesCardsProps) {
   const { characterData, characterSkills } = useGameSessionContext();
   const corruptionCheckSkills = useMemo(() => {
@@ -112,8 +112,8 @@ export function CharacterResourcesCards({
     skillName: CorruptionCheckSkillName;
     characteristic: Characteristic["key"];
   }) => {
-    if (onOpenRoll) {
-      onOpenRoll({ key: characteristic, label: skillName });
+    if (onOpenCorruptionCheck) {
+      onOpenCorruptionCheck({ key: characteristic, label: skillName });
       return;
     }
 

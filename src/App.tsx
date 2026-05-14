@@ -87,6 +87,10 @@ import type {
 import type { ArmourDefinition, ArmourLocation, Characteristic, Ruleset, SkillDefinition } from "./types";
 import type { ItemDefinition, SpellDefinition } from "./types";
 
+// Guardrail: keep this file lean. App.tsx should only compose top-level providers, layout,
+// routing/tab orchestration, and state wiring. Move new feature logic, data transforms,
+// and reusable UI into focused modules under src/components, src/tabs, src/lib, or src/data.
+
 const InfoSidebar = lazy(() =>
   import("./components/InfoSidebar").then((module) => ({ default: module.InfoSidebar })),
 );
@@ -108,11 +112,13 @@ const BackgroundTab = lazy(() => import("./tabs/BackgroundTab").then((module) =>
 const NotesTab = lazy(() => import("./tabs/NotesTab").then((module) => ({ default: module.NotesTab })));
 const CareerTab = lazy(() => import("./tabs/CareerTab").then((module) => ({ default: module.CareerTab })));
 
+type RollTestType = "dramatic" | "attack" | "channeling" | "corruption";
+
 interface RollHistoryItem {
   id: string;
   label: string;
   title?: string | null;
-  testType: "dramatic" | "attack" | "channeling";
+  testType: RollTestType;
   result: number;
   sl: number;
   isSuccess: boolean;
@@ -133,7 +139,7 @@ interface RollState {
   characteristic: Characteristic | null;
   title: string | null;
   baseValueOverride: number | null;
-  testType: "dramatic" | "attack" | "channeling";
+  testType: RollTestType;
   modifier: number;
   targetBonusSources: RollBonusSource[];
   result: number | null;
@@ -1498,6 +1504,7 @@ function AppScreen() {
   const getTestTypeTitle = (testType: RollState["testType"] | RollHistoryItem["testType"]) => {
     if (testType === "attack") return "Attack Test";
     if (testType === "channeling") return "Channeling Test";
+    if (testType === "corruption") return "Corruption Test";
     return "Dramatic Test";
   };
 
@@ -2135,6 +2142,12 @@ function AppScreen() {
               onAdjustResolve={adjustResolve}
               coins={characterData.coins}
               onAdjustCoin={handleAdjustCoinType}
+              onOpenCorruptionCheck={(characteristic) =>
+                handleRoll(characteristic, undefined, {
+                  testType: "corruption",
+                  title: "Corruption Test",
+                })
+              }
             />
 
             <section className="wfrp-card overflow-hidden p-0!">
