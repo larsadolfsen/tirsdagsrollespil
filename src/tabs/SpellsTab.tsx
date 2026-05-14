@@ -91,7 +91,7 @@ export function SpellsTab({
               };
 
               return (
-                <div key={spell.name} className="wfrp-table-row md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 md:lg:gap-4 md:px-4 md:py-2 md:items-center">
+                <div key={spell.name} className="wfrp-table-row md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 lg:gap-4 md:px-4 md:py-2 md:items-center">
                   <details className="group/details md:contents">
                     <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
                       <div className="flex justify-center">
@@ -144,8 +144,7 @@ export function SpellsTab({
                       </div>
 
                       <div className="hidden wfrp-list-cell-strong truncate md:block">
-                        {spellTarget}
-                      </div>
+                        {spellTarget}</div>
 
                       <div className="hidden wfrp-list-cell-strong md:block">
                         {spellDuration}
