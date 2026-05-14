@@ -33,7 +33,8 @@ export function useMobileNavigation({ setActiveMainTab }: UseMobileNavigationOpt
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        closeMobileNavigation();
+        setIsMobileNavigationOpen(false);
+        setIsMobileCharacterListOpen(false);
       }
     };
 
