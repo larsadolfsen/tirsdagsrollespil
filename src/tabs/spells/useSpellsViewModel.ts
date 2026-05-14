@@ -1,11 +1,6 @@
 import { useMemo } from "react";
 import type { ResolvedCharacterSkill, ResolvedCharacterSpell } from "../../data/characters/resolved";
 import type { Characteristic } from "../../types";
-import type { SpellSubtab } from "../tabTypes";
-import {
-  filterSpellsBySubtab,
-  getSpellSubtabOptions,
-} from "./spellUtils";
 
 type RollOptions = {
   testType?: "dramatic" | "attack" | "channeling";
@@ -28,8 +23,7 @@ export type SpellListRow = {
 };
 
 export function useSpellsViewModel({
-  spells,
-  activeSpellSubtab,
+  filteredSpells,
   attributes,
   characterSkills,
   formatSpellRange,
@@ -38,8 +32,7 @@ export function useSpellsViewModel({
   handleRoll,
   openSpellInfo,
 }: {
-  spells: ResolvedCharacterSpell[];
-  activeSpellSubtab: SpellSubtab;
+  filteredSpells: ResolvedCharacterSpell[];
   attributes: Record<string, number>;
   characterSkills: ResolvedCharacterSkill[];
   formatSpellRange: (range: string) => string;
@@ -52,12 +45,6 @@ export function useSpellsViewModel({
   ) => void;
   openSpellInfo: (spell: ResolvedCharacterSpell, formattedSpell: FormattedSpellFields) => void;
 }) {
-  const spellSubtabOptions = useMemo(() => getSpellSubtabOptions(spells), [spells]);
-  const filteredSpells = useMemo(
-    () => filterSpellsBySubtab(spells, activeSpellSubtab),
-    [activeSpellSubtab, spells],
-  );
-
   const spellRows = useMemo<SpellListRow[]>(() => {
     const baseWP = attributes.WP || 0;
     const channellingSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
@@ -95,9 +82,5 @@ export function useSpellsViewModel({
     openSpellInfo,
   ]);
 
-  return {
-    filteredSpells,
-    spellRows,
-    spellSubtabOptions,
-  };
+  return { spellRows };
 }
