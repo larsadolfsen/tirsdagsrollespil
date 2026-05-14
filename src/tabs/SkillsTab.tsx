@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { InlineSubtabs } from "../components/ui";
+import { SheetDataHeader, SheetDataPanel, SheetDataRow, SheetDataTable } from "../components/wfrp";
 import type { SkillSubtab } from "./tabTypes";
 
 type SkillRow = {
@@ -38,20 +39,23 @@ export function SkillsTab({
       />
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4">
-        <section className="wfrp-subpanel-shell flex flex-col">
-          <div className="wfrp-subpanel-header hidden grid-cols-[minmax(0,1fr)_36px_44px_58px] gap-2 items-center md:grid">
+        <SheetDataPanel>
+          <SheetDataHeader className="hidden grid-cols-[minmax(0,1fr)_36px_44px_58px] md:grid">
             <span className="wfrp-table-label text-left">Skill</span>
             <span className="wfrp-table-label col-span-2 text-center">Char.</span>
             <span className="wfrp-table-label text-center">Adv</span>
-          </div>
+          </SheetDataHeader>
 
-          <div className="divide-y divide-white/5">
+          <SheetDataTable>
             {visibleSkillRows.map((skill) => {
               const charValue = attributes[skill.characteristic] || 0;
               const totalValue = charValue + skill.advances;
 
               return (
-                <div key={skill.key} className="wfrp-table-row group md:grid md:grid-cols-[minmax(0,1fr)_36px_44px_58px] md:items-center md:gap-2">
+                <SheetDataRow
+                  key={skill.key}
+                  className="block group md:grid md:grid-cols-[minmax(0,1fr)_36px_44px_58px]"
+                >
                   <details className="group/details md:contents">
                     <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
                       <div className="flex justify-center">
@@ -124,11 +128,11 @@ export function SkillsTab({
                       </div>
                     </div>
                   </details>
-                </div>
+                </SheetDataRow>
               );
             })}
-          </div>
-        </section>
+          </SheetDataTable>
+        </SheetDataPanel>
       </div>
     </div>
   );
