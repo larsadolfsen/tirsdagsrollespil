@@ -1,8 +1,10 @@
 import { Minus } from "lucide-react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, RefObject } from "react";
 import { InlineSubtabs } from "../components/ui";
+import { InventoryContextMenu } from "./inventory/InventoryContextMenu";
 import type { ResolvedCharacterEquipment, ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { InventorySubtab } from "./tabTypes";
+import type { InventoryDragState, InventoryDropTargetId, InventoryMenuState } from "../types/inventory";
 import {
   formatCoinTotalValue,
   getCoinCount,
@@ -13,19 +15,6 @@ import {
   isPacksAndContainersItem,
   isWornInventoryItem,
 } from "./inventory/inventoryUtils";
-
-type InventoryMenuState = {
-  id: string;
-  mode: "move" | "drop";
-  top: number;
-  left: number;
-};
-
-type InventoryDragState = {
-  itemId: string;
-};
-
-type InventoryDropTargetId = "carried" | string;
 
 type InventorySection = {
   id: string;
@@ -385,77 +374,19 @@ export function InventoryTab({
           })}
       </div>
 
-      {activeInventoryMenu && (
-        <div
-          ref={inventoryMenuRef}
-          className="fixed z-50 min-w-[152px] overflow-hidden rounded border border-white/10 bg-wfrp-menu py-1 shadow-xl"
-          style={{ top: activeInventoryMenu.top, left: activeInventoryMenu.left }}
-        >
-          {(() => {
-            const activeItem = equipmentState.find((item) => item.id === activeInventoryMenu.id);
-            if (!activeItem) return null;
-
-            const stowableContainers = equipmentState.filter(
-              (item) =>
-                isPacksAndContainersItem(item) &&
-                item.id !== activeItem.id &&
-                item.id !== activeItem.containerId &&
-                canStoreInContainer(activeItem.id, item.id),
-            );
-            const canMoveToWorn = canDropInventoryItem(activeItem.id, null, true);
-            const canMoveToCarried = isWornInventoryItem(activeItem)
-              ? canDropInventoryItem(activeItem.id, null, false, true)
-              : canDropInventoryItem(activeItem.id, null);
-
-            return (
-              <>
-                {activeInventoryMenu.mode === "drop" ? (
-                  <button
-                    onClick={() => handleDropItem(activeItem.id)}
-                    className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
-                  >
-                    Confirm
-                  </button>
-                ) : (
-                  <>
-                    {canMoveToWorn && (
-                      <button
-                        onClick={() => handleWearItem(activeItem.id)}
-                        className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
-                      >
-                        Wear
-                      </button>
-                    )}
-                    {canMoveToCarried && (
-                      <button
-                        onClick={() => {
-                          if (isWornInventoryItem(activeItem)) {
-                            handleUnwearItem(activeItem.id);
-                          } else {
-                            handleCarryItem(activeItem.id);
-                          }
-                        }}
-                        className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
-                      >
-                        Ready
-                      </button>
-                    )}
-                    {stowableContainers.map((container) => (
-                      <button
-                        key={container.id}
-                        onClick={() => handleStoreItem(activeItem.id, container.id)}
-                        className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
-                      >
-                        {container.name}
-                      </button>
-                    ))}
-                  </>
-                )}
-              </>
-            );
-          })()}
-        </div>
-      )}
+      <InventoryContextMenu
+        activeInventoryMenu={activeInventoryMenu}
+        canDropInventoryItem={canDropInventoryItem}
+        canStoreInContainer={canStoreInContainer}
+        containers={containers}
+        equipmentState={equipmentState}
+        handleCarryItem={handleCarryItem}
+        handleDropItem={handleDropItem}
+        handleStoreItem={handleStoreItem}
+        handleUnwearItem={handleUnwearItem}
+        handleWearItem={handleWearItem}
+        inventoryMenuRef={inventoryMenuRef}
+      />
     </div>
   );
 }
