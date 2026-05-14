@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import type { AriaRole, ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function ScrollableTabStrip({
   children,
   className,
+  role,
+  ariaLabel,
 }: {
   children: ReactNode;
   className: string;
+  role?: AriaRole;
+  ariaLabel?: string;
 }) {
   const stripRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -49,13 +53,14 @@ export function ScrollableTabStrip({
 
   return (
     <div className="relative">
-      <div ref={stripRef} className={`${className} pl-12 pr-12`}>
+      <div ref={stripRef} className={`${className} pl-12 pr-12`} role={role} aria-label={ariaLabel}>
         {children}
       </div>
       {canScrollLeft && (
         <>
           <div className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-wfrp-surface-subtle via-wfrp-surface-subtle/95 to-transparent" />
           <button
+            type="button"
             onClick={scrollTabsLeft}
             className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded border border-white/10 bg-wfrp-tab-control/95 p-1.5 text-gray-300 shadow-lg transition-colors hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
             aria-label="Show previous tabs"
@@ -68,6 +73,7 @@ export function ScrollableTabStrip({
         <>
           <div className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-wfrp-surface-subtle via-wfrp-surface-subtle/95 to-transparent" />
           <button
+            type="button"
             onClick={scrollTabsRight}
             className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded border border-white/10 bg-wfrp-tab-control/95 p-1.5 text-gray-300 shadow-lg transition-colors hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
             aria-label="Show more tabs"
