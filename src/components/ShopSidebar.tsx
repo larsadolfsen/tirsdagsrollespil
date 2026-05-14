@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowDown, ArrowUp, ChevronDown, ListFilter, Search, ShoppingBag, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import { allItemDefinitions, wfrp4eRuleset } from "../data/rules/wfrp4e";
 import { formatItemValue, getItemPriceInBrass } from "../lib/gameSession";
 import type { ItemDefinition } from "../types";
@@ -148,6 +149,8 @@ export function ShopSidebar({
   const sidebarRef = useRef<HTMLElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
 
+  useFocusTrap(sidebarRef, isOpen, onClose);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -286,6 +289,9 @@ export function ShopSidebar({
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
           className="wfrp-sidebar-shell w-[min(86vw,340px)] md:w-[400px]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="shop-sidebar-title"
         >
           <div className="wfrp-sidebar-header p-3">
             <div className="flex items-center gap-3">
@@ -293,7 +299,7 @@ export function ShopSidebar({
                 <ShoppingBag size={18} />
               </div>
               <div className="flex flex-col">
-                <h2 className="wfrp-sidebar-title text-sm uppercase tracking-widest text-wfrp-gold">
+                <h2 id="shop-sidebar-title" className="wfrp-sidebar-title text-sm uppercase tracking-widest text-wfrp-gold">
                   Shop
                 </h2>
                 <span className="wfrp-sidebar-kicker">Market & trade</span>
