@@ -1051,27 +1051,30 @@ export function AppComposition() {
             <div className={`w-full flex-col gap-6 md:flex md:w-[28%] xl:w-[24%] ${
               activeMobileMainView === "characteristics" ? "flex" : "hidden"
             }`}>
-            <CharacterResourcesCards
-              woundsCurrent={woundsCurrent}
-              woundsMax={characterData.wounds.max}
-              onAdjustWounds={adjustWounds}
-              corruptionCurrent={corruptionCurrent}
-              corruptionMax={maxCorruption}
-              onAdjustCorruption={adjustCorruption}
-              fateCurrent={fateCurrent}
-              fateMax={resourceCaps.fate}
-              onAdjustFate={adjustFate}
-              fortuneCurrent={fortuneCurrent}
-              onAdjustFortune={adjustFortune}
-              resilienceCurrent={resilienceCurrent}
-              resilienceMax={resourceCaps.resilience}
-              onAdjustResilience={adjustResilience}
-              resolveCurrent={resolveCurrent}
-              resolveMax={Math.min(resourceCaps.resolve, resilienceCurrent)}
-              onAdjustResolve={adjustResolve}
-              coins={characterData.coins}
-              onAdjustCoin={handleAdjustCoinType}
-            />
+          <CharacterResourcesCards
+            woundsCurrent={woundsCurrent}
+            woundsMax={characterData.wounds.max}
+            onAdjustWounds={adjustWounds}
+            corruptionCurrent={corruptionCurrent}
+            corruptionMax={maxCorruption}
+            onAdjustCorruption={adjustCorruption}
+            fateCurrent={fateCurrent}
+            fateMax={resourceCaps.fate}
+            onAdjustFate={adjustFate}
+            fortuneCurrent={fortuneCurrent}
+            onAdjustFortune={adjustFortune}
+            resilienceCurrent={resilienceCurrent}
+            resilienceMax={resourceCaps.resilience}
+            onAdjustResilience={adjustResilience}
+            resolveCurrent={resolveCurrent}
+            resolveMax={Math.min(resourceCaps.resolve, resilienceCurrent)}
+            onAdjustResolve={adjustResolve}
+            coins={characterData.coins}
+            onAdjustCoin={handleAdjustCoinType}
+            onOpenRoll={(characteristic) => {
+              handleRoll(characteristic, undefined, { testType: "corruption" });
+            }}
+          />
 
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">

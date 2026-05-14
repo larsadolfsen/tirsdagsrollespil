@@ -1,5 +1,7 @@
 import type { Characteristic } from "./index";
 
+export type RollTestType = "dramatic" | "attack" | "channeling" | "corruption";
+
 export interface RollBonusSource {
   label: string;
   value: number;
@@ -9,7 +11,7 @@ export interface RollHistoryItem {
   id: string;
   label: string;
   title?: string | null;
-  testType: "dramatic" | "attack" | "channeling";
+  testType: RollTestType;
   result: number;
   sl: number;
   isSuccess: boolean;
@@ -25,7 +27,7 @@ export interface RollState {
   characteristic: Characteristic | null;
   title: string | null;
   baseValueOverride: number | null;
-  testType: "dramatic" | "attack" | "channeling";
+  testType: RollTestType;
   modifier: number;
   targetBonusSources: RollBonusSource[];
   result: number | null;

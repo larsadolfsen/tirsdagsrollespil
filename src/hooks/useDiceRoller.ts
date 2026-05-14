@@ -149,11 +149,12 @@ export function useDiceRoller({
   const getBonusTotal = (bonusSources: RollBonusSource[]) =>
     bonusSources.reduce((sum, bonus) => sum + bonus.value, 0);
 
-  const getTestTypeTitle = (testType: RollState["testType"] | RollHistoryItem["testType"]) => {
-    if (testType === "attack") return "Attack Test";
-    if (testType === "channeling") return "Channeling Test";
-    return "Dramatic Test";
-  };
+const getTestTypeTitle = (testType: RollState["testType"] | RollHistoryItem["testType"]) => {
+  if (testType === "attack") return "Attack Test";
+  if (testType === "channeling") return "Channeling Test";
+  if (testType === "corruption") return "Corruption Test";
+  return "Dramatic Test";
+};
 
   const archiveRoll = (state: RollState, labelSuffix?: string) => {
     if (!state.characteristic || state.result === null) return;
