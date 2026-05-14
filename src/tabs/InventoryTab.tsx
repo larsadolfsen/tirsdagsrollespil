@@ -159,6 +159,42 @@ export function InventoryTab({
     })),
   ];
 
+  const renderItemActions = (item: ResolvedCharacterEquipment) => (
+    <>
+      {item.type === "Consumable" && (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            handleConsumeItem(item.id);
+          }}
+          className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
+          aria-label={`Use one ${getConsumableBaseName(item).toLowerCase()}`}
+        >
+          <Minus size={10} />
+        </button>
+      )}
+      <SheetRowActionButton
+        onClick={(event) => {
+          event.preventDefault();
+          handleToggleInventoryMenu(item.id, event, "drop");
+        }}
+        aria-label={`Drop ${item.name}`}
+      >
+        <span className="font-mono text-[10px] font-bold leading-none">Drop</span>
+      </SheetRowActionButton>
+      <SheetRowActionButton
+        onClick={(event) => {
+          event.preventDefault();
+          handleToggleInventoryMenu(item.id, event, "move");
+        }}
+        aria-label={`Move ${item.name}`}
+      >
+        <span className="font-mono text-[10px] font-bold leading-none">Move</span>
+      </SheetRowActionButton>
+    </>
+  );
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <InlineSubtabs<InventorySubtab>
@@ -331,41 +367,6 @@ export function InventoryTab({
                     const quantity = getConsumableCount(item) ?? 1;
                     const itemEncumbrance = getInventoryEncumbrance(item) || "-";
                     const itemValue = formatItemValue(item);
-                    const itemActions = (
-                      <>
-                        {item.type === "Consumable" && (
-                          <button
-                            type="button"
-                            onClick={(event) => {
-                              event.preventDefault();
-                              handleConsumeItem(item.id);
-                            }}
-                            className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
-                            aria-label={`Use one ${getConsumableBaseName(item).toLowerCase()}`}
-                          >
-                            <Minus size={10} />
-                          </button>
-                        )}
-                        <SheetRowActionButton
-                          onClick={(event) => {
-                            event.preventDefault();
-                            handleToggleInventoryMenu(item.id, event, "drop");
-                          }}
-                          aria-label={`Drop ${item.name}`}
-                        >
-                          <span className="font-mono text-[10px] font-bold leading-none">Drop</span>
-                        </SheetRowActionButton>
-                        <SheetRowActionButton
-                          onClick={(event) => {
-                            event.preventDefault();
-                            handleToggleInventoryMenu(item.id, event, "move");
-                          }}
-                          aria-label={`Move ${item.name}`}
-                        >
-                          <span className="font-mono text-[10px] font-bold leading-none">Move</span>
-                        </SheetRowActionButton>
-                      </>
-                    );
 
                     return (
                       <SheetDataListRow
@@ -393,7 +394,7 @@ export function InventoryTab({
                             </button>
 
                             <div className="relative flex items-center justify-end gap-1 pr-1">
-                              {itemActions}
+                              {renderItemActions(item)}
                             </div>
 
                             <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180" aria-hidden="true" />
@@ -422,7 +423,7 @@ export function InventoryTab({
                           <div className="wfrp-list-cell-strong text-center font-mono">{itemEncumbrance}</div>
                           <div className="wfrp-list-cell-strong text-center font-mono">{itemValue}</div>
                           <div className="relative flex items-center justify-end gap-1 pr-1">
-                            {itemActions}
+                            {renderItemActions(item)}
                           </div>
                         </div>
                       </SheetDataListRow>
