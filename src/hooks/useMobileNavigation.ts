@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { MainTab, MobileTabMenuTarget } from "../tabs/tabTypes";
 
@@ -27,6 +27,19 @@ export function useMobileNavigation({ setActiveMainTab }: UseMobileNavigationOpt
     setIsMobileNavigationOpen(false);
     setIsMobileCharacterListOpen(false);
   };
+
+  useEffect(() => {
+    if (!isMobileNavigationOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeMobileNavigation();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isMobileNavigationOpen]);
 
   const openMobileNavigation = (showCharacterList = false) => {
     setIsMobilePortraitMenuOpen(false);
