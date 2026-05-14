@@ -306,6 +306,11 @@ body {
   margin-right: auto;
 }
 
+.wfrp-card [class~="border-2"][class*="border-wfrp"] {
+  border-color: var(--color-wfrp-border);
+  border-width: 1px;
+}
+
 /* Raise low-contrast muted text on dark panels reported by PageSpeed mobile contrast audit. */
 .text-gray-500,
 .text-gray-600,
