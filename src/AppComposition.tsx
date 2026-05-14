@@ -1072,7 +1072,10 @@ export function AppComposition() {
               onAdjustResolve={adjustResolve}
               coins={characterData.coins}
               onAdjustCoin={handleAdjustCoinType}
-            />
+              onOpenRoll={(characteristic) => {
+              handleRoll(characteristic, undefined, { testType: "corruption" });
+  }}
+/>
 
             <section className="wfrp-card overflow-hidden p-0!">
               <div className="wfrp-card-tab-header">
