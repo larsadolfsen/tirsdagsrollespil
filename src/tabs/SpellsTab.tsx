@@ -1,6 +1,12 @@
 import { ChevronDown } from "lucide-react";
 import { InlineSubtabs } from "../components/ui";
-import { SheetDataHeader, SheetDataPanel, SheetDataRow, SheetDataTable } from "../components/wfrp";
+import {
+  SheetDataHeader,
+  SheetDataList,
+  SheetDataListRow,
+  SheetDataMobileDetails,
+  SheetDataPanel,
+} from "../components/wfrp";
 import type { ResolvedCharacterSkill, ResolvedCharacterSpell } from "../data/characters/resolved";
 import type { Characteristic } from "../types";
 import type { SpellSubtab } from "./tabTypes";
@@ -75,7 +81,7 @@ export function SpellsTab({
             <span className="wfrp-table-label text-left">Duration</span>
           </SheetDataHeader>
 
-          <SheetDataTable className="flex flex-col">
+          <SheetDataList>
             {filteredSpells.map((spell) => {
               const baseWP = attributes.WP || 0;
               const chnSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
@@ -83,6 +89,12 @@ export function SpellsTab({
               const spellRange = formatSpellRange(spell.range);
               const spellTarget = formatSpellTarget(spell.target);
               const spellDuration = formatSpellDuration(spell.duration);
+              const mobileDetails = [
+                { label: "CN", value: spell.cn, valueClassName: "font-mono" },
+                { label: "Range", value: spellRange },
+                { label: "Target", value: spellTarget },
+                { label: "Duration", value: spellDuration },
+              ];
               const openCurrentSpellInfo = () => {
                 openSpellInfo(spell, {
                   range: spellRange,
@@ -92,9 +104,9 @@ export function SpellsTab({
               };
 
               return (
-                <SheetDataRow
+                <SheetDataListRow
                   key={spell.name}
-                  className="block border-b border-wfrp-border last:border-0 md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 md:px-4 md:py-2 lg:gap-4"
+                  className="md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 md:px-4 md:py-2 lg:gap-4"
                 >
                   <details className="group/details md:contents">
                     <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
@@ -156,29 +168,12 @@ export function SpellsTab({
                       </div>
                     </summary>
 
-                    <div className="mt-2 grid grid-cols-2 gap-2 rounded border border-white/5 bg-black/20 p-2 md:hidden">
-                      <div>
-                        <div className="wfrp-table-label">CN</div>
-                        <div className="wfrp-list-cell-strong font-mono">{spell.cn}</div>
-                      </div>
-                      <div>
-                        <div className="wfrp-table-label">Range</div>
-                        <div className="wfrp-list-cell-strong">{spellRange}</div>
-                      </div>
-                      <div>
-                        <div className="wfrp-table-label">Target</div>
-                        <div className="wfrp-list-cell-strong">{spellTarget}</div>
-                      </div>
-                      <div>
-                        <div className="wfrp-table-label">Duration</div>
-                        <div className="wfrp-list-cell-strong">{spellDuration}</div>
-                      </div>
-                    </div>
+                    <SheetDataMobileDetails fields={mobileDetails} />
                   </details>
-                </SheetDataRow>
+                </SheetDataListRow>
               );
             })}
-          </SheetDataTable>
+          </SheetDataList>
         </SheetDataPanel>
       </div>
     </div>
