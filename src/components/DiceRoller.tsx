@@ -32,7 +32,7 @@ export function DiceRoller({
   fortuneCurrent: number;
   executeRoll: () => void;
   handleReroll: () => void;
-  getOutcome: (sl: number, isSuccess: boolean) => string;
+  getOutcome: (sl: number, isSuccess: boolean, testType?: RollState["testType"]) => string;
 }) {
   const getTargetBonusTotal = (targetBonusSources = rollState.targetBonusSources ?? []) =>
     targetBonusSources.reduce((sum, bonus) => sum + bonus.value, 0);
@@ -82,6 +82,7 @@ export function DiceRoller({
                       targetBonusSources: rollState.targetBonusSources ?? [],
                       target,
                       damage: damage?.total ?? null,
+                      testType: rollState.testType,
                       isCritical: flags.isCritical,
                       isFumble: flags.isFumble,
                     };
@@ -258,11 +259,17 @@ export function DiceRoller({
                           className={`font-black uppercase tracking-widest ${rollState.isSuccess ? "text-wfrp-gold" : "text-wfrp-red"}`}
                         >
                           {adjustedSl.total > 0 ? `+${adjustedSl.total}` : adjustedSl.total} -{" "}
-                          {rollState.isSuccess ? "Critical Impact" : "Fumbled Attempt"}
+                          {rollState.testType === "corruption"
+                            ? rollState.isSuccess
+                              ? "Corruption Resisted"
+                              : "Corruption Takes Hold"
+                            : rollState.isSuccess
+                              ? "Critical Impact"
+                              : "Fumbled Attempt"}
                         </span>
                       </div>
 
-                      {(rollFlags.isCritical || rollFlags.isFumble) && (
+                      {(rollState.testType !== "corruption" && (rollFlags.isCritical || rollFlags.isFumble)) && (
                         <div className="text-[10px] font-bold uppercase tracking-widest text-wfrp-gold/80 px-1">
                           {rollFlags.isCritical ? "Critical" : "Fumble"}
                           {rollFlags.hasImpaleCritical ? " from Impale" : ""}
@@ -311,7 +318,7 @@ export function DiceRoller({
                       )}
 
                       <div className="mt-2 text-[9px] font-bold text-gray-500 uppercase italic px-1 border-l border-white/5">
-                        {getOutcome(adjustedSl.total, rollState.isSuccess!)}
+                        {getOutcome(adjustedSl.total, rollState.isSuccess!, rollState.testType)}
                       </div>
                     </div>
                   )}

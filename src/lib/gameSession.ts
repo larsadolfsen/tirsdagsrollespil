@@ -305,13 +305,14 @@ function applyCharacterProgress(
     null;
   const baseCharacteristicAdvances = character.characteristicAdvances ?? {};
   const currentCharacteristicAdvances = progress.characteristicAdvances ?? baseCharacteristicAdvances;
-  const attributes = Object.fromEntries(
+  const advancedAttributes = Object.fromEntries(
     Object.entries(character.attributes).map(([key, value]) => {
       const baseAdvances = baseCharacteristicAdvances[key] ?? 0;
       const currentAdvances = currentCharacteristicAdvances[key] ?? baseAdvances;
       return [key, value + (currentAdvances - baseAdvances)];
     }),
   );
+  const attributes = progress.attributeOverrides ?? advancedAttributes;
   const addedEquipment = (progress.addedEquipment ?? [])
     .map((item): ResolvedCharacterEquipment | null => {
       const definition = ruleset.items.find((entry) => entry.id === item.itemId);

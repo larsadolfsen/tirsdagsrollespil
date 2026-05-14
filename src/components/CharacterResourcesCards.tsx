@@ -30,7 +30,7 @@ type CharacterResourcesCardsProps = {
   onAdjustResolve: ResourceAdjuster;
   coins: Record<CoinKey, number>;
   onAdjustCoin: CoinAdjuster;
-  onOpenRoll?: (characteristic: { key: Characteristic["key"]; label: string }) => void;
+  onOpenRoll: (characteristic: { key: Characteristic["key"]; label: string }) => void;
 };
 
 const sliderContentClassName = "flex min-w-0 flex-1 flex-col gap-1";
@@ -41,30 +41,6 @@ const coinRows = [
 ] as const satisfies ReadonlyArray<readonly [CoinKey, string, string]>;
 const coinAdjustments = [-10, -1, 1, 10] as const;
 const corruptionCheckSkillNames = ["Cool", "Endurance"] as const satisfies readonly CorruptionCheckSkillName[];
-
-const clickSharedSkillRoll = (skillName: CorruptionCheckSkillName) => {
-  const rollButton = [...document.querySelectorAll<HTMLButtonElement>("button")]
-    .find((button) => button.getAttribute("aria-label") === `Roll for ${skillName}`);
-
-  if (rollButton) {
-    rollButton.click();
-    return;
-  }
-
-  const skillsTabButton = [...document.querySelectorAll<HTMLButtonElement>("button")]
-    .find((button) => button.textContent?.trim() === "Skills");
-
-  if (!skillsTabButton) {
-    return;
-  }
-
-  skillsTabButton.click();
-  window.setTimeout(() => {
-    [...document.querySelectorAll<HTMLButtonElement>("button")]
-      .find((button) => button.getAttribute("aria-label") === `Roll for ${skillName}`)
-      ?.click();
-  }, 0);
-};
 
 export function CharacterResourcesCards({
   woundsCurrent,
@@ -112,12 +88,7 @@ export function CharacterResourcesCards({
     skillName: CorruptionCheckSkillName;
     characteristic: Characteristic["key"];
   }) => {
-    if (onOpenRoll) {
-      onOpenRoll({ key: characteristic, label: skillName });
-      return;
-    }
-
-    clickSharedSkillRoll(skillName);
+    onOpenRoll({ key: characteristic, label: skillName });
   };
 
   return (

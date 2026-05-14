@@ -160,6 +160,7 @@ export function useGameSession() {
   const [portraitDataUrl, setPortraitDataUrl] = useState(session.progress?.portraitDataUrl ?? "");
   const [characterCoins, setCharacterCoins] = useState(character.coins);
   const [currentCareerRank, setCurrentCareerRank] = useState(character.level);
+  const [characterAttributes, setCharacterAttributes] = useState(character.attributes);
   const [currentCharacteristicAdvances, setCurrentCharacteristicAdvances] = useState(character.characteristicAdvances);
   const [characterSkills, setCharacterSkills] = useState(character.skills);
   const [characterTalents, setCharacterTalents] = useState(character.talents);
@@ -303,6 +304,7 @@ export function useGameSession() {
     setPortraitDataUrl(session.progress?.portraitDataUrl ?? "");
     setCharacterCoins(character.coins);
     setCurrentCareerRank(character.level);
+    setCharacterAttributes(character.attributes);
     setCurrentCharacteristicAdvances(character.characteristicAdvances);
     setCharacterSkills(character.skills);
     setCharacterTalents(character.talents);
@@ -347,6 +349,7 @@ export function useGameSession() {
       portraitDataUrl,
       coins: characterCoins,
       careerCurrentRank: currentCareerRank,
+      attributeOverrides: characterAttributes,
       characteristicAdvances: currentCharacteristicAdvances,
       skills: Object.fromEntries(
         characterSkills.map((skill) => [getCharacterSkillKey(skill), skill.advances]),
@@ -394,6 +397,7 @@ export function useGameSession() {
     portraitDataUrl,
     characterCoins,
     currentCareerRank,
+    characterAttributes,
     currentCharacteristicAdvances,
     characterSkills,
     characterTalents,
@@ -411,13 +415,7 @@ export function useGameSession() {
     ...character,
     name: characterName,
     xpTotal,
-    attributes: Object.fromEntries(
-      Object.entries(character.attributes).map(([key, value]) => {
-        const baseAdvances = character.characteristicAdvances[key] ?? 0;
-        const currentAdvances = currentCharacteristicAdvances[key] ?? baseAdvances;
-        return [key, Number(value) + (currentAdvances - baseAdvances)];
-      }),
-    ),
+    attributes: characterAttributes,
     characteristicAdvances: currentCharacteristicAdvances,
     coins: characterCoins,
     level: currentCareer?.rank ?? character.level,
@@ -491,6 +489,8 @@ export function useGameSession() {
     setCharacterCoins,
     currentCareerRank,
     setCurrentCareerRank,
+    characterAttributes,
+    setCharacterAttributes,
     currentCharacteristicAdvances,
     setCurrentCharacteristicAdvances,
     characterSkills,
