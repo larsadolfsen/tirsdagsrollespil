@@ -3,6 +3,7 @@ import type { Characteristic } from "../types";
 export interface RollHistoryItem {
   id: string;
   label: string;
+  testType?: "dramatic" | "attack" | "channeling" | "corruption";
   result: number;
   sl: number;
   isSuccess: boolean;
@@ -16,6 +17,7 @@ export interface RollHistoryItem {
 
 export interface RollState {
   characteristic: Characteristic | null;
+  testType?: "dramatic" | "attack" | "channeling" | "corruption";
   modifier: number;
   targetBonusSources?: Array<{ label: string; value: number }>;
   result: number | null;

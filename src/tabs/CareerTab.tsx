@@ -1,5 +1,6 @@
+import { useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Pencil, Plus, X } from "lucide-react";
 import { AdvancementSection, ScrollableTabStrip } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import { useGameSessionContext } from "../context/GameSessionContext";
@@ -33,6 +34,20 @@ type AdvancementSkillSection = {
   skills: AdvancementSkillRow[];
 };
 
+type AdvancementEditValues = {
+  characteristicBases: Record<string, number>;
+  characteristicAdvances: Record<string, number>;
+  skillBases: Record<string, number>;
+  skillAdvances: Record<string, number>;
+};
+
+type AdvancementEditDraft = {
+  characteristicBases: Record<string, string>;
+  characteristicAdvances: Record<string, string>;
+  skillBases: Record<string, string>;
+  skillAdvances: Record<string, string>;
+};
+
 type CareerAdvancementData = {
   characteristics: Array<{
     key: string;
@@ -47,6 +62,7 @@ interface CareerTabProps {
   setActiveCareerSubtab: Dispatch<SetStateAction<CareerSubtab>>;
   saveCareerChanges: () => void;
   hasPendingCareerChanges: boolean;
+  saveAdvancementEdits: (values: AdvancementEditValues) => void;
   characterData: ResolvedCharacterRecord;
   displayedCareerRank: number;
   displayedCareerRankRecord: ResolvedCharacterRecord["careerRecord"]["ranks"][number] | null;
@@ -88,11 +104,23 @@ const careerSubtabOptions: Array<{ id: CareerSubtab; label: string }> = [
 
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
 
+const toNumericDraft = (value: number) => String(Math.max(0, Math.trunc(value || 0)));
+
+const isValidNumericDraft = (value: string) => /^\d+$/.test(value.trim());
+
+const numericInputClassName = (hasError: boolean) =>
+  `h-8 w-full min-w-0 rounded border bg-black/40 px-2 text-center font-mono text-[12px] font-semibold text-gray-100 outline-none transition focus-visible:ring-2 ${
+    hasError
+      ? "border-red-500/80 focus-visible:ring-red-500/50"
+      : "border-white/10 focus:border-wfrp-gold/60 focus-visible:ring-wfrp-gold/30"
+  }`;
+
 export function CareerTab({
   activeCareerSubtab,
   setActiveCareerSubtab,
   saveCareerChanges,
   hasPendingCareerChanges,
+  saveAdvancementEdits,
   characterData,
   displayedCareerRank,
   displayedCareerRankRecord,
@@ -124,10 +152,110 @@ export function CareerTab({
   clearRollCharacteristic,
 }: CareerTabProps) {
   const { setXpCurrent, setXpTotal } = useGameSessionContext();
+  const [editDraft, setEditDraft] = useState<AdvancementEditDraft | null>(null);
   const addCurrentXp = (amount: number) => {
     setXpCurrent((current) => Math.max(0, current + amount));
     setXpTotal((current) => Math.max(0, current + amount));
   };
+
+  const flatAdvancementSkillRows = useMemo(
+    () => advancementSkillSections.flatMap((section) => section.skills),
+    [advancementSkillSections],
+  );
+
+  const startEditMode = () => {
+    setEditDraft({
+      characteristicBases: Object.fromEntries(
+        advancementCharacteristics.map((item) => [item.key, toNumericDraft(item.value)]),
+      ),
+      characteristicAdvances: Object.fromEntries(
+        advancementCharacteristics.map((item) => [item.key, toNumericDraft(item.advances)]),
+      ),
+      skillBases: Object.fromEntries(
+        flatAdvancementSkillRows.map((skill) => [skill.skillName, toNumericDraft(skill.baseCharacteristicValue)]),
+      ),
+      skillAdvances: Object.fromEntries(
+        flatAdvancementSkillRows.map((skill) => [skill.skillName, toNumericDraft(skill.baseAdvances)]),
+      ),
+    });
+  };
+
+  const updateDraftValue = (
+    section: keyof AdvancementEditDraft,
+    key: string,
+    value: string,
+  ) => {
+    if (!/^\d*$/.test(value)) return;
+
+    setEditDraft((current) => {
+      if (!current) return current;
+
+      const nextDraft: AdvancementEditDraft = {
+        ...current,
+        [section]: {
+          ...current[section],
+          [key]: value,
+        },
+      };
+
+      if (section === "characteristicBases") {
+        nextDraft.skillBases = { ...nextDraft.skillBases };
+        flatAdvancementSkillRows.forEach((skill) => {
+          if (skill.characteristicKey === key) {
+            nextDraft.skillBases[skill.skillName] = value;
+          }
+        });
+      }
+
+      if (section === "skillBases") {
+        const characteristicKey = flatAdvancementSkillRows.find(
+          (skill) => skill.skillName === key,
+        )?.characteristicKey;
+
+        if (characteristicKey) {
+          nextDraft.characteristicBases = {
+            ...nextDraft.characteristicBases,
+            [characteristicKey]: value,
+          };
+          nextDraft.skillBases = { ...nextDraft.skillBases };
+          flatAdvancementSkillRows.forEach((skill) => {
+            if (skill.characteristicKey === characteristicKey) {
+              nextDraft.skillBases[skill.skillName] = value;
+            }
+          });
+        }
+      }
+
+      return nextDraft;
+    });
+  };
+
+  const editErrors = editDraft
+    ? Object.values(editDraft).flatMap((section) => Object.values(section)).filter((value) => !isValidNumericDraft(value))
+    : [];
+  const hasEditErrors = editErrors.length > 0;
+
+  const commitEditMode = () => {
+    if (!editDraft || hasEditErrors) return;
+
+    saveAdvancementEdits({
+      characteristicBases: Object.fromEntries(
+        Object.entries(editDraft.characteristicBases).map(([key, value]) => [key, Number(value)]),
+      ),
+      characteristicAdvances: Object.fromEntries(
+        Object.entries(editDraft.characteristicAdvances).map(([key, value]) => [key, Number(value)]),
+      ),
+      skillBases: Object.fromEntries(
+        Object.entries(editDraft.skillBases).map(([key, value]) => [key, Number(value)]),
+      ),
+      skillAdvances: Object.fromEntries(
+        Object.entries(editDraft.skillAdvances).map(([key, value]) => [key, Number(value)]),
+      ),
+    });
+    setEditDraft(null);
+  };
+
+  const isEditMode = editDraft !== null;
 
   return (
     <div className="flex flex-col h-full min-h-0">
@@ -169,15 +297,55 @@ export function CareerTab({
         >
           +100
         </button>
-        <button
-          onClick={saveCareerChanges}
-          disabled={!hasPendingCareerChanges}
-          className="wfrp-action-btn ml-auto h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
-          aria-label="Save career changes"
-        >
-          Save
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          {isEditMode ? (
+            <>
+              <button
+                onClick={() => setEditDraft(null)}
+                className="wfrp-action-btn h-9 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300"
+                aria-label="Cancel advancement edits"
+              >
+                <X size={12} />
+                Cancel
+              </button>
+              <button
+                onClick={commitEditMode}
+                disabled={hasEditErrors}
+                className="wfrp-action-btn h-9 px-4 text-[10px] font-black uppercase tracking-widest text-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Save advancement edits"
+              >
+                Save Edits
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={startEditMode}
+                disabled={hasPendingCareerChanges}
+                className="wfrp-action-btn h-9 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Edit advancement values"
+                title={hasPendingCareerChanges ? "Save or discard pending advances before editing values." : undefined}
+              >
+                <Pencil size={12} />
+                Edit
+              </button>
+              <button
+                onClick={saveCareerChanges}
+                disabled={!hasPendingCareerChanges}
+                className="wfrp-action-btn h-9 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Save career changes"
+              >
+                Save
+              </button>
+            </>
+          )}
+        </div>
       </div>
+      {isEditMode && hasEditErrors && (
+        <div id="advancement-edit-error" className="border-b border-red-500/20 bg-red-950/30 px-3 py-2 text-[11px] font-semibold text-red-200 lg:px-4">
+          Enter whole numbers in every highlighted field before saving edits.
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4 no-scrollbar">
         {(activeCareerSubtab === "all" || activeCareerSubtab === "careers") && (
@@ -236,7 +404,7 @@ export function CareerTab({
                   <div className="flex justify-end gap-1">
                     <button
                       onClick={decreasePendingCareerRank}
-                      disabled={pendingCareerRank === null}
+                      disabled={isEditMode || pendingCareerRank === null}
                       className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
                       aria-label={`Decrease career rank for ${characterData.career}`}
                     >
@@ -245,6 +413,7 @@ export function CareerTab({
                     <button
                       onClick={increasePendingCareerRank}
                       disabled={
+                        isEditMode ||
                         !nextCareerRankRecord ||
                         nextCareerAdvanceCost === null ||
                         pendingAvailableXp < nextCareerAdvanceCost
@@ -316,9 +485,43 @@ export function CareerTab({
                           {item.label} ({item.key})
                         </button>
                       </div>
-                      <div className="wfrp-list-cell-strong text-left font-mono">{item.value}</div>
+                      <div className="wfrp-list-cell-strong text-left font-mono">
+                        {isEditMode ? (
+                          <input
+                            value={editDraft.characteristicBases[item.key] ?? ""}
+                            onChange={(event) =>
+                              updateDraftValue("characteristicBases", item.key, event.target.value)
+                            }
+                            inputMode="numeric"
+                            aria-label={`Edit ${item.label} base value`}
+                            aria-invalid={!isValidNumericDraft(editDraft.characteristicBases[item.key] ?? "")}
+                            aria-describedby={hasEditErrors ? "advancement-edit-error" : undefined}
+                            className={numericInputClassName(
+                              !isValidNumericDraft(editDraft.characteristicBases[item.key] ?? ""),
+                            )}
+                          />
+                        ) : (
+                          item.value
+                        )}
+                      </div>
                       <div className="wfrp-list-cell-strong text-center font-mono">
-                        {advancesDisplay}
+                        {isEditMode ? (
+                          <input
+                            value={editDraft.characteristicAdvances[item.key] ?? ""}
+                            onChange={(event) =>
+                              updateDraftValue("characteristicAdvances", item.key, event.target.value)
+                            }
+                            inputMode="numeric"
+                            aria-label={`Edit ${item.label} advances`}
+                            aria-invalid={!isValidNumericDraft(editDraft.characteristicAdvances[item.key] ?? "")}
+                            aria-describedby={hasEditErrors ? "advancement-edit-error" : undefined}
+                            className={numericInputClassName(
+                              !isValidNumericDraft(editDraft.characteristicAdvances[item.key] ?? ""),
+                            )}
+                          />
+                        ) : (
+                          advancesDisplay
+                        )}
                       </div>
                       <div className="wfrp-list-cell-strong text-center font-mono">
                         {isAvailable ? nextCharacteristicCost : "-"}
@@ -326,7 +529,7 @@ export function CareerTab({
                       <div className="flex justify-end gap-1">
                         <button
                           onClick={() => removePendingCharacteristicAdvance(item.key)}
-                          disabled={item.pendingAdvances === 0 || !isAvailable}
+                          disabled={isEditMode || item.pendingAdvances === 0 || !isAvailable}
                           className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
                           aria-label={`Decrease ${item.label}`}
                         >
@@ -334,7 +537,7 @@ export function CareerTab({
                         </button>
                         <button
                           onClick={() => purchaseCharacteristicAdvance(item.key)}
-                          disabled={!isAvailable || pendingAvailableXp < nextCharacteristicCost}
+                          disabled={isEditMode || !isAvailable || pendingAvailableXp < nextCharacteristicCost}
                           className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
                           aria-label={`Increase ${item.label}`}
                         >
@@ -396,12 +599,44 @@ export function CareerTab({
                               </button>
                             </div>
                             <div className="wfrp-list-cell-strong text-center font-mono">
-                              {skillRow.baseCharacteristicValue === 0
-                                ? "-"
-                                : skillRow.baseCharacteristicValue}
+                              {isEditMode ? (
+                                <input
+                                  value={editDraft.skillBases[skillRow.skillName] ?? ""}
+                                  onChange={(event) =>
+                                    updateDraftValue("skillBases", skillRow.skillName, event.target.value)
+                                  }
+                                  inputMode="numeric"
+                                  aria-label={`Edit ${skillRow.skillName} base value`}
+                                  aria-invalid={!isValidNumericDraft(editDraft.skillBases[skillRow.skillName] ?? "")}
+                                  aria-describedby={hasEditErrors ? "advancement-edit-error" : undefined}
+                                  className={numericInputClassName(
+                                    !isValidNumericDraft(editDraft.skillBases[skillRow.skillName] ?? ""),
+                                  )}
+                                />
+                              ) : skillRow.baseCharacteristicValue === 0 ? (
+                                "-"
+                              ) : (
+                                skillRow.baseCharacteristicValue
+                              )}
                             </div>
                             <div className="wfrp-list-cell-strong text-center font-mono">
-                              {advancesDisplay}
+                              {isEditMode ? (
+                                <input
+                                  value={editDraft.skillAdvances[skillRow.skillName] ?? ""}
+                                  onChange={(event) =>
+                                    updateDraftValue("skillAdvances", skillRow.skillName, event.target.value)
+                                  }
+                                  inputMode="numeric"
+                                  aria-label={`Edit ${skillRow.skillName} advances`}
+                                  aria-invalid={!isValidNumericDraft(editDraft.skillAdvances[skillRow.skillName] ?? "")}
+                                  aria-describedby={hasEditErrors ? "advancement-edit-error" : undefined}
+                                  className={numericInputClassName(
+                                    !isValidNumericDraft(editDraft.skillAdvances[skillRow.skillName] ?? ""),
+                                  )}
+                                />
+                              ) : (
+                                advancesDisplay
+                              )}
                             </div>
                             <div className="wfrp-list-cell-strong text-center font-mono">
                               {skillRow.isCareerSkill ? skillRow.nextSkillCost : "-"}
@@ -409,7 +644,7 @@ export function CareerTab({
                             <div className="flex justify-end gap-1">
                               <button
                                 onClick={() => removePendingSkillAdvance(skillRow.skillName)}
-                                disabled={skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
+                                disabled={isEditMode || skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
                                 className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
                                 aria-label={`Decrease skill advances for ${skillRow.skillName}`}
                               >
@@ -417,7 +652,7 @@ export function CareerTab({
                               </button>
                               <button
                                 onClick={() => purchaseSkillAdvance(skillRow.skillName)}
-                                disabled={!canPurchase}
+                                disabled={isEditMode || !canPurchase}
                                 className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
                                 aria-label={`Advance skill ${skillRow.skillName}`}
                               >
@@ -484,7 +719,7 @@ export function CareerTab({
                       <div className="flex justify-end gap-1">
                         <button
                           onClick={() => removePendingTalentPurchase(talentName)}
-                          disabled={pendingTakenCount === 0}
+                          disabled={isEditMode || pendingTakenCount === 0}
                           className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
                           aria-label={`Decrease talent purchases for ${talentName}`}
                         >
@@ -492,7 +727,7 @@ export function CareerTab({
                         </button>
                         <button
                           onClick={() => purchaseTalent(talentName)}
-                          disabled={!canPurchase}
+                          disabled={isEditMode || !canPurchase}
                           className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
                           aria-label={`Purchase talent ${talentName}`}
                         >

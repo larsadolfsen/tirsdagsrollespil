@@ -112,7 +112,7 @@ interface RollHistoryItem {
   id: string;
   label: string;
   title?: string | null;
-  testType: "dramatic" | "attack" | "channeling";
+  testType: "dramatic" | "attack" | "channeling" | "corruption";
   result: number;
   sl: number;
   isSuccess: boolean;
@@ -133,7 +133,7 @@ interface RollState {
   characteristic: Characteristic | null;
   title: string | null;
   baseValueOverride: number | null;
-  testType: "dramatic" | "attack" | "channeling";
+  testType: "dramatic" | "attack" | "channeling" | "corruption";
   modifier: number;
   targetBonusSources: RollBonusSource[];
   result: number | null;
@@ -191,6 +191,7 @@ function AppScreen() {
     setCharacterCoins,
     currentCareerRank,
     setCurrentCareerRank,
+    setCharacterAttributes,
     currentCharacteristicAdvances,
     setCurrentCharacteristicAdvances,
     characterSkills,
@@ -1314,6 +1315,16 @@ function AppScreen() {
     if (!hasPendingCareerChanges) return;
 
     if (Object.keys(pendingCharacteristicAdvances).length > 0) {
+      setCharacterAttributes((prev) => {
+        const nextAttributes = { ...prev };
+
+        for (const [characteristicKey, pendingCount] of Object.entries(pendingCharacteristicAdvances)) {
+          nextAttributes[characteristicKey] = (nextAttributes[characteristicKey] ?? 0) + pendingCount;
+        }
+
+        return nextAttributes;
+      });
+
       setCurrentCharacteristicAdvances((prev) => {
         const nextAdvances = { ...prev };
 
@@ -1401,6 +1412,72 @@ function AppScreen() {
     setPendingSkillAdvances({});
     setPendingTalentPurchases({});
     setPendingCareerRank(null);
+  };
+
+  const saveAdvancementEdits = ({
+    characteristicBases,
+    characteristicAdvances,
+    skillBases,
+    skillAdvances,
+  }: {
+    characteristicBases: Record<string, number>;
+    characteristicAdvances: Record<string, number>;
+    skillBases: Record<string, number>;
+    skillAdvances: Record<string, number>;
+  }) => {
+    setCharacterAttributes((prev) => {
+      const nextAttributes = { ...prev, ...characteristicBases };
+
+      for (const [skillName, baseValue] of Object.entries(skillBases)) {
+        const skillRow = advancementSkillRows.find((row) => row.skillName === skillName);
+        if (skillRow?.characteristicKey) {
+          nextAttributes[skillRow.characteristicKey] = baseValue;
+        }
+      }
+
+      return nextAttributes;
+    });
+
+    setCurrentCharacteristicAdvances((prev) => ({ ...prev, ...characteristicAdvances }));
+
+    setCharacterSkills((prev) => {
+      let nextSkills = [...prev];
+
+      for (const [skillName, advances] of Object.entries(skillAdvances)) {
+        const skillOption = rulesIndex.resolvedSkillOptions.find((option) => option.name === skillName);
+        const skillDefinition = skillOption
+          ? ruleset.skills.find((skill) => skill.id === skillOption.skillId)
+          : null;
+
+        if (!skillOption || !skillDefinition) continue;
+
+        const skillKey = getCharacterSkillKey(skillOption);
+        const existingIndex = nextSkills.findIndex((skill) => getCharacterSkillKey(skill) === skillKey);
+
+        if (existingIndex >= 0) {
+          nextSkills[existingIndex] = {
+            ...nextSkills[existingIndex],
+            advances,
+          };
+          continue;
+        }
+
+        nextSkills = [
+          ...nextSkills,
+          {
+            skillId: skillOption.skillId,
+            specialisationId: skillOption.specialisationId,
+            advances,
+            baseName: skillDefinition.name,
+            displayName: skillOption.name,
+            characteristic: skillCharacteristicById[skillOption.skillId],
+          },
+        ];
+      }
+
+      return nextSkills;
+    });
+
   };
 
   const formatSignedSl = (value: number, zeroSign: "positive" | "negative" | "neutral" = "neutral") => {
@@ -1498,6 +1575,7 @@ function AppScreen() {
   const getTestTypeTitle = (testType: RollState["testType"] | RollHistoryItem["testType"]) => {
     if (testType === "attack") return "Attack Test";
     if (testType === "channeling") return "Channeling Test";
+    if (testType === "corruption") return "Corruption Test";
     return "Dramatic Test";
   };
 
@@ -1653,12 +1731,7 @@ function AppScreen() {
   const executeRoll = () => {
     if (!rollState.characteristic) return;
     
-    const baseValue = (characterData.attributes as Record<string, number>)[rollState.characteristic!.key] || 0;
-    // Check if it's a skill by looking for it in characterSkills
-    const skill = characterSkills.find(s => s.displayName === rollState.characteristic?.label);
-    const value = skill ? baseValue + skill.advances : baseValue;
-    
-    const target = value + rollState.modifier + getTargetBonusTotal(rollState.targetBonusSources);
+    const target = getRollTarget(rollState);
     const roll = Math.floor(Math.random() * 100); 
     const finalRoll = roll === 0 ? 100 : roll;
     
@@ -1695,7 +1768,11 @@ function AppScreen() {
     }, 2200); 
   };
 
-  const getOutcome = (sl: number, isSuccess: boolean) => {
+  const getOutcome = (sl: number, isSuccess: boolean, testType: RollState["testType"] = "dramatic") => {
+    if (testType === "corruption") {
+      return isSuccess ? "Corruption Resisted" : "Corruption Takes Hold";
+    }
+
     if (isSuccess) {
       if (sl >= 6) return "Astounding Success";
       if (sl >= 4) return "Impressive Success";
@@ -2135,6 +2212,12 @@ function AppScreen() {
               onAdjustResolve={adjustResolve}
               coins={characterData.coins}
               onAdjustCoin={handleAdjustCoinType}
+              onOpenRoll={(characteristic) =>
+                handleRoll(characteristic, undefined, {
+                  testType: "corruption",
+                  title: `${characteristic.label} Corruption Test`,
+                })
+              }
             />
 
             <section className="wfrp-card overflow-hidden p-0!">
@@ -2336,6 +2419,7 @@ function AppScreen() {
                         setActiveCareerSubtab={setActiveCareerSubtab}
                         saveCareerChanges={saveCareerChanges}
                         hasPendingCareerChanges={hasPendingCareerChanges}
+                        saveAdvancementEdits={saveAdvancementEdits}
                         characterData={characterData}
                         displayedCareerRank={displayedCareerRank}
                         displayedCareerRankRecord={displayedCareerRankRecord}
@@ -2656,6 +2740,11 @@ function AppScreen() {
                             </span>
                           </div>
                           <div />
+                          <span className="wfrp-list-cell-strong">Outcome:</span>
+                          <span className="wfrp-sidebar-body text-right text-gray-200">
+                            {getOutcome(item.sl, item.isSuccess, item.testType)}
+                          </span>
+                          <div />
                         </div>
 
                         {item.testType === "attack" && item.damage !== null && item.damage !== undefined && (
@@ -2831,6 +2920,15 @@ function AppScreen() {
                                   rollState.sl!,
                                   rollState.isSuccess ? "positive" : "negative",
                                 )}
+                              </span>
+                              <div />
+                            </div>
+                            <div className="col-span-2 h-px bg-white/8 my-0.5" />
+                            <div />
+                            <div className="contents">
+                              <span className="wfrp-list-cell-strong">Outcome:</span>
+                              <span className="wfrp-sidebar-body text-right text-gray-200">
+                                {getOutcome(rollState.sl!, rollState.isSuccess!, rollState.testType)}
                               </span>
                               <div />
                             </div>
