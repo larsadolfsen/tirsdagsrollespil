@@ -5,9 +5,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export function ScrollableTabStrip({
   children,
   className,
+  edgePaddingClassName = "pl-12 pr-12",
 }: {
   children: ReactNode;
   className: string;
+  edgePaddingClassName?: string;
 }) {
   const stripRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -49,7 +51,7 @@ export function ScrollableTabStrip({
 
   return (
     <div className="relative">
-      <div ref={stripRef} className={`${className} pl-12 pr-12`}>
+      <div ref={stripRef} className={`${className} ${edgePaddingClassName}`}>
         {children}
       </div>
       {canScrollLeft && (
