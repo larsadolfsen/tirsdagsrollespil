@@ -1,4 +1,5 @@
-import { InlineSubtabs } from "../components/ui";
+import { Button, InlineSubtabs } from "../components/ui";
+import { SheetDataHeader, SheetDataPanel, SheetDataRow, SheetDataTable } from "../components/wfrp";
 import type { ResolvedCharacterSkill, ResolvedCharacterSpell } from "../data/characters/resolved";
 import type { Characteristic } from "../types";
 import type { SpellSubtab } from "./tabTypes";
@@ -52,28 +53,28 @@ export function SpellsTab({
         activeId={activeSpellSubtab}
         onChange={setActiveSpellSubtab}
         trailingContent={
-          <button
-            type="button"
+          <Button
             onClick={openSpellShop}
-            className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em] max-md:hidden"
+            size="sm"
+            className="gap-1.5 font-black tracking-[0.12em] max-md:hidden"
             aria-label="Add spells"
           >
             <span className="whitespace-nowrap">Add Spells</span>
-          </button>
+          </Button>
         }
       />
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        <div className="wfrp-subpanel flex flex-col overflow-x-auto shadow-sm">
-          <div className="grid min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
+        <SheetDataPanel className="overflow-x-auto">
+          <SheetDataHeader className="min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 px-4 py-1 lg:gap-4">
             <span className="wfrp-table-label text-center">Channel</span>
             <span className="wfrp-table-label text-left">Spell</span>
             <span className="wfrp-table-label text-center">CN</span>
             <span className="wfrp-table-label text-left">Range</span>
             <span className="wfrp-table-label text-left">Target</span>
             <span className="wfrp-table-label text-left">Duration</span>
-          </div>
+          </SheetDataHeader>
 
-          <div className="flex flex-col divide-y divide-white/5">
+          <SheetDataTable className="flex flex-col">
             {filteredSpells.map((spell) => {
               const baseWP = attributes.WP || 0;
               const chnSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
@@ -83,9 +84,9 @@ export function SpellsTab({
               const spellDuration = formatSpellDuration(spell.duration);
 
               return (
-                <div
+                <SheetDataRow
                   key={spell.name}
-                  className="grid min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-2 items-center"
+                  className="min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 px-4 py-2 lg:gap-4"
                 >
                   <div className="flex justify-center">
                     <button
@@ -127,11 +128,11 @@ export function SpellsTab({
                   <div className="wfrp-list-cell-strong">
                     {spellDuration}
                   </div>
-                </div>
+                </SheetDataRow>
               );
             })}
-          </div>
-        </div>
+          </SheetDataTable>
+        </SheetDataPanel>
       </div>
     </div>
   );

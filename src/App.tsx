@@ -1901,6 +1901,20 @@ function AppScreen() {
     setIsMobileNavigationOpen(true);
   };
 
+  useEffect(() => {
+    if (!isMobileNavigationOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileNavigationOpen(false);
+        setIsMobileCharacterListOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isMobileNavigationOpen]);
+
   const openAdvanceView = () => {
     setActiveInfo(null);
     setIsShopOpen(false);
