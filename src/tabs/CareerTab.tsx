@@ -124,7 +124,7 @@ export function CareerTab({
   clearRollCharacteristic,
 }: CareerTabProps) {
   const { setXpCurrent, setXpTotal } = useGameSessionContext();
-  const addCurrentXp = (amount: number) => {
+  const adjustXp = (amount: number) => {
     setXpCurrent((current) => Math.max(0, current + amount));
     setXpTotal((current) => Math.max(0, current + amount));
   };
@@ -149,6 +149,20 @@ export function CareerTab({
       </ScrollableTabStrip>
 
       <div className="flex flex-wrap items-center gap-2 border-b border-white/5 bg-wfrp-bg px-2 py-2 sm:px-3 lg:px-4">
+        <button
+          onClick={() => adjustXp(-100)}
+          className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+          aria-label="Remove 100 current and total XP"
+        >
+          -100
+        </button>
+        <button
+          onClick={() => adjustXp(-10)}
+          className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+          aria-label="Remove 10 current and total XP"
+        >
+          -10
+        </button>
         <div className="flex items-center justify-center gap-1.5 rounded bg-black/40 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-gray-300">
           <span className="text-gray-500">XP</span>
           <span className="font-mono text-white">{pendingAvailableXp}</span>
@@ -156,14 +170,14 @@ export function CareerTab({
           <span className="font-mono text-gray-300">{characterData.xpTotal}</span>
         </div>
         <button
-          onClick={() => addCurrentXp(10)}
+          onClick={() => adjustXp(10)}
           className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
           aria-label="Add 10 current and total XP"
         >
           +10
         </button>
         <button
-          onClick={() => addCurrentXp(100)}
+          onClick={() => adjustXp(100)}
           className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
           aria-label="Add 100 current and total XP"
         >
@@ -266,7 +280,7 @@ export function CareerTab({
             <div className="wfrp-subpanel-shell flex flex-col">
               <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_64px_72px_62px_74px] gap-2 lg:gap-3 items-center">
                 <span className="wfrp-table-label text-left">Characteristics</span>
-                <span className="wfrp-table-label text-left">Base</span>
+                <span className="wfrp-table-label text-left">Initial</span>
                 <span className="wfrp-table-label text-center">Advances</span>
                 <span className="wfrp-table-label text-center">Cost</span>
                 <span className="wfrp-table-label text-right">Advance</span>
@@ -356,7 +370,7 @@ export function CareerTab({
                 <div key={section.id} className="wfrp-subpanel-shell flex flex-col">
                   <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_56px_62px_62px_74px] gap-2 lg:gap-3 items-center">
                     <span className="wfrp-table-label text-left">{section.title}</span>
-                    <span className="wfrp-table-label text-center">Base</span>
+                    <span className="wfrp-table-label text-center">Initial</span>
                     <span className="wfrp-table-label text-center">Advances</span>
                     <span className="wfrp-table-label text-center">Cost</span>
                     <span className="wfrp-table-label text-right">Advance</span>
