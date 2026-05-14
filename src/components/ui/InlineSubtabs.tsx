@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import { ScrollableTabStrip } from "./ScrollableTabStrip";
 
 type InlineSubtabOption<T extends string> = {
@@ -17,20 +17,53 @@ export function InlineSubtabs<T extends string>({
   onChange: (id: T) => void;
   trailingContent?: ReactNode;
 }) {
+  const activeIndex = options.findIndex((option) => option.id === activeId);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, optionIndex: number) => {
+    let nextIndex: number | null = null;
+
+    if (event.key === "ArrowRight") {
+      nextIndex = (optionIndex + 1) % options.length;
+    } else if (event.key === "ArrowLeft") {
+      nextIndex = (optionIndex - 1 + options.length) % options.length;
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = options.length - 1;
+    }
+
+    if (nextIndex === null) return;
+
+    event.preventDefault();
+    const nextOption = options[nextIndex];
+    onChange(nextOption.id);
+    event.currentTarget.parentElement
+      ?.querySelectorAll<HTMLButtonElement>("[role='tab']")
+      [nextIndex]?.focus();
+  };
+
   return (
     <div className="flex items-center gap-2 border-b border-white/5 bg-transparent md:bg-black/20">
       <div className="min-w-0 flex-1">
-        <ScrollableTabStrip className="flex flex-wrap items-center justify-center gap-2 overflow-visible py-3 pr-0 pl-0 !pr-0 !pl-0 md:flex-nowrap md:justify-start md:overflow-x-auto md:p-3 md:!pr-3 md:!pl-3 lg:p-4 lg:!pr-4 lg:!pl-4 no-scrollbar">
-          {options.map((option) => (
+        <ScrollableTabStrip
+          className="flex flex-wrap items-center justify-center gap-2 overflow-visible py-3 pr-0 pl-0 !pr-0 !pl-0 md:flex-nowrap md:justify-start md:overflow-x-auto md:p-3 md:!pr-3 md:!pl-3 lg:p-4 lg:!pr-4 lg:!pl-4 no-scrollbar"
+          role="tablist"
+          ariaLabel="Section tabs"
+        >
+          {options.map((option, optionIndex) => (
             <button
               key={option.id}
+              type="button"
+              role="tab"
               onClick={() => onChange(option.id)}
+              onKeyDown={(event) => handleKeyDown(event, optionIndex)}
               className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
                 activeId === option.id
                   ? "bg-wfrp-tab-active text-white shadow-lg"
                   : "bg-black/40 text-gray-400 hover:bg-wfrp-surface-raised hover:text-gray-200"
               }`}
-              aria-pressed={activeId === option.id}
+              aria-selected={activeId === option.id}
+              tabIndex={activeId === option.id || (activeIndex === -1 && optionIndex === 0) ? 0 : -1}
             >
               {option.label}
             </button>
