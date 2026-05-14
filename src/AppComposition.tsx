@@ -204,13 +204,23 @@ export function AppComposition() {
   const [newNoteText, setNewNoteText] = useState("");
   const [noteSearch, setNoteSearch] = useState("");
   const {
+    advancementCharacteristics,
+    advancementProgress,
+    availableCareerCharacteristicKeys,
     displayedCareerRank,
+    displayedCareerRankRecord,
+    getCareerSkillOptions,
     hasPendingCareerChanges,
+    isCareerSkillName,
+    nextCareerAdvanceCost,
+    nextCareerRankRecord,
+    pendingAvailableXp,
     pendingCareerRank,
     pendingCharacteristicAdvances,
     pendingCharacteristicSpend,
     pendingSkillAdvances,
     pendingSkillSpend,
+    pendingSpentXp,
     pendingTalentPurchases,
     pendingTalentSpend,
     resetPendingAdvancements,
@@ -219,10 +229,15 @@ export function AppComposition() {
     setPendingSkillAdvances,
     setPendingTalentPurchases,
   } = useCareerAdvancement({
+    careerAdvancementData,
+    characterData,
     characterSkills,
     characterTalents,
     currentCareerRank,
     currentCharacteristicAdvances,
+    rulesIndex,
+    ruleset,
+    xpCurrent,
   });
   const {
     activeMobileMainView,
@@ -242,82 +257,15 @@ export function AppComposition() {
     document.title = `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
   }, [characterData.name]);
 
-  const totalEarnedXp = characterData.xpTotal;
-  const spentXp = Math.max(0, totalEarnedXp - xpCurrent);
-  const displayedCareerRankRecord =
-    characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank) ??
-    characterData.careerRecord.ranks.find((rank) => rank.rank === characterData.careerRecord.level) ??
-    null;
-  const nextCareerRankRecord =
-    characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank + 1) ?? null;
-  const advancementCharacteristics = UI_LABELS.CHARACTERISTICS.map(({ key, label }) => ({
-    key,
-    label,
-    advances: currentCharacteristicAdvances[key] ?? 0,
-    pendingAdvances: pendingCharacteristicAdvances[key] ?? 0,
-    value: characterData.attributes[key] ?? 0,
-  }));
-  const availableCareerCharacteristicKeys = careerAdvancementData.characteristics
-    .filter((item) => item.availableFromRank <= displayedCareerRank)
-    .map((item) => item.key);
-  const characterSkillByName = new Map<string, ResolvedCharacterSkill>(
-    characterSkills.map((skill) => [skill.displayName, skill]),
-  );
   type ResolvedSkillOption = (typeof rulesIndex.resolvedSkillOptions)[number];
   const skillDefinitionById = new Map<string, SkillDefinition>(
     ruleset.skills.map((skill) => [skill.id, skill]),
   );
-  const skillDefinitionByName = new Map<string, SkillDefinition>(
-    ruleset.skills.map((skill) => [skill.name, skill]),
+  const characterSkillByName = new Map<string, ResolvedCharacterSkill>(
+    characterSkills.map((skill) => [skill.displayName, skill]),
   );
-  const skillOptionByName = new Map<string, ResolvedSkillOption>(
-    rulesIndex.resolvedSkillOptions.map((option) => [option.name, option]),
-  );
-  const getSkillAdvanceTotal = (skillName: string) => {
-    const baseAdvances = characterSkillByName.get(skillName)?.advances ?? 0;
-    const pendingAdvances = pendingSkillAdvances[skillName] ?? 0;
-    return baseAdvances + pendingAdvances;
-  };
   const spellSubtabOptions = getSpellSubtabOptions(characterData.spells);
   const filteredSpells = filterSpellsBySubtab(characterData.spells, activeSpellSubtab);
-  const getCareerSkillAdvanceTotal = (careerSkillName: string) => {
-    const skillDefinition = skillDefinitionByName.get(careerSkillName);
-
-    if (!skillDefinition?.grouped) {
-      return getSkillAdvanceTotal(careerSkillName);
-    }
-
-    return Math.max(
-      0,
-      ...rulesIndex.resolvedSkillOptions
-        .filter((option) => option.skillId === skillDefinition.id)
-        .map((option) => getSkillAdvanceTotal(option.name)),
-    );
-  };
-  const getCareerSkillOptions = (careerSkillName: string) => {
-    const skillDefinition = skillDefinitionByName.get(careerSkillName);
-
-    if (!skillDefinition?.grouped) {
-      return [careerSkillName];
-    }
-
-    return rulesIndex.resolvedSkillOptions
-      .filter((option) => option.skillId === skillDefinition.id)
-      .map((option) => option.name);
-  };
-  const isCareerSkillName = (skillName: string) => {
-    if (careerAdvancementData.skills.includes(skillName)) {
-      return true;
-    }
-
-    const skillOption = skillOptionByName.get(skillName);
-    if (!skillOption) {
-      return false;
-    }
-
-    const parentSkill = skillDefinitionById.get(skillOption.skillId);
-    return parentSkill ? careerAdvancementData.skills.includes(parentSkill.name) : false;
-  };
   const isBasicSkillOption = (option: ResolvedSkillOption) => {
     const skillDefinition = skillDefinitionById.get(option.skillId);
     return (
@@ -332,57 +280,6 @@ export function AppComposition() {
     ...characterTalents.map((talent) => talent.name),
   ])];
   const characterTalentRows = getCharacterTalentRows(characterTalents);
-  const hasCareerTalentRequirement = careerAdvancementData.talents.some((talentName) =>
-    characterTalents.some((talent) => talent.name === talentName) ||
-    (pendingTalentPurchases[talentName] ?? 0) > 0,
-  );
-  const isCareerStepComplete = (rank: number) => {
-    const requiredAdvances = rank * 5;
-    const availableCharacteristicKeys = careerAdvancementData.characteristics
-      .filter((item) => item.availableFromRank <= rank)
-      .map((item) => item.key);
-    const completedCharacteristics = availableCharacteristicKeys.filter((characteristicKey) => {
-      const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
-      const pendingAdvances = pendingCharacteristicAdvances[characteristicKey] ?? 0;
-      return baseAdvances + pendingAdvances >= requiredAdvances;
-    }).length;
-    const completedSkills = careerAdvancementData.skills.filter((skillName) => {
-      return getCareerSkillAdvanceTotal(skillName) >= requiredAdvances;
-    }).length;
-
-    return (
-      completedCharacteristics === availableCharacteristicKeys.length &&
-      completedSkills === careerAdvancementData.skills.length &&
-      hasCareerTalentRequirement
-    );
-  };
-  const getCareerAdvanceCost = (rank: number) => (isCareerStepComplete(rank) ? 100 : 200);
-  const pendingCareerSpend =
-    pendingCareerRank === null || pendingCareerRank <= currentCareerRank
-      ? 0
-      : Array.from(
-          { length: pendingCareerRank - currentCareerRank },
-          (_, index) => currentCareerRank + index,
-        ).reduce((total, rank) => total + getCareerAdvanceCost(rank), 0);
-  const pendingSpentXp =
-    pendingCharacteristicSpend + pendingSkillSpend + pendingTalentSpend + pendingCareerSpend;
-  const pendingAvailableXp = Math.max(0, Number(xpCurrent) - pendingSpentXp);
-  const requiredCareerAdvances = displayedCareerRank * 5;
-  const completedCareerCharacteristics = availableCareerCharacteristicKeys.filter((characteristicKey) => {
-    const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
-    const pendingAdvances = pendingCharacteristicAdvances[characteristicKey] ?? 0;
-    return baseAdvances + pendingAdvances >= requiredCareerAdvances;
-  }).length;
-  const completedCareerSkills = careerAdvancementData.skills.filter((skillName) => {
-    return getCareerSkillAdvanceTotal(skillName) >= requiredCareerAdvances;
-  }).length;
-  const careerProgressGoalCount = availableCareerCharacteristicKeys.length + careerAdvancementData.skills.length + 1;
-  const careerProgressCompletedCount =
-    completedCareerCharacteristics + completedCareerSkills + (hasCareerTalentRequirement ? 1 : 0);
-  const advancementProgress = careerProgressGoalCount === 0
-    ? 0
-    : Math.round((careerProgressCompletedCount / careerProgressGoalCount) * 100);
-  const nextCareerAdvanceCost = nextCareerRankRecord ? getCareerAdvanceCost(displayedCareerRank) : null;
   const formattedCoins = useMemo(
     () => formatCharacterCoins(characterData.coins),
     [characterData.coins],
