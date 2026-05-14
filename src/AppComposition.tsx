@@ -16,7 +16,7 @@ import { CharacterHeader } from "./components/CharacterHeader";
 import { DiceLogSidebar } from "./components/DiceLogSidebar";
 import { MobileTabMenu } from "./components/MobileTabMenu";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
-import { useMobileNavigation } from "./hooks/useMobileNavigation";
+import { useAppShellState } from "./hooks/useAppShellState";
 import { useDiceRoller } from "./hooks/useDiceRoller";
 import { useCareerAdvancement } from "./hooks/useCareerAdvancement";
 import { useInventoryActions } from "./hooks/useInventoryActions";
@@ -27,7 +27,6 @@ import {
   ResourceCounterBar,
   ScrollableTabStrip,
 } from "./components/ui";
-import type { ActiveInfoState } from "./components/appTypes";
 import { useGameSessionContext } from "./context/GameSessionContext";
 import { LazyTabPanel } from "./tabs/LazyTabPanel";
 import {
@@ -70,14 +69,7 @@ import {
   mobileTabMenuOptions,
 } from "./tabs/tabOptions";
 import type {
-  ActionCategory,
-  CareerSubtab,
-  InventorySubtab,
-  JournalSubtab,
-  MainTab,
   MobileTabMenuTarget,
-  SkillSubtab,
-  SpellSubtab,
 } from "./tabs/tabTypes";
 import type { ArmourDefinition, ArmourLocation, Characteristic, Ruleset, SkillDefinition } from "./types";
 
@@ -148,17 +140,42 @@ export function AppComposition() {
     setNotes,
   } = useGameSessionContext();
   const availableCharacters = useMemo(() => listCharacters(), []);
-  const [activeInfo, setActiveInfo] = useState<ActiveInfoState | null>(null);
-  const [activeMainTab, setActiveMainTab] = useState<MainTab>('skills');
-  const [activeActionCategory, setActiveActionCategory] = useState<ActionCategory>('all');
-  const [activeSkillSubtab, setActiveSkillSubtab] = useState<SkillSubtab>('trained');
-  const [activeSpellSubtab, setActiveSpellSubtab] = useState<SpellSubtab>('all');
-  const [activeInventorySubtab, setActiveInventorySubtab] = useState<InventorySubtab>('all');
-  const [activeCareerSubtab, setActiveCareerSubtab] = useState<CareerSubtab>('all');
-  const [activeJournalSubtab, setActiveJournalSubtab] = useState<JournalSubtab>('sessions');
-  const [isShopOpen, setIsShopOpen] = useState(false);
-  const [isSpellShopOpen, setIsSpellShopOpen] = useState(false);
-  const [isCharacterBuilderOpen, setIsCharacterBuilderOpen] = useState(false);
+  const {
+    activeInfo,
+    activeMainTab,
+    activeActionCategory,
+    activeSkillSubtab,
+    activeSpellSubtab,
+    activeInventorySubtab,
+    activeCareerSubtab,
+    activeJournalSubtab,
+    activeMobileMainView,
+    closeMobileNavigation,
+    handleMobileMainViewSelect,
+    isMobileCharacterListOpen,
+    isMobileNavigationOpen,
+    isMobilePortraitMenuOpen,
+    isShopOpen,
+    isSpellShopOpen,
+    isCharacterBuilderOpen,
+    openMobileNavigation,
+    resetAppShellState,
+    setActiveInfo,
+    setActiveMainTab,
+    setActiveActionCategory,
+    setActiveSkillSubtab,
+    setActiveSpellSubtab,
+    setActiveInventorySubtab,
+    setActiveCareerSubtab,
+    setActiveJournalSubtab,
+    setActiveMobileMainView,
+    setIsMobileCharacterListOpen,
+    setIsMobileNavigationOpen,
+    setIsMobilePortraitMenuOpen,
+    setIsShopOpen,
+    setIsSpellShopOpen,
+    setIsCharacterBuilderOpen,
+  } = useAppShellState();
   const {
     activeRollerRef,
     archiveRoll,
@@ -239,20 +256,6 @@ export function AppComposition() {
     ruleset,
     xpCurrent,
   });
-  const {
-    activeMobileMainView,
-    closeMobileNavigation,
-    handleMobileMainViewSelect,
-    isMobileCharacterListOpen,
-    isMobileNavigationOpen,
-    isMobilePortraitMenuOpen,
-    openMobileNavigation,
-    setActiveMobileMainView,
-    setIsMobileCharacterListOpen,
-    setIsMobileNavigationOpen,
-    setIsMobilePortraitMenuOpen,
-  } = useMobileNavigation({ setActiveMainTab });
-
   useEffect(() => {
     document.title = `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
   }, [characterData.name]);
@@ -294,16 +297,8 @@ export function AppComposition() {
   );
 
   useEffect(() => {
-    setActiveInfo(null);
-    setActiveMainTab("skills");
-    setActiveMobileMainView("characteristics");
-    setActiveActionCategory("all");
-    setActiveSkillSubtab("trained");
-    setActiveInventorySubtab("all");
-    setActiveCareerSubtab("all");
-    setActiveJournalSubtab("sessions");
+    resetAppShellState();
     setActiveInventoryMenu(null);
-    setIsShopOpen(false);
     resetPendingAdvancements();
     resetDiceRoller();
   }, [characterData.id, resetDiceRoller]);
