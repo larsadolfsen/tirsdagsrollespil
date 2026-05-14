@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowDown, ArrowUp, BookOpen, ChevronDown, ListFilter, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import { formatSpellSchoolLabel, formatSpellSchoolShortLabel } from "../tabs/spells/spellUtils";
 import type { SpellDefinition } from "../types";
 
@@ -143,6 +144,8 @@ export function SpellShopSidebar({
   const [expandedSpellId, setExpandedSpellId] = useState<string | null>(null);
   const sidebarRef = useRef<HTMLElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(sidebarRef, isOpen, onClose);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -304,6 +307,9 @@ export function SpellShopSidebar({
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
           className="wfrp-sidebar-shell w-[360px] max-w-[calc(100vw-1rem)]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Spell shop"
         >
           <div className="wfrp-sidebar-header p-3">
             <div className="flex items-center gap-3">
@@ -318,6 +324,7 @@ export function SpellShopSidebar({
               </div>
             </div>
             <button
+              type="button"
               onClick={onClose}
               className="wfrp-icon-btn rounded-full p-1 hover:bg-wfrp-border"
               aria-label="Close spell shop"
