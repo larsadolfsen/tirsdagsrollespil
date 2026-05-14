@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { Dispatch, MutableRefObject, ReactNode, SetStateAction } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
+import { WfrpSidebar } from "./wfrp";
 import type {
   ResolvedCharacterRecord,
   ResolvedCharacterEquipment,
@@ -201,41 +200,19 @@ function RuleSidebarShell({
   children: ReactNode;
 }) {
   return (
-    <AnimatePresence mode="wait">
-      {activeInfo && (
-        <motion.aside
-          key="info-sidebar"
-          initial={{ x: "100%", opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: "100%", opacity: 0 }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="wfrp-sidebar-shell w-[400px]"
-        >
-          <div className="wfrp-sidebar-header p-4">
-            <div className="flex flex-col">
-              <h2 className="wfrp-sidebar-title text-sm uppercase tracking-widest text-wfrp-gold">
-                {sidebarTitleByType[activeInfo.type]}
-              </h2>
-              <span className="wfrp-sidebar-kicker">Knowledge is power</span>
-            </div>
-            <button
-              onClick={onClose}
-              className="wfrp-icon-btn p-1 rounded-full hover:bg-wfrp-border"
-              aria-label="Close sidebar"
-            >
-              <X size={20} className="cursor-pointer" />
-            </button>
-          </div>
-
-          <div
-            ref={scrollContainerRef}
-            className="flex-1 overflow-y-auto scroll-smooth pb-[80vh] no-scrollbar"
-          >
-            {children}
-          </div>
-        </motion.aside>
-      )}
-    </AnimatePresence>
+    <WfrpSidebar
+      isOpen={Boolean(activeInfo)}
+      motionKey="info-sidebar"
+      onClose={onClose}
+      className="w-[400px]"
+      contentClassName="scroll-smooth pb-[80vh]"
+      title={activeInfo ? sidebarTitleByType[activeInfo.type] : ""}
+      kicker="Knowledge is power"
+      closeLabel="Close sidebar"
+      contentRef={scrollContainerRef}
+    >
+      {children}
+    </WfrpSidebar>
   );
 }
 

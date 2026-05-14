@@ -1,7 +1,14 @@
 import { ChevronDown, Minus } from "lucide-react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, RefObject } from "react";
 import { InlineSubtabs } from "../components/ui";
-import { SheetDataHeader, SheetDataPanel, SheetDataTable } from "../components/wfrp";
+import {
+  SheetDataHeader,
+  SheetDataList,
+  SheetDataListRow,
+  SheetDataMobileDetails,
+  SheetDataPanel,
+  SheetRowActionButton,
+} from "../components/wfrp";
 import { InventoryContextMenu } from "./inventory/InventoryContextMenu";
 import type { ResolvedCharacterEquipment, ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { InventorySubtab } from "./tabTypes";
@@ -27,18 +34,6 @@ type InventorySection = {
   dropWorn?: boolean;
   dropCarried?: boolean;
 };
-
-const inventoryMobileDetailsClass =
-  "mt-2 grid grid-cols-2 gap-2 rounded border border-white/5 bg-black/20 p-2 md:hidden";
-
-function MobileDetail({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div>
-      <div className="wfrp-table-label">{label}</div>
-      <div className="wfrp-list-cell-strong">{value}</div>
-    </div>
-  );
-}
 
 export function InventoryTab({
   activeInventorySubtab,
@@ -131,6 +126,7 @@ export function InventoryTab({
 }) {
   const walletCoinCount = getCoinCount(characterData.coins);
   const walletEncumbrance = getCoinEncumbrance(characterData.coins);
+  const walletValue = formatCoinTotalValue(characterData.coins);
 
   const sections: InventorySection[] = [
     {
@@ -162,6 +158,42 @@ export function InventoryTab({
       alwaysVisible: true,
     })),
   ];
+
+  const renderItemActions = (item: ResolvedCharacterEquipment) => (
+    <>
+      {item.type === "Consumable" && (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            handleConsumeItem(item.id);
+          }}
+          className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
+          aria-label={`Use one ${getConsumableBaseName(item).toLowerCase()}`}
+        >
+          <Minus size={10} />
+        </button>
+      )}
+      <SheetRowActionButton
+        onClick={(event) => {
+          event.preventDefault();
+          handleToggleInventoryMenu(item.id, event, "drop");
+        }}
+        aria-label={`Drop ${item.name}`}
+      >
+        <span className="font-mono text-[10px] font-bold leading-none">Drop</span>
+      </SheetRowActionButton>
+      <SheetRowActionButton
+        onClick={(event) => {
+          event.preventDefault();
+          handleToggleInventoryMenu(item.id, event, "move");
+        }}
+        aria-label={`Move ${item.name}`}
+      >
+        <span className="font-mono text-[10px] font-bold leading-none">Move</span>
+      </SheetRowActionButton>
+    </>
+  );
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -302,20 +334,22 @@ export function InventoryTab({
                   </span>
                 </div>
 
-                <SheetDataTable className="divide-y-0">
+                <SheetDataList className="divide-y-0">
                   {section.id === "carried" && (
-                    <div className="wfrp-table-row border-0 group md:flex md:min-w-[700px]">
+                    <SheetDataListRow className="border-0 group md:flex md:min-w-[700px]">
                       <details className="group/details md:hidden">
                         <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-2 [&::-webkit-details-marker]:hidden">
                           <span className="wfrp-list-cell-strong flex items-center gap-1.5 text-gray-200">Coins</span>
                           <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180" aria-hidden="true" />
                         </summary>
-                        <div className={inventoryMobileDetailsClass}>
-                          <MobileDetail label="Type" value="Currency" />
-                          <MobileDetail label="Qty" value={walletCoinCount} />
-                          <MobileDetail label="Enc" value={walletEncumbrance || "-"} />
-                          <MobileDetail label="Value" value={formatCoinTotalValue(characterData.coins)} />
-                        </div>
+                        <SheetDataMobileDetails
+                          fields={[
+                            { label: "Type", value: "Currency" },
+                            { label: "Qty", value: walletCoinCount },
+                            { label: "Enc", value: walletEncumbrance || "-" },
+                            { label: "Value", value: walletValue },
+                          ]}
+                        />
                       </details>
 
                       <div className="hidden flex-1 grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center md:grid">
@@ -323,10 +357,10 @@ export function InventoryTab({
                         <div className="wfrp-list-cell-strong truncate">Currency</div>
                         <div className="wfrp-list-cell-strong text-center font-mono">{walletCoinCount}</div>
                         <div className="wfrp-list-cell-strong text-center font-mono">{walletEncumbrance || "-"}</div>
-                        <div className="wfrp-list-cell-strong text-center font-mono">{formatCoinTotalValue(characterData.coins)}</div>
+                        <div className="wfrp-list-cell-strong text-center font-mono">{walletValue}</div>
                         <div className="wfrp-list-cell-strong pr-1 text-right font-mono">-</div>
                       </div>
-                    </div>
+                    </SheetDataListRow>
                   )}
 
                   {section.items.map((item) => {
@@ -335,12 +369,12 @@ export function InventoryTab({
                     const itemValue = formatItemValue(item);
 
                     return (
-                      <div
+                      <SheetDataListRow
                         key={item.id}
                         draggable={!isPacksAndContainersItem(item)}
                         onDragStart={(event) => handleInventoryDragStart(item, event)}
                         onDragEnd={handleInventoryDragEnd}
-                        className={`wfrp-table-row border-0 group md:flex md:min-w-[700px] ${
+                        className={`border-0 group md:flex md:min-w-[700px] ${
                           inventoryDrag?.itemId === item.id ? "opacity-45" : ""
                         } ${
                           isPacksAndContainersItem(item) ? "" : "cursor-grab active:cursor-grabbing"
@@ -360,52 +394,20 @@ export function InventoryTab({
                             </button>
 
                             <div className="relative flex items-center justify-end gap-1 pr-1">
-                              {item.type === "Consumable" && (
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    handleConsumeItem(item.id);
-                                  }}
-                                  className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
-                                  aria-label={`Use one ${getConsumableBaseName(item).toLowerCase()}`}
-                                >
-                                  <Minus size={10} />
-                                </button>
-                              )}
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.preventDefault();
-                                  handleToggleInventoryMenu(item.id, event, "drop");
-                                }}
-                                className="wfrp-stepper-btn inline-flex h-5 min-w-12 items-center justify-center px-1.5 py-0 focus-visible:ring-wfrp-gold/50"
-                                aria-label={`Drop ${item.name}`}
-                              >
-                                <span className="font-mono text-[10px] font-bold leading-none">Drop</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={(event) => {
-                                  event.preventDefault();
-                                  handleToggleInventoryMenu(item.id, event, "move");
-                                }}
-                                className="wfrp-stepper-btn inline-flex h-5 min-w-12 items-center justify-center px-1.5 py-0 focus-visible:ring-wfrp-gold/50"
-                                aria-label={`Move ${item.name}`}
-                              >
-                                <span className="font-mono text-[10px] font-bold leading-none">Move</span>
-                              </button>
+                              {renderItemActions(item)}
                             </div>
 
                             <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180" aria-hidden="true" />
                           </summary>
 
-                          <div className={inventoryMobileDetailsClass}>
-                            <MobileDetail label="Type" value={item.type} />
-                            <MobileDetail label="Qty" value={quantity} />
-                            <MobileDetail label="Enc" value={itemEncumbrance} />
-                            <MobileDetail label="Value" value={itemValue} />
-                          </div>
+                          <SheetDataMobileDetails
+                            fields={[
+                              { label: "Type", value: item.type },
+                              { label: "Qty", value: quantity },
+                              { label: "Enc", value: itemEncumbrance },
+                              { label: "Value", value: itemValue },
+                            ]}
+                          />
                         </details>
 
                         <div className="hidden flex-1 grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center md:grid">
@@ -421,35 +423,10 @@ export function InventoryTab({
                           <div className="wfrp-list-cell-strong text-center font-mono">{itemEncumbrance}</div>
                           <div className="wfrp-list-cell-strong text-center font-mono">{itemValue}</div>
                           <div className="relative flex items-center justify-end gap-1 pr-1">
-                            {item.type === "Consumable" && (
-                              <button
-                                type="button"
-                                onClick={() => handleConsumeItem(item.id)}
-                                className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
-                                aria-label={`Use one ${getConsumableBaseName(item).toLowerCase()}`}
-                              >
-                                <Minus size={10} />
-                              </button>
-                            )}
-                            <button
-                              type="button"
-                              onClick={(event) => handleToggleInventoryMenu(item.id, event, "drop")}
-                              className="wfrp-stepper-btn inline-flex h-5 min-w-12 items-center justify-center px-1.5 py-0 focus-visible:ring-wfrp-gold/50"
-                              aria-label={`Drop ${item.name}`}
-                            >
-                              <span className="font-mono text-[10px] font-bold leading-none">Drop</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(event) => handleToggleInventoryMenu(item.id, event, "move")}
-                              className="wfrp-stepper-btn inline-flex h-5 min-w-12 items-center justify-center px-1.5 py-0 focus-visible:ring-wfrp-gold/50"
-                              aria-label={`Move ${item.name}`}
-                            >
-                              <span className="font-mono text-[10px] font-bold leading-none">Move</span>
-                            </button>
+                            {renderItemActions(item)}
                           </div>
                         </div>
-                      </div>
+                      </SheetDataListRow>
                     );
                   })}
 
@@ -458,7 +435,7 @@ export function InventoryTab({
                       {canDropHere ? "Drop here" : "Empty"}
                     </div>
                   )}
-                </SheetDataTable>
+                </SheetDataList>
               </SheetDataPanel>
             );
           })}
