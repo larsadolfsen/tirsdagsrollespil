@@ -22,7 +22,7 @@ export function CharacterSheetFrame({
       {mobileHeader}
 
       <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 px-4 py-4 md:gap-8 md:px-0 md:py-0">
-        <h1 className="font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100 md:hidden">
+        <h1 className="text-center font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100 md:hidden">
           {mobileTitle}
         </h1>
 

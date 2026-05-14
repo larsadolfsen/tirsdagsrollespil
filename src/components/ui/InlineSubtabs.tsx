@@ -40,10 +40,10 @@ export function InlineSubtabs<T extends string>({
   };
 
   return (
-    <div className="flex flex-col items-start gap-2 border-b border-white/5 bg-transparent md:flex-row md:bg-black/20">
+    <div className="flex flex-col items-stretch gap-2 border-b border-white/5 bg-transparent md:flex-row md:items-start md:bg-black/20">
       <div className="min-w-0 flex-1 self-stretch">
         <ScrollableTabStrip
-          className="flex flex-wrap items-center justify-start gap-1.5 overflow-visible py-3 px-0 !px-0 sm:gap-2 md:flex-nowrap md:overflow-x-auto md:p-3 md:!px-3 lg:p-4 lg:!px-4 no-scrollbar"
+          className="flex w-max max-w-full flex-nowrap items-center justify-start gap-1.5 overflow-x-auto py-3 px-0 !px-0 sm:mx-auto sm:gap-2 md:w-auto md:max-w-none md:mx-0 md:flex-nowrap md:overflow-x-auto md:p-3 md:!px-3 lg:p-4 lg:!px-4 no-scrollbar"
           role="tablist"
           ariaLabel={ariaLabel}
         >
