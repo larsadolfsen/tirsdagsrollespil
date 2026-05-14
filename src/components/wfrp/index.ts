@@ -15,4 +15,5 @@ export {
 export type { SheetDataMobileDetailField } from "./SheetDataList";
 export { WfrpPanel } from "./WfrpPanel";
 export { WfrpSection } from "./WfrpSection";
+export { WfrpSidebar } from "./WfrpSidebar";
 export { WfrpStatusBadge } from "./WfrpStatusBadge";
