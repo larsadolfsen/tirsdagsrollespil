@@ -119,11 +119,11 @@
 }
 
 @utility wfrp-table-header {
-  @apply px-2 py-2 sm:px-4 border-b border-white/5 bg-black/40 text-[8px] font-bold text-gray-700 uppercase tracking-widest items-center;
+  @apply px-2 py-2 sm:px-4 border-b border-wfrp-border bg-black/40 text-[8px] font-bold text-gray-700 uppercase tracking-widest items-center;
 }
 
 @utility wfrp-table-row {
-  @apply px-2 py-2 sm:px-3 items-center border-b border-white/5 last:border-0 transition-colors;
+  @apply px-2 py-2 sm:px-3 items-center border-b border-wfrp-border last:border-0 transition-colors;
   &:hover {
     @apply bg-white/[0.02];
   }
@@ -150,7 +150,7 @@
 }
 
 @utility wfrp-surface-soft {
-  @apply bg-black/20 border-white/5;
+  @apply bg-black/20 border-wfrp-border transition-colors hover:border-wfrp-border/80;
 }
 
 @utility wfrp-card {
@@ -218,7 +218,7 @@
 }
 
 @utility wfrp-subpanel-header {
-  @apply border-b border-white/5 bg-black/10 px-2 py-1 sm:px-3;
+  @apply border-b border-wfrp-border bg-black/10 px-2 py-1 sm:px-3;
 }
 
 @utility wfrp-panel-copy {
@@ -226,11 +226,11 @@
 }
 
 @utility wfrp-panel-rule {
-  @apply h-px flex-1 bg-white/5;
+  @apply h-px flex-1 bg-wfrp-border;
 }
 
 @utility wfrp-list-header {
-  @apply px-2 py-2 sm:px-4 border-b border-white/5 bg-black/30 text-[9px] font-black text-gray-500 uppercase tracking-widest items-center;
+  @apply px-2 py-2 sm:px-4 border-b border-wfrp-border bg-black/30 text-[9px] font-black text-gray-500 uppercase tracking-widest items-center;
 }
 
 @utility wfrp-list-group {
@@ -238,11 +238,11 @@
 }
 
 @utility wfrp-stat-tile {
-  @apply p-3 bg-black/20 border border-white/5 rounded;
+  @apply p-3 bg-black/20 border border-wfrp-border rounded-lg transition-colors hover:border-wfrp-border/80;
 }
 
 @utility wfrp-badge {
-  @apply px-2 py-0.5 rounded border inline-flex w-fit items-center gap-2 text-[10px] font-black uppercase tracking-widest;
+  @apply px-2 py-0.5 rounded border border-wfrp-border inline-flex w-fit items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-colors hover:border-wfrp-border/80;
 }
 
 @utility wfrp-skill-link {
@@ -259,7 +259,7 @@
 }
 
 @utility wfrp-property-pill {
-  @apply inline-flex h-8 items-center justify-start gap-2 rounded-[8px] border border-white/5 bg-black/30 px-4 text-[10px] font-bold text-gray-500 transition-all cursor-pointer hover:text-wfrp-gold hover:border-wfrp-gold/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply inline-flex h-8 items-center justify-start gap-2 rounded-[8px] border border-wfrp-border bg-black/30 px-4 text-[10px] font-bold text-gray-500 transition-all cursor-pointer hover:text-wfrp-gold hover:border-wfrp-border/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
 @utility wfrp-table-label {
