@@ -2,6 +2,39 @@
 @source "./**/*.{ts,tsx}";
 @source "../index.html";
 
+:root {
+  color-scheme: dark;
+  --background: #0c0c0c;
+  --foreground: #f0f0f0;
+  --card: #181818;
+  --card-foreground: #f0f0f0;
+  --popover: #151515;
+  --popover-foreground: #f0f0f0;
+  --primary: #c5a059;
+  --primary-foreground: #121212;
+  --secondary: #222222;
+  --secondary-foreground: #f0f0f0;
+  --muted: #1a1a1a;
+  --muted-foreground: #9ca3af;
+  --accent: #2a2417;
+  --accent-foreground: #f4e4bc;
+  --destructive: #8b0000;
+  --destructive-foreground: #f4e4bc;
+  --border: #303030;
+  --input: #303030;
+  --ring: #c5a059;
+  --overlay: rgb(0 0 0 / 80%);
+  --sidebar: #141414;
+  --sidebar-foreground: #f0f0f0;
+  --sidebar-primary: #c5a059;
+  --sidebar-primary-foreground: #121212;
+  --sidebar-accent: #222222;
+  --sidebar-accent-foreground: #f4e4bc;
+  --sidebar-border: #303030;
+  --sidebar-ring: #c5a059;
+  --radius: 0.5rem;
+}
+
 @theme {
   --font-body: "Source Sans 3", system-ui, sans-serif;
   --font-display-face: "Libre Caslon Display", Georgia, serif;
@@ -41,6 +74,40 @@
   --color-wfrp-muted-text: #9ca3af;
   --shadow-wfrp-gold-glow: 0 0 4px rgb(214 168 86 / 65%);
   --shadow-wfrp-popover: 0 14px 40px rgb(0 0 0 / 45%);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 @utility no-scrollbar {
@@ -226,8 +293,8 @@
 body {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
-  color: var(--color-gray-400);
-  background-color: var(--color-wfrp-bg);
+  color: var(--foreground);
+  background-color: var(--background);
 }
 
 .wfrp-card .wfrp-stat-tile {
