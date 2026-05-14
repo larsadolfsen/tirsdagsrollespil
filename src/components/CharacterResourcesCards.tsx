@@ -148,9 +148,9 @@ export function CharacterResourcesCards({
               <div className="mb-2 text-center text-[8px] font-bold uppercase tracking-[0.18em] text-gray-500">
                 Corruption Check
               </div>
-              <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {corruptionCheckSkills.map((skill) => (
-                  <div key={skill.skillName} className="grid grid-cols-[40px_minmax(0,1fr)] items-center gap-2">
+                  <div key={skill.skillName} className="grid min-w-0 grid-cols-[32px_minmax(0,1fr)] items-center gap-1.5 sm:grid-cols-[40px_minmax(0,1fr)] sm:gap-2">
                     <div className="flex justify-center">
                       <button
                         type="button"
