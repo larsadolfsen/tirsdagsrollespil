@@ -9,6 +9,7 @@ import {
 } from "../components/wfrp";
 import type { ResolvedCharacterSkill, ResolvedCharacterSpell } from "../data/characters/resolved";
 import type { Characteristic } from "../types";
+import { useSpellsViewModel } from "./spells/useSpellsViewModel";
 import type { SpellSubtab } from "./tabTypes";
 
 type RollOptions = {
@@ -53,6 +54,17 @@ export function SpellsTab({
   openSpellInfo: (spell: ResolvedCharacterSpell, formattedSpell: FormattedSpellFields) => void;
   openSpellShop: () => void;
 }) {
+  const { spellRows } = useSpellsViewModel({
+    attributes,
+    characterSkills,
+    filteredSpells,
+    formatSpellDuration,
+    formatSpellRange,
+    formatSpellTarget,
+    handleRoll,
+    openSpellInfo,
+  });
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <InlineSubtabs
@@ -82,97 +94,75 @@ export function SpellsTab({
           </SheetDataHeader>
 
           <SheetDataList>
-            {filteredSpells.map((spell) => {
-              const baseWP = attributes.WP || 0;
-              const chnSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
-              const skillValue = chnSkill ? baseWP + chnSkill.advances : baseWP;
-              const spellRange = formatSpellRange(spell.range);
-              const spellTarget = formatSpellTarget(spell.target);
-              const spellDuration = formatSpellDuration(spell.duration);
-              const mobileDetails = [
-                { label: "CN", value: spell.cn, valueClassName: "font-mono" },
-                { label: "Range", value: spellRange },
-                { label: "Target", value: spellTarget },
-                { label: "Duration", value: spellDuration },
-              ];
-              const openCurrentSpellInfo = () => {
-                openSpellInfo(spell, {
-                  range: spellRange,
-                  target: spellTarget,
-                  duration: spellDuration,
-                });
-              };
-
-              return (
-                <SheetDataListRow
-                  key={spell.name}
-                  className="md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 md:px-4 md:py-2 lg:gap-4"
-                >
-                  <details className="group/details md:contents">
-                    <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
-                      <div className="flex justify-center">
-                        <button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            handleRoll({ key: "WP", label: spell.name }, undefined, { testType: "channeling" });
-                          }}
-                          className="wfrp-roll-btn"
-                          aria-label={`Channel ${spell.name}`}
-                        >
-                          {skillValue}
-                        </button>
-                      </div>
-
+            {spellRows.map((row) => (
+              <SheetDataListRow
+                key={row.spell.name}
+                className="md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 md:px-4 md:py-2 lg:gap-4"
+              >
+                <details className="group/details md:contents">
+                  <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
+                    <div className="flex justify-center">
                       <button
                         onClick={(event) => {
                           event.preventDefault();
-                          openCurrentSpellInfo();
+                          row.channel();
                         }}
-                        className="wfrp-skill-link min-w-0 truncate text-left"
+                        className="wfrp-roll-btn"
+                        aria-label={`Channel ${row.spell.name}`}
                       >
-                        {spell.name}
+                        {row.skillValue}
                       </button>
+                    </div>
 
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          openCurrentSpellInfo();
-                        }}
-                        className="min-h-8 rounded border border-white/10 px-2 text-[10px] font-black uppercase tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden"
-                        aria-label={`Show ${spell.name} details`}
-                      >
-                        Info
-                      </button>
+                    <button
+                      onClick={(event) => {
+                        event.preventDefault();
+                        row.openInfo();
+                      }}
+                      className="wfrp-skill-link min-w-0 truncate text-left"
+                    >
+                      {row.spell.name}
+                    </button>
 
-                      <ChevronDown
-                        size={14}
-                        className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden"
-                        aria-hidden="true"
-                      />
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        row.openInfo();
+                      }}
+                      className="min-h-8 rounded border border-white/10 px-2 text-[10px] font-black uppercase tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden"
+                      aria-label={`Show ${row.spell.name} details`}
+                    >
+                      Info
+                    </button>
 
-                      <div className="hidden wfrp-list-cell-strong text-center md:block">
-                        {spell.cn}
-                      </div>
+                    <ChevronDown
+                      size={14}
+                      className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden"
+                      aria-hidden="true"
+                    />
 
-                      <div className="hidden wfrp-list-cell-strong truncate md:block">
-                        {spellRange}
-                      </div>
+                    <div className="hidden wfrp-list-cell-strong text-center md:block">
+                      {row.spell.cn}
+                    </div>
 
-                      <div className="hidden wfrp-list-cell-strong truncate md:block">
-                        {spellTarget}
-                      </div>
+                    <div className="hidden wfrp-list-cell-strong truncate md:block">
+                      {row.formattedFields.range}
+                    </div>
 
-                      <div className="hidden wfrp-list-cell-strong md:block">
-                        {spellDuration}
-                      </div>
-                    </summary>
+                    <div className="hidden wfrp-list-cell-strong truncate md:block">
+                      {row.formattedFields.target}
+                    </div>
 
-                    <SheetDataMobileDetails fields={mobileDetails} />
-                  </details>
-                </SheetDataListRow>
-              );
-            })}
+                    <div className="hidden wfrp-list-cell-strong md:block">
+                      {row.formattedFields.duration}
+                    </div>
+                  </summary>
+
+                  <SheetDataMobileDetails fields={row.mobileDetails} />
+                </details>
+              </SheetDataListRow>
+            ))}
           </SheetDataList>
         </SheetDataPanel>
       </div>
