@@ -2,6 +2,7 @@ export { ActionsTab } from "./ActionsTab";
 export { BackgroundTab } from "./BackgroundTab";
 export { CareerTab } from "./CareerTab";
 export { InventoryTab } from "./InventoryTab";
+export { JournalTab } from "./JournalTab";
 export { LazyTabPanel } from "./LazyTabPanel";
 export { NotesTab } from "./NotesTab";
 export { SkillsTab } from "./SkillsTab";
@@ -16,6 +17,7 @@ export type {
   CareerSubtab,
   CoinKey,
   InventorySubtab,
+  JournalSubtab,
   MainTab,
   MobileTabMenuTarget,
   SkillSubtab,

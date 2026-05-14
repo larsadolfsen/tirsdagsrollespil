@@ -1,6 +1,7 @@
 export type ActionCategory = "all" | "melee" | "ranged" | "other";
-export type MainTab = "skills" | "actions" | "inventory" | "spells" | "features" | "background" | "notes" | "career";
+export type MainTab = "skills" | "actions" | "inventory" | "spells" | "features" | "journal" | "career";
 export type MobileTabMenuTarget = MainTab | "characteristics";
+export type JournalSubtab = "sessions" | "npcs" | "backgrounds";
 export type SkillSubtab = "all" | "trained" | "advanced" | "basic";
 export type SpellSubtab = "all" | "petty" | "arcane" | `school:${string}`;
 export type InventorySubtab = "all" | "worn" | "carried" | `container:${string}`;
