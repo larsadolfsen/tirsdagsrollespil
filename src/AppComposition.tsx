@@ -6,14 +6,14 @@
 import { lazy, Suspense, useEffect, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import {
-  Menu,
-  Settings,
   Dice5,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AppShell } from "./components/AppShell";
+import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
 import { CharacterHeader } from "./components/CharacterHeader";
 import { DiceLogSidebar } from "./components/DiceLogSidebar";
+import { MobileCharacterHeader } from "./components/MobileCharacterHeader";
 import { MobileTabMenu } from "./components/MobileTabMenu";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
@@ -955,9 +955,9 @@ export function AppComposition() {
       )}
     >
           
-          {/* Compact Horizontal Header */}
-          <div className="hidden md:block">
-            <CharacterHeader
+          <CharacterSheetFrame
+            desktopHeader={(
+              <CharacterHeader
               characterData={characterData}
               availableCharacters={availableCharacters}
               selectedCharacterId={selectedCharacterId}
@@ -979,93 +979,32 @@ export function AppComposition() {
               onOpenAdvance={() => {
                 openAdvanceView();
               }}
-            />
-          </div>
-
-          <section className="md:hidden border-b border-wfrp-border bg-wfrp-surface shadow-lg shadow-black/20">
-            <div className="flex h-[60px] items-center">
-              <button
-                type="button"
-                onClick={() => openMobileNavigation(false)}
-                className="flex h-full w-14 shrink-0 items-center justify-center text-gray-400 transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                aria-label="Open navigation drawer"
-                aria-haspopup="dialog"
-                aria-expanded={isMobileNavigationOpen}
-              >
-                <Menu size={18} />
-              </button>
-              <button
-                type="button"
-                onClick={() => openMobileNavigation(true)}
-                className="flex min-w-0 flex-1 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                aria-label="Change character"
-              >
-                <span className="min-w-0">
-                  <span className="block truncate font-serif text-xl font-bold leading-tight text-gray-100">
-                    {characterData.name}
-                  </span>
-                  <span className="mt-0.5 block truncate text-[9px] font-black uppercase tracking-[0.22em] text-gray-500">
-                    {UI_LABELS.CAMPAIGN_NAME}
-                  </span>
-                </span>
-              </button>
-              <div className="relative mr-3 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileNavigationOpen(false);
-                    setIsMobileCharacterListOpen(false);
-                    setIsMobilePortraitMenuOpen((isOpen) => !isOpen);
-                  }}
-                  className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-wfrp-gold/70 bg-black/30 p-0.5 shadow-inner transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                  aria-label="Open character actions"
-                  aria-haspopup="menu"
-                  aria-expanded={isMobilePortraitMenuOpen}
-                >
-                  <img
-                    src="https://picsum.photos/seed/knight/200/200"
-                    alt=""
-                    referrerPolicy="no-referrer"
-                    className="h-full w-full rounded-full object-cover grayscale brightness-90"
-                  />
-                </button>
-                {isMobilePortraitMenuOpen && (
-                  <div
-                    className="absolute right-0 top-[calc(100%+0.5rem)] z-40 min-w-44 overflow-hidden rounded border border-wfrp-border bg-wfrp-popover shadow-2xl"
-                    role="menu"
-                    aria-label="Character actions"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        openAdvanceView();
-                        setIsMobilePortraitMenuOpen(false);
-                      }}
-                      className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                      role="menuitem"
-                    >
-                      <span>Advance</span>
-                      <span className="text-xs font-bold text-blue-400">{xpCurrent}/{characterData.xpTotal}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsMobilePortraitMenuOpen(false)}
-                      className="flex w-full items-center gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                      role="menuitem"
-                    >
-                      <Settings size={14} />
-                      Settings
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-
-        <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 px-4 py-4 md:gap-8 md:px-0 md:py-0">
-          <h1 className="font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100 md:hidden">
-            {mobilePageTitleByView[activeMobileMainView]}
-          </h1>
+              />
+            )}
+            mobileHeader={(
+              <MobileCharacterHeader
+                campaignName={UI_LABELS.CAMPAIGN_NAME}
+                characterName={characterData.name}
+                isMobileNavigationOpen={isMobileNavigationOpen}
+                isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
+                onClosePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
+                onOpenAdvance={() => {
+                  openAdvanceView();
+                  setIsMobilePortraitMenuOpen(false);
+                }}
+                onOpenCharacterActions={() => {
+                  setIsMobileNavigationOpen(false);
+                  setIsMobileCharacterListOpen(false);
+                  setIsMobilePortraitMenuOpen((isOpen) => !isOpen);
+                }}
+                onOpenCharacterList={() => openMobileNavigation(true)}
+                onOpenNavigation={() => openMobileNavigation(false)}
+                xpCurrent={xpCurrent}
+                xpTotal={characterData.xpTotal}
+              />
+            )}
+            mobileTitle={mobilePageTitleByView[activeMobileMainView]}
+          >
 
           {/* Layout for Characteristics and Skills */}
           {/* Characteristics Section */}
@@ -1395,7 +1334,7 @@ export function AppComposition() {
               </div>
             </section>
           </div>
-        </div>
+          </CharacterSheetFrame>
     </AppShell>
   );
 }
