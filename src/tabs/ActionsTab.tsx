@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { InlineSubtabs } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import type {
@@ -41,6 +42,12 @@ type CombatAction = {
 
 const offensiveProperties = ["Damaging", "Hack", "Impact", "Impale", "Precise", "Pummel", "Trap-blade", "Wrap"];
 const defensiveProperties = ["Defensive", "Shield"];
+const mobileActionSummaryClass =
+  "grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden";
+const mobileActionInfoButtonClass =
+  "min-h-8 rounded border border-white/10 px-2 text-[10px] font-black uppercase tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden";
+const mobileActionDetailsClass =
+  "mt-2 grid grid-cols-2 gap-2 rounded border border-white/5 bg-black/20 p-2 md:hidden";
 
 const getRelevantWeaponProperties = (actionId: string, properties: string[]) => {
   if (actionId === "attack" || actionId === "charge") {
@@ -57,6 +64,15 @@ const getRelevantWeaponProperties = (actionId: string, properties: string[]) => 
 
   return [];
 };
+
+function MobileDetail({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div>
+      <div className="wfrp-table-label">{label}</div>
+      <div className="wfrp-list-cell-strong">{value}</div>
+    </div>
+  );
+}
 
 export function ActionsTab({
   activeActionCategory,
@@ -129,53 +145,73 @@ export function ActionsTab({
             char: "WP" as Characteristic["key"],
             properties: ["Spellcasting"],
           };
+          const openChannelingInfo = () => setActiveInfo({
+            type: "attack",
+            name: "Channeling",
+            extra: {
+              ...channelingAction,
+              totalValue: totalChannelingValue,
+              weaponName: "Channeling",
+              weaponType: "Character Action",
+            },
+          });
 
           return (
             <div className="wfrp-subpanel-shell flex flex-col">
-              <div className="grid grid-cols-[60px_1fr_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
+              <div className="hidden grid-cols-[60px_1fr_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center md:grid">
                 <span className="wfrp-table-label col-span-2 text-left">Channeling</span>
                 <span className="wfrp-table-label text-left">Notes</span>
               </div>
 
               <div className="divide-y divide-white/5">
-                <div className="grid grid-cols-[60px_1fr_1fr] items-center gap-2 lg:gap-4 wfrp-table-row group">
-                  <div className="flex justify-center">
-                    <button
-                      onClick={() => handleRoll({ key: "WP", label: "Language (Magick)" }, undefined, { testType: "channeling" })}
-                      className="wfrp-roll-btn"
-                      aria-label="Roll Channeling"
-                    >
-                      {totalChannelingValue}
-                    </button>
-                  </div>
-                  <span
-                    onClick={() => setActiveInfo({
-                      type: "attack",
-                      name: "Channeling",
-                      extra: {
-                        ...channelingAction,
-                        totalValue: totalChannelingValue,
-                        weaponName: "Channeling",
-                        weaponType: "Character Action",
-                      },
-                    })}
-                    className="wfrp-skill-link truncate"
-                  >
-                    {channelingAction.name}
-                  </span>
-                  <div className="flex w-full flex-wrap content-start items-center gap-x-1">
-                    {channelingAction.properties.map((prop, propIndex) => (
-                      <span key={prop} className="text-xs font-semibold text-gray-400">
+                <div className="wfrp-table-row group md:grid md:grid-cols-[60px_1fr_1fr] md:items-center md:gap-2 lg:gap-4">
+                  <details className="group/details md:contents">
+                    <summary className={mobileActionSummaryClass}>
+                      <div className="flex justify-center">
                         <button
-                          onClick={() => openPropertyInfo(prop, channelingAction.properties)}
-                          className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleRoll({ key: "WP", label: "Language (Magick)" }, undefined, { testType: "channeling" });
+                          }}
+                          className="wfrp-roll-btn"
+                          aria-label="Roll Channeling"
                         >
-                          {prop === "Spellcasting" ? "Spell Focus" : prop}
+                          {totalChannelingValue}
                         </button>
-                        {propIndex < channelingAction.properties.length - 1 ? "," : ""}
-                      </span>
-                    ))}
-                  </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          openChannelingInfo();
+                        }}
+                        className="wfrp-skill-link min-w-0 truncate text-left"
+                      >
+                        {channelingAction.name}
+                      </button>
+                      <button type="button" onClick={(event) => { event.preventDefault(); openChannelingInfo(); }} className={mobileActionInfoButtonClass}>
+                        Info
+                      </button>
+                      <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden" aria-hidden="true" />
+                      <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
+                        {channelingAction.properties.map((prop, propIndex) => (
+                          <span key={prop} className="text-xs font-semibold text-gray-400">
+                            <button
+                              onClick={() => openPropertyInfo(prop, channelingAction.properties)}
+                              className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
+                            >
+                              {prop === "Spellcasting" ? "Spell Focus" : prop}
+                            </button>
+                            {propIndex < channelingAction.properties.length - 1 ? "," : ""}
+                          </span>
+                        ))}
+                      </div>
+                    </summary>
+                    <div className={mobileActionDetailsClass}>
+                      <MobileDetail label="Type" value="Channeling" />
+                      <MobileDetail label="Notes" value="Spell Focus" />
+                    </div>
+                  </details>
                 </div>
               </div>
             </div>
@@ -292,7 +328,7 @@ export function ActionsTab({
               <div key={weapon.name} className="wfrp-subpanel-shell flex flex-col">
                 {isMelee ? (
                   <>
-                    <div className="grid grid-cols-[60px_1fr_60px_80px_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
+                    <div className="hidden grid-cols-[60px_1fr_60px_80px_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center md:grid">
                       <span className="wfrp-table-label col-span-2 text-left">{weapon.name}</span>
                       <span className="wfrp-table-label text-left">Dmg</span>
                       <span className="wfrp-table-label text-left">Reach</span>
@@ -300,70 +336,82 @@ export function ActionsTab({
                     </div>
 
                     <div className="divide-y divide-white/5">
-                      {actions.map((action, idx) => (
-                        <div key={idx} className="grid grid-cols-[60px_1fr_60px_80px_1fr] items-center gap-2 lg:gap-4 wfrp-table-row group">
-                          <div className="flex justify-center">
-                            <button
-                              onClick={() => {
-                                handleRoll(
-                                  { key: action.char, label: rollLabel },
-                                  action.rollDamage,
-                                  {
-                                    bonuses: action.bonuses,
-                                    title: `${weapon.name} ${action.name}`,
-                                  },
-                                );
-                                applyActionAdjustments(action);
-                              }}
-                              className="wfrp-roll-btn"
-                              aria-label={`Roll ${action.name} with ${weapon.name}`}
-                            >
-                              {action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? [])}
-                            </button>
-                          </div>
-                          <span
-                            onClick={() => setActiveInfo({
-                              type: "attack",
-                              name: action.name,
-                              extra: {
-                                ...action,
-                                totalValue: action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []),
-                                weaponName: weapon.name,
-                                weaponType: weapon.type,
-                              },
-                            })}
-                            className="wfrp-skill-link truncate"
-                          >
-                            {action.name}
-                          </span>
-                          <div className="wfrp-list-cell-strong text-center font-mono">
-                            {action.damage}
-                          </div>
-                          <div className="wfrp-list-cell-strong">{action.range}</div>
-                          <div className="flex w-full flex-wrap content-start items-center gap-x-1">
-                            {action.properties.map((prop, propIndex) => (
-                              <span key={prop} className="text-xs font-semibold text-gray-400">
-                                {rulesIndex.propertyDescriptionByName[prop] ? (
+                      {actions.map((action, idx) => {
+                        const totalActionValue = action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
+                        const openActionInfo = () => setActiveInfo({
+                          type: "attack",
+                          name: action.name,
+                          extra: {
+                            ...action,
+                            totalValue: totalActionValue,
+                            weaponName: weapon.name,
+                            weaponType: weapon.type,
+                          },
+                        });
+
+                        return (
+                          <div key={idx} className="wfrp-table-row group md:grid md:grid-cols-[60px_1fr_60px_80px_1fr] md:items-center md:gap-2 lg:gap-4">
+                            <details className="group/details md:contents">
+                              <summary className={mobileActionSummaryClass}>
+                                <div className="flex justify-center">
                                   <button
-                                    onClick={() => openPropertyInfo(prop, action.properties)}
-                                    className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      handleRoll(
+                                        { key: action.char, label: rollLabel },
+                                        action.rollDamage,
+                                        {
+                                          bonuses: action.bonuses,
+                                          title: `${weapon.name} ${action.name}`,
+                                        },
+                                      );
+                                      applyActionAdjustments(action);
+                                    }}
+                                    className="wfrp-roll-btn"
+                                    aria-label={`Roll ${action.name} with ${weapon.name}`}
                                   >
-                                    {prop}
+                                    {totalActionValue}
                                   </button>
-                                ) : (
-                                  <span>{prop}</span>
-                                )}
-                                {propIndex < action.properties.length - 1 ? "," : ""}
-                              </span>
-                            ))}
+                                </div>
+                                <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className="wfrp-skill-link min-w-0 truncate text-left">
+                                  {action.name}
+                                </button>
+                                <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className={mobileActionInfoButtonClass}>
+                                  Info
+                                </button>
+                                <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden" aria-hidden="true" />
+                                <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{action.damage}</div>
+                                <div className="hidden wfrp-list-cell-strong md:block">{action.range}</div>
+                                <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
+                                  {action.properties.map((prop, propIndex) => (
+                                    <span key={prop} className="text-xs font-semibold text-gray-400">
+                                      {rulesIndex.propertyDescriptionByName[prop] ? (
+                                        <button onClick={() => openPropertyInfo(prop, action.properties)} className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm">
+                                          {prop}
+                                        </button>
+                                      ) : (
+                                        <span>{prop}</span>
+                                      )}
+                                      {propIndex < action.properties.length - 1 ? "," : ""}
+                                    </span>
+                                  ))}
+                                </div>
+                              </summary>
+                              <div className={mobileActionDetailsClass}>
+                                <MobileDetail label="Weapon" value={weapon.name} />
+                                <MobileDetail label="Dmg" value={action.damage} />
+                                <MobileDetail label="Reach" value={action.range} />
+                                <MobileDetail label="Properties" value={action.properties.length ? action.properties.join(", ") : "-"} />
+                              </div>
+                            </details>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="grid grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] gap-2 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
+                    <div className="hidden grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] gap-2 px-4 py-1 bg-black/10 border-b border-white/5 items-center md:grid">
                       <span className="wfrp-table-label col-span-2 text-left">{weapon.name}</span>
                       <span className="wfrp-table-label text-left">Dmg</span>
                       <span className="wfrp-table-label text-left">PB</span>
@@ -375,69 +423,82 @@ export function ActionsTab({
                     </div>
 
                     <div className="divide-y divide-white/5">
-                      {actions.map((action, idx) => (
-                        <div key={idx} className="grid grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] items-center gap-2 wfrp-table-row group">
-                          <div className="flex justify-center">
-                            <button
-                              onClick={() => {
-                                handleRoll(
-                                  { key: action.char, label: rollLabel },
-                                  action.rollDamage,
-                                  {
-                                    bonuses: action.bonuses,
-                                    title: `${weapon.name} ${action.name}`,
-                                  },
-                                );
-                                applyActionAdjustments(action);
-                              }}
-                              className="wfrp-roll-btn"
-                              aria-label={`Roll ${action.name} with ${weapon.name}`}
-                            >
-                              {action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? [])}
-                            </button>
-                          </div>
-                          <span
-                            onClick={() => setActiveInfo({
-                              type: "attack",
-                              name: action.name,
-                              extra: {
-                                ...action,
-                                totalValue: action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []),
-                                weaponName: weapon.name,
-                                weaponType: weapon.type,
-                              },
-                            })}
-                            className="wfrp-skill-link truncate"
-                          >
-                            {action.name}
-                          </span>
-                          <div className="wfrp-list-cell-strong text-center font-mono">
-                            {action.damage}
-                          </div>
-                          <div className="wfrp-list-cell-strong text-center font-mono opacity-50">{rangeBands?.pb ?? "-"}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono opacity-70">{rangeBands?.s ?? "-"}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono text-wfrp-gold">{rangeBands?.a ?? "-"}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono opacity-70">{rangeBands?.l ?? "-"}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono opacity-50">{rangeBands?.e ?? "-"}</div>
-                          <div className="flex w-full flex-wrap content-start items-center gap-x-1">
-                            {action.properties.map((prop, propIndex) => (
-                              <span key={prop} className="text-xs font-semibold text-gray-400">
-                                {rulesIndex.propertyDescriptionByName[prop] ? (
+                      {actions.map((action, idx) => {
+                        const totalActionValue = action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
+                        const openActionInfo = () => setActiveInfo({
+                          type: "attack",
+                          name: action.name,
+                          extra: {
+                            ...action,
+                            totalValue: totalActionValue,
+                            weaponName: weapon.name,
+                            weaponType: weapon.type,
+                          },
+                        });
+
+                        return (
+                          <div key={idx} className="wfrp-table-row group md:grid md:grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] md:items-center md:gap-2">
+                            <details className="group/details md:contents">
+                              <summary className={mobileActionSummaryClass}>
+                                <div className="flex justify-center">
                                   <button
-                                    onClick={() => openPropertyInfo(prop, action.properties)}
-                                    className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
+                                    onClick={(event) => {
+                                      event.preventDefault();
+                                      handleRoll(
+                                        { key: action.char, label: rollLabel },
+                                        action.rollDamage,
+                                        {
+                                          bonuses: action.bonuses,
+                                          title: `${weapon.name} ${action.name}`,
+                                        },
+                                      );
+                                      applyActionAdjustments(action);
+                                    }}
+                                    className="wfrp-roll-btn"
+                                    aria-label={`Roll ${action.name} with ${weapon.name}`}
                                   >
-                                    {prop}
+                                    {totalActionValue}
                                   </button>
-                                ) : (
-                                  <span>{prop}</span>
-                                )}
-                                {propIndex < action.properties.length - 1 ? "," : ""}
-                              </span>
-                            ))}
+                                </div>
+                                <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className="wfrp-skill-link min-w-0 truncate text-left">
+                                  {action.name}
+                                </button>
+                                <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className={mobileActionInfoButtonClass}>
+                                  Info
+                                </button>
+                                <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden" aria-hidden="true" />
+                                <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{action.damage}</div>
+                                <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-50 md:block">{rangeBands?.pb ?? "-"}</div>
+                                <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-70 md:block">{rangeBands?.s ?? "-"}</div>
+                                <div className="hidden wfrp-list-cell-strong text-center font-mono text-wfrp-gold md:block">{rangeBands?.a ?? "-"}</div>
+                                <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-70 md:block">{rangeBands?.l ?? "-"}</div>
+                                <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-50 md:block">{rangeBands?.e ?? "-"}</div>
+                                <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
+                                  {action.properties.map((prop, propIndex) => (
+                                    <span key={prop} className="text-xs font-semibold text-gray-400">
+                                      {rulesIndex.propertyDescriptionByName[prop] ? (
+                                        <button onClick={() => openPropertyInfo(prop, action.properties)} className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm">
+                                          {prop}
+                                        </button>
+                                      ) : (
+                                        <span>{prop}</span>
+                                      )}
+                                      {propIndex < action.properties.length - 1 ? "," : ""}
+                                    </span>
+                                  ))}
+                                </div>
+                              </summary>
+                              <div className={mobileActionDetailsClass}>
+                                <MobileDetail label="Weapon" value={weapon.name} />
+                                <MobileDetail label="Dmg" value={action.damage} />
+                                <MobileDetail label="Range" value={weaponStats.reach} />
+                                <MobileDetail label="Bands" value={`PB ${rangeBands?.pb ?? "-"} / S ${rangeBands?.s ?? "-"} / A ${rangeBands?.a ?? "-"} / L ${rangeBands?.l ?? "-"} / E ${rangeBands?.e ?? "-"}`} />
+                                <MobileDetail label="Properties" value={action.properties.length ? action.properties.join(", ") : "-"} />
+                              </div>
+                            </details>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </>
                 )}
@@ -447,7 +508,7 @@ export function ActionsTab({
 
         {(activeActionCategory === "all" || activeActionCategory === "other") && (
           <div className="wfrp-subpanel-shell flex flex-col opacity-80 hover:opacity-100 transition-opacity">
-            <div className="grid grid-cols-[60px_1fr_60px_80px_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center">
+            <div className="hidden grid-cols-[60px_1fr_60px_80px_1fr] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center md:grid">
               <span className="wfrp-table-label col-span-2 text-left">Maneuvers</span>
               <span className="wfrp-table-label text-left">Dmg</span>
               <span className="wfrp-table-label text-left">Reach</span>
@@ -469,57 +530,67 @@ export function ActionsTab({
                   const strValue = attributes.S || 0;
                   const sb = Math.floor(strValue / 10);
                   const finalDamage = action.damage === "SB" ? `+${sb}` : action.damage;
+                  const totalActionValue = totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
+                  const openManeuverInfo = () => setActiveInfo({
+                    type: "attack",
+                    name: action.name,
+                    extra: {
+                      ...action,
+                      totalValue: totalActionValue,
+                      damage: finalDamage,
+                      properties: action.properties,
+                    },
+                  });
 
                   return (
-                    <div key={action.name} className="grid grid-cols-[60px_1fr_60px_80px_1fr] items-center gap-2 lg:gap-4 wfrp-table-row group">
-                      <div className="flex justify-center">
-                        <button
-                          onClick={() => {
-                            handleRoll(
-                              { key: action.char, label: action.name },
-                              action.damage === "SB" ? sb : undefined,
-                              { title: action.name },
-                            );
-                            if (action.modifier !== 0 || action.targetBonusSources?.length) {
-                              setRollAdjustments(action.modifier, action.targetBonusSources ?? []);
-                            }
-                          }}
-                          className="wfrp-roll-btn"
-                          aria-label={`Execute ${action.name}`}
-                        >
-                          {totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? [])}
-                        </button>
-                      </div>
-                      <span
-                        onClick={() => setActiveInfo({
-                          type: "attack",
-                          name: action.name,
-                          extra: {
-                            ...action,
-                            totalValue: totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []),
-                            damage: finalDamage,
-                            properties: action.properties,
-                          },
-                        })}
-                        className="wfrp-skill-link truncate"
-                      >
-                        {action.name}
-                      </span>
-                      <div className="wfrp-list-cell-strong text-center font-mono">{finalDamage}</div>
-                      <div className="wfrp-list-cell-strong">{action.range}</div>
-                      <div className="flex w-full flex-wrap content-start items-center gap-x-1">
-                        {action.properties.map((prop, propIndex) => (
-                          <span key={prop} className="text-xs font-semibold text-gray-400">
+                    <div key={action.name} className="wfrp-table-row group md:grid md:grid-cols-[60px_1fr_60px_80px_1fr] md:items-center md:gap-2 lg:gap-4">
+                      <details className="group/details md:contents">
+                        <summary className={mobileActionSummaryClass}>
+                          <div className="flex justify-center">
                             <button
-                              onClick={() => openPropertyInfo(prop)}
-                              className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                handleRoll(
+                                  { key: action.char, label: action.name },
+                                  action.damage === "SB" ? sb : undefined,
+                                  { title: action.name },
+                                );
+                                if (action.modifier !== 0 || action.targetBonusSources?.length) {
+                                  setRollAdjustments(action.modifier, action.targetBonusSources ?? []);
+                                }
+                              }}
+                              className="wfrp-roll-btn"
+                              aria-label={`Execute ${action.name}`}
                             >
-                              {prop}
+                              {totalActionValue}
                             </button>
-                            {propIndex < action.properties.length - 1 ? "," : ""}
-                          </span>
-                        ))}
-                      </div>
+                          </div>
+                          <button type="button" onClick={(event) => { event.preventDefault(); openManeuverInfo(); }} className="wfrp-skill-link min-w-0 truncate text-left">
+                            {action.name}
+                          </button>
+                          <button type="button" onClick={(event) => { event.preventDefault(); openManeuverInfo(); }} className={mobileActionInfoButtonClass}>
+                            Info
+                          </button>
+                          <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden" aria-hidden="true" />
+                          <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{finalDamage}</div>
+                          <div className="hidden wfrp-list-cell-strong md:block">{action.range}</div>
+                          <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
+                            {action.properties.map((prop, propIndex) => (
+                              <span key={prop} className="text-xs font-semibold text-gray-400">
+                                <button onClick={() => openPropertyInfo(prop)} className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm">
+                                  {prop}
+                                </button>
+                                {propIndex < action.properties.length - 1 ? "," : ""}
+                              </span>
+                            ))}
+                          </div>
+                        </summary>
+                        <div className={mobileActionDetailsClass}>
+                          <MobileDetail label="Dmg" value={finalDamage} />
+                          <MobileDetail label="Reach" value={action.range} />
+                          <MobileDetail label="Properties" value={action.properties.length ? action.properties.join(", ") : "-"} />
+                        </div>
+                      </details>
                     </div>
                   );
                 })}
