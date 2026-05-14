@@ -64,8 +64,8 @@ export function SpellsTab({
           </button>
         }
       />
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        <SheetDataPanel className="wfrp-subpanel overflow-x-hidden shadow-sm md:overflow-x-auto">
+      <div className="flex-1 overflow-y-auto p-2 space-y-1 max-md:px-0">
+        <SheetDataPanel className="overflow-x-hidden border-x-0 border-y-0 shadow-none md:wfrp-subpanel md:overflow-x-auto md:shadow-sm">
           <SheetDataHeader className="hidden min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 px-4 py-1 lg:gap-4 md:grid">
             <span className="wfrp-table-label text-center">Channel</span>
             <span className="wfrp-table-label text-left">Spell</span>
@@ -94,7 +94,7 @@ export function SpellsTab({
               return (
                 <SheetDataRow
                   key={spell.name}
-                  className="block md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 lg:gap-4 md:px-4 md:py-2"
+                  className="block border-b border-wfrp-border last:border-0 md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 md:px-4 md:py-2 lg:gap-4"
                 >
                   <details className="group/details md:contents">
                     <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
