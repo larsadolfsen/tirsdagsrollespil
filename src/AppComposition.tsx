@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { lazy, Suspense, useState, useEffect, useMemo, useRef } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import {
   Menu,
@@ -21,6 +21,7 @@ import { useCharacterDerivedStats } from "./hooks/useCharacterDerivedStats";
 import { useDiceRoller } from "./hooks/useDiceRoller";
 import { useCareerAdvancement } from "./hooks/useCareerAdvancement";
 import { useInventoryActions } from "./hooks/useInventoryActions";
+import { useNotesViewModel } from "./hooks/useNotesViewModel";
 import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
   InlineSubtabs,
@@ -207,9 +208,24 @@ export function AppComposition() {
     setIsShopOpen,
     setResilienceCurrent,
   });
-  const [newNoteTitle, setNewNoteTitle] = useState("");
-  const [newNoteText, setNewNoteText] = useState("");
-  const [noteSearch, setNoteSearch] = useState("");
+  const {
+    addNote,
+    deleteNote,
+    formatNoteDate,
+    formatNoteDay,
+    newNoteText,
+    newNoteTitle,
+    noteGroups,
+    noteHashtags,
+    noteSearch,
+    npcNoteGroups,
+    npcNoteHashtags,
+    npcNotes,
+    setNewNoteText,
+    setNewNoteTitle,
+    setNoteSearch,
+    sortedNotes,
+  } = useNotesViewModel({ notes, setNotes });
   const {
     advancementCharacteristics,
     advancementProgress,
@@ -407,90 +423,6 @@ export function AppComposition() {
 
   const adjustResolve = (delta: number) => {
     setResolveCurrent(prev => Math.min(Math.max(0, prev + delta), Math.min(resourceCaps.resolve, resilienceCurrent)));
-  };
-
-  const sortedNotes = [...notes].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-  const formatNoteDate = (value: string) =>
-    new Intl.DateTimeFormat("en-GB", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(value));
-  const formatNoteDay = (value: string) =>
-    new Intl.DateTimeFormat("en-GB", {
-      dateStyle: "full",
-    }).format(new Date(value));
-  const getNoteDayKey = (value: string) => {
-    const date = new Date(value);
-    return [
-      date.getFullYear(),
-      String(date.getMonth() + 1).padStart(2, "0"),
-      String(date.getDate()).padStart(2, "0"),
-    ].join("-");
-  };
-  const getNoteHashtags = (text: string) =>
-    Array.from(text.matchAll(/(^|\s)#([A-Za-z0-9_-]+)/g), (match) => match[2].toLowerCase());
-  const noteHashtags = [...new Set(sortedNotes.flatMap((note) => getNoteHashtags(note.text)))].sort();
-  const normalizedNoteSearch = noteSearch.trim().toLowerCase();
-  const filteredNotes = normalizedNoteSearch
-    ? sortedNotes.filter((note) => {
-      const text = note.text.toLowerCase();
-      const title = (note.title ?? "").toLowerCase();
-        const hashtags = getNoteHashtags(note.text);
-        const search = normalizedNoteSearch.startsWith("#")
-          ? normalizedNoteSearch.slice(1)
-          : normalizedNoteSearch;
-
-        return (
-          text.includes(normalizedNoteSearch) ||
-          title.includes(normalizedNoteSearch) ||
-          hashtags.some((tag) => tag.includes(search))
-        );
-      })
-    : sortedNotes;
-  const groupNotesByDay = (entries: typeof sortedNotes) =>
-    entries.reduce<Array<{ dayKey: string; date: string; notes: typeof sortedNotes }>>(
-      (groups, note) => {
-        const dayKey = getNoteDayKey(note.createdAt);
-        const existingGroup = groups.find((group) => group.dayKey === dayKey);
-
-        if (existingGroup) {
-          existingGroup.notes.push(note);
-        } else {
-          groups.push({ dayKey, date: note.createdAt, notes: [note] });
-        }
-
-        return groups;
-      },
-      [],
-    );
-  const noteGroups = groupNotesByDay(filteredNotes);
-  const npcNotes = filteredNotes.filter((note) =>
-    getNoteHashtags(note.text).some((tag) => tag === "npc" || tag === "npcs"),
-  );
-  const npcNoteGroups = groupNotesByDay(npcNotes);
-  const npcNoteHashtags = [...new Set(npcNotes.flatMap((note) => getNoteHashtags(note.text)))].sort();
-  const addNote = () => {
-    const title = newNoteTitle.trim();
-    const text = newNoteText.trim();
-    if (!title || !text) return;
-
-    setNotes((prev) => [
-      ...prev,
-      {
-        id: `note_${Date.now()}`,
-        title,
-        text,
-        createdAt: new Date().toISOString(),
-      },
-    ]);
-    setNewNoteTitle("");
-    setNewNoteText("");
-  };
-
-  const deleteNote = (noteId: string) => {
-    setNotes((prev) => prev.filter((note) => note.id !== noteId));
   };
 
   const openTalentInfo = (talentName: string) => {
