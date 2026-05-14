@@ -73,6 +73,7 @@ import type {
   ActionCategory,
   CareerSubtab,
   InventorySubtab,
+  JournalSubtab,
   MainTab,
   MobileTabMenuTarget,
   SkillSubtab,
@@ -97,8 +98,7 @@ const ActionsTab = lazy(() => import("./tabs/ActionsTab").then((module) => ({ de
 const InventoryTab = lazy(() => import("./tabs/InventoryTab").then((module) => ({ default: module.InventoryTab })));
 const SpellsTab = lazy(() => import("./tabs/SpellsTab").then((module) => ({ default: module.SpellsTab })));
 const TalentsTab = lazy(() => import("./tabs/TalentsTab").then((module) => ({ default: module.TalentsTab })));
-const BackgroundTab = lazy(() => import("./tabs/BackgroundTab").then((module) => ({ default: module.BackgroundTab })));
-const NotesTab = lazy(() => import("./tabs/NotesTab").then((module) => ({ default: module.NotesTab })));
+const JournalTab = lazy(() => import("./tabs/JournalTab").then((module) => ({ default: module.JournalTab })));
 const CareerTab = lazy(() => import("./tabs/CareerTab").then((module) => ({ default: module.CareerTab })));
 
 type RollActionButton = {
@@ -155,6 +155,7 @@ export function AppComposition() {
   const [activeSpellSubtab, setActiveSpellSubtab] = useState<SpellSubtab>('all');
   const [activeInventorySubtab, setActiveInventorySubtab] = useState<InventorySubtab>('all');
   const [activeCareerSubtab, setActiveCareerSubtab] = useState<CareerSubtab>('all');
+  const [activeJournalSubtab, setActiveJournalSubtab] = useState<JournalSubtab>('sessions');
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isSpellShopOpen, setIsSpellShopOpen] = useState(false);
   const [isCharacterBuilderOpen, setIsCharacterBuilderOpen] = useState(false);
@@ -300,6 +301,7 @@ export function AppComposition() {
     setActiveSkillSubtab("trained");
     setActiveInventorySubtab("all");
     setActiveCareerSubtab("all");
+    setActiveJournalSubtab("sessions");
     setActiveInventoryMenu(null);
     setIsShopOpen(false);
     resetPendingAdvancements();
@@ -574,21 +576,28 @@ export function AppComposition() {
         );
       })
     : sortedNotes;
-  const noteGroups = filteredNotes.reduce<Array<{ dayKey: string; date: string; notes: typeof sortedNotes }>>(
-    (groups, note) => {
-      const dayKey = getNoteDayKey(note.createdAt);
-      const existingGroup = groups.find((group) => group.dayKey === dayKey);
+  const groupNotesByDay = (entries: typeof sortedNotes) =>
+    entries.reduce<Array<{ dayKey: string; date: string; notes: typeof sortedNotes }>>(
+      (groups, note) => {
+        const dayKey = getNoteDayKey(note.createdAt);
+        const existingGroup = groups.find((group) => group.dayKey === dayKey);
 
-      if (existingGroup) {
-        existingGroup.notes.push(note);
-      } else {
-        groups.push({ dayKey, date: note.createdAt, notes: [note] });
-      }
+        if (existingGroup) {
+          existingGroup.notes.push(note);
+        } else {
+          groups.push({ dayKey, date: note.createdAt, notes: [note] });
+        }
 
-      return groups;
-    },
-    [],
+        return groups;
+      },
+      [],
+    );
+  const noteGroups = groupNotesByDay(filteredNotes);
+  const npcNotes = filteredNotes.filter((note) =>
+    getNoteHashtags(note.text).some((tag) => tag === "npc" || tag === "npcs"),
   );
+  const npcNoteGroups = groupNotesByDay(npcNotes);
+  const npcNoteHashtags = [...new Set(npcNotes.flatMap((note) => getNoteHashtags(note.text)))].sort();
   const addNote = () => {
     const title = newNoteTitle.trim();
     const text = newNoteText.trim();
@@ -1551,18 +1560,16 @@ export function AppComposition() {
                         clearRollCharacteristic={() => setRollState((prev) => ({ ...prev, characteristic: null }))}
                       />
                       )}
-                      {activeMainTab === 'background' && (
-                        <BackgroundTab
-                        backgroundText={backgroundText}
-                        setBackgroundText={setBackgroundText}
-                      />
-                      )}
-
-                      {activeMainTab === 'notes' && (
-                        <NotesTab
+                      {activeMainTab === 'journal' && (
+                        <JournalTab
+                        activeJournalSubtab={activeJournalSubtab}
+                        setActiveJournalSubtab={setActiveJournalSubtab}
                         sortedNotes={sortedNotes}
                         noteGroups={noteGroups}
                         noteHashtags={noteHashtags}
+                        npcNotes={npcNotes}
+                        npcNoteGroups={npcNoteGroups}
+                        npcNoteHashtags={npcNoteHashtags}
                         noteSearch={noteSearch}
                         setNoteSearch={setNoteSearch}
                         newNoteTitle={newNoteTitle}
@@ -1573,6 +1580,8 @@ export function AppComposition() {
                         deleteNote={deleteNote}
                         formatNoteDay={formatNoteDay}
                         formatNoteDate={formatNoteDate}
+                        backgroundText={backgroundText}
+                        setBackgroundText={setBackgroundText}
                       />
                       )}
                     </LazyTabPanel>
