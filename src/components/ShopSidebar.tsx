@@ -2,8 +2,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowDown, ArrowUp, ChevronDown, ListFilter, Search, ShoppingBag, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
+import { Button } from "./ui";
+import { SheetDataButtonRow, SheetDataPanel } from "./wfrp";
 import { allItemDefinitions, wfrp4eRuleset } from "../data/rules/wfrp4e";
 import { formatItemValue, getItemPriceInBrass } from "../lib/gameSession";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import type { ItemDefinition } from "../types";
 
 const weaponAvailabilityById = new Map(
@@ -148,6 +151,8 @@ export function ShopSidebar({
   const sidebarRef = useRef<HTMLElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
 
+  useFocusTrap(sidebarRef, isOpen, onClose);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -286,6 +291,9 @@ export function ShopSidebar({
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
           className="wfrp-sidebar-shell w-[min(86vw,340px)] md:w-[400px]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Shop"
         >
           <div className="wfrp-sidebar-header p-3">
             <div className="flex items-center gap-3">
@@ -433,7 +441,7 @@ export function ShopSidebar({
                 </div>
               )}
 
-              <div className="wfrp-subpanel-shell">
+              <SheetDataPanel>
                 <div className="grid grid-cols-[minmax(0,1fr)_76px_18px] gap-2 wfrp-list-header">
                   <SortHeaderButton activeSortKey={sortKey} label="Item" sortDirection={sortDirection} sortKey="name" onSort={handleSort} />
                   <SortHeaderButton align="right" activeSortKey={sortKey} label="Price" sortDirection={sortDirection} sortKey="price" onSort={handleSort} />
@@ -455,14 +463,13 @@ export function ShopSidebar({
 
                         return (
                         <div key={item.id} className="rounded border border-transparent transition-colors hover:border-white/5">
-                          <button
-                            type="button"
+                          <SheetDataButtonRow
                             onClick={() =>
                               setExpandedItemId((currentId) =>
                                 currentId === item.id ? null : item.id,
                               )
                             }
-                            className="wfrp-table-row grid w-full grid-cols-[minmax(0,1fr)_76px_18px] gap-2 border-0 text-left"
+                            className="grid-cols-[minmax(0,1fr)_76px_18px] gap-2 border-0"
                             aria-expanded={expandedItemId === item.id}
                           >
                             <div className="min-w-0">
@@ -493,7 +500,7 @@ export function ShopSidebar({
                                 expandedItemId === item.id ? "rotate-180 text-wfrp-gold" : ""
                               }`}
                             />
-                          </button>
+                          </SheetDataButtonRow>
 
                           {expandedItemId === item.id && (
                             <div className="mx-2 mb-2 rounded border border-white/5 bg-black/20 p-3">
@@ -533,20 +540,20 @@ export function ShopSidebar({
                                 ) : null}
                               </div>
                               <div className="mt-3 flex items-center gap-2">
-                                <button
-                                  type="button"
+                                <Button
                                   onClick={() => onAddToInventory(item)}
-                                  className="wfrp-standard-btn h-7 whitespace-nowrap px-4"
+                                  size="sm"
+                                  className="whitespace-nowrap px-4"
                                 >
                                   Add
-                                </button>
-                                <button
-                                  type="button"
+                                </Button>
+                                <Button
                                   onClick={() => onBuy(item)}
-                                  className="wfrp-standard-btn h-7 whitespace-nowrap px-4"
+                                  size="sm"
+                                  className="whitespace-nowrap px-4"
                                 >
                                   Buy
-                                </button>
+                                </Button>
                               </div>
                             </div>
                           )}
@@ -562,7 +569,7 @@ export function ShopSidebar({
                     </div>
                   )}
                 </div>
-              </div>
+              </SheetDataPanel>
             </div>
           </div>
         </motion.aside>

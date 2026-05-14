@@ -1,4 +1,6 @@
 import { Trash2 } from "lucide-react";
+import { Button, Input, Panel, Textarea } from "../components/ui";
+import { SheetEmptyState } from "../components/wfrp";
 import type { CharacterNoteData } from "../types/storage";
 
 type NoteGroup = {
@@ -37,19 +39,20 @@ export function NotesTab({
   formatNoteDate: (value: string) => string;
 }) {
   return (
-    <div className="flex-1 overflow-y-auto p-3 lg:p-4 flex flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-3 lg:p-4">
       {sortedNotes.length > 0 && (
-        <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
-          <input
+        <Panel className="flex flex-col gap-3 p-4">
+          <Input
             value={noteSearch}
             onChange={(event) => setNoteSearch(event.target.value)}
-            className="h-9 rounded border border-white/10 bg-black/30 px-3 text-sm text-gray-200 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+            className="h-9 text-gray-200"
             placeholder="Search notes or #hashtags"
+            aria-label="Search notes"
           />
-        </section>
+        </Panel>
       )}
 
-      <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
+      <Panel className="flex flex-col gap-3 p-4">
         <div className="flex items-center justify-between gap-3">
           <h3 className="wfrp-panel-title">
             Campaign Journal
@@ -59,28 +62,30 @@ export function NotesTab({
             {sortedNotes.length} {sortedNotes.length === 1 ? "Entry" : "Entries"}
           </span>
         </div>
-        <input
+        <Input
           value={newNoteTitle}
           onChange={(event) => setNewNoteTitle(event.target.value)}
-          className="h-10 rounded border border-white/10 bg-black/30 px-3 text-sm font-semibold text-gray-100 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+          className="h-10 font-semibold"
           placeholder="Entry title"
+          aria-label="New note title"
         />
-        <textarea
+        <Textarea
           value={newNoteText}
           onChange={(event) => setNewNoteText(event.target.value)}
           rows={4}
-          className="min-h-28 resize-y rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+          className="min-h-28 resize-y text-gray-200"
           placeholder="Write a note... Use #tags to create a chip."
+          aria-label="New note text"
         />
         <div className="flex justify-end">
-          <button
-            type="button"
+          <Button
             onClick={addNote}
             disabled={!newNoteTitle.trim() || !newNoteText.trim()}
-            className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            variant="outline"
+            className="font-black"
           >
             Add Note
-          </button>
+          </Button>
         </div>
         {noteHashtags.length > 0 && (
           <div className="flex flex-wrap gap-2 border-t border-white/5 pt-3">
@@ -89,34 +94,26 @@ export function NotesTab({
               const isActive = noteSearch.trim().toLowerCase() === tagSearch;
 
               return (
-                <button
+                <Button
                   key={tag}
-                  type="button"
                   onClick={() => setNoteSearch(isActive ? "" : tagSearch)}
-                  className={`rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${
-                    isActive
-                      ? "border-wfrp-gold/60 bg-wfrp-gold/15 text-wfrp-gold"
-                      : "border-white/10 bg-black/25 text-gray-400 hover:text-gray-200 hover:border-white/20"
-                  }`}
+                  variant={isActive ? "outline" : "ghost"}
+                  size="chip"
+                  className={isActive ? "border-wfrp-gold/60 bg-wfrp-gold/15 text-wfrp-gold" : "border border-white/10 bg-black/25"}
+                  aria-pressed={isActive}
                 >
                   #{tag}
-                </button>
+                </Button>
               );
             })}
           </div>
         )}
-      </section>
+      </Panel>
 
       {sortedNotes.length === 0 ? (
-        <div className="min-h-48 border border-dashed border-white/5 rounded-lg flex flex-col items-center justify-center text-gray-700 gap-2">
-          <span className="text-[9px] font-black uppercase tracking-widest">No Notes</span>
-          <p className="text-[10px] italic">Entries will appear here by date written.</p>
-        </div>
+        <SheetEmptyState title="No Notes">Entries will appear here by date written.</SheetEmptyState>
       ) : noteGroups.length === 0 ? (
-        <div className="min-h-48 border border-dashed border-white/5 rounded-lg flex flex-col items-center justify-center text-gray-700 gap-2">
-          <span className="text-[9px] font-black uppercase tracking-widest">No Matches</span>
-          <p className="text-[10px] italic">Try another word or hashtag.</p>
-        </div>
+        <SheetEmptyState title="No Matches">Try another word or hashtag.</SheetEmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {noteGroups.map((group) => (
@@ -144,14 +141,15 @@ export function NotesTab({
                           {formatNoteDate(note.createdAt)}
                         </time>
                       </div>
-                      <button
-                        type="button"
+                      <Button
                         onClick={() => deleteNote(note.id)}
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-white/10 bg-black/20 text-gray-500 transition-colors hover:border-white/20 hover:text-wfrp-red focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-red/40"
+                        variant="danger"
+                        size="icon"
+                        className="shrink-0"
                         aria-label={`Delete note from ${formatNoteDate(note.createdAt)}`}
                       >
                         <Trash2 size={12} />
-                      </button>
+                      </Button>
                     </div>
                     <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-gray-200">
                       {note.text}

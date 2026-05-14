@@ -2,7 +2,10 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowDown, ArrowUp, BookOpen, ChevronDown, ListFilter, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
+import { Button } from "./ui";
+import { SheetDataButtonRow, SheetDataPanel } from "./wfrp";
 import { formatSpellSchoolLabel, formatSpellSchoolShortLabel } from "../tabs/spells/spellUtils";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import type { SpellDefinition } from "../types";
 
 const spellCategoryOrder: SpellDefinition["category"][] = ["petty", "arcane", "school"];
@@ -143,6 +146,8 @@ export function SpellShopSidebar({
   const [expandedSpellId, setExpandedSpellId] = useState<string | null>(null);
   const sidebarRef = useRef<HTMLElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(sidebarRef, isOpen, onClose);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -304,6 +309,9 @@ export function SpellShopSidebar({
           exit={{ x: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
           className="wfrp-sidebar-shell w-[360px] max-w-[calc(100vw-1rem)]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Spell shop"
         >
           <div className="wfrp-sidebar-header p-3">
             <div className="flex items-center gap-3">
@@ -403,7 +411,7 @@ export function SpellShopSidebar({
                 </div>
               )}
 
-              <div className="wfrp-subpanel-shell">
+              <SheetDataPanel>
                 <div className="grid grid-cols-[minmax(0,1fr)_42px_18px] gap-2 wfrp-list-header">
                   <SortHeaderButton activeSortKey={sortKey} label="Spell" sortDirection={sortDirection} sortKey="name" onSort={handleSort} />
                   <SortHeaderButton align="center" activeSortKey={sortKey} label="CN" sortDirection={sortDirection} sortKey="cn" onSort={handleSort} />
@@ -425,14 +433,13 @@ export function SpellShopSidebar({
 
                         return (
                           <div key={spell.id} className="rounded border border-transparent transition-colors hover:border-white/5">
-                            <button
-                              type="button"
+                            <SheetDataButtonRow
                               onClick={() =>
                                 setExpandedSpellId((currentId) =>
                                   currentId === spell.id ? null : spell.id,
                                 )
                               }
-                              className="wfrp-table-row grid w-full grid-cols-[minmax(0,1fr)_42px_18px] gap-2 border-0 text-left"
+                              className="grid-cols-[minmax(0,1fr)_42px_18px] gap-2 border-0"
                               aria-expanded={expandedSpellId === spell.id}
                             >
                               <div className="min-w-0">
@@ -457,7 +464,7 @@ export function SpellShopSidebar({
                                   expandedSpellId === spell.id ? "rotate-180 text-wfrp-gold" : ""
                                 }`}
                               />
-                            </button>
+                            </SheetDataButtonRow>
 
                             {expandedSpellId === spell.id && (
                               <div className="mx-2 mb-2 rounded border border-white/5 bg-black/20 p-3">
@@ -484,14 +491,14 @@ export function SpellShopSidebar({
                                 </div>
                                 {!isKnown ? (
                                   <div className="mt-3">
-                                    <button
-                                      type="button"
+                                    <Button
                                       onClick={() => onAddSpell(spell)}
-                                      className="wfrp-action-btn gap-2 whitespace-nowrap px-4 py-1.5"
+                                      variant="outline"
+                                      className="gap-2 whitespace-nowrap px-4 py-1.5"
                                       aria-label={`Add ${spell.name}`}
                                     >
                                       Add Spell
-                                    </button>
+                                    </Button>
                                   </div>
                                 ) : null}
                               </div>
@@ -508,7 +515,7 @@ export function SpellShopSidebar({
                     </div>
                   )}
                 </div>
-              </div>
+              </SheetDataPanel>
             </div>
           </div>
         </motion.aside>

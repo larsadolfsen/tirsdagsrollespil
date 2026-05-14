@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
-import { AdvancementSection, ScrollableTabStrip } from "../components/ui";
+import { AdvancementSection, Button, InlineSubtabs } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import { useGameSessionContext } from "../context/GameSessionContext";
 import type {
@@ -131,22 +131,14 @@ export function CareerTab({
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      <ScrollableTabStrip className="sticky top-0 z-10 flex items-center gap-2 p-3 lg:p-4 bg-wfrp-bg border-b border-white/5 overflow-x-auto no-scrollbar">
-        {careerSubtabOptions.map((option) => (
-          <button
-            key={option.id}
-            onClick={() => setActiveCareerSubtab(option.id)}
-            className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
-              activeCareerSubtab === option.id
-                ? "bg-wfrp-tab-active text-white shadow-lg"
-                : "bg-black/40 text-gray-400 hover:bg-wfrp-surface-raised hover:text-gray-200"
-            }`}
-            aria-pressed={activeCareerSubtab === option.id}
-          >
-            {option.label}
-          </button>
-        ))}
-      </ScrollableTabStrip>
+      <div className="sticky top-0 z-10 bg-wfrp-bg">
+        <InlineSubtabs<CareerSubtab>
+          options={careerSubtabOptions}
+          activeId={activeCareerSubtab}
+          onChange={setActiveCareerSubtab}
+          ariaLabel="Career advancement sections"
+        />
+      </div>
 
       <div className="flex flex-wrap items-center gap-2 border-b border-white/5 bg-wfrp-bg px-2 py-2 sm:px-3 lg:px-4">
         <div className="flex items-center justify-center gap-1.5 rounded bg-black/40 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-gray-300">
@@ -155,28 +147,33 @@ export function CareerTab({
           <span className="text-gray-600">/</span>
           <span className="font-mono text-gray-300">{characterData.xpTotal}</span>
         </div>
-        <button
+        <Button
           onClick={() => addCurrentXp(10)}
-          className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+          variant="outline"
+          size="sm"
+          className="h-auto px-2 py-1 font-black"
           aria-label="Add 10 current and total XP"
         >
           +10
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => addCurrentXp(100)}
-          className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+          variant="outline"
+          size="sm"
+          className="h-auto px-2 py-1 font-black"
           aria-label="Add 100 current and total XP"
         >
           +100
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={saveCareerChanges}
           disabled={!hasPendingCareerChanges}
-          className="wfrp-action-btn ml-auto h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+          variant="outline"
+          className="ml-auto font-black"
           aria-label="Save career changes"
         >
           Save
-        </button>
+        </Button>
       </div>
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4 no-scrollbar">
