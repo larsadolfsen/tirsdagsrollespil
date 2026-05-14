@@ -1,3 +1,5 @@
+import { Textarea } from "../components/ui";
+
 export function BackgroundTab({
   backgroundText,
   setBackgroundText,
@@ -17,11 +19,11 @@ export function BackgroundTab({
             {backgroundText.trim().length} Characters
           </span>
         </div>
-        <textarea
+        <Textarea
           value={backgroundText}
           onChange={(event) => setBackgroundText(event.target.value)}
           rows={18}
-          className="min-h-[420px] w-full resize-y rounded border border-white/10 bg-black/30 px-4 py-3 text-sm leading-7 text-gray-200 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+          className="min-h-[420px] leading-7"
           placeholder="Write the character's history, relationships, goals, appearance, reputation, and anything the table should remember."
           aria-label="Character background editor"
         />

@@ -1,4 +1,5 @@
 import { Trash2 } from "lucide-react";
+import { Button, Input, Textarea } from "../components/ui";
 import type { CharacterNoteData } from "../types/storage";
 
 type NoteGroup = {
@@ -40,11 +41,12 @@ export function NotesTab({
     <div className="flex-1 overflow-y-auto p-3 lg:p-4 flex flex-col gap-4">
       {sortedNotes.length > 0 && (
         <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
-          <input
+          <Input
             value={noteSearch}
             onChange={(event) => setNoteSearch(event.target.value)}
-            className="h-9 rounded border border-white/10 bg-black/30 px-3 text-sm text-gray-200 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+            className="h-9"
             placeholder="Search notes or #hashtags"
+            aria-label="Search notes or hashtags"
           />
         </section>
       )}
@@ -59,28 +61,29 @@ export function NotesTab({
             {sortedNotes.length} {sortedNotes.length === 1 ? "Entry" : "Entries"}
           </span>
         </div>
-        <input
+        <Input
           value={newNoteTitle}
           onChange={(event) => setNewNoteTitle(event.target.value)}
-          className="h-10 rounded border border-white/10 bg-black/30 px-3 text-sm font-semibold text-gray-100 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+          className="h-10 font-semibold"
           placeholder="Entry title"
+          aria-label="New note title"
         />
-        <textarea
+        <Textarea
           value={newNoteText}
           onChange={(event) => setNewNoteText(event.target.value)}
           rows={4}
-          className="min-h-28 resize-y rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-200 placeholder:text-gray-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+          className="min-h-28"
           placeholder="Write a note... Use #tags to create a chip."
+          aria-label="New note text"
         />
         <div className="flex justify-end">
-          <button
-            type="button"
+          <Button
             onClick={addNote}
             disabled={!newNoteTitle.trim() || !newNoteText.trim()}
-            className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            size="sm"
           >
             Add Note
-          </button>
+          </Button>
         </div>
         {noteHashtags.length > 0 && (
           <div className="flex flex-wrap gap-2 border-t border-white/5 pt-3">
@@ -144,14 +147,15 @@ export function NotesTab({
                           {formatNoteDate(note.createdAt)}
                         </time>
                       </div>
-                      <button
-                        type="button"
+                      <Button
                         onClick={() => deleteNote(note.id)}
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-white/10 bg-black/20 text-gray-500 transition-colors hover:border-white/20 hover:text-wfrp-red focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-red/40"
+                        variant="destructive"
+                        size="icon"
+                        className="h-7 w-7 shrink-0"
                         aria-label={`Delete note from ${formatNoteDate(note.createdAt)}`}
                       >
                         <Trash2 size={12} />
-                      </button>
+                      </Button>
                     </div>
                     <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-gray-200">
                       {note.text}

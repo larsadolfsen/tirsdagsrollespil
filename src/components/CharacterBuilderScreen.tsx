@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Button, Card, Input, Textarea } from "./ui";
 import { UI_LABELS } from "../labels";
 import type { Ruleset } from "../types";
 
@@ -222,29 +223,30 @@ export function CharacterBuilderScreen({
           <div className="grid gap-4">
             <label className="flex flex-col gap-2">
               <span className="wfrp-panel-title text-gray-400">Name</span>
-              <input
+              <Input
                 value={characterName}
                 onChange={(event) => setCharacterName(event.target.value)}
-                className="rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-100 outline-none focus:border-wfrp-gold/60"
                 placeholder="Character name"
+                aria-label="Character name"
               />
             </label>
             <label className="flex flex-col gap-2">
               <span className="wfrp-panel-title text-gray-400">Background</span>
-              <textarea
+              <Textarea
                 value={background}
                 onChange={(event) => setBackground(event.target.value)}
-                className="min-h-28 rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-100 outline-none focus:border-wfrp-gold/60"
+                className="min-h-28"
                 placeholder="Origin, appearance, reputation, or notable history"
+                aria-label="Character background"
               />
             </label>
             <label className="flex flex-col gap-2">
               <span className="wfrp-panel-title text-gray-400">Ambition</span>
-              <input
+              <Input
                 value={ambition}
                 onChange={(event) => setAmbition(event.target.value)}
-                className="rounded border border-white/10 bg-black/30 px-3 py-2 text-sm text-gray-100 outline-none focus:border-wfrp-gold/60"
                 placeholder="Short-term or long-term ambition"
+                aria-label="Character ambition"
               />
             </label>
           </div>
@@ -298,20 +300,21 @@ export function CharacterBuilderScreen({
     <div className="min-h-screen bg-wfrp-dark font-sans selection:bg-wfrp-gold/40 flex flex-col">
       <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
       <main className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col gap-4 p-4">
-        <section className="rounded border border-wfrp-border bg-wfrp-surface shadow-lg">
+        <Card className="overflow-hidden p-0">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-wfrp-border px-4 py-3">
             <div>
               <p className="wfrp-sidebar-kicker">Character Builder</p>
               <h1 className="text-xl font-bold font-serif tracking-tight">New Character</h1>
             </div>
-            <button
-              type="button"
+            <Button
               onClick={onClose}
-              className="wfrp-action-btn flex items-center gap-2 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 font-black tracking-[0.12em]"
             >
               <X size={14} />
               Sheet
-            </button>
+            </Button>
           </div>
 
           <div className="grid gap-0 lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -366,27 +369,27 @@ export function CharacterBuilderScreen({
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-                <button
-                  type="button"
+                <Button
                   onClick={goToPreviousStep}
                   disabled={isFirstStep}
-                  className="wfrp-action-btn flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
+                  variant="outline"
+                  className="flex items-center gap-2 px-4 py-2 font-black tracking-[0.12em]"
                 >
                   <ChevronLeft size={14} />
                   Back
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
                   onClick={goToNextStep}
-                  className="wfrp-action-btn flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.12em] text-gray-100"
+                  variant="outline"
+                  className="flex items-center gap-2 px-4 py-2 font-black tracking-[0.12em] text-gray-100"
                 >
                   {isLastStep ? "Finish" : "Next"}
                   {!isLastStep && <ChevronRight size={14} />}
-                </button>
+                </Button>
               </div>
             </section>
           </div>
-        </section>
+        </Card>
       </main>
     </div>
   );
