@@ -55,7 +55,7 @@ export function ScrollableTabStrip({
     <div className="relative">
       <div
         ref={stripRef}
-        className={`${className} !pl-0 md:!pl-3 lg:!pl-4 pr-12`}
+        className={`${className} !pl-0 md:!pl-3 lg:!pl-4 md:pr-12`}
         role={role}
         aria-label={ariaLabel}
       >
