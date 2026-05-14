@@ -7,11 +7,11 @@ import { lazy, Suspense, useState, useEffect, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import {
   Menu,
-  Plus,
   Settings,
   Dice5,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { AppShell } from "./components/AppShell";
 import { CharacterHeader } from "./components/CharacterHeader";
 import { DiceLogSidebar } from "./components/DiceLogSidebar";
 import { MobileTabMenu } from "./components/MobileTabMenu";
@@ -1036,14 +1036,110 @@ export function AppComposition() {
   }
 
   return (
-    <div className="min-h-screen bg-wfrp-dark text-wfrp-page-text font-sans selection:bg-wfrp-gold/40 flex flex-col">
-      
-      {/* Top Accent Line */}
-      <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
+    <AppShell
+      mobileAddAction={mobileAddAction}
+      mobileNavigation={(
+        <MobileTabMenu
+          activeMobileMainView={activeMobileMainView}
+          availableCharacters={availableCharacters}
+          campaignName={UI_LABELS.CAMPAIGN_NAME}
+          characterName={characterData.name}
+          closeMobileNavigation={closeMobileNavigation}
+          handleMobileMainViewSelect={handleMobileMainViewSelect}
+          isMobileCharacterListOpen={isMobileCharacterListOpen}
+          isMobileNavigationOpen={isMobileNavigationOpen}
+          mobileTabMenuOptions={mobileTabMenuOptions}
+          onCreateCharacter={() => {
+            setActiveInfo(null);
+            setIsShopOpen(false);
+            setIsSpellShopOpen(false);
+            setIsDiceLogOpen(false);
+            setRollState((prev) => ({ ...prev, characteristic: null }));
+            setIsCharacterBuilderOpen(true);
+            closeMobileNavigation();
+          }}
+          onOpenDiceLog={() => {
+            setActiveInfo(null);
+            setIsShopOpen(false);
+            setIsDiceLogOpen(true);
+            closeMobileNavigation();
+          }}
+          selectedCharacterId={selectedCharacterId}
+          setIsMobileCharacterListOpen={setIsMobileCharacterListOpen}
+          setSelectedCharacterId={setSelectedCharacterId}
+        />
+      )}
+      sidebars={(
+        <>
+          <DiceLogSidebar
+            activeRollerRef={activeRollerRef}
+            archiveRoll={archiveRoll}
+            canRollCritical={canRollCritical}
+            canUseFortuneActions={canUseFortuneActions}
+            canUseResilienceAction={canUseResilienceAction}
+            displayRoll={displayRoll}
+            executeRoll={executeRoll}
+            formatSignedSl={formatSignedSl}
+            getDamageTotal={getDamageTotal}
+            getDifficultyLabel={getDifficultyLabel}
+            getHitLocation={getHitLocation}
+            getIsCritical={getIsCritical}
+            getOutcome={getOutcome}
+            getRollBaseValue={getRollBaseValue}
+            getRollTarget={getRollTarget}
+            getTargetBonusTotal={getTargetBonusTotal}
+            getTestTypeTitle={getTestTypeTitle}
+            handleAddSl={handleAddSl}
+            handleIWillNotFail={handleIWillNotFail}
+            handleReroll={handleReroll}
+            handleRollCritical={handleRollCritical}
+            isOpen={isDiceLogOpen || Boolean(rollState.characteristic)}
+            rollHistory={rollHistory}
+            rollState={rollState}
+            setIsDiceLogOpen={setIsDiceLogOpen}
+            setRollState={setRollState}
+          />
 
-      <div className="flex flex-1 overflow-hidden relative">
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto p-0 md:p-4 md:space-y-4">
+          <Suspense fallback={null}>
+            {activeInfo ? (
+              <InfoSidebar
+                activeInfo={activeInfo}
+                setActiveInfo={setActiveInfo}
+                characterData={characterData}
+                characterSkills={characterSkills}
+                advancementTalentNames={advancementTalentNames}
+                ruleset={ruleset}
+                rulesIndex={rulesIndex}
+                getCharacteristicDescription={getCharacteristicDescription}
+                formatSpellDuration={formatSpellDuration}
+                skillListRefs={skillListRefs}
+                propertyListRefs={propertyListRefs}
+                talentListRefs={talentListRefs}
+              />
+            ) : null}
+            {isShopOpen ? (
+              <ShopSidebar
+                isOpen={isShopOpen}
+                coins={formattedCoins}
+                ownedItemIds={ownedShopItemIds}
+                onAddToInventory={handleAddShopItem}
+                onBuy={handleAddShopItem}
+                onClose={() => setIsShopOpen(false)}
+              />
+            ) : null}
+            {isSpellShopOpen ? (
+              <SpellShopSidebar
+                isOpen={isSpellShopOpen}
+                spells={ruleset.spells}
+                knownSpellIds={knownSpellIds}
+                onAddSpell={handleAddSpell}
+                onClose={() => setIsSpellShopOpen(false)}
+              />
+            ) : null}
+          </Suspense>
+        </>
+      )}
+    >
           
           {/* Compact Horizontal Header */}
           <div className="hidden md:block">
@@ -1486,116 +1582,6 @@ export function AppComposition() {
             </section>
           </div>
         </div>
-        </main>
-
-        {mobileAddAction && (
-          <button
-            type="button"
-            onClick={mobileAddAction.onClick}
-            className="fixed bottom-6 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-wfrp-gold/50 bg-wfrp-surface text-wfrp-gold shadow-xl shadow-black/50 transition-colors hover:border-wfrp-gold/70 hover:bg-wfrp-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wfrp-gold/60 md:hidden"
-            aria-label={mobileAddAction.label}
-          >
-            <Plus size={24} />
-          </button>
-        )}
-
-        <MobileTabMenu
-          activeMobileMainView={activeMobileMainView}
-          availableCharacters={availableCharacters}
-          campaignName={UI_LABELS.CAMPAIGN_NAME}
-          characterName={characterData.name}
-          closeMobileNavigation={closeMobileNavigation}
-          handleMobileMainViewSelect={handleMobileMainViewSelect}
-          isMobileCharacterListOpen={isMobileCharacterListOpen}
-          isMobileNavigationOpen={isMobileNavigationOpen}
-          mobileTabMenuOptions={mobileTabMenuOptions}
-          onCreateCharacter={() => {
-            setActiveInfo(null);
-            setIsShopOpen(false);
-            setIsSpellShopOpen(false);
-            setIsDiceLogOpen(false);
-            setRollState((prev) => ({ ...prev, characteristic: null }));
-            setIsCharacterBuilderOpen(true);
-            closeMobileNavigation();
-          }}
-          onOpenDiceLog={() => {
-            setActiveInfo(null);
-            setIsShopOpen(false);
-            setIsDiceLogOpen(true);
-            closeMobileNavigation();
-          }}
-          selectedCharacterId={selectedCharacterId}
-          setIsMobileCharacterListOpen={setIsMobileCharacterListOpen}
-          setSelectedCharacterId={setSelectedCharacterId}
-        />
-
-        <DiceLogSidebar
-          activeRollerRef={activeRollerRef}
-          archiveRoll={archiveRoll}
-          canRollCritical={canRollCritical}
-          canUseFortuneActions={canUseFortuneActions}
-          canUseResilienceAction={canUseResilienceAction}
-          displayRoll={displayRoll}
-          executeRoll={executeRoll}
-          formatSignedSl={formatSignedSl}
-          getDamageTotal={getDamageTotal}
-          getDifficultyLabel={getDifficultyLabel}
-          getHitLocation={getHitLocation}
-          getIsCritical={getIsCritical}
-          getOutcome={getOutcome}
-          getRollBaseValue={getRollBaseValue}
-          getRollTarget={getRollTarget}
-          getTargetBonusTotal={getTargetBonusTotal}
-          getTestTypeTitle={getTestTypeTitle}
-          handleAddSl={handleAddSl}
-          handleIWillNotFail={handleIWillNotFail}
-          handleReroll={handleReroll}
-          handleRollCritical={handleRollCritical}
-          isOpen={isDiceLogOpen || Boolean(rollState.characteristic)}
-          rollHistory={rollHistory}
-          rollState={rollState}
-          setIsDiceLogOpen={setIsDiceLogOpen}
-          setRollState={setRollState}
-        />
-
-        <Suspense fallback={null}>
-          {activeInfo ? (
-            <InfoSidebar
-              activeInfo={activeInfo}
-              setActiveInfo={setActiveInfo}
-              characterData={characterData}
-              characterSkills={characterSkills}
-              advancementTalentNames={advancementTalentNames}
-              ruleset={ruleset}
-              rulesIndex={rulesIndex}
-              getCharacteristicDescription={getCharacteristicDescription}
-              formatSpellDuration={formatSpellDuration}
-              skillListRefs={skillListRefs}
-              propertyListRefs={propertyListRefs}
-              talentListRefs={talentListRefs}
-            />
-          ) : null}
-          {isShopOpen ? (
-            <ShopSidebar
-              isOpen={isShopOpen}
-              coins={formattedCoins}
-              ownedItemIds={ownedShopItemIds}
-              onAddToInventory={handleAddShopItem}
-              onBuy={handleAddShopItem}
-              onClose={() => setIsShopOpen(false)}
-            />
-          ) : null}
-          {isSpellShopOpen ? (
-            <SpellShopSidebar
-              isOpen={isSpellShopOpen}
-              spells={ruleset.spells}
-              knownSpellIds={knownSpellIds}
-              onAddSpell={handleAddSpell}
-              onClose={() => setIsSpellShopOpen(false)}
-            />
-          ) : null}
-        </Suspense>
-      </div>
-    </div>
+    </AppShell>
   );
 }
