@@ -1,4 +1,5 @@
 import { InlineSubtabs } from "../components/ui";
+import { SheetDataHeader, SheetDataPanel, SheetDataRow, SheetDataTable } from "../components/wfrp";
 import type { SkillSubtab } from "./tabTypes";
 
 type SkillRow = {
@@ -37,22 +38,22 @@ export function SkillsTab({
       />
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4">
-        <section className="wfrp-subpanel-shell flex flex-col">
-          <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_36px_44px_58px] gap-2 items-center">
+        <SheetDataPanel>
+          <SheetDataHeader className="grid-cols-[minmax(0,1fr)_36px_44px_58px]">
             <span className="wfrp-table-label text-left">Skill</span>
             <span className="wfrp-table-label col-span-2 text-center">Char.</span>
             <span className="wfrp-table-label text-center">Adv</span>
-          </div>
+          </SheetDataHeader>
 
-          <div className="divide-y divide-white/5">
+          <SheetDataTable>
             {visibleSkillRows.map((skill) => {
               const charValue = attributes[skill.characteristic] || 0;
               const totalValue = charValue + skill.advances;
 
               return (
-                <div
+                <SheetDataRow
                   key={skill.key}
-                  className="grid grid-cols-[minmax(0,1fr)_36px_44px_58px] items-center gap-2 wfrp-table-row group"
+                  className="grid-cols-[minmax(0,1fr)_36px_44px_58px] group"
                 >
                   <div className="flex min-w-0 items-center gap-2">
                     <button
@@ -82,11 +83,11 @@ export function SkillsTab({
                   <div className="wfrp-list-cell-strong text-center font-mono">
                     {skill.advances === 0 ? "-" : skill.advances}
                   </div>
-                </div>
+                </SheetDataRow>
               );
             })}
-          </div>
-        </section>
+          </SheetDataTable>
+        </SheetDataPanel>
       </div>
     </div>
   );
