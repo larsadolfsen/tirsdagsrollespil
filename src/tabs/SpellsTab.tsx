@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { InlineSubtabs } from "../components/ui";
+import { SheetDataHeader, SheetDataPanel, SheetDataRow, SheetDataTable } from "../components/wfrp";
 import type { ResolvedCharacterSkill, ResolvedCharacterSpell } from "../data/characters/resolved";
 import type { Characteristic } from "../types";
 import type { SpellSubtab } from "./tabTypes";
@@ -64,17 +65,17 @@ export function SpellsTab({
         }
       />
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        <div className="wfrp-subpanel flex flex-col overflow-x-hidden shadow-sm md:overflow-x-auto">
-          <div className="hidden min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4 px-4 py-1 bg-black/10 border-b border-white/5 items-center md:grid">
+        <SheetDataPanel className="wfrp-subpanel overflow-x-hidden shadow-sm md:overflow-x-auto">
+          <SheetDataHeader className="hidden min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 px-4 py-1 lg:gap-4 md:grid">
             <span className="wfrp-table-label text-center">Channel</span>
             <span className="wfrp-table-label text-left">Spell</span>
             <span className="wfrp-table-label text-center">CN</span>
             <span className="wfrp-table-label text-left">Range</span>
             <span className="wfrp-table-label text-left">Target</span>
             <span className="wfrp-table-label text-left">Duration</span>
-          </div>
+          </SheetDataHeader>
 
-          <div className="flex flex-col divide-y divide-white/5">
+          <SheetDataTable className="flex flex-col">
             {filteredSpells.map((spell) => {
               const baseWP = attributes.WP || 0;
               const chnSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
@@ -91,7 +92,10 @@ export function SpellsTab({
               };
 
               return (
-                <div key={spell.name} className="wfrp-table-row md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 lg:gap-4 md:px-4 md:py-2 md:items-center">
+                <SheetDataRow
+                  key={spell.name}
+                  className="block md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 lg:gap-4 md:px-4 md:py-2"
+                >
                   <details className="group/details md:contents">
                     <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
                       <div className="flex justify-center">
@@ -171,11 +175,11 @@ export function SpellsTab({
                       </div>
                     </div>
                   </details>
-                </div>
+                </SheetDataRow>
               );
             })}
-          </div>
-        </div>
+          </SheetDataTable>
+        </SheetDataPanel>
       </div>
     </div>
   );
