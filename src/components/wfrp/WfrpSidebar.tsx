@@ -1,5 +1,5 @@
 import type { ReactNode, RefObject } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/src/lib/utils";
@@ -42,13 +42,16 @@ export function WfrpSidebar({
   trapFocus = false,
   closeOnOutsidePointerDown = false,
 }: WfrpSidebarProps) {
-  useFocusTrap(sidebarRef ?? { current: null }, isOpen && trapFocus, onClose);
+  const internalSidebarRef = useRef<HTMLElement | null>(null);
+  const resolvedSidebarRef = sidebarRef ?? internalSidebarRef;
+
+  useFocusTrap(resolvedSidebarRef, isOpen && trapFocus, onClose);
 
   useEffect(() => {
     if (!isOpen || !closeOnOutsidePointerDown) return;
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (!sidebarRef?.current?.contains(event.target as Node)) {
+      if (!resolvedSidebarRef.current?.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -58,13 +61,13 @@ export function WfrpSidebar({
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
     };
-  }, [closeOnOutsidePointerDown, isOpen, onClose, sidebarRef]);
+  }, [closeOnOutsidePointerDown, isOpen, onClose, resolvedSidebarRef]);
 
   return (
     <AnimatePresence mode="wait">
       {isOpen && (
         <motion.aside
-          ref={sidebarRef}
+          ref={resolvedSidebarRef}
           key={motionKey}
           initial={{ x: "100%", opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
