@@ -79,6 +79,11 @@
   --shadow-wfrp-gold-glow: 0 0 4px rgb(214 168 86 / 65%);
   --shadow-wfrp-popover: 0 14px 40px rgb(0 0 0 / 45%);
 
+  --color-gray-400: var(--color-wfrp-muted-text);
+  --color-gray-500: var(--color-wfrp-muted-text);
+  --color-gray-600: var(--color-wfrp-muted-text);
+  --color-gray-700: var(--color-wfrp-muted-text);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -319,12 +324,4 @@ body {
 .wfrp-card [class~="border-2"][class*="border-wfrp"] {
   border-color: var(--color-wfrp-border);
   border-width: 1px;
-}
-
-/* Keep grey card text consistent across Tailwind grey utility usage. */
-.text-gray-400,
-.text-gray-500,
-.text-gray-600,
-.text-gray-700 {
-  color: var(--color-wfrp-muted-text);
 }
