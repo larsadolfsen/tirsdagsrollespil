@@ -19,6 +19,7 @@ type SkillRow = {
 };
 
 const desktopSkillGridClass = "md:grid-cols-[56px_minmax(0,1fr)_56px_56px_56px_56px_48px]";
+const mobileTableGridClass = "grid-cols-[40px_minmax(0,1fr)_48px]";
 
 const characteristicNames: Record<string, string> = {
   Ag: "Agility",
@@ -62,13 +63,13 @@ export function SkillsTab({
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card space-y-4">
         <SheetDataPanel>
-          <SheetDataHeader className={`hidden ${desktopSkillGridClass} md:grid md:gap-0`}>
+          <SheetDataHeader className={`grid ${mobileTableGridClass} ${desktopSkillGridClass} gap-0 md:grid`}>
             <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
             <SheetDataHeaderCell>Skill</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="right">Char.</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="right">Score</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="right">Adv.</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="right">Total</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="hidden md:block" align="right">Char.</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="hidden md:block" align="right">Score</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="hidden md:block" align="right">Adv.</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="hidden md:block" align="right">Total</SheetDataHeaderCell>
             <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
           </SheetDataHeader>
 
@@ -82,7 +83,7 @@ export function SkillsTab({
                 <SheetDataAccordionRow
                   key={skill.key}
                   className="wfrp-skill-row"
-                  summaryClassName={`wfrp-skill-row-summary grid-cols-[40px_minmax(0,1fr)_48px] md:grid ${desktopSkillGridClass} md:gap-0`}
+                  summaryClassName={`wfrp-skill-row-summary ${mobileTableGridClass} md:grid ${desktopSkillGridClass} md:gap-0`}
                   contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                   summary={(
                     <>
