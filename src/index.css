@@ -24,11 +24,11 @@
   --input: #303030;
   --ring: #c5a059;
   --overlay: rgb(0 0 0 / 80%);
-  --sidebar: #1E1E1E;
+  --sidebar: #303030;
   --sidebar-foreground: #f0f0f0;
   --sidebar-primary: #c5a059;
   --sidebar-primary-foreground: #121212;
-  --sidebar-accent: #1E1E1E;
+  --sidebar-accent: #303030;
   --sidebar-accent-foreground: #f4e4bc;
   --sidebar-border: #303030;
   --sidebar-ring: #c5a059;
@@ -56,7 +56,7 @@
   --color-wfrp-surface-muted-hover: #1E1E1E;
   --color-wfrp-surface-subtle: #1E1E1E;
   --color-wfrp-popover: #1E1E1E;
-  --color-wfrp-menu: #1E1E1E;
+  --color-wfrp-menu: #303030;
   --color-wfrp-border: #303030;
   --color-wfrp-border-muted: #2f2f2f;
   --color-wfrp-brass-border: #3a3324;
@@ -163,11 +163,11 @@
 }
 
 @utility wfrp-sidebar-shell {
-  @apply wfrp-surface-strong fixed top-0 right-0 h-full flex flex-col z-50 overflow-hidden border-l shadow-2xl;
+  @apply fixed top-0 right-0 h-full flex flex-col z-50 overflow-hidden border-l border-wfrp-border bg-sidebar shadow-2xl;
 }
 
 @utility wfrp-sidebar-header {
-  @apply flex items-center justify-between border-b border-wfrp-border bg-card;
+  @apply flex items-center justify-between border-b border-wfrp-border bg-sidebar;
 }
 
 @utility wfrp-stepper-btn {
