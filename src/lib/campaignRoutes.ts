@@ -1,11 +1,29 @@
 import type { MainTab } from "../tabs/tabTypes";
 
 const campaignCharacterRoutePattern = /^\/kampagne\/([^/]+)\/karakter\/([^/]+)(?:\/([^/?#]+))?\/?$/;
-const mainTabIds: readonly MainTab[] = ["skills", "actions", "inventory", "spells", "features", "journal", "career"];
+const mainTabPathSegments: Record<MainTab, string> = {
+  skills: "faner",
+  actions: "actions",
+  inventory: "inventory",
+  spells: "spells",
+  features: "talents",
+  journal: "journal",
+  career: "advance",
+};
 const tabAliases: Record<string, MainTab> = {
-  faner: "skills",
-  talents: "features",
+  actions: "actions",
+  action: "actions",
   advance: "career",
+  career: "career",
+  careers: "career",
+  faner: "skills",
+  features: "features",
+  inventory: "inventory",
+  journal: "journal",
+  notes: "journal",
+  skills: "skills",
+  spells: "spells",
+  talents: "features",
 };
 
 export type CampaignCharacterRoute = {
@@ -16,24 +34,29 @@ export type CampaignCharacterRoute = {
 
 export const defaultCampaignId = "min-kampagne";
 
-const decodePathSegment = (value: string) => decodeURIComponent(value.replace(/\+/g, " "));
+const decodePathSegment = (value: string) => {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return null;
+  }
+};
 const encodePathSegment = (value: string) => encodeURIComponent(value);
 
 export function parseCampaignCharacterPath(pathname: string): CampaignCharacterRoute | null {
   const match = campaignCharacterRoutePattern.exec(pathname);
   if (!match) return null;
 
-  const [, campaignId, characterId, tabSegment = "skills"] = match;
-  const normalizedTab = tabSegment.toLowerCase();
-  const tab = mainTabIds.includes(normalizedTab as MainTab)
-    ? normalizedTab as MainTab
-    : tabAliases[normalizedTab];
+  const [, campaignIdSegment, characterIdSegment, tabSegment = mainTabPathSegments.skills] = match;
+  const campaignId = decodePathSegment(campaignIdSegment);
+  const characterId = decodePathSegment(characterIdSegment);
+  const tab = tabAliases[tabSegment.toLowerCase()];
 
-  if (!tab) return null;
+  if (!campaignId || !characterId || !tab) return null;
 
   return {
-    campaignId: decodePathSegment(campaignId),
-    characterId: decodePathSegment(characterId),
+    campaignId,
+    characterId,
     tab,
   };
 }
@@ -47,5 +70,5 @@ export function buildCampaignCharacterPath({
   characterId: string;
   tab: MainTab;
 }) {
-  return `/kampagne/${encodePathSegment(campaignId)}/karakter/${encodePathSegment(characterId)}/${tab}`;
+  return `/kampagne/${encodePathSegment(campaignId)}/karakter/${encodePathSegment(characterId)}/${mainTabPathSegments[tab]}`;
 }

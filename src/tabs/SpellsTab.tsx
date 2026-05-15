@@ -9,7 +9,8 @@ import {
   SheetDataMobileDetails,
   SheetDataPanel,
 } from "../components/wfrp";
-import type { ResolvedCharacterSkill, ResolvedCharacterSpell } from "../data/characters/resolved";
+import type { ResolvedCharacterSpell } from "../data/characters/resolved";
+import type { SpellListRow } from "./spells/useSpellsViewModel";
 import type { Characteristic } from "../types";
 import type { SpellSubtab } from "./tabTypes";
 
@@ -28,12 +29,7 @@ export function SpellsTab({
   spellSubtabOptions,
   activeSpellSubtab,
   setActiveSpellSubtab,
-  filteredSpells,
-  attributes,
-  characterSkills,
-  formatSpellRange,
-  formatSpellTarget,
-  formatSpellDuration,
+  spellRows,
   handleRoll,
   openSpellInfo,
   openSpellShop,
@@ -41,12 +37,7 @@ export function SpellsTab({
   spellSubtabOptions: Array<{ id: SpellSubtab; label: string }>;
   activeSpellSubtab: SpellSubtab;
   setActiveSpellSubtab: (subtab: SpellSubtab) => void;
-  filteredSpells: ResolvedCharacterSpell[];
-  attributes: Record<string, number>;
-  characterSkills: ResolvedCharacterSkill[];
-  formatSpellRange: (range: string) => string;
-  formatSpellTarget: (target: string) => string;
-  formatSpellDuration: (duration: string) => string;
+  spellRows: SpellListRow[];
   handleRoll: (
     characteristic: Characteristic,
     damage?: number,
@@ -84,25 +75,9 @@ export function SpellsTab({
           </SheetDataHeader>
 
           <SheetDataList>
-            {filteredSpells.map((spell) => {
-              const baseWP = attributes.WP || 0;
-              const chnSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
-              const skillValue = chnSkill ? baseWP + chnSkill.advances : baseWP;
-              const spellRange = formatSpellRange(spell.range);
-              const spellTarget = formatSpellTarget(spell.target);
-              const spellDuration = formatSpellDuration(spell.duration);
-              const mobileDetails = [
-                { label: "CN", value: spell.cn, valueClassName: "font-mono" },
-                { label: "Range", value: spellRange },
-                { label: "Target", value: spellTarget },
-                { label: "Duration", value: spellDuration },
-              ];
+            {spellRows.map(({ channelValue, formatted, mobileDetails, spell }) => {
               const openCurrentSpellInfo = () => {
-                openSpellInfo(spell, {
-                  range: spellRange,
-                  target: spellTarget,
-                  duration: spellDuration,
-                });
+                openSpellInfo(spell, formatted);
               };
 
               return (
@@ -121,7 +96,7 @@ export function SpellsTab({
                           className="wfrp-roll-btn"
                           aria-label={`Channel ${spell.name}`}
                         >
-                          {skillValue}
+                          {channelValue}
                         </button>
                       </div>
 
@@ -146,9 +121,9 @@ export function SpellsTab({
                       <SheetDataDisclosureChevron />
 
                       <SheetDataDesktopCell align="center">{spell.cn}</SheetDataDesktopCell>
-                      <SheetDataDesktopCell truncate>{spellRange}</SheetDataDesktopCell>
-                      <SheetDataDesktopCell truncate>{spellTarget}</SheetDataDesktopCell>
-                      <SheetDataDesktopCell>{spellDuration}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell truncate>{formatted.range}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell truncate>{formatted.target}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell>{formatted.duration}</SheetDataDesktopCell>
                     </summary>
 
                     <SheetDataMobileDetails fields={mobileDetails} />

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import {
   Dice5,
@@ -48,7 +48,7 @@ import {
   formatItemValue,
   getCharacterSkillKey,
 } from "./lib/gameSession";
-import { buildCampaignCharacterPath, defaultCampaignId, parseCampaignCharacterPath } from "./lib/campaignRoutes";
+import { useCampaignRouteSync } from "./lib/useCampaignRouteSync";
 import { mainTabButtonActiveClassName, mainTabButtonBaseClassName, mainTabButtonInactiveClassName } from "./lib/tabStyles";
 import { cn } from "./lib/utils";
 import { formatTalentEffect } from "./lib/talentEffects";
@@ -58,10 +58,6 @@ import {
   mobilePageTitleByView,
   mobileTabMenuOptions,
 } from "./tabs/tabOptions";
-import type {
-  MainTab,
-  MobileTabMenuTarget,
-} from "./tabs/tabTypes";
 import type { Characteristic, Ruleset, SkillDefinition } from "./types";
 
 const InfoSidebar = lazy(() =>
@@ -132,7 +128,6 @@ export function AppComposition() {
     setNotes,
   } = useGameSessionContext();
   const availableCharacters = useMemo(() => listCharacters(), []);
-  const currentCampaignRoute = useRef(parseCampaignCharacterPath(window.location.pathname));
   const {
     activeInfo,
     activeMainTab,
@@ -275,18 +270,6 @@ export function AppComposition() {
   const characterSkillByName = new Map<string, ResolvedCharacterSkill>(
     characterSkills.map((skill) => [skill.displayName, skill]),
   );
-  const {
-    filteredSpells,
-    openSpellInfo,
-    openSpellShop,
-    spellSubtabOptions,
-  } = useSpellsViewModel({
-    spells: characterData.spells,
-    activeSpellSubtab,
-    setActiveInfo,
-    setIsSpellShopOpen,
-    setRollState,
-  });
   const isBasicSkillOption = (option: ResolvedSkillOption) => {
     const skillDefinition = skillDefinitionById.get(option.skillId);
     return (
@@ -326,6 +309,38 @@ export function AppComposition() {
   });
   const getTalentMaxDisplay = (max: string) =>
     getTalentMaxDisplayValue(max, attributes);
+  const {
+    openSpellInfo,
+    openSpellShop,
+    spellRows,
+    spellSubtabOptions,
+  } = useSpellsViewModel({
+    activeSpellSubtab,
+    attributes,
+    characterSkills,
+    formatSpellDuration,
+    formatSpellRange,
+    formatSpellTarget,
+    setActiveInfo,
+    setIsSpellShopOpen,
+    setRollState,
+    spells: characterData.spells,
+  });
+
+  const {
+    getCurrentCampaignRoute,
+    selectCharacter,
+    selectMainTab,
+    selectMobileMainView,
+  } = useCampaignRouteSync({
+    activeMainTab,
+    availableCharacters,
+    handleMobileMainViewSelect,
+    selectedCharacterId,
+    setActiveMainTab,
+    setActiveMobileMainView,
+    setSelectedCharacterId,
+  });
 
   useEffect(() => {
     resetAppShellState();
@@ -333,94 +348,12 @@ export function AppComposition() {
     resetPendingAdvancements();
     resetDiceRoller();
 
-    const route = currentCampaignRoute.current;
+    const route = getCurrentCampaignRoute();
     if (route?.characterId === characterData.id) {
       setActiveMainTab(route.tab);
       setActiveMobileMainView(route.tab);
     }
-  }, [characterData.id, resetDiceRoller, setActiveMainTab, setActiveMobileMainView]);
-
-  const syncCampaignRoute = useCallback(({
-    characterId = selectedCharacterId,
-    tab = activeMainTab,
-    mode = "replace",
-  }: {
-    characterId?: string;
-    tab?: MainTab;
-    mode?: "push" | "replace";
-  } = {}) => {
-    const nextPath = buildCampaignCharacterPath({
-      campaignId: currentCampaignRoute.current?.campaignId ?? defaultCampaignId,
-      characterId,
-      tab,
-    });
-    const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
-
-    currentCampaignRoute.current = {
-      campaignId: currentCampaignRoute.current?.campaignId ?? defaultCampaignId,
-      characterId,
-      tab,
-    };
-
-    if (window.location.pathname === nextPath) {
-      return;
-    }
-
-    if (mode === "push") {
-      window.history.pushState(null, "", nextUrl);
-      return;
-    }
-
-    window.history.replaceState(null, "", nextUrl);
-  }, [activeMainTab, selectedCharacterId]);
-
-  useEffect(() => {
-    const applyRoute = (pathname: string) => {
-      const route = parseCampaignCharacterPath(pathname);
-      if (!route) return;
-
-      currentCampaignRoute.current = route;
-
-      if (availableCharacters.some((character) => character.id === route.characterId)) {
-        setSelectedCharacterId(route.characterId);
-      }
-
-      setActiveMainTab(route.tab);
-      setActiveMobileMainView(route.tab);
-    };
-
-    applyRoute(window.location.pathname);
-
-    const handlePopState = () => applyRoute(window.location.pathname);
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [availableCharacters, setActiveMainTab, setActiveMobileMainView, setSelectedCharacterId]);
-
-  useEffect(() => {
-    syncCampaignRoute();
-  }, [syncCampaignRoute]);
-
-  const selectMainTab = (tab: MainTab) => {
-    syncCampaignRoute({ tab, mode: "push" });
-    setActiveMainTab(tab);
-    setActiveMobileMainView(tab);
-  };
-
-  const selectMobileMainView = (target: MobileTabMenuTarget) => {
-    if (target !== "characteristics") {
-      syncCampaignRoute({ tab: target, mode: "push" });
-    }
-
-    handleMobileMainViewSelect(target);
-  };
-
-  const selectCharacter = (characterId: string) => {
-    syncCampaignRoute({ characterId, mode: "push" });
-    setSelectedCharacterId(characterId);
-  };
+  }, [characterData.id, getCurrentCampaignRoute, resetDiceRoller, setActiveMainTab, setActiveMobileMainView]);
 
   useEffect(() => {
     if (activeInfo) {
@@ -1354,12 +1287,7 @@ export function AppComposition() {
                         spellSubtabOptions={spellSubtabOptions}
                         activeSpellSubtab={activeSpellSubtab}
                         setActiveSpellSubtab={setActiveSpellSubtab}
-                        filteredSpells={filteredSpells}
-                        attributes={attributes}
-                        characterSkills={characterSkills}
-                        formatSpellRange={formatSpellRange}
-                        formatSpellTarget={formatSpellTarget}
-                        formatSpellDuration={formatSpellDuration}
+                        spellRows={spellRows}
                         handleRoll={handleRoll}
                         openSpellInfo={openSpellInfo}
                         openSpellShop={openSpellShop}
