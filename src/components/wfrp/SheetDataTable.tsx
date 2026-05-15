@@ -72,7 +72,7 @@ export function SheetDataAccordionRow({
 
 export function SheetDataAccordionDetails({
   description,
-  descriptionFallback = "No description available.",
+  descriptionFallback = "No details available.",
   rows = [],
 }: {
   description?: ReactNode;
@@ -86,8 +86,8 @@ export function SheetDataAccordionDetails({
   return (
     <div className="flex flex-col gap-2">
       <div>
-        <p className="max-w-3xl text-[11px] font-bold leading-relaxed text-gray-400">
-          {description || <span className="italic text-gray-500">{descriptionFallback}</span>}
+        <p className="max-w-3xl text-[11px] font-bold leading-relaxed text-wfrp-muted-text">
+          {description || <span className="italic text-wfrp-muted-text">{descriptionFallback}</span>}
         </p>
       </div>
 
@@ -97,12 +97,12 @@ export function SheetDataAccordionDetails({
             <div
               key={row.label}
               className={cn(
-                "grid grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 text-[11px] font-bold text-gray-400",
+                "grid grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 text-[11px] font-bold text-wfrp-muted-text",
                 row.bordered && "border-y border-white/10 py-1",
               )}
             >
-              <span className="wfrp-list-cell-strong text-gray-500">{row.label}</span>
-              <span className="wfrp-sidebar-body text-right text-gray-300">{row.value}</span>
+              <span className="wfrp-list-cell-strong text-wfrp-muted-text">{row.label}</span>
+              <span className="wfrp-sidebar-body text-right text-card-foreground">{row.value}</span>
             </div>
           ))}
         </div>
@@ -113,7 +113,7 @@ export function SheetDataAccordionDetails({
 
 export function SheetEmptyState({ title, children, className }: { title: string; children?: ReactNode; className?: string }) {
   return (
-    <div className={cn("flex min-h-48 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-white/5 text-gray-700", className)}>
+    <div className={cn("flex min-h-48 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-white/5 text-wfrp-muted-text", className)}>
       <span className="text-[9px] font-black uppercase tracking-widest">{title}</span>
       {children ? <p className="text-[10px] italic">{children}</p> : null}
     </div>
