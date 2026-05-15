@@ -1,6 +1,7 @@
+import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
-import { AdvancementSection, ScrollableTabStrip } from "../components/ui";
+import { AdvancementSection, InlineSubtabs } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import { useGameSessionContext } from "../context/GameSessionContext";
 import type {
@@ -13,6 +14,7 @@ type AdvancementCharacteristic = {
   key: string;
   label: string;
   advances: number;
+  initial: number;
   pendingAdvances: number;
   value: number;
 };
@@ -64,9 +66,12 @@ interface CareerTabProps {
   getCharacteristicLabel: (key: string) => string;
   removePendingCharacteristicAdvance: (characteristicKey: string) => void;
   purchaseCharacteristicAdvance: (characteristicKey: string) => void;
+  updateCharacteristicInitial: (characteristicKey: string, initialValue: number) => void;
+  updateCharacteristicAdvances: (characteristicKey: string, advances: number) => void;
   advancementSkillSections: AdvancementSkillSection[];
   removePendingSkillAdvance: (skillName: string) => void;
   purchaseSkillAdvance: (skillName: string) => void;
+  updateSkillAdvances: (skillName: string, advances: number) => void;
   advancementTalentNames: string[];
   characterTalents: ResolvedCharacterTalent[];
   pendingTalentPurchases: Record<string, number>;
@@ -110,9 +115,12 @@ export function CareerTab({
   getCharacteristicLabel,
   removePendingCharacteristicAdvance,
   purchaseCharacteristicAdvance,
+  updateCharacteristicInitial,
+  updateCharacteristicAdvances,
   advancementSkillSections,
   removePendingSkillAdvance,
   purchaseSkillAdvance,
+  updateSkillAdvances,
   advancementTalentNames,
   characterTalents,
   pendingTalentPurchases,
@@ -129,24 +137,66 @@ export function CareerTab({
     setXpTotal((current) => Math.max(0, current + amount));
   };
 
+  const [isAdvancementEditMode, setIsAdvancementEditMode] = useState(false);
+  const [characteristicInitialDrafts, setCharacteristicInitialDrafts] = useState<Record<string, number>>({});
+  const [characteristicAdvanceDrafts, setCharacteristicAdvanceDrafts] = useState<Record<string, number>>({});
+  const [skillAdvanceDrafts, setSkillAdvanceDrafts] = useState<Record<string, number>>({});
+
+  const beginAdvancementEdit = () => {
+    setCharacteristicInitialDrafts(
+      Object.fromEntries(advancementCharacteristics.map((item) => [item.key, item.initial])),
+    );
+    setCharacteristicAdvanceDrafts(
+      Object.fromEntries(advancementCharacteristics.map((item) => [item.key, item.advances])),
+    );
+    setSkillAdvanceDrafts(
+      Object.fromEntries(
+        advancementSkillSections.flatMap((section) =>
+          section.skills.map((skill) => [skill.skillName, skill.baseAdvances]),
+        ),
+      ),
+    );
+    setIsAdvancementEditMode(true);
+  };
+
+  const cancelAdvancementEdit = () => {
+    setIsAdvancementEditMode(false);
+    setCharacteristicInitialDrafts({});
+    setCharacteristicAdvanceDrafts({});
+    setSkillAdvanceDrafts({});
+  };
+
+  const handleSaveCareerClick = () => {
+    if (isAdvancementEditMode) {
+      Object.entries(characteristicInitialDrafts).forEach(([key, value]) => {
+        updateCharacteristicInitial(key, Number(value));
+      });
+      Object.entries(characteristicAdvanceDrafts).forEach(([key, value]) => {
+        updateCharacteristicAdvances(key, Number(value));
+      });
+      Object.entries(skillAdvanceDrafts).forEach(([skillName, value]) => {
+        updateSkillAdvances(skillName, Number(value));
+      });
+      cancelAdvancementEdit();
+    }
+
+    if (hasPendingCareerChanges) {
+      saveCareerChanges();
+    }
+  };
+
+  const parseDraftNumber = (value: string) => Math.max(0, Math.floor(Number(value) || 0));
+
   return (
     <div className="flex flex-col h-full min-h-0">
-      <ScrollableTabStrip className="sticky top-0 z-10 flex items-center gap-2 p-3 lg:p-4 bg-wfrp-bg border-b border-white/5 overflow-x-auto no-scrollbar">
-        {careerSubtabOptions.map((option) => (
-          <button
-            key={option.id}
-            onClick={() => setActiveCareerSubtab(option.id)}
-            className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
-              activeCareerSubtab === option.id
-                ? "bg-wfrp-tab-active text-white shadow-lg"
-                : "bg-black/40 text-gray-400 hover:bg-wfrp-surface-raised hover:text-gray-200"
-            }`}
-            aria-pressed={activeCareerSubtab === option.id}
-          >
-            {option.label}
-          </button>
-        ))}
-      </ScrollableTabStrip>
+      <div className="sticky top-0 z-10 bg-wfrp-bg">
+        <InlineSubtabs<CareerSubtab>
+          options={careerSubtabOptions}
+          activeId={activeCareerSubtab}
+          onChange={setActiveCareerSubtab}
+          ariaLabel="Career section tabs"
+        />
+      </div>
 
       <div className="flex flex-wrap items-center gap-2 border-b border-white/5 bg-wfrp-bg px-2 py-2 sm:px-3 lg:px-4">
         <button
@@ -184,9 +234,16 @@ export function CareerTab({
           +100
         </button>
         <button
-          onClick={saveCareerChanges}
-          disabled={!hasPendingCareerChanges}
-          className="wfrp-action-btn ml-auto h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+          onClick={isAdvancementEditMode ? cancelAdvancementEdit : beginAdvancementEdit}
+          className="wfrp-action-btn ml-auto h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300"
+          aria-label={isAdvancementEditMode ? "Cancel advancement edits" : "Edit initial and advances"}
+        >
+          {isAdvancementEditMode ? "Cancel" : "Edit"}
+        </button>
+        <button
+          onClick={handleSaveCareerClick}
+          disabled={!hasPendingCareerChanges && !isAdvancementEditMode}
+          className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
           aria-label="Save career changes"
         >
           Save
@@ -330,9 +387,43 @@ export function CareerTab({
                           {item.label} ({item.key})
                         </button>
                       </div>
-                      <div className="wfrp-list-cell-strong text-left font-mono">{item.value}</div>
+                      <div className="wfrp-list-cell-strong text-left font-mono">
+                        {isAdvancementEditMode ? (
+                          <input
+                            type="number"
+                            min={0}
+                            value={characteristicInitialDrafts[item.key] ?? item.initial}
+                            onChange={(event) =>
+                              setCharacteristicInitialDrafts((prev) => ({
+                                ...prev,
+                                [item.key]: parseDraftNumber(event.target.value),
+                              }))
+                            }
+                            className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-center font-mono text-[11px] text-white"
+                            aria-label={`Initial value for ${item.label}`}
+                          />
+                        ) : (
+                          item.initial
+                        )}
+                      </div>
                       <div className="wfrp-list-cell-strong text-center font-mono">
-                        {advancesDisplay}
+                        {isAdvancementEditMode ? (
+                          <input
+                            type="number"
+                            min={0}
+                            value={characteristicAdvanceDrafts[item.key] ?? item.advances}
+                            onChange={(event) =>
+                              setCharacteristicAdvanceDrafts((prev) => ({
+                                ...prev,
+                                [item.key]: parseDraftNumber(event.target.value),
+                              }))
+                            }
+                            className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-center font-mono text-[11px] text-white"
+                            aria-label={`Advances for ${item.label}`}
+                          />
+                        ) : (
+                          advancesDisplay
+                        )}
                       </div>
                       <div className="wfrp-list-cell-strong text-center font-mono">
                         {isAvailable ? nextCharacteristicCost : "-"}
@@ -415,7 +506,23 @@ export function CareerTab({
                                 : skillRow.baseCharacteristicValue}
                             </div>
                             <div className="wfrp-list-cell-strong text-center font-mono">
-                              {advancesDisplay}
+                              {isAdvancementEditMode ? (
+                                <input
+                                  type="number"
+                                  min={0}
+                                  value={skillAdvanceDrafts[skillRow.skillName] ?? skillRow.baseAdvances}
+                                  onChange={(event) =>
+                                    setSkillAdvanceDrafts((prev) => ({
+                                      ...prev,
+                                      [skillRow.skillName]: parseDraftNumber(event.target.value),
+                                    }))
+                                  }
+                                  className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-center font-mono text-[11px] text-white"
+                                  aria-label={`Advances for ${skillRow.skillName}`}
+                                />
+                              ) : (
+                                advancesDisplay
+                              )}
                             </div>
                             <div className="wfrp-list-cell-strong text-center font-mono">
                               {skillRow.isCareerSkill ? skillRow.nextSkillCost : "-"}

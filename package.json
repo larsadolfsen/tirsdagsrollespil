@@ -13,7 +13,8 @@
     "lint": "tsc --noEmit",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "test:unit": "tsx --test src/features/dice/diceMath.test.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",

@@ -4,28 +4,26 @@ import type {
   ResolvedCharacterRecord,
   ResolvedCharacterSkill,
   ResolvedCharacterTalent,
-} from "../data/characters/resolved";
-import { getApplicableTalentEffects, getTalentSlBonus } from "../lib/talentEffects";
-import type { ActiveInfoState } from "../components/appTypes";
-import type { Characteristic, Ruleset } from "../types";
-import type { RollBonusSource, RollHistoryItem, RollState } from "../types/dice";
-
-const createInitialRollState = (): RollState => ({
-  characteristic: null,
-  title: null,
-  baseValueOverride: null,
-  testType: "dramatic",
-  modifier: 0,
-  targetBonusSources: [],
-  result: null,
-  isSuccess: null,
-  rawSl: null,
-  sl: null,
-  isRolling: false,
-  damageBase: null,
-  bonusSources: [],
-  fortuneActionUsed: false,
-});
+} from "../../data/characters/resolved";
+import { getApplicableTalentEffects, getTalentSlBonusSources } from "../../lib/talentEffects";
+import type { ActiveInfoState } from "../../components/appTypes";
+import type { Characteristic, Ruleset } from "../../types";
+import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/dice";
+import {
+  calculateRollResult,
+  createInitialRollState,
+  createRollHistoryItem,
+  formatSignedSl,
+  getDamageTotal,
+  getDifficultyLabel,
+  getHitLocation,
+  getIsCritical,
+  getOutcome,
+  getRollBaseValue as getRollBaseValueForCharacter,
+  getRollTarget as getRollTargetForCharacter,
+  getTargetBonusTotal,
+  getTestTypeTitle,
+} from "./diceMath";
 
 interface UseDiceRollerOptions {
   characterData: ResolvedCharacterRecord;
@@ -89,92 +87,23 @@ export function useDiceRoller({
     setRollState((prev) => ({ ...prev, characteristic: null }));
   };
 
-  const formatSignedSl = (
-    value: number,
-    zeroSign: "positive" | "negative" | "neutral" = "neutral",
-  ) => {
-    if (value === 0) {
-      if (zeroSign === "positive") return "+0";
-      if (zeroSign === "negative") return "-0";
-      return "0";
-    }
-
-    return value > 0 ? `+${value}` : `${value}`;
-  };
-
-  const getRollBaseValue = (state: Pick<RollState, "characteristic"> & { baseValueOverride?: number | null }) => {
-    if (!state.characteristic) return 0;
-    if ("baseValueOverride" in state && state.baseValueOverride !== null) return state.baseValueOverride;
-
-    const baseValue = (characterData.attributes[state.characteristic.key] || 0);
-    const skill = characterSkills.find((entry) => entry.displayName === state.characteristic?.label);
-
-    return skill ? baseValue + skill.advances : baseValue;
-  };
-
-  const getTargetBonusTotal = (targetBonusSources: RollBonusSource[]) =>
-    targetBonusSources.reduce((sum, bonus) => sum + bonus.value, 0);
+  const getRollBaseValue = (state: Pick<RollState, "characteristic"> & { baseValueOverride?: number | null }) =>
+    getRollBaseValueForCharacter(characterData, characterSkills, state);
 
   const getRollTarget = (
     state: Pick<RollState, "characteristic" | "modifier" | "targetBonusSources"> & {
       baseValueOverride?: number | null;
     },
-  ) => getRollBaseValue(state) + state.modifier + getTargetBonusTotal(state.targetBonusSources);
-
-  const getDamageTotal = (state: Pick<RollState, "damageBase" | "sl" | "isSuccess">) => {
-    if (state.damageBase === null || state.sl === null) return null;
-    return state.damageBase + state.sl;
-  };
-
-  const getHitLocation = (result: number | null) => {
-    if (result === null) return null;
-
-    const normalized = result === 100 ? 0 : result;
-    const reversed = (normalized % 10) * 10 + Math.floor(normalized / 10);
-
-    if (reversed >= 1 && reversed <= 9) return "Head";
-    if (reversed >= 10 && reversed <= 24) return "Left Arm";
-    if (reversed >= 25 && reversed <= 44) return "Right Arm";
-    if (reversed >= 45 && reversed <= 79) return "Body";
-    if (reversed >= 80 && reversed <= 89) return "Left Leg";
-    return "Right Leg";
-  };
-
-  const getIsCritical = (state: Pick<RollState, "testType" | "result" | "isSuccess">) => {
-    if (state.testType !== "attack" || state.result === null) return false;
-    const criticalRolls = new Set([11, 22, 33, 44, 55, 66, 77, 88, 99]);
-    return criticalRolls.has(state.result);
-  };
-
-  const getBonusTotal = (bonusSources: RollBonusSource[]) =>
-    bonusSources.reduce((sum, bonus) => sum + bonus.value, 0);
-
-  const getTestTypeTitle = (testType: RollState["testType"] | RollHistoryItem["testType"]) => {
-    if (testType === "attack") return "Attack Test";
-    if (testType === "channeling") return "Channeling Test";
-    if (testType === "corruption") return "Corruption Test";
-    return "Dramatic Test";
-  };
+  ) => getRollTargetForCharacter(characterData, characterSkills, state);
 
   const archiveRoll = (state: RollState, labelSuffix?: string) => {
-    if (!state.characteristic || state.result === null) return;
+    const historyItem = createRollHistoryItem({
+      getTarget: getRollTarget,
+      labelSuffix,
+      state,
+    });
 
-    const historyItem: RollHistoryItem = {
-      id: Math.random().toString(36).substring(2, 9),
-      label: `${state.characteristic.label}${labelSuffix ?? ""}`,
-      title: state.title ? `${state.title}${labelSuffix ?? ""}` : null,
-      testType: state.testType,
-      result: state.result,
-      sl: state.sl || 0,
-      isSuccess: state.isSuccess || false,
-      modifier: state.modifier,
-      targetBonusSources: state.targetBonusSources,
-      target: getRollTarget(state),
-      damage: getDamageTotal(state),
-      hitLocation: state.testType === "attack" ? getHitLocation(state.result) : null,
-      isCritical: getIsCritical(state),
-    };
-
+    if (!historyItem) return;
     setRollHistory((prev) => [historyItem, ...prev]);
   };
 
@@ -234,27 +163,23 @@ export function useDiceRoller({
       ?? (options?.slBonusLabel || options?.slBonus
         ? [{ label: options?.slBonusLabel ?? "Bonus", value: options?.slBonus ?? 0 }]
         : []);
+    const testType = options?.testType ?? (damage === undefined ? "dramatic" : "attack");
     const talentEffects = getApplicableTalentEffects({
       talents: characterTalents,
       talentDefinitions: ruleset.talents,
-      context: { testName: char.label },
+      context: {
+        testName: testType === "corruption" ? "Corruption Test" : char.label,
+        testType,
+      },
     });
-    const talentSlBonus = getTalentSlBonus(talentEffects);
-    const bonusSources = talentSlBonus === 0
-      ? optionBonusSources
-      : [
-          ...optionBonusSources,
-          {
-            label: "Talents",
-            value: talentSlBonus,
-          },
-        ];
+    const talentBonusSources = getTalentSlBonusSources(talentEffects);
+    const bonusSources = [...optionBonusSources, ...talentBonusSources];
 
     setRollState({
       characteristic: char,
       title: options?.title ?? null,
       baseValueOverride: options?.baseValueOverride ?? null,
-      testType: options?.testType ?? (damage === undefined ? "dramatic" : "attack"),
+      testType,
       modifier: 0,
       targetBonusSources: [],
       result: null,
@@ -262,7 +187,7 @@ export function useDiceRoller({
       rawSl: null,
       sl: null,
       isRolling: false,
-      damageBase: damage || null,
+      damageBase: damage ?? null,
       bonusSources,
       fortuneActionUsed: false,
     });
@@ -271,34 +196,23 @@ export function useDiceRoller({
   const executeRoll = () => {
     if (!rollState.characteristic) return;
 
-    const baseValue = characterData.attributes[rollState.characteristic.key] || 0;
-    const skill = characterSkills.find((skillEntry) => skillEntry.displayName === rollState.characteristic?.label);
-    const value = skill ? baseValue + skill.advances : baseValue;
-
-    const target = value + rollState.modifier + getTargetBonusTotal(rollState.targetBonusSources);
+    const target = getRollTarget(rollState);
     const roll = Math.floor(Math.random() * 100);
-    const finalRoll = roll === 0 ? 100 : roll;
-
-    let success = finalRoll <= target;
-    if (finalRoll <= 5) success = true;
-    if (finalRoll >= 96) success = false;
-
-    const targetTens = Math.floor(target / 10);
-    const rollTens = Math.floor(finalRoll / 10);
-    const sl = targetTens - rollTens;
 
     setRollState((prev) => {
-      const totalBonus = getBonusTotal(prev.bonusSources);
-      const totalSl = sl + totalBonus;
-      const finalSuccess = totalBonus !== 0 ? totalSl >= 0 : success;
+      const result = calculateRollResult({
+        bonusSources: prev.bonusSources,
+        roll,
+        target,
+      });
 
       return {
         ...prev,
         isRolling: true,
-        result: finalRoll,
-        isSuccess: finalSuccess,
-        rawSl: sl,
-        sl: totalSl,
+        result: result.finalRoll,
+        isSuccess: result.isSuccess,
+        rawSl: result.rawSl,
+        sl: result.sl,
       };
     });
 
@@ -336,33 +250,6 @@ export function useDiceRoller({
       bonusSources: [],
       fortuneActionUsed: false,
     });
-  };
-
-  const getOutcome = (sl: number, isSuccess: boolean) => {
-    if (isSuccess) {
-      if (sl >= 6) return "Astounding Success";
-      if (sl >= 4) return "Impressive Success";
-      if (sl >= 2) return "Success";
-      return "Marginal Success";
-    }
-
-    if (sl <= -6) return "Astounding Failure";
-    if (sl <= -4) return "Impressive Failure";
-    if (sl <= -2) return "Failure";
-    return "Marginal Failure";
-  };
-
-  const getDifficultyLabel = (modifier: number) => {
-    switch (modifier) {
-      case 60: return "Very Easy";
-      case 40: return "Easy";
-      case 20: return "Average";
-      case 0: return "Challenging";
-      case -10: return "Difficult";
-      case -20: return "Hard";
-      case -30: return "Very Hard";
-      default: return modifier > 0 ? "Bonus" : "Penalty";
-    }
   };
 
   const canUseFortuneActions =

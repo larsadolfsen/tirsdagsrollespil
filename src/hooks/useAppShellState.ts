@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { ActiveInfoState } from "../components/appTypes";
 import type {
   ActionCategory,
@@ -26,17 +26,19 @@ export function useAppShellState() {
 
   const mobileNavigation = useMobileNavigation({ setActiveMainTab });
 
-  const resetAppShellState = () => {
+  const resetAppShellState = useCallback(() => {
     setActiveInfo(null);
     setActiveMainTab("skills");
     mobileNavigation.setActiveMobileMainView("characteristics");
     setActiveActionCategory("all");
     setActiveSkillSubtab("trained");
+    setActiveSpellSubtab("all");
     setActiveInventorySubtab("all");
     setActiveCareerSubtab("all");
     setActiveJournalSubtab("sessions");
     setIsShopOpen(false);
-  };
+    setIsSpellShopOpen(false);
+  }, [mobileNavigation.setActiveMobileMainView]);
 
   return {
     activeInfo,

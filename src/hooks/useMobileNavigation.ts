@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { MainTab, MobileTabMenuTarget } from "../tabs/tabTypes";
 
@@ -13,7 +13,7 @@ export function useMobileNavigation({ setActiveMainTab }: UseMobileNavigationOpt
   const [isMobileCharacterListOpen, setIsMobileCharacterListOpen] = useState(false);
   const [isMobilePortraitMenuOpen, setIsMobilePortraitMenuOpen] = useState(false);
 
-  const handleMobileMainViewSelect = (target: MobileTabMenuTarget) => {
+  const handleMobileMainViewSelect = useCallback((target: MobileTabMenuTarget) => {
     setActiveMobileMainView(target);
 
     if (target === "characteristics") {
@@ -21,12 +21,12 @@ export function useMobileNavigation({ setActiveMainTab }: UseMobileNavigationOpt
     }
 
     setActiveMainTab(target);
-  };
+  }, [setActiveMainTab]);
 
-  const closeMobileNavigation = () => {
+  const closeMobileNavigation = useCallback(() => {
     setIsMobileNavigationOpen(false);
     setIsMobileCharacterListOpen(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (!isMobileNavigationOpen) return;
@@ -42,11 +42,11 @@ export function useMobileNavigation({ setActiveMainTab }: UseMobileNavigationOpt
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [isMobileNavigationOpen]);
 
-  const openMobileNavigation = (showCharacterList = false) => {
+  const openMobileNavigation = useCallback((showCharacterList = false) => {
     setIsMobilePortraitMenuOpen(false);
     setIsMobileCharacterListOpen(showCharacterList);
     setIsMobileNavigationOpen(true);
-  };
+  }, []);
 
   return {
     activeMobileMainView,

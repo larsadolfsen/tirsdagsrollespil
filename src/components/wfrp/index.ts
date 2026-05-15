@@ -7,9 +7,13 @@ export {
   SheetEmptyState,
 } from "./SheetDataTable";
 export {
+  SheetDataDesktopCell,
+  SheetDataDisclosureChevron,
+  SheetDataInfoButton,
   SheetDataList,
   SheetDataListRow,
   SheetDataMobileDetails,
+  SheetDataResponsiveListRow,
   SheetRowActionButton,
 } from "./SheetDataList";
 export type { SheetDataMobileDetailField } from "./SheetDataList";

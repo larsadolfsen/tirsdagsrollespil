@@ -12,13 +12,12 @@ import { motion, AnimatePresence } from "motion/react";
 import { AppShell } from "./components/AppShell";
 import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
 import { CharacterHeader } from "./components/CharacterHeader";
-import { DiceLogSidebar } from "./components/DiceLogSidebar";
 import { MobileCharacterHeader } from "./components/MobileCharacterHeader";
 import { MobileTabMenu } from "./components/MobileTabMenu";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
 import { useCharacterDerivedStats } from "./hooks/useCharacterDerivedStats";
-import { useDiceRoller } from "./hooks/useDiceRoller";
+import { DiceLogSidebar, useDiceRoller } from "./features/dice";
 import { useCareerAdvancement } from "./hooks/useCareerAdvancement";
 import { useInventoryActions } from "./hooks/useInventoryActions";
 import { useNotesViewModel } from "./hooks/useNotesViewModel";
@@ -35,10 +34,7 @@ import {
   getConsumableBaseName,
   isBackpackContainerItem,
 } from "./tabs/inventory/inventoryUtils";
-import {
-  filterSpellsBySubtab,
-  getSpellSubtabOptions,
-} from "./tabs/spells/spellUtils";
+import { useSpellsViewModel } from "./tabs/spells/useSpellsViewModel";
 import {
   getCharacterTalentRows,
   getTalentMaxDisplay as getTalentMaxDisplayValue,
@@ -52,6 +48,9 @@ import {
   formatItemValue,
   getCharacterSkillKey,
 } from "./lib/gameSession";
+import { useCampaignRouteSync } from "./lib/useCampaignRouteSync";
+import { mainTabButtonActiveClassName, mainTabButtonBaseClassName, mainTabButtonInactiveClassName } from "./lib/tabStyles";
+import { cn } from "./lib/utils";
 import { formatTalentEffect } from "./lib/talentEffects";
 import { UI_LABELS } from "./labels";
 import {
@@ -59,9 +58,6 @@ import {
   mobilePageTitleByView,
   mobileTabMenuOptions,
 } from "./tabs/tabOptions";
-import type {
-  MobileTabMenuTarget,
-} from "./tabs/tabTypes";
 import type { Characteristic, Ruleset, SkillDefinition } from "./types";
 
 const InfoSidebar = lazy(() =>
@@ -117,6 +113,7 @@ export function AppComposition() {
     currentCareerRank,
     setCurrentCareerRank,
     currentCharacteristicAdvances,
+    setCurrentCharacteristicInitials,
     setCurrentCharacteristicAdvances,
     characterSkills,
     setCharacterSkills,
@@ -273,8 +270,6 @@ export function AppComposition() {
   const characterSkillByName = new Map<string, ResolvedCharacterSkill>(
     characterSkills.map((skill) => [skill.displayName, skill]),
   );
-  const spellSubtabOptions = getSpellSubtabOptions(characterData.spells);
-  const filteredSpells = filterSpellsBySubtab(characterData.spells, activeSpellSubtab);
   const isBasicSkillOption = (option: ResolvedSkillOption) => {
     const skillDefinition = skillDefinitionById.get(option.skillId);
     return (
@@ -314,13 +309,51 @@ export function AppComposition() {
   });
   const getTalentMaxDisplay = (max: string) =>
     getTalentMaxDisplayValue(max, attributes);
+  const {
+    openSpellInfo,
+    openSpellShop,
+    spellRows,
+    spellSubtabOptions,
+  } = useSpellsViewModel({
+    activeSpellSubtab,
+    attributes,
+    characterSkills,
+    formatSpellDuration,
+    formatSpellRange,
+    formatSpellTarget,
+    setActiveInfo,
+    setIsSpellShopOpen,
+    setRollState,
+    spells: characterData.spells,
+  });
+
+  const {
+    getCurrentCampaignRoute,
+    selectCharacter,
+    selectMainTab,
+    selectMobileMainView,
+  } = useCampaignRouteSync({
+    activeMainTab,
+    availableCharacters,
+    handleMobileMainViewSelect,
+    selectedCharacterId,
+    setActiveMainTab,
+    setActiveMobileMainView,
+    setSelectedCharacterId,
+  });
 
   useEffect(() => {
     resetAppShellState();
     setActiveInventoryMenu(null);
     resetPendingAdvancements();
     resetDiceRoller();
-  }, [characterData.id, resetDiceRoller]);
+
+    const route = getCurrentCampaignRoute();
+    if (route?.characterId === characterData.id) {
+      setActiveMainTab(route.tab);
+      setActiveMobileMainView(route.tab);
+    }
+  }, [characterData.id, getCurrentCampaignRoute, resetDiceRoller, setActiveMainTab, setActiveMobileMainView]);
 
   useEffect(() => {
     if (activeInfo) {
@@ -535,6 +568,67 @@ export function AppComposition() {
         ...prev,
         [talentName]: current - 1,
       };
+    });
+  };
+
+  const clampAdvanceEditValue = (value: number) => Math.max(0, Math.floor(Number.isFinite(value) ? value : 0));
+
+  const updateCharacteristicInitial = (characteristicKey: string, initialValue: number) => {
+    setCurrentCharacteristicInitials((prev) => ({
+      ...prev,
+      [characteristicKey]: clampAdvanceEditValue(initialValue),
+    }));
+  };
+
+  const updateCharacteristicAdvances = (characteristicKey: string, advances: number) => {
+    setCurrentCharacteristicAdvances((prev) => ({
+      ...prev,
+      [characteristicKey]: clampAdvanceEditValue(advances),
+    }));
+  };
+
+  const updateSkillAdvances = (skillName: string, advances: number) => {
+    const nextAdvances = clampAdvanceEditValue(advances);
+
+    setCharacterSkills((prev) => {
+      const skillOption = rulesIndex.resolvedSkillOptions.find((option) => option.name === skillName);
+      const skillDefinition = skillOption
+        ? ruleset.skills.find((skill) => skill.id === skillOption.skillId)
+        : null;
+
+      if (!skillOption || !skillDefinition) return prev;
+
+      const skillKey = getCharacterSkillKey(skillOption);
+      const existingIndex = prev.findIndex((skill) => getCharacterSkillKey(skill) === skillKey);
+
+      if (existingIndex >= 0) {
+        if (nextAdvances === 0) {
+          return prev.filter((_, index) => index !== existingIndex);
+        }
+
+        return prev.map((skill, index) =>
+          index === existingIndex
+            ? {
+                ...skill,
+                advances: nextAdvances,
+              }
+            : skill,
+        );
+      }
+
+      if (nextAdvances === 0) return prev;
+
+      return [
+        ...prev,
+        {
+          skillId: skillOption.skillId,
+          specialisationId: skillOption.specialisationId,
+          advances: nextAdvances,
+          baseName: skillDefinition.name,
+          displayName: skillOption.name,
+          characteristic: skillCharacteristicById[skillOption.skillId],
+        },
+      ];
     });
   };
 
@@ -808,8 +902,7 @@ export function AppComposition() {
     setIsShopOpen(false);
     setIsSpellShopOpen(false);
     setIsDiceLogOpen(false);
-    setActiveMainTab("career");
-    setActiveMobileMainView("career");
+    selectMainTab("career");
   };
 
   const mobileAddAction =
@@ -859,7 +952,7 @@ export function AppComposition() {
           campaignName={UI_LABELS.CAMPAIGN_NAME}
           characterName={characterData.name}
           closeMobileNavigation={closeMobileNavigation}
-          handleMobileMainViewSelect={handleMobileMainViewSelect}
+          handleMobileMainViewSelect={selectMobileMainView}
           isMobileCharacterListOpen={isMobileCharacterListOpen}
           isMobileNavigationOpen={isMobileNavigationOpen}
           mobileTabMenuOptions={mobileTabMenuOptions}
@@ -880,7 +973,7 @@ export function AppComposition() {
           }}
           selectedCharacterId={selectedCharacterId}
           setIsMobileCharacterListOpen={setIsMobileCharacterListOpen}
-          setSelectedCharacterId={setSelectedCharacterId}
+          setSelectedCharacterId={selectCharacter}
         />
       )}
       sidebars={(
@@ -962,7 +1055,7 @@ export function AppComposition() {
               availableCharacters={availableCharacters}
               selectedCharacterId={selectedCharacterId}
               xpCurrent={xpCurrent}
-              onSelectCharacter={setSelectedCharacterId}
+              onSelectCharacter={selectCharacter}
               onCreateCharacter={() => {
                 setActiveInfo(null);
                 setIsShopOpen(false);
@@ -1122,15 +1215,11 @@ export function AppComposition() {
                 {mainTabOptions.map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => {
-                      setActiveMainTab(tab.id);
-                      setActiveMobileMainView(tab.id);
-                    }}
-                    className={`relative py-3.5 px-0.5 text-[11px] font-bold uppercase tracking-widest transition-all cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
-                      activeMainTab === tab.id 
-                        ? 'text-white' 
-                        : 'text-gray-400 hover:text-gray-200'
-                    }`}
+                    onClick={() => selectMainTab(tab.id)}
+                    className={cn(
+                      mainTabButtonBaseClassName,
+                      activeMainTab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
+                    )}
                     aria-current={activeMainTab === tab.id ? 'page' : undefined}
                   >
                     {tab.label}
@@ -1198,22 +1287,10 @@ export function AppComposition() {
                         spellSubtabOptions={spellSubtabOptions}
                         activeSpellSubtab={activeSpellSubtab}
                         setActiveSpellSubtab={setActiveSpellSubtab}
-                        filteredSpells={filteredSpells}
-                        attributes={attributes}
-                        characterSkills={characterSkills}
-                        formatSpellRange={formatSpellRange}
-                        formatSpellTarget={formatSpellTarget}
-                        formatSpellDuration={formatSpellDuration}
+                        spellRows={spellRows}
                         handleRoll={handleRoll}
-                        openSpellInfo={(spell, formattedSpell) => {
-                          setActiveInfo({
-                            type: 'spell',
-                            name: spell.name,
-                            extra: { ...spell, ...formattedSpell },
-                          });
-                          setRollState(prev => ({ ...prev, characteristic: null }));
-                        }}
-                        openSpellShop={() => setIsSpellShopOpen(true)}
+                        openSpellInfo={openSpellInfo}
+                        openSpellShop={openSpellShop}
                       />
                       )}
                       {activeMainTab === 'inventory' && (
@@ -1293,9 +1370,12 @@ export function AppComposition() {
                         getCharacteristicLabel={getCharacteristicLabel}
                         removePendingCharacteristicAdvance={removePendingCharacteristicAdvance}
                         purchaseCharacteristicAdvance={purchaseCharacteristicAdvance}
+                        updateCharacteristicInitial={updateCharacteristicInitial}
+                        updateCharacteristicAdvances={updateCharacteristicAdvances}
                         advancementSkillSections={advancementSkillSections}
                         removePendingSkillAdvance={removePendingSkillAdvance}
                         purchaseSkillAdvance={purchaseSkillAdvance}
+                        updateSkillAdvances={updateSkillAdvances}
                         advancementTalentNames={advancementTalentNames}
                         characterTalents={characterTalents}
                         pendingTalentPurchases={pendingTalentPurchases}

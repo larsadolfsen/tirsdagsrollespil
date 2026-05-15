@@ -1,8 +1,8 @@
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
 import { motion } from "motion/react";
-import { WfrpSidebar } from "./wfrp";
-import type { RollBonusSource, RollHistoryItem, RollState } from "../types/dice";
+import { WfrpSidebar } from "../../components/wfrp";
+import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/dice";
 
 interface DiceLogSidebarProps {
   activeRollerRef: RefObject<HTMLDivElement | null>;
