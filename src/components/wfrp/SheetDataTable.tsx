@@ -22,11 +22,15 @@ export function SheetDataTable({ className, ...props }: DivProps) {
 }
 
 export function SheetDataHeader({ className, ...props }: DivProps) {
+  const headerClassName = typeof className === "string"
+    ? className.replace(/\bhidden\b/g, "")
+    : className;
+
   return (
     <div
       className={cn(
-        "wfrp-subpanel-header grid items-center gap-2 border-t border-white/5 bg-card rounded-t-none",
-        className,
+        "wfrp-subpanel-header grid grid-cols-[40px_minmax(0,1fr)_48px] items-center gap-0 border-t border-white/5 bg-card rounded-t-none [&>*:nth-child(n+3):not(:last-child)]:hidden md:[&>*:nth-child(n+3):not(:last-child)]:block",
+        headerClassName,
       )}
       {...props}
     />
