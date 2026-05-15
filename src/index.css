@@ -72,6 +72,7 @@
   --color-wfrp-page-text: #f0f0f0;
   --color-wfrp-body-text: #d4d4d4;
   --color-wfrp-muted-text: #9ca3af;
+  --color-wfrp-mid-text: #BDBDBD;
   --shadow-wfrp-gold-glow: 0 0 4px rgb(214 168 86 / 65%);
   --shadow-wfrp-popover: 0 14px 40px rgb(0 0 0 / 45%);
 
@@ -319,7 +320,10 @@ body {
 
 /* Raise low-contrast muted text on dark panels reported by PageSpeed mobile contrast audit. */
 .text-gray-500,
-.text-gray-600,
 .text-gray-700 {
   color: var(--color-wfrp-muted-text);
+}
+
+.text-gray-600 {
+  color: var(--color-wfrp-mid-text);
 }

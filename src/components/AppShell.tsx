@@ -22,7 +22,7 @@ export function AppShell({
       <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
 
       <div className="flex flex-1 overflow-hidden relative">
-        <main className="flex-1 overflow-y-auto p-0 md:p-4 md:space-y-4">
+        <main className="flex-1 overflow-y-auto p-0">
           {children}
         </main>
 
