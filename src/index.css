@@ -15,7 +15,7 @@
   --secondary: #1E1E1E;
   --secondary-foreground: #f0f0f0;
   --muted: #1E1E1E;
-  --muted-foreground: #9ca3af;
+  --muted-foreground: #A8A8A8;
   --accent: #2a2417;
   --accent-foreground: #f4e4bc;
   --destructive: #8b0000;
@@ -71,8 +71,8 @@
   --color-wfrp-coin-brass: #e1c16e;
   --color-wfrp-page-text: #f0f0f0;
   --color-wfrp-body-text: #d4d4d4;
-  --color-wfrp-muted-text: #9ca3af;
-  --color-wfrp-mid-text: #BDBDBD;
+  --color-wfrp-muted-text: #A8A8A8;
+  --color-wfrp-mid-text: #A8A8A8;
   --color-wfrp-dice-bg: #696969;
   --color-wfrp-dice-hover-bg: #757575;
   --color-wfrp-dice-text: #FFFFFF;
@@ -321,12 +321,10 @@ body {
   border-width: 1px;
 }
 
-/* Raise low-contrast muted text on dark panels reported by PageSpeed mobile contrast audit. */
+/* Keep grey card text consistent across Tailwind grey utility usage. */
+.text-gray-400,
 .text-gray-500,
+.text-gray-600,
 .text-gray-700 {
   color: var(--color-wfrp-muted-text);
-}
-
-.text-gray-600 {
-  color: var(--color-wfrp-mid-text);
 }
