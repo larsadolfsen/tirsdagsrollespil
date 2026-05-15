@@ -48,7 +48,7 @@ export function SkillsTab({
   openSkillInfo: (skillName: string) => void;
 }) {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-card">
       <InlineSubtabs<SkillSubtab>
         options={[
           { id: "all", label: "All" },
@@ -60,7 +60,7 @@ export function SkillsTab({
         onChange={setActiveSkillSubtab}
       />
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card p-2 space-y-4">
         <SheetDataPanel>
           <SheetDataHeader className={`hidden ${desktopSkillGridClass} md:grid md:gap-0`}>
             <span className="wfrp-table-label text-center">Roll</span>
