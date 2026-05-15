@@ -1,6 +1,9 @@
 import type { MainTab } from "../tabs/tabTypes";
+import { defaultCampaignId } from "../data/campaigns";
 
-const campaignCharacterRoutePattern = /^\/kampagne\/([^/]+)\/karakter\/([^/]+)(?:\/([^/?#]+))?\/?$/;
+export { defaultCampaignId } from "../data/campaigns";
+
+const campaignCharacterRoutePattern = /^\/([^/]+)\/([^/]+)(?:\/([^/?#]+))?\/?$/;
 const mainTabPathSegments: Record<MainTab, string> = {
   skills: "faner",
   actions: "actions",
@@ -31,8 +34,6 @@ export type CampaignCharacterRoute = {
   characterId: string;
   tab: MainTab;
 };
-
-export const defaultCampaignId = "min-kampagne";
 
 const decodePathSegment = (value: string) => {
   try {
@@ -70,5 +71,5 @@ export function buildCampaignCharacterPath({
   characterId: string;
   tab: MainTab;
 }) {
-  return `/kampagne/${encodePathSegment(campaignId)}/karakter/${encodePathSegment(characterId)}/${mainTabPathSegments[tab]}`;
+  return `/${encodePathSegment(campaignId)}/${encodePathSegment(characterId)}/${mainTabPathSegments[tab]}`;
 }

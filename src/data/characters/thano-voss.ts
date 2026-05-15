@@ -1,7 +1,9 @@
 import type { CharacterRecord } from "../../types";
+import { enemyWithinCampaign } from "../campaigns";
 
 export const thanoVoss: CharacterRecord = {
   id: "thano_voss",
+  campaignId: enemyWithinCampaign.id,
   rulesetId: "wfrp4e",
   name: "Thano Voss",
   race: "Human (Reiklander)",

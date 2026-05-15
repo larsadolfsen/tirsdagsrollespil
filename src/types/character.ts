@@ -32,6 +32,7 @@ export interface CharacterCoins {
 
 export interface CharacterRecord {
   id: string;
+  campaignId: string;
   rulesetId: string;
   name: string;
   aka?: string[];

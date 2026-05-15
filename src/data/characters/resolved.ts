@@ -86,6 +86,7 @@ export interface ResolvedCharacterCareer {
 
 export interface ResolvedCharacterRecord {
   id: string;
+  campaignId: string;
   rulesetId: string;
   name: string;
   aka: string[];
@@ -148,6 +149,7 @@ export function resolveCharacterRecord(
 
   return {
     id: character.id,
+    campaignId: character.campaignId,
     rulesetId: character.rulesetId,
     name: character.name,
     aka: character.aka ?? [],

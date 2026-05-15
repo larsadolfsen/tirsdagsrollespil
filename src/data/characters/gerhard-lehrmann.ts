@@ -1,7 +1,9 @@
 import type { CharacterRecord } from "../../types";
+import { enemyWithinCampaign } from "../campaigns";
 
 export const gerhardLehrmann: CharacterRecord = {
   id: "gerhard_lehrmann",
+  campaignId: enemyWithinCampaign.id,
   rulesetId: "wfrp4e",
   name: "Gerhard Lehrmann",
   aka: ["Gerlardo"],

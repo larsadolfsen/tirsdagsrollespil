@@ -7,16 +7,31 @@ import {
   loadCharacterProgress as loadPersistedCharacterProgress,
   saveCharacterProgress as persistCharacterProgress,
 } from "./persistence";
+import { campaignById, campaigns, type CampaignRecord } from "./campaigns";
 import { rulesetById, rulesets } from "./rules";
 
 export interface CharacterSummary {
   id: string;
+  campaignId: string;
   name: string;
   aka: string[];
   rulesetId: string;
 }
 
 export { defaultCharacterId };
+
+export function listCampaigns(): CampaignRecord[] {
+  return campaigns;
+}
+
+export function loadCampaign(campaignId: string): CampaignRecord {
+  const campaign = campaignById[campaignId];
+  if (!campaign) {
+    throw new Error(`Unknown campaign "${campaignId}".`);
+  }
+
+  return campaign;
+}
 
 export function listRulesets(): Ruleset[] {
   return rulesets;
@@ -34,6 +49,7 @@ export function loadRuleset(rulesetId: string): Ruleset {
 export function listCharacters(): CharacterSummary[] {
   return Object.values(characterRecordById).map((character) => ({
     id: character.id,
+    campaignId: character.campaignId,
     name: character.name,
     aka: character.aka ?? [],
     rulesetId: character.rulesetId,
