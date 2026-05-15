@@ -73,8 +73,9 @@
   --color-wfrp-body-text: #d4d4d4;
   --color-wfrp-muted-text: #A8A8A8;
   --color-wfrp-mid-text: #A8A8A8;
+  --color-wfrp-accent: #757575;
   --color-wfrp-dice-bg: #696969;
-  --color-wfrp-dice-hover-bg: #757575;
+  --color-wfrp-dice-hover-bg: var(--color-wfrp-accent);
   --color-wfrp-dice-text: #FFFFFF;
   --shadow-wfrp-gold-glow: 0 0 4px rgb(214 168 86 / 65%);
   --shadow-wfrp-popover: 0 14px 40px rgb(0 0 0 / 45%);
@@ -319,4 +320,37 @@ body {
 .wfrp-card [class~="border-2"][class*="border-wfrp"] {
   border-color: var(--color-wfrp-border);
   border-width: 1px;
+}
+
+section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1.5rem 2rem;
+}
+
+section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [class~="group/char"] {
+  flex: 0 0 5.75rem;
+  width: 5.75rem;
+}
+
+[class~="group/char"]:hover [class~="-bottom-2"] {
+  border-color: var(--color-wfrp-accent);
+  background-color: var(--color-wfrp-accent);
+}
+
+[class~="group/char"]:hover [class~="-bottom-2"] span {
+  color: var(--color-wfrp-dice-text);
+}
+
+@media (min-width: 1024px) {
+  section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] {
+    gap: 1.75rem 3rem;
+  }
+
+  section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [class~="group/char"] {
+    flex-basis: 7rem;
+    width: 7rem;
+  }
 }
