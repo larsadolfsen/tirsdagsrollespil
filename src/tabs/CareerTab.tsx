@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
-import { AdvancementSection, ScrollableTabStrip } from "../components/ui";
+import { AdvancementSection, InlineSubtabs } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import { useGameSessionContext } from "../context/GameSessionContext";
 import type {
@@ -189,22 +189,14 @@ export function CareerTab({
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      <ScrollableTabStrip className="sticky top-0 z-10 flex items-center gap-2 p-3 lg:p-4 bg-wfrp-bg border-b border-white/5 overflow-x-auto no-scrollbar">
-        {careerSubtabOptions.map((option) => (
-          <button
-            key={option.id}
-            onClick={() => setActiveCareerSubtab(option.id)}
-            className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 ${
-              activeCareerSubtab === option.id
-                ? "bg-wfrp-tab-active text-white shadow-lg"
-                : "bg-black/40 text-gray-400 hover:bg-wfrp-surface-raised hover:text-gray-200"
-            }`}
-            aria-pressed={activeCareerSubtab === option.id}
-          >
-            {option.label}
-          </button>
-        ))}
-      </ScrollableTabStrip>
+      <div className="sticky top-0 z-10 bg-wfrp-bg">
+        <InlineSubtabs<CareerSubtab>
+          options={careerSubtabOptions}
+          activeId={activeCareerSubtab}
+          onChange={setActiveCareerSubtab}
+          ariaLabel="Career section tabs"
+        />
+      </div>
 
       <div className="flex flex-wrap items-center gap-2 border-b border-white/5 bg-wfrp-bg px-2 py-2 sm:px-3 lg:px-4">
         <button
