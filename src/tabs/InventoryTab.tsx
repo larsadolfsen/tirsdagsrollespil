@@ -1,39 +1,20 @@
-import { ChevronDown, Minus } from "lucide-react";
+import { Minus } from "lucide-react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, RefObject } from "react";
 import { InlineSubtabs } from "../components/ui";
 import {
+  SheetDataDisclosureChevron,
   SheetDataHeader,
   SheetDataList,
-  SheetDataListRow,
-  SheetDataMobileDetails,
+  SheetDataResponsiveListRow,
   SheetDataPanel,
   SheetRowActionButton,
 } from "../components/wfrp";
 import { InventoryContextMenu } from "./inventory/InventoryContextMenu";
+import { useInventoryViewModel } from "./inventory/useInventoryViewModel";
 import type { ResolvedCharacterEquipment, ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { InventorySubtab } from "./tabTypes";
 import type { InventoryDragState, InventoryDropTargetId, InventoryMenuState } from "../types/inventory";
-import {
-  formatCoinTotalValue,
-  getCoinCount,
-  getCoinEncumbrance,
-  getConsumableBaseName,
-  getConsumableCount,
-  getInventoryEncumbrance,
-  isPacksAndContainersItem,
-} from "./inventory/inventoryUtils";
-
-type InventorySection = {
-  id: string;
-  title: string;
-  subtitle?: string;
-  items: ResolvedCharacterEquipment[];
-  dropContainerId: string | null;
-  alwaysVisible: boolean;
-  acceptsDrops?: boolean;
-  dropWorn?: boolean;
-  dropCarried?: boolean;
-};
+import { getConsumableBaseName } from "./inventory/inventoryUtils";
 
 export function InventoryTab({
   activeInventorySubtab,
@@ -124,40 +105,17 @@ export function InventoryTab({
   openShop: () => void;
   openEquipmentInfo: (itemName: string) => void;
 }) {
-  const walletCoinCount = getCoinCount(characterData.coins);
-  const walletEncumbrance = getCoinEncumbrance(characterData.coins);
-  const walletValue = formatCoinTotalValue(characterData.coins);
-
-  const sections: InventorySection[] = [
-    {
-      id: "carried",
-      title: "Ready",
-      items: carriedItems,
-      dropContainerId: null,
-      dropCarried: true,
-      alwaysVisible:
-        activeInventorySubtab === "carried" ||
-        carriedItems.length > 0 ||
-        walletCoinCount > 0 ||
-        Boolean(inventoryDrag),
-    },
-    {
-      id: "worn",
-      title: "Worn",
-      items: wornItems,
-      dropContainerId: null,
-      dropWorn: true,
-      alwaysVisible: true,
-    },
-    ...containers.map((container) => ({
-      id: container.id,
-      title: container.name,
-      subtitle: `${getContainerUsedEncumbrance(container.id)} / ${container.carries ?? 0} enc`,
-      items: getContainerContents(container.id),
-      dropContainerId: container.id,
-      alwaysVisible: true,
-    })),
-  ];
+  const { inventorySubtabOptions, visibleSections, wallet } = useInventoryViewModel({
+    activeInventorySubtab,
+    carriedItems,
+    characterCoins: characterData.coins,
+    containers,
+    getContainerContents,
+    getContainerUsedEncumbrance,
+    formatItemValue,
+    inventoryDrag,
+    wornItems,
+  });
 
   const renderItemActions = (item: ResolvedCharacterEquipment) => (
     <>
@@ -198,15 +156,7 @@ export function InventoryTab({
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <InlineSubtabs<InventorySubtab>
-        options={[
-          { id: "all", label: "All" },
-          { id: "carried", label: "Ready" },
-          { id: "worn", label: "Worn" },
-          ...containers.map((container) => ({
-            id: `container:${container.id}` as InventorySubtab,
-            label: container.name,
-          })),
-        ]}
+        options={inventorySubtabOptions}
         activeId={activeInventorySubtab}
         onChange={setActiveInventorySubtab}
         trailingContent={
@@ -247,15 +197,7 @@ export function InventoryTab({
       />
 
       <div className="flex-1 overflow-y-auto p-2 space-y-4">
-        {sections
-          .filter((section) => {
-            if (!section.alwaysVisible) return false;
-            if (activeInventorySubtab === "all") return true;
-            if (activeInventorySubtab === "worn") return section.id === "worn";
-            if (activeInventorySubtab === "carried") return section.id === "carried";
-            return activeInventorySubtab === `container:${section.id}`;
-          })
-          .map((section) => {
+        {visibleSections.map((section) => {
             const isActiveDropTarget = inventoryDropTarget === section.id;
             const acceptsDrops = section.acceptsDrops !== false;
             const dropsToWorn = section.dropWorn === true;
@@ -336,52 +278,44 @@ export function InventoryTab({
 
                 <SheetDataList className="divide-y-0">
                   {section.id === "carried" && (
-                    <SheetDataListRow className="border-0 group md:flex md:min-w-[700px]">
-                      <details className="group/details md:hidden">
-                        <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-2 [&::-webkit-details-marker]:hidden">
+                    <SheetDataResponsiveListRow
+                      mobileSummary={(
+                        <>
                           <span className="wfrp-list-cell-strong flex items-center gap-1.5 text-gray-200">Coins</span>
-                          <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180" aria-hidden="true" />
-                        </summary>
-                        <SheetDataMobileDetails
-                          fields={[
-                            { label: "Type", value: "Currency" },
-                            { label: "Qty", value: walletCoinCount },
-                            { label: "Enc", value: walletEncumbrance || "-" },
-                            { label: "Value", value: walletValue },
-                          ]}
-                        />
-                      </details>
-
-                      <div className="hidden flex-1 grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center md:grid">
-                        <span className="wfrp-list-cell-strong flex items-center gap-1.5 text-gray-200">Coins</span>
-                        <div className="wfrp-list-cell-strong truncate">Currency</div>
-                        <div className="wfrp-list-cell-strong text-center font-mono">{walletCoinCount}</div>
-                        <div className="wfrp-list-cell-strong text-center font-mono">{walletEncumbrance || "-"}</div>
-                        <div className="wfrp-list-cell-strong text-center font-mono">{walletValue}</div>
-                        <div className="wfrp-list-cell-strong pr-1 text-right font-mono">-</div>
-                      </div>
-                    </SheetDataListRow>
+                          <SheetDataDisclosureChevron className="md:inline" />
+                        </>
+                      )}
+                      mobileDetails={wallet.mobileDetails}
+                      summaryClassName="grid-cols-[minmax(0,1fr)_auto]"
+                      desktopClassName="grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4"
+                      desktopContent={(
+                        <>
+                          <span className="wfrp-list-cell-strong flex items-center gap-1.5 text-gray-200">Coins</span>
+                          <div className="wfrp-list-cell-strong truncate">Currency</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{wallet.coinCount}</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{wallet.encumbrance || "-"}</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{wallet.value}</div>
+                          <div className="wfrp-list-cell-strong pr-1 text-right font-mono">-</div>
+                        </>
+                      )}
+                    />
                   )}
 
-                  {section.items.map((item) => {
-                    const quantity = getConsumableCount(item) ?? 1;
-                    const itemEncumbrance = getInventoryEncumbrance(item) || "-";
-                    const itemValue = formatItemValue(item);
+                  {section.itemRows.map((row) => {
+                    const { item } = row;
 
                     return (
-                      <SheetDataListRow
+                      <SheetDataResponsiveListRow
                         key={item.id}
-                        draggable={!isPacksAndContainersItem(item)}
+                        draggable={row.isDraggable}
                         onDragStart={(event) => handleInventoryDragStart(item, event)}
                         onDragEnd={handleInventoryDragEnd}
-                        className={`border-0 group md:flex md:min-w-[700px] ${
-                          inventoryDrag?.itemId === item.id ? "opacity-45" : ""
-                        } ${
-                          isPacksAndContainersItem(item) ? "" : "cursor-grab active:cursor-grabbing"
+                        className={`${row.isDragging ? "opacity-45" : ""} ${
+                          row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                         }`}
-                      >
-                        <details className="group/details md:hidden">
-                          <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 [&::-webkit-details-marker]:hidden">
+                        summaryClassName="grid-cols-[minmax(0,1fr)_auto_auto]"
+                        mobileSummary={(
+                          <>
                             <button
                               type="button"
                               onClick={(event) => {
@@ -397,40 +331,34 @@ export function InventoryTab({
                               {renderItemActions(item)}
                             </div>
 
-                            <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180" aria-hidden="true" />
-                          </summary>
-
-                          <SheetDataMobileDetails
-                            fields={[
-                              { label: "Type", value: item.type },
-                              { label: "Qty", value: quantity },
-                              { label: "Enc", value: itemEncumbrance },
-                              { label: "Value", value: itemValue },
-                            ]}
-                          />
-                        </details>
-
-                        <div className="hidden flex-1 grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center md:grid">
-                          <button
-                            type="button"
-                            onClick={() => openEquipmentInfo(item.name)}
-                            className="wfrp-skill-link flex min-w-0 items-center gap-1.5 text-left"
-                          >
-                            <span className="truncate">{item.name}</span>
-                          </button>
-                          <div className="wfrp-list-cell-strong truncate">{item.type}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">{quantity}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">{itemEncumbrance}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">{itemValue}</div>
-                          <div className="relative flex items-center justify-end gap-1 pr-1">
-                            {renderItemActions(item)}
-                          </div>
-                        </div>
-                      </SheetDataListRow>
+                            <SheetDataDisclosureChevron className="md:inline" />
+                          </>
+                        )}
+                        mobileDetails={row.mobileDetails}
+                        desktopClassName="grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4"
+                        desktopContent={(
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => openEquipmentInfo(item.name)}
+                              className="wfrp-skill-link flex min-w-0 items-center gap-1.5 text-left"
+                            >
+                              <span className="truncate">{item.name}</span>
+                            </button>
+                            <div className="wfrp-list-cell-strong truncate">{item.type}</div>
+                            <div className="wfrp-list-cell-strong text-center font-mono">{row.quantity}</div>
+                            <div className="wfrp-list-cell-strong text-center font-mono">{row.encumbrance}</div>
+                            <div className="wfrp-list-cell-strong text-center font-mono">{row.value}</div>
+                            <div className="relative flex items-center justify-end gap-1 pr-1">
+                              {renderItemActions(item)}
+                            </div>
+                          </>
+                        )}
+                      />
                     );
                   })}
 
-                  {section.items.length === 0 && section.id !== "carried" && (
+                  {section.itemRows.length === 0 && section.id !== "carried" && (
                     <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-700">
                       {canDropHere ? "Drop here" : "Empty"}
                     </div>

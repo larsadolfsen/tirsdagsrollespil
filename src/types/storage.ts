@@ -15,6 +15,7 @@ export interface CharacterProgressData {
     d: number;
   };
   careerCurrentRank?: number;
+  characteristicInitials?: Record<string, number>;
   characteristicAdvances?: Record<string, number>;
   skills: Record<string, number>;
   talentIds?: string[];

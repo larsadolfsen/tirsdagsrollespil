@@ -1,5 +1,6 @@
 import type { ResolvedCharacterTalent } from "../data/characters/resolved";
 import type { TalentDefinition, TalentEffect } from "../types";
+import type { RollTestType } from "../types/dice";
 
 export interface ActiveTalentEffect {
   talentId: string;
@@ -12,6 +13,7 @@ export interface TalentEffectContext {
   testName?: string;
   actionId?: string;
   conditionTags?: string[];
+  testType?: RollTestType;
 }
 
 export interface TalentSlBonusSource {
@@ -28,17 +30,25 @@ const conditionMatches = (effectCondition: string | undefined, conditionTags: st
   return conditionTags.some((tag) => normalize(tag) === normalizedCondition);
 };
 
-const testMatches = (effectTest: string | undefined, testName: string | undefined) => {
+const testMatches = (
+  effectTest: string | undefined,
+  testName: string | undefined,
+  testType?: RollTestType,
+) => {
   if (!effectTest || !testName) return true;
 
   const normalizedEffectTest = normalize(effectTest);
   const normalizedTestName = normalize(testName);
 
-  return Boolean(
-    normalizedEffectTest &&
-      normalizedTestName &&
-      (normalizedEffectTest.includes(normalizedTestName) ||
-        normalizedTestName.includes(normalizedEffectTest)),
+  if (!normalizedEffectTest || !normalizedTestName) return false;
+
+  if (normalizedEffectTest.includes("corruption")) {
+    return testType === "corruption";
+  }
+
+  return (
+    normalizedEffectTest.includes(normalizedTestName) ||
+    normalizedTestName.includes(normalizedEffectTest)
   );
 };
 
@@ -62,7 +72,7 @@ export function getApplicableTalentEffects(params: {
     return (definition.effects ?? [])
       .filter((effect) => {
         if (effect.type === "test_sl_bonus" || effect.type === "test_reverse_failed_roll") {
-          return testMatches(effect.test, context.testName) && conditionMatches(effect.condition, conditionTags);
+          return testMatches(effect.test, context.testName, context.testType) && conditionMatches(effect.condition, conditionTags);
         }
 
         if (effect.type === "action_unlock") {

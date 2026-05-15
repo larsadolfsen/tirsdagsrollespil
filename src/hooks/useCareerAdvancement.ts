@@ -104,13 +104,20 @@ export function useCareerAdvancement({
     null;
   const nextCareerRankRecord =
     characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank + 1) ?? null;
-  const advancementCharacteristics = UI_LABELS.CHARACTERISTICS.map(({ key, label }) => ({
-    key,
-    label,
-    advances: currentCharacteristicAdvances[key] ?? 0,
-    pendingAdvances: pendingCharacteristicAdvances[key] ?? 0,
-    value: characterData.attributes[key] ?? 0,
-  }));
+  const advancementCharacteristics = UI_LABELS.CHARACTERISTICS.map(({ key, label }) => {
+    const advances = currentCharacteristicAdvances[key] ?? 0;
+    const pendingAdvances = pendingCharacteristicAdvances[key] ?? 0;
+    const value = characterData.attributes[key] ?? 0;
+
+    return {
+      key,
+      label,
+      advances,
+      initial: value - advances,
+      pendingAdvances,
+      value,
+    };
+  });
   const availableCareerCharacteristicKeys = careerAdvancementData.characteristics
     .filter((item) => item.availableFromRank <= displayedCareerRank)
     .map((item) => item.key);

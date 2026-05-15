@@ -1,13 +1,15 @@
-import { ChevronDown } from "lucide-react";
 import { InlineSubtabs } from "../components/ui";
 import {
+  SheetDataDesktopCell,
+  SheetDataDisclosureChevron,
   SheetDataHeader,
+  SheetDataInfoButton,
   SheetDataList,
-  SheetDataListRow,
-  SheetDataMobileDetails,
   SheetDataPanel,
+  SheetDataResponsiveListRow,
 } from "../components/wfrp";
-import type { ResolvedCharacterSkill, ResolvedCharacterSpell } from "../data/characters/resolved";
+import type { ResolvedCharacterSpell } from "../data/characters/resolved";
+import type { SpellListRow } from "./spells/useSpellsViewModel";
 import type { Characteristic } from "../types";
 import type { SpellSubtab } from "./tabTypes";
 
@@ -26,12 +28,7 @@ export function SpellsTab({
   spellSubtabOptions,
   activeSpellSubtab,
   setActiveSpellSubtab,
-  filteredSpells,
-  attributes,
-  characterSkills,
-  formatSpellRange,
-  formatSpellTarget,
-  formatSpellDuration,
+  spellRows,
   handleRoll,
   openSpellInfo,
   openSpellShop,
@@ -39,12 +36,7 @@ export function SpellsTab({
   spellSubtabOptions: Array<{ id: SpellSubtab; label: string }>;
   activeSpellSubtab: SpellSubtab;
   setActiveSpellSubtab: (subtab: SpellSubtab) => void;
-  filteredSpells: ResolvedCharacterSpell[];
-  attributes: Record<string, number>;
-  characterSkills: ResolvedCharacterSkill[];
-  formatSpellRange: (range: string) => string;
-  formatSpellTarget: (target: string) => string;
-  formatSpellDuration: (duration: string) => string;
+  spellRows: SpellListRow[];
   handleRoll: (
     characteristic: Characteristic,
     damage?: number,
@@ -82,34 +74,18 @@ export function SpellsTab({
           </SheetDataHeader>
 
           <SheetDataList>
-            {filteredSpells.map((spell) => {
-              const baseWP = attributes.WP || 0;
-              const chnSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
-              const skillValue = chnSkill ? baseWP + chnSkill.advances : baseWP;
-              const spellRange = formatSpellRange(spell.range);
-              const spellTarget = formatSpellTarget(spell.target);
-              const spellDuration = formatSpellDuration(spell.duration);
-              const mobileDetails = [
-                { label: "CN", value: spell.cn, valueClassName: "font-mono" },
-                { label: "Range", value: spellRange },
-                { label: "Target", value: spellTarget },
-                { label: "Duration", value: spellDuration },
-              ];
+            {spellRows.map(({ channelValue, formatted, mobileDetails, spell }) => {
               const openCurrentSpellInfo = () => {
-                openSpellInfo(spell, {
-                  range: spellRange,
-                  target: spellTarget,
-                  duration: spellDuration,
-                });
+                openSpellInfo(spell, formatted);
               };
 
               return (
-                <SheetDataListRow
+                <SheetDataResponsiveListRow
                   key={spell.name}
-                  className="md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 md:px-4 md:py-2 lg:gap-4"
-                >
-                  <details className="group/details md:contents">
-                    <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
+                  className="md:min-w-[640px] md:px-4 md:py-2"
+                  summaryClassName="grid-cols-[40px_minmax(0,1fr)_auto_auto]"
+                  mobileSummary={(
+                    <>
                       <div className="flex justify-center">
                         <button
                           onClick={(event) => {
@@ -119,7 +95,7 @@ export function SpellsTab({
                           className="wfrp-roll-btn"
                           aria-label={`Channel ${spell.name}`}
                         >
-                          {skillValue}
+                          {channelValue}
                         </button>
                       </div>
 
@@ -133,44 +109,48 @@ export function SpellsTab({
                         {spell.name}
                       </button>
 
-                      <button
-                        type="button"
+                      <SheetDataInfoButton
                         onClick={(event) => {
                           event.preventDefault();
                           openCurrentSpellInfo();
                         }}
-                        className="min-h-8 rounded border border-white/10 px-2 text-[10px] font-black uppercase tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden"
                         aria-label={`Show ${spell.name} details`}
-                      >
-                        Info
-                      </button>
-
-                      <ChevronDown
-                        size={14}
-                        className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden"
-                        aria-hidden="true"
                       />
 
-                      <div className="hidden wfrp-list-cell-strong text-center md:block">
-                        {spell.cn}
+                      <SheetDataDisclosureChevron />
+                    </>
+                  )}
+                  mobileDetails={mobileDetails}
+                  desktopClassName="grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4"
+                  desktopContent={(
+                    <>
+                      <div className="flex justify-center">
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleRoll({ key: "WP", label: spell.name }, undefined, { testType: "channeling" });
+                          }}
+                          className="wfrp-roll-btn"
+                          aria-label={`Channel ${spell.name}`}
+                        >
+                          {channelValue}
+                        </button>
                       </div>
 
-                      <div className="hidden wfrp-list-cell-strong truncate md:block">
-                        {spellRange}
-                      </div>
+                      <button
+                        onClick={openCurrentSpellInfo}
+                        className="wfrp-skill-link min-w-0 truncate text-left"
+                      >
+                        {spell.name}
+                      </button>
 
-                      <div className="hidden wfrp-list-cell-strong truncate md:block">
-                        {spellTarget}
-                      </div>
-
-                      <div className="hidden wfrp-list-cell-strong md:block">
-                        {spellDuration}
-                      </div>
-                    </summary>
-
-                    <SheetDataMobileDetails fields={mobileDetails} />
-                  </details>
-                </SheetDataListRow>
+                      <SheetDataDesktopCell align="center">{spell.cn}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell truncate>{formatted.range}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell truncate>{formatted.target}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell>{formatted.duration}</SheetDataDesktopCell>
+                    </>
+                  )}
+                />
               );
             })}
           </SheetDataList>
