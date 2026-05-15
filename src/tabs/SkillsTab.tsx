@@ -45,6 +45,7 @@ export function SkillsTab({
   visibleSkillRows: SkillRow[];
   attributes: Record<string, number>;
   handleRoll: (characteristic: { key: string; label: string }) => void;
+  openSkillInfo?: (skillName: string) => void;
 }) {
   return (
     <div className="flex flex-col h-full bg-card">
