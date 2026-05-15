@@ -19,6 +19,7 @@ type RollOptions = {
 };
 
 const desktopSpellGridClass = "md:grid-cols-[56px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px_48px]";
+const mobileTableGridClass = "grid-cols-[40px_minmax(0,1fr)_48px]";
 
 export function SpellsTab({
   spellSubtabOptions,
@@ -58,13 +59,13 @@ export function SpellsTab({
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card space-y-4">
         <SheetDataPanel>
-          <SheetDataHeader className={`hidden ${desktopSpellGridClass} md:grid md:gap-0`}>
+          <SheetDataHeader className={`grid ${mobileTableGridClass} ${desktopSpellGridClass} gap-0 md:grid`}>
             <SheetDataHeaderCell align="center">Channel</SheetDataHeaderCell>
             <SheetDataHeaderCell>Spell</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="right">CN</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="right">Range</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="right">Target</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="right">Duration</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="hidden md:block" align="right">CN</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="hidden md:block" align="right">Range</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="hidden md:block" align="right">Target</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="hidden md:block" align="right">Duration</SheetDataHeaderCell>
             <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
           </SheetDataHeader>
 
@@ -74,7 +75,7 @@ export function SpellsTab({
                 <SheetDataAccordionRow
                   key={spell.name}
                   className="wfrp-skill-row"
-                  summaryClassName={`wfrp-skill-row-summary grid-cols-[40px_minmax(0,1fr)_48px] md:grid ${desktopSpellGridClass} md:gap-0`}
+                  summaryClassName={`wfrp-skill-row-summary ${mobileTableGridClass} md:grid ${desktopSpellGridClass} md:gap-0`}
                   contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                   summary={(
                     <>
