@@ -39,6 +39,49 @@ export function SheetDataMobileDetails({
   );
 }
 
+export function SheetDataResponsiveListRow({
+  className,
+  desktopClassName,
+  desktopContent,
+  detailsClassName,
+  mobileDetails,
+  mobileSummary,
+  summaryClassName,
+  ...props
+}: DivProps & {
+  desktopClassName?: string;
+  desktopContent: ReactNode;
+  detailsClassName?: string;
+  mobileDetails: SheetDataMobileDetailField[];
+  mobileSummary: ReactNode;
+  summaryClassName?: string;
+}) {
+  return (
+    <SheetDataListRow className={cn("border-0 group md:flex md:min-w-[700px]", className)} {...props}>
+      <details className={cn("group/details md:hidden", detailsClassName)}>
+        <summary
+          className={cn(
+            "grid min-h-11 cursor-pointer list-none items-center gap-2 [&::-webkit-details-marker]:hidden",
+            summaryClassName,
+          )}
+        >
+          {mobileSummary}
+        </summary>
+        <SheetDataMobileDetails fields={mobileDetails} />
+      </details>
+
+      <div
+        className={cn(
+          "hidden flex-1 items-center md:grid",
+          desktopClassName,
+        )}
+      >
+        {desktopContent}
+      </div>
+    </SheetDataListRow>
+  );
+}
+
 export function SheetDataDesktopCell({
   align = "left",
   children,

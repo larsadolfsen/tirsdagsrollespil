@@ -5,8 +5,7 @@ import {
   SheetDataDisclosureChevron,
   SheetDataHeader,
   SheetDataList,
-  SheetDataListRow,
-  SheetDataMobileDetails,
+  SheetDataResponsiveListRow,
   SheetDataPanel,
   SheetRowActionButton,
 } from "../components/wfrp";
@@ -279,43 +278,44 @@ export function InventoryTab({
 
                 <SheetDataList className="divide-y-0">
                   {section.id === "carried" && (
-                    <SheetDataListRow className="border-0 group md:flex md:min-w-[700px]">
-                      <details className="group/details md:hidden">
-                        <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-2 [&::-webkit-details-marker]:hidden">
+                    <SheetDataResponsiveListRow
+                      mobileSummary={(
+                        <>
                           <span className="wfrp-list-cell-strong flex items-center gap-1.5 text-gray-200">Coins</span>
                           <SheetDataDisclosureChevron className="md:inline" />
-                        </summary>
-                        <SheetDataMobileDetails fields={wallet.mobileDetails} />
-                      </details>
-
-                      <div className="hidden flex-1 grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center md:grid">
-                        <span className="wfrp-list-cell-strong flex items-center gap-1.5 text-gray-200">Coins</span>
-                        <div className="wfrp-list-cell-strong truncate">Currency</div>
-                        <div className="wfrp-list-cell-strong text-center font-mono">{wallet.coinCount}</div>
-                        <div className="wfrp-list-cell-strong text-center font-mono">{wallet.encumbrance || "-"}</div>
-                        <div className="wfrp-list-cell-strong text-center font-mono">{wallet.value}</div>
-                        <div className="wfrp-list-cell-strong pr-1 text-right font-mono">-</div>
-                      </div>
-                    </SheetDataListRow>
+                        </>
+                      )}
+                      mobileDetails={wallet.mobileDetails}
+                      summaryClassName="grid-cols-[minmax(0,1fr)_auto]"
+                      desktopClassName="grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4"
+                      desktopContent={(
+                        <>
+                          <span className="wfrp-list-cell-strong flex items-center gap-1.5 text-gray-200">Coins</span>
+                          <div className="wfrp-list-cell-strong truncate">Currency</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{wallet.coinCount}</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{wallet.encumbrance || "-"}</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{wallet.value}</div>
+                          <div className="wfrp-list-cell-strong pr-1 text-right font-mono">-</div>
+                        </>
+                      )}
+                    />
                   )}
 
                   {section.itemRows.map((row) => {
                     const { item } = row;
 
                     return (
-                      <SheetDataListRow
+                      <SheetDataResponsiveListRow
                         key={item.id}
                         draggable={row.isDraggable}
                         onDragStart={(event) => handleInventoryDragStart(item, event)}
                         onDragEnd={handleInventoryDragEnd}
-                        className={`border-0 group md:flex md:min-w-[700px] ${
-                          row.isDragging ? "opacity-45" : ""
-                        } ${
+                        className={`${row.isDragging ? "opacity-45" : ""} ${
                           row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                         }`}
-                      >
-                        <details className="group/details md:hidden">
-                          <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 [&::-webkit-details-marker]:hidden">
+                        summaryClassName="grid-cols-[minmax(0,1fr)_auto_auto]"
+                        mobileSummary={(
+                          <>
                             <button
                               type="button"
                               onClick={(event) => {
@@ -332,28 +332,29 @@ export function InventoryTab({
                             </div>
 
                             <SheetDataDisclosureChevron className="md:inline" />
-                          </summary>
-
-                          <SheetDataMobileDetails fields={row.mobileDetails} />
-                        </details>
-
-                        <div className="hidden flex-1 grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center md:grid">
-                          <button
-                            type="button"
-                            onClick={() => openEquipmentInfo(item.name)}
-                            className="wfrp-skill-link flex min-w-0 items-center gap-1.5 text-left"
-                          >
-                            <span className="truncate">{item.name}</span>
-                          </button>
-                          <div className="wfrp-list-cell-strong truncate">{item.type}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">{row.quantity}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">{row.encumbrance}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">{row.value}</div>
-                          <div className="relative flex items-center justify-end gap-1 pr-1">
-                            {renderItemActions(item)}
-                          </div>
-                        </div>
-                      </SheetDataListRow>
+                          </>
+                        )}
+                        mobileDetails={row.mobileDetails}
+                        desktopClassName="grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4"
+                        desktopContent={(
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => openEquipmentInfo(item.name)}
+                              className="wfrp-skill-link flex min-w-0 items-center gap-1.5 text-left"
+                            >
+                              <span className="truncate">{item.name}</span>
+                            </button>
+                            <div className="wfrp-list-cell-strong truncate">{item.type}</div>
+                            <div className="wfrp-list-cell-strong text-center font-mono">{row.quantity}</div>
+                            <div className="wfrp-list-cell-strong text-center font-mono">{row.encumbrance}</div>
+                            <div className="wfrp-list-cell-strong text-center font-mono">{row.value}</div>
+                            <div className="relative flex items-center justify-end gap-1 pr-1">
+                              {renderItemActions(item)}
+                            </div>
+                          </>
+                        )}
+                      />
                     );
                   })}
 

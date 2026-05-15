@@ -13,6 +13,7 @@ export {
   SheetDataList,
   SheetDataListRow,
   SheetDataMobileDetails,
+  SheetDataResponsiveListRow,
   SheetRowActionButton,
 } from "./SheetDataList";
 export type { SheetDataMobileDetailField } from "./SheetDataList";
