@@ -4,17 +4,17 @@
 
 :root {
   color-scheme: dark;
-  --background: #0c0c0c;
+  --background: #424242;
   --foreground: #f0f0f0;
-  --card: #181818;
+  --card: #212121;
   --card-foreground: #f0f0f0;
-  --popover: #151515;
+  --popover: #212121;
   --popover-foreground: #f0f0f0;
   --primary: #c5a059;
   --primary-foreground: #121212;
-  --secondary: #222222;
+  --secondary: #212121;
   --secondary-foreground: #f0f0f0;
-  --muted: #1a1a1a;
+  --muted: #212121;
   --muted-foreground: #9ca3af;
   --accent: #2a2417;
   --accent-foreground: #f4e4bc;
@@ -24,11 +24,11 @@
   --input: #303030;
   --ring: #c5a059;
   --overlay: rgb(0 0 0 / 80%);
-  --sidebar: #141414;
+  --sidebar: #212121;
   --sidebar-foreground: #f0f0f0;
   --sidebar-primary: #c5a059;
   --sidebar-primary-foreground: #121212;
-  --sidebar-accent: #222222;
+  --sidebar-accent: #212121;
   --sidebar-accent-foreground: #f4e4bc;
   --sidebar-border: #303030;
   --sidebar-ring: #c5a059;
@@ -47,23 +47,23 @@
   --color-wfrp-red: #8b0000;
   --color-wfrp-gold: #c5a059;
   --color-wfrp-parchment: #f4e4bc;
-  --color-wfrp-dark: #121212;
+  --color-wfrp-dark: #212121;
   --color-wfrp-stone: #2a2a2a;
-  --color-wfrp-bg: #0c0c0c;
-  --color-wfrp-surface: #181818;
-  --color-wfrp-surface-raised: #222222;
-  --color-wfrp-surface-hover: #1e1e1e;
-  --color-wfrp-surface-muted-hover: #242424;
-  --color-wfrp-surface-subtle: #111111;
-  --color-wfrp-popover: #151515;
-  --color-wfrp-menu: #141414;
+  --color-wfrp-bg: #424242;
+  --color-wfrp-surface: #212121;
+  --color-wfrp-surface-raised: #212121;
+  --color-wfrp-surface-hover: #212121;
+  --color-wfrp-surface-muted-hover: #212121;
+  --color-wfrp-surface-subtle: #212121;
+  --color-wfrp-popover: #212121;
+  --color-wfrp-menu: #212121;
   --color-wfrp-border: #303030;
   --color-wfrp-border-muted: #2f2f2f;
   --color-wfrp-brass-border: #3a3324;
   --color-wfrp-control-hover: #404040;
   --color-wfrp-gold-surface: #2a2417;
   --color-wfrp-tab-active: #333333;
-  --color-wfrp-tab-control: #1a1a1a;
+  --color-wfrp-tab-control: #212121;
   --color-wfrp-amber: #c98b00;
   --color-wfrp-aqua: #0088a8;
   --color-wfrp-coin-gold: #d3af37;
@@ -119,14 +119,11 @@
 }
 
 @utility wfrp-table-header {
-  @apply px-2 py-2 sm:px-4 border-b border-wfrp-border bg-black/40 text-[8px] font-bold text-gray-700 uppercase tracking-widest items-center;
+  @apply px-2 py-2 sm:px-4 border-b border-wfrp-border bg-card text-[8px] font-bold text-gray-700 uppercase tracking-widest items-center;
 }
 
 @utility wfrp-table-row {
   @apply px-2 py-2 sm:px-3 items-center border-b border-wfrp-border last:border-0 transition-colors;
-  &:hover {
-    @apply bg-white/[0.02];
-  }
 }
 
 @utility wfrp-label-sm {
@@ -134,7 +131,7 @@
 }
 
 @utility wfrp-label-xs {
-  @apply text-[10px] font-bold text-gray-600 uppercase bg-black/30 rounded px-1 w-fit;
+  @apply text-[10px] font-bold text-gray-600 uppercase rounded px-1 w-fit;
 }
 
 @utility wfrp-action-btn {
@@ -146,11 +143,11 @@
 }
 
 @utility wfrp-surface-strong {
-  @apply bg-wfrp-surface border-wfrp-border;
+  @apply bg-card border-wfrp-border;
 }
 
 @utility wfrp-surface-soft {
-  @apply bg-black/20 border-wfrp-border transition-colors hover:border-wfrp-border/80;
+  @apply bg-card border-wfrp-border transition-colors hover:border-wfrp-border/80;
 }
 
 @utility wfrp-card {
@@ -158,11 +155,11 @@
 }
 
 @utility wfrp-card-tab-header {
-  @apply flex items-center justify-center border-b border-wfrp-border bg-wfrp-surface-subtle px-4 py-3.5;
+  @apply flex items-center justify-center border-b border-wfrp-border bg-card px-4 py-3.5;
 }
 
 @utility wfrp-card-tab-body {
-  @apply bg-wfrp-bg/50 p-3 lg:p-4;
+  @apply bg-card p-3 lg:p-4;
 }
 
 @utility wfrp-sidebar-shell {
@@ -170,7 +167,7 @@
 }
 
 @utility wfrp-sidebar-header {
-  @apply flex items-center justify-between border-b border-wfrp-border bg-wfrp-surface-raised;
+  @apply flex items-center justify-between border-b border-wfrp-border bg-card;
 }
 
 @utility wfrp-stepper-btn {
@@ -202,7 +199,7 @@
 }
 
 @utility wfrp-digit-window {
-  @apply relative h-8 w-8 overflow-hidden rounded border border-wfrp-border bg-black/40;
+  @apply relative h-8 w-8 overflow-hidden rounded border border-wfrp-border bg-card;
 }
 
 @utility wfrp-panel-title {
@@ -218,7 +215,7 @@
 }
 
 @utility wfrp-subpanel-header {
-  @apply border-b border-wfrp-border bg-black/10 px-2 py-1 sm:px-3;
+  @apply border-b border-wfrp-border bg-card px-2 py-1 sm:px-3;
 }
 
 @utility wfrp-panel-copy {
@@ -230,7 +227,7 @@
 }
 
 @utility wfrp-list-header {
-  @apply px-2 py-2 sm:px-4 border-b border-wfrp-border bg-black/30 text-[9px] font-black text-gray-500 uppercase tracking-widest items-center;
+  @apply px-2 py-2 sm:px-4 border-b border-wfrp-border bg-card text-[9px] font-black text-gray-500 uppercase tracking-widest items-center;
 }
 
 @utility wfrp-list-group {
@@ -238,7 +235,7 @@
 }
 
 @utility wfrp-stat-tile {
-  @apply p-3 bg-black/20 border border-wfrp-border rounded-lg transition-colors hover:border-wfrp-border/80;
+  @apply p-3 bg-card border border-wfrp-border rounded-lg transition-colors hover:border-wfrp-border/80;
 }
 
 @utility wfrp-badge {
@@ -268,7 +265,7 @@
 }
 
 @utility wfrp-property-pill {
-  @apply inline-flex h-8 items-center justify-start gap-2 rounded-[8px] border border-wfrp-border bg-black/30 px-4 text-[10px] font-bold text-gray-500 transition-all cursor-pointer hover:text-wfrp-gold hover:border-wfrp-border/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply inline-flex h-8 items-center justify-start gap-2 rounded-[8px] border border-wfrp-border bg-card px-4 text-[10px] font-bold text-gray-500 transition-all cursor-pointer hover:text-wfrp-gold hover:border-wfrp-border/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
 @utility wfrp-table-label {
