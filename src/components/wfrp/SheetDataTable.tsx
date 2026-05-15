@@ -10,7 +10,7 @@ type SheetDataPanelProps = DivProps & {
 const rowClasses = "wfrp-table-row grid items-center gap-2";
 
 export function SheetDataPanel({ as: Component = "section", className, ...props }: SheetDataPanelProps) {
-  return <Component className={cn("wfrp-subpanel-shell flex flex-col bg-card", className)} {...props} />;
+  return <Component className={cn("wfrp-subpanel-shell flex flex-col bg-card rounded-t-none", className)} {...props} />;
 }
 
 export function SheetDataTable({ className, ...props }: DivProps) {
@@ -18,7 +18,7 @@ export function SheetDataTable({ className, ...props }: DivProps) {
 }
 
 export function SheetDataHeader({ className, ...props }: DivProps) {
-  return <div className={cn("wfrp-subpanel-header grid items-center gap-2 bg-card", className)} {...props} />;
+  return <div className={cn("wfrp-subpanel-header grid items-center gap-2 bg-card rounded-t-none", className)} {...props} />;
 }
 
 export function SheetDataRow({ className, ...props }: DivProps) {
