@@ -17,6 +17,8 @@ type RollOptions = {
   title?: string | null;
 };
 
+const desktopSpellGridClass = "md:grid-cols-[56px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px_48px]";
+
 export function SpellsTab({
   spellSubtabOptions,
   activeSpellSubtab,
@@ -37,7 +39,7 @@ export function SpellsTab({
   openSpellShop: () => void;
 }) {
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden bg-card">
       <InlineSubtabs
         options={spellSubtabOptions}
         activeId={activeSpellSubtab}
@@ -53,9 +55,9 @@ export function SpellsTab({
           </button>
         }
       />
-      <div className="flex-1 overflow-y-auto p-2 space-y-1 max-md:px-0">
-        <SheetDataPanel className="overflow-x-hidden border-x-0 border-y-0 shadow-none md:wfrp-subpanel md:overflow-x-auto md:shadow-sm">
-          <SheetDataHeader className="hidden min-w-[700px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px_48px] gap-2 px-4 py-1 lg:gap-4 md:grid">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card space-y-4">
+        <SheetDataPanel>
+          <SheetDataHeader className={`hidden ${desktopSpellGridClass} md:grid md:gap-0`}>
             <span className="wfrp-table-label text-center">Channel</span>
             <span className="wfrp-table-label text-left">Spell</span>
             <span className="wfrp-table-label text-center">CN</span>
@@ -65,14 +67,14 @@ export function SpellsTab({
             <span className="wfrp-table-label text-center">More</span>
           </SheetDataHeader>
 
-          <SheetDataTable className="flex flex-col">
+          <SheetDataTable>
             {spellRows.map(({ channelValue, formatted, mobileDetails, spell }) => {
               return (
                 <SheetDataAccordionRow
                   key={spell.name}
-                  className="md:min-w-[700px] md:px-4 md:py-2"
-                  summaryClassName="grid-cols-[40px_minmax(0,1fr)_48px] md:grid md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px_48px] md:gap-2 lg:gap-4"
-                  contentClassName="px-10 pb-4 pt-1 md:px-0"
+                  className="wfrp-skill-row"
+                  summaryClassName={`wfrp-skill-row-summary grid-cols-[40px_minmax(0,1fr)_48px] md:grid ${desktopSpellGridClass} md:gap-0`}
+                  contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                   summary={(
                     <>
                       <div className="flex justify-center">
@@ -96,7 +98,7 @@ export function SpellsTab({
                       <SheetDataDesktopCell truncate>{formatted.range}</SheetDataDesktopCell>
                       <SheetDataDesktopCell truncate>{formatted.target}</SheetDataDesktopCell>
                       <SheetDataDesktopCell>{formatted.duration}</SheetDataDesktopCell>
-                      <SheetDataDisclosureChevron />
+                      <SheetDataDisclosureChevron className="md:inline-flex" />
                     </>
                   )}
                 >
