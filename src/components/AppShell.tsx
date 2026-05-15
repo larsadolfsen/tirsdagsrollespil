@@ -18,7 +18,7 @@ export function AppShell({
   sidebars,
 }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-wfrp-dark text-wfrp-page-text font-sans selection:bg-wfrp-gold/40 flex flex-col">
+    <div className="min-h-screen bg-background text-wfrp-page-text font-sans selection:bg-wfrp-gold/40 flex flex-col">
       <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
 
       <div className="flex flex-1 overflow-hidden relative">
