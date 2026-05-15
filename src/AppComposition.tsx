@@ -310,7 +310,6 @@ export function AppComposition() {
   const getTalentMaxDisplay = (max: string) =>
     getTalentMaxDisplayValue(max, attributes);
   const {
-    openSpellInfo,
     openSpellShop,
     spellRows,
     spellSubtabOptions,
@@ -321,9 +320,7 @@ export function AppComposition() {
     formatSpellDuration,
     formatSpellRange,
     formatSpellTarget,
-    setActiveInfo,
     setIsSpellShopOpen,
-    setRollState,
     spells: characterData.spells,
   });
 
@@ -1279,10 +1276,6 @@ export function AppComposition() {
                               targetBonusSources,
                             }));
                           }}
-                          setActiveInfo={setActiveInfo}
-                          clearRollCharacteristic={() => {
-                            setRollState(prev => ({ ...prev, characteristic: null }));
-                          }}
                         />
                       )}
 
@@ -1293,7 +1286,6 @@ export function AppComposition() {
                         setActiveSpellSubtab={setActiveSpellSubtab}
                         spellRows={spellRows}
                         handleRoll={handleRoll}
-                        openSpellInfo={openSpellInfo}
                         openSpellShop={openSpellShop}
                       />
                       )}
@@ -1334,10 +1326,6 @@ export function AppComposition() {
                           setActiveInfo(null);
                           setIsDiceLogOpen(false);
                           setIsShopOpen(true);
-                        }}
-                        openEquipmentInfo={(itemName) => {
-                          setActiveInfo({ type: 'equipment', name: itemName });
-                          setRollState(prev => ({ ...prev, characteristic: null }));
                         }}
                       />
                       )}

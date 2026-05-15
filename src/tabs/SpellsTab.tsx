@@ -1,14 +1,13 @@
 import { InlineSubtabs } from "../components/ui";
 import {
+  SheetDataAccordionDetails,
+  SheetDataAccordionRow,
   SheetDataDesktopCell,
   SheetDataDisclosureChevron,
   SheetDataHeader,
-  SheetDataInfoButton,
-  SheetDataList,
   SheetDataPanel,
-  SheetDataResponsiveListRow,
+  SheetDataTable,
 } from "../components/wfrp";
-import type { ResolvedCharacterSpell } from "../data/characters/resolved";
 import type { SpellListRow } from "./spells/useSpellsViewModel";
 import type { Characteristic } from "../types";
 import type { SpellSubtab } from "./tabTypes";
@@ -18,19 +17,12 @@ type RollOptions = {
   title?: string | null;
 };
 
-type FormattedSpellFields = {
-  range: string;
-  target: string;
-  duration: string;
-};
-
 export function SpellsTab({
   spellSubtabOptions,
   activeSpellSubtab,
   setActiveSpellSubtab,
   spellRows,
   handleRoll,
-  openSpellInfo,
   openSpellShop,
 }: {
   spellSubtabOptions: Array<{ id: SpellSubtab; label: string }>;
@@ -42,7 +34,6 @@ export function SpellsTab({
     damage?: number,
     options?: RollOptions,
   ) => void;
-  openSpellInfo: (spell: ResolvedCharacterSpell, formattedSpell: FormattedSpellFields) => void;
   openSpellShop: () => void;
 }) {
   return (
@@ -64,27 +55,25 @@ export function SpellsTab({
       />
       <div className="flex-1 overflow-y-auto p-2 space-y-1 max-md:px-0">
         <SheetDataPanel className="overflow-x-hidden border-x-0 border-y-0 shadow-none md:wfrp-subpanel md:overflow-x-auto md:shadow-sm">
-          <SheetDataHeader className="hidden min-w-[640px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 px-4 py-1 lg:gap-4 md:grid">
+          <SheetDataHeader className="hidden min-w-[700px] grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px_48px] gap-2 px-4 py-1 lg:gap-4 md:grid">
             <span className="wfrp-table-label text-center">Channel</span>
             <span className="wfrp-table-label text-left">Spell</span>
             <span className="wfrp-table-label text-center">CN</span>
             <span className="wfrp-table-label text-left">Range</span>
             <span className="wfrp-table-label text-left">Target</span>
             <span className="wfrp-table-label text-left">Duration</span>
+            <span className="wfrp-table-label text-center">More</span>
           </SheetDataHeader>
 
-          <SheetDataList>
+          <SheetDataTable className="flex flex-col">
             {spellRows.map(({ channelValue, formatted, mobileDetails, spell }) => {
-              const openCurrentSpellInfo = () => {
-                openSpellInfo(spell, formatted);
-              };
-
               return (
-                <SheetDataResponsiveListRow
+                <SheetDataAccordionRow
                   key={spell.name}
-                  className="md:min-w-[640px] md:px-4 md:py-2"
-                  summaryClassName="grid-cols-[40px_minmax(0,1fr)_auto_auto]"
-                  mobileSummary={(
+                  className="md:min-w-[700px] md:px-4 md:py-2"
+                  summaryClassName="grid-cols-[40px_minmax(0,1fr)_48px] md:grid md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px_48px] md:gap-2 lg:gap-4"
+                  contentClassName="px-10 pb-4 pt-1 md:px-0"
+                  summary={(
                     <>
                       <div className="flex justify-center">
                         <button
@@ -99,61 +88,31 @@ export function SpellsTab({
                         </button>
                       </div>
 
-                      <button
-                        onClick={(event) => {
-                          event.preventDefault();
-                          openCurrentSpellInfo();
-                        }}
-                        className="wfrp-skill-link min-w-0 truncate text-left"
-                      >
+                      <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                         {spell.name}
-                      </button>
-
-                      <SheetDataInfoButton
-                        onClick={(event) => {
-                          event.preventDefault();
-                          openCurrentSpellInfo();
-                        }}
-                        aria-label={`Show ${spell.name} details`}
-                      />
-
-                      <SheetDataDisclosureChevron />
-                    </>
-                  )}
-                  mobileDetails={mobileDetails}
-                  desktopClassName="grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4"
-                  desktopContent={(
-                    <>
-                      <div className="flex justify-center">
-                        <button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            handleRoll({ key: "WP", label: spell.name }, undefined, { testType: "channeling" });
-                          }}
-                          className="wfrp-roll-btn"
-                          aria-label={`Channel ${spell.name}`}
-                        >
-                          {channelValue}
-                        </button>
-                      </div>
-
-                      <button
-                        onClick={openCurrentSpellInfo}
-                        className="wfrp-skill-link min-w-0 truncate text-left"
-                      >
-                        {spell.name}
-                      </button>
+                      </span>
 
                       <SheetDataDesktopCell align="center">{spell.cn}</SheetDataDesktopCell>
                       <SheetDataDesktopCell truncate>{formatted.range}</SheetDataDesktopCell>
                       <SheetDataDesktopCell truncate>{formatted.target}</SheetDataDesktopCell>
                       <SheetDataDesktopCell>{formatted.duration}</SheetDataDesktopCell>
+                      <SheetDataDisclosureChevron />
                     </>
                   )}
-                />
+                >
+                  <SheetDataAccordionDetails
+                    description={spell.description}
+                    rows={[
+                      ...mobileDetails.map((field) => ({ label: field.label, value: field.value })),
+                      { label: "Category", value: spell.category },
+                      ...(spell.school ? [{ label: "School", value: spell.school }] : []),
+                      ...(spell.damage ? [{ bordered: true, label: "Damage", value: spell.damage }] : []),
+                    ]}
+                  />
+                </SheetDataAccordionRow>
               );
             })}
-          </SheetDataList>
+          </SheetDataTable>
         </SheetDataPanel>
       </div>
     </div>

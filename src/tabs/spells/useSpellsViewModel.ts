@@ -1,7 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { ActiveInfoState } from "../../components/appTypes";
 import type { ResolvedCharacterRecord, ResolvedCharacterSkill, ResolvedCharacterSpell } from "../../data/characters/resolved";
-import type { RollState } from "../../types/dice";
 import type { SpellSubtab } from "../tabTypes";
 import { filterSpellsBySubtab, getSpellSubtabOptions } from "./spellUtils";
 
@@ -25,9 +23,7 @@ export function useSpellsViewModel({
   formatSpellDuration,
   formatSpellRange,
   formatSpellTarget,
-  setActiveInfo,
   setIsSpellShopOpen,
-  setRollState,
   spells,
 }: {
   activeSpellSubtab: SpellSubtab;
@@ -36,9 +32,7 @@ export function useSpellsViewModel({
   formatSpellDuration: (duration: string) => string;
   formatSpellRange: (range: string) => string;
   formatSpellTarget: (target: string) => string;
-  setActiveInfo: Dispatch<SetStateAction<ActiveInfoState | null>>;
   setIsSpellShopOpen: Dispatch<SetStateAction<boolean>>;
-  setRollState: Dispatch<SetStateAction<RollState>>;
   spells: ResolvedCharacterRecord["spells"];
 }) {
   const spellSubtabOptions = getSpellSubtabOptions(spells);
@@ -66,19 +60,9 @@ export function useSpellsViewModel({
     };
   });
 
-  const openSpellInfo = (spell: ResolvedCharacterSpell, formattedSpell: FormattedSpellFields) => {
-    setActiveInfo({
-      type: "spell",
-      name: spell.name,
-      extra: { ...spell, ...formattedSpell },
-    });
-    setRollState((prev) => ({ ...prev, characteristic: null }));
-  };
-
   const openSpellShop = () => setIsSpellShopOpen(true);
 
   return {
-    openSpellInfo,
     openSpellShop,
     spellRows,
     spellSubtabOptions,

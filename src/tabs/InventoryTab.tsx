@@ -2,11 +2,14 @@ import { Minus } from "lucide-react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, RefObject } from "react";
 import { InlineSubtabs } from "../components/ui";
 import {
+  SheetDataAccordionDetails,
+  SheetDataAccordionRow,
   SheetDataDisclosureChevron,
   SheetDataHeader,
   SheetDataList,
   SheetDataResponsiveListRow,
   SheetDataPanel,
+  SheetDataTable,
   SheetRowActionButton,
 } from "../components/wfrp";
 import { InventoryContextMenu } from "./inventory/InventoryContextMenu";
@@ -49,7 +52,6 @@ export function InventoryTab({
   handleStoreItem,
   formatItemValue,
   openShop,
-  openEquipmentInfo,
 }: {
   activeInventorySubtab: InventorySubtab;
   setActiveInventorySubtab: (subtab: InventorySubtab) => void;
@@ -103,7 +105,6 @@ export function InventoryTab({
   handleStoreItem: (itemId: string, containerId: string) => void;
   formatItemValue: (item: ResolvedCharacterEquipment) => string;
   openShop: () => void;
-  openEquipmentInfo: (itemName: string) => void;
 }) {
   const { inventorySubtabOptions, visibleSections, wallet } = useInventoryViewModel({
     activeInventorySubtab,
@@ -249,7 +250,7 @@ export function InventoryTab({
                       : ""
                 }`}
               >
-                <SheetDataHeader className="hidden min-w-[700px] grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 md:grid">
+                <SheetDataHeader className="hidden min-w-[700px] grid-cols-[1fr_140px_48px_60px_60px_48px] gap-2 lg:gap-4 md:grid">
                   <span className="flex min-w-0 items-center gap-2 text-left">
                     <span className="truncate">{section.title}</span>
                     {section.subtitle ? (
@@ -262,7 +263,7 @@ export function InventoryTab({
                   <span className="text-center">Qty</span>
                   <span className="text-center">Enc</span>
                   <span className="text-center">Value</span>
-                  <span className="text-right">Actions</span>
+                  <span className="text-center">More</span>
                 </SheetDataHeader>
 
                 <div className="border-b border-white/5 bg-black/10 px-2 py-1 md:hidden">
@@ -300,70 +301,60 @@ export function InventoryTab({
                       )}
                     />
                   )}
+                </SheetDataList>
 
+                <SheetDataTable className="flex flex-col divide-y-0">
                   {section.itemRows.map((row) => {
                     const { item } = row;
 
                     return (
-                      <SheetDataResponsiveListRow
+                      <SheetDataAccordionRow
                         key={item.id}
                         draggable={row.isDraggable}
-                        onDragStart={(event) => handleInventoryDragStart(item, event)}
+                        onDragStart={(event) => handleInventoryDragStart(item, event as unknown as ReactDragEvent<HTMLDivElement>)}
                         onDragEnd={handleInventoryDragEnd}
                         className={`${row.isDragging ? "opacity-45" : ""} ${
                           row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                         }`}
-                        summaryClassName="grid-cols-[minmax(0,1fr)_auto_auto]"
-                        mobileSummary={(
+                        summaryClassName="grid-cols-[minmax(0,1fr)_48px] md:grid md:min-w-[700px] md:grid-cols-[1fr_140px_48px_60px_60px_48px] md:gap-2 lg:gap-4"
+                        contentClassName="px-2 pb-4 pt-1 md:px-4"
+                        summary={(
                           <>
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                openEquipmentInfo(item.name);
-                              }}
-                              className="wfrp-skill-link flex min-w-0 items-center gap-1.5 text-left"
-                            >
+                            <span className="wfrp-list-cell-strong flex min-w-0 items-center gap-1.5 text-left text-gray-200">
                               <span className="truncate">{item.name}</span>
-                            </button>
+                            </span>
 
-                            <div className="relative flex items-center justify-end gap-1 pr-1">
-                              {renderItemActions(item)}
-                            </div>
-
-                            <SheetDataDisclosureChevron className="md:inline" />
+                            <div className="hidden wfrp-list-cell-strong truncate md:block">{item.type}</div>
+                            <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{row.quantity}</div>
+                            <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{row.encumbrance}</div>
+                            <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{row.value}</div>
+                            <SheetDataDisclosureChevron />
                           </>
                         )}
-                        mobileDetails={row.mobileDetails}
-                        desktopClassName="grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4"
-                        desktopContent={(
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => openEquipmentInfo(item.name)}
-                              className="wfrp-skill-link flex min-w-0 items-center gap-1.5 text-left"
-                            >
-                              <span className="truncate">{item.name}</span>
-                            </button>
-                            <div className="wfrp-list-cell-strong truncate">{item.type}</div>
-                            <div className="wfrp-list-cell-strong text-center font-mono">{row.quantity}</div>
-                            <div className="wfrp-list-cell-strong text-center font-mono">{row.encumbrance}</div>
-                            <div className="wfrp-list-cell-strong text-center font-mono">{row.value}</div>
-                            <div className="relative flex items-center justify-end gap-1 pr-1">
-                              {renderItemActions(item)}
-                            </div>
-                          </>
-                        )}
-                      />
+                      >
+                        <SheetDataAccordionDetails
+                          description={item.description}
+                          rows={[
+                            { label: "Type", value: item.type },
+                            { label: "Qty", value: row.quantity },
+                            { label: "Enc", value: row.encumbrance },
+                            { label: "Value", value: row.value },
+                          ]}
+                        >
+                          <div className="flex flex-wrap items-center justify-end gap-1 border-t border-white/10 pt-2">
+                            {renderItemActions(item)}
+                          </div>
+                        </SheetDataAccordionDetails>
+                      </SheetDataAccordionRow>
                     );
                   })}
+                </SheetDataTable>
 
                   {section.itemRows.length === 0 && section.id !== "carried" && (
                     <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-700">
                       {canDropHere ? "Drop here" : "Empty"}
                     </div>
                   )}
-                </SheetDataList>
               </SheetDataPanel>
             );
           })}

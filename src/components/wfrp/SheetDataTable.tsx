@@ -71,10 +71,14 @@ export function SheetDataAccordionRow({
 }
 
 export function SheetDataAccordionDetails({
+  children,
+  className,
   description,
   descriptionFallback = "No details available.",
   rows = [],
 }: {
+  children?: ReactNode;
+  className?: string;
   description?: ReactNode;
   descriptionFallback?: ReactNode;
   rows?: Array<{
@@ -84,7 +88,7 @@ export function SheetDataAccordionDetails({
   }>;
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn("flex flex-col gap-2", className)}>
       <div>
         <p className="max-w-3xl text-[11px] font-bold leading-relaxed text-wfrp-muted-text">
           {description || <span className="italic text-wfrp-muted-text">{descriptionFallback}</span>}
@@ -107,6 +111,8 @@ export function SheetDataAccordionDetails({
           ))}
         </div>
       ) : null}
+
+      {children}
     </div>
   );
 }

@@ -1,14 +1,12 @@
 import { InlineSubtabs } from "../components/ui";
 import {
+  SheetDataAccordionDetails,
+  SheetDataAccordionRow,
   SheetDataDisclosureChevron,
   SheetDataHeader,
-  SheetDataInfoButton,
-  SheetDataMobileDetails,
   SheetDataPanel,
-  SheetDataRow,
   SheetDataTable,
 } from "../components/wfrp";
-import type { ActiveInfoState } from "../components/appTypes";
 import type {
   ResolvedCharacterEquipment,
   ResolvedCharacterRecord,
@@ -50,12 +48,11 @@ type CombatAction = {
 
 const offensiveProperties = ["Damaging", "Hack", "Impact", "Impale", "Precise", "Pummel", "Trap-blade", "Wrap"];
 const defensiveProperties = ["Defensive", "Shield"];
-const mobileActionSummaryClass =
-  "grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden";
-const channelingGridClass = "md:grid-cols-[60px_1fr_1fr] md:gap-2 lg:gap-4";
-const weaponActionGridClass = "md:grid-cols-[60px_1fr_60px_80px_1fr] md:gap-2 lg:gap-4";
+const channelingGridClass = "md:grid-cols-[60px_1fr_1fr_48px] md:gap-2 lg:gap-4";
+const weaponActionGridClass = "md:grid-cols-[60px_1fr_60px_80px_1fr_48px] md:gap-2 lg:gap-4";
 const rangedActionGridClass =
-  "md:grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr] md:gap-2";
+  "md:grid-cols-[60px_1fr_60px_32px_32px_32px_32px_32px_1fr_48px] md:gap-2";
+const actionSummaryGridClass = "grid-cols-[40px_minmax(0,1fr)_48px]";
 
 const getRelevantWeaponProperties = (actionId: string, properties: string[]) => {
   if (actionId === "attack" || actionId === "charge") {
@@ -84,8 +81,6 @@ export function ActionsTab({
   getTargetBonusTotal,
   handleRoll,
   setRollAdjustments,
-  setActiveInfo,
-  clearRollCharacteristic,
 }: {
   activeActionCategory: ActionCategory;
   setActiveActionCategory: (category: ActionCategory) => void;
@@ -101,18 +96,31 @@ export function ActionsTab({
     options?: RollOptions,
   ) => void;
   setRollAdjustments: (modifier: number, targetBonusSources: RollBonusSource[]) => void;
-  setActiveInfo: (activeInfo: ActiveInfoState | null) => void;
-  clearRollCharacteristic: () => void;
 }) {
   const attributes = characterData.attributes;
 
-  const openPropertyInfo = (name: string, weaponProperties?: string[]) => {
-    setActiveInfo({
-      type: "property",
-      name,
-      extra: weaponProperties ? { weaponProperties } : undefined,
-    });
-    clearRollCharacteristic();
+  const renderPropertyDetails = (properties: string[]) => {
+    const describedProperties = properties
+      .map((property) => ({
+        description: rulesIndex.propertyDescriptionByName[property],
+        property,
+      }))
+      .filter((entry) => entry.description);
+
+    if (describedProperties.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="flex flex-col gap-1 border-t border-white/10 pt-2">
+        {describedProperties.map(({ description, property }) => (
+          <div key={property} className="text-[11px] leading-relaxed">
+            <span className="wfrp-list-cell-strong text-wfrp-muted-text">{property}: </span>
+            <span className="wfrp-sidebar-body text-card-foreground">{description}</span>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const applyActionAdjustments = (action: Pick<CombatAction, "modifier" | "targetBonusSources">) => {
@@ -144,28 +152,22 @@ export function ActionsTab({
             char: "WP" as Characteristic["key"],
             properties: ["Spellcasting"],
           };
-          const openChannelingInfo = () => setActiveInfo({
-            type: "attack",
-            name: "Channeling",
-            extra: {
-              ...channelingAction,
-              totalValue: totalChannelingValue,
-              weaponName: "Channeling",
-              weaponType: "Character Action",
-            },
-          });
 
           return (
             <SheetDataPanel>
               <SheetDataHeader className={`hidden ${channelingGridClass} md:grid`}>
                 <span className="wfrp-table-label col-span-2 text-left">Channeling</span>
                 <span className="wfrp-table-label text-left">Notes</span>
+                <span className="wfrp-table-label text-center">More</span>
               </SheetDataHeader>
 
               <SheetDataTable>
-                <SheetDataRow className={`block group md:grid ${channelingGridClass}`}>
-                  <details className="group/details md:contents">
-                    <summary className={mobileActionSummaryClass}>
+                <SheetDataAccordionRow
+                  className="group"
+                  summaryClassName={`${actionSummaryGridClass} md:grid ${channelingGridClass}`}
+                  contentClassName="px-10 pb-4 pt-1 md:px-4"
+                  summary={(
+                    <>
                       <div className="flex justify-center">
                         <button
                           onClick={(event) => {
@@ -178,40 +180,32 @@ export function ActionsTab({
                           {totalChannelingValue}
                         </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          openChannelingInfo();
-                        }}
-                        className="wfrp-skill-link min-w-0 truncate text-left"
-                      >
+                      <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                         {channelingAction.name}
-                      </button>
-                      <SheetDataInfoButton onClick={(event) => { event.preventDefault(); openChannelingInfo(); }} />
-                      <SheetDataDisclosureChevron />
+                      </span>
                       <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
                         {channelingAction.properties.map((prop, propIndex) => (
                           <span key={prop} className="text-xs font-semibold text-gray-400">
-                            <button
-                              onClick={() => openPropertyInfo(prop, channelingAction.properties)}
-                              className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm"
-                            >
-                              {prop === "Spellcasting" ? "Spell Focus" : prop}
-                            </button>
+                            {prop === "Spellcasting" ? "Spell Focus" : prop}
                             {propIndex < channelingAction.properties.length - 1 ? "," : ""}
                           </span>
                         ))}
                       </div>
-                    </summary>
-                    <SheetDataMobileDetails
-                      fields={[
-                        { label: "Type", value: "Channeling" },
-                        { label: "Notes", value: "Spell Focus" },
-                      ]}
-                    />
-                  </details>
-                </SheetDataRow>
+                      <SheetDataDisclosureChevron />
+                    </>
+                  )}
+                >
+                  <SheetDataAccordionDetails
+                    description={rulesIndex.actionDescriptionByName.Channeling}
+                    rows={[
+                      { label: "Type", value: "Channeling" },
+                      { label: "Roll", value: totalChannelingValue },
+                      { label: "Notes", value: "Spell Focus" },
+                    ]}
+                  >
+                    {renderPropertyDetails(channelingAction.properties)}
+                  </SheetDataAccordionDetails>
+                </SheetDataAccordionRow>
               </SheetDataTable>
             </SheetDataPanel>
           );
@@ -332,26 +326,20 @@ export function ActionsTab({
                       <span className="wfrp-table-label text-left">Dmg</span>
                       <span className="wfrp-table-label text-left">Reach</span>
                       <span className="wfrp-table-label text-left">Properties</span>
+                      <span className="wfrp-table-label text-center">More</span>
                     </SheetDataHeader>
 
                     <SheetDataTable>
                       {actions.map((action, idx) => {
                         const totalActionValue = action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
-                        const openActionInfo = () => setActiveInfo({
-                          type: "attack",
-                          name: action.name,
-                          extra: {
-                            ...action,
-                            totalValue: totalActionValue,
-                            weaponName: weapon.name,
-                            weaponType: weapon.type,
-                          },
-                        });
-
                         return (
-                          <SheetDataRow key={idx} className={`block group md:grid ${weaponActionGridClass}`}>
-                            <details className="group/details md:contents">
-                              <summary className={mobileActionSummaryClass}>
+                          <SheetDataAccordionRow
+                            key={idx}
+                            className="group"
+                            summaryClassName={`${actionSummaryGridClass} md:grid ${weaponActionGridClass}`}
+                            contentClassName="px-10 pb-4 pt-1 md:px-4"
+                            summary={(
+                              <>
                                 <div className="flex justify-center">
                                   <button
                                     onClick={(event) => {
@@ -372,38 +360,39 @@ export function ActionsTab({
                                     {totalActionValue}
                                   </button>
                                 </div>
-                                <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className="wfrp-skill-link min-w-0 truncate text-left">
+                                <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                                   {action.name}
-                                </button>
-                                <SheetDataInfoButton onClick={(event) => { event.preventDefault(); openActionInfo(); }} />
-                                <SheetDataDisclosureChevron />
+                                </span>
                                 <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{action.damage}</div>
                                 <div className="hidden wfrp-list-cell-strong md:block">{action.range}</div>
                                 <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
                                   {action.properties.map((prop, propIndex) => (
                                     <span key={prop} className="text-xs font-semibold text-gray-400">
-                                      {rulesIndex.propertyDescriptionByName[prop] ? (
-                                        <button onClick={() => openPropertyInfo(prop, action.properties)} className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm">
-                                          {prop}
-                                        </button>
-                                      ) : (
-                                        <span>{prop}</span>
-                                      )}
+                                      {prop}
                                       {propIndex < action.properties.length - 1 ? "," : ""}
                                     </span>
                                   ))}
                                 </div>
-                              </summary>
-                              <SheetDataMobileDetails
-                                fields={[
+                                <SheetDataDisclosureChevron />
+                              </>
+                            )}
+                          >
+                            <SheetDataAccordionDetails
+                              description={rulesIndex.actionDescriptionByName[action.name] || action.note}
+                              rows={[
                                   { label: "Weapon", value: weapon.name },
+                                  { label: "Roll", value: totalActionValue },
                                   { label: "Dmg", value: action.damage },
                                   { label: "Reach", value: action.range },
                                   { label: "Properties", value: action.properties.length ? action.properties.join(", ") : "-" },
-                                ]}
-                              />
-                            </details>
-                          </SheetDataRow>
+                              ]}
+                            >
+                              {action.note && rulesIndex.actionDescriptionByName[action.name] ? (
+                                <p className="text-[11px] font-bold leading-relaxed text-wfrp-muted-text">{action.note}</p>
+                              ) : null}
+                              {renderPropertyDetails(action.properties)}
+                            </SheetDataAccordionDetails>
+                          </SheetDataAccordionRow>
                         );
                       })}
                     </SheetDataTable>
@@ -419,26 +408,20 @@ export function ActionsTab({
                       <span className="wfrp-table-label text-left">L</span>
                       <span className="wfrp-table-label text-left">E</span>
                       <span className="wfrp-table-label text-left">Properties</span>
+                      <span className="wfrp-table-label text-center">More</span>
                     </SheetDataHeader>
 
                     <SheetDataTable>
                       {actions.map((action, idx) => {
                         const totalActionValue = action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
-                        const openActionInfo = () => setActiveInfo({
-                          type: "attack",
-                          name: action.name,
-                          extra: {
-                            ...action,
-                            totalValue: totalActionValue,
-                            weaponName: weapon.name,
-                            weaponType: weapon.type,
-                          },
-                        });
-
                         return (
-                          <SheetDataRow key={idx} className={`block group md:grid ${rangedActionGridClass}`}>
-                            <details className="group/details md:contents">
-                              <summary className={mobileActionSummaryClass}>
+                          <SheetDataAccordionRow
+                            key={idx}
+                            className="group"
+                            summaryClassName={`${actionSummaryGridClass} md:grid ${rangedActionGridClass}`}
+                            contentClassName="px-10 pb-4 pt-1 md:px-4"
+                            summary={(
+                              <>
                                 <div className="flex justify-center">
                                   <button
                                     onClick={(event) => {
@@ -459,11 +442,9 @@ export function ActionsTab({
                                     {totalActionValue}
                                   </button>
                                 </div>
-                                <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className="wfrp-skill-link min-w-0 truncate text-left">
+                                <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                                   {action.name}
-                                </button>
-                                <SheetDataInfoButton onClick={(event) => { event.preventDefault(); openActionInfo(); }} />
-                                <SheetDataDisclosureChevron />
+                                </span>
                                 <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{action.damage}</div>
                                 <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-50 md:block">{rangeBands?.pb ?? "-"}</div>
                                 <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-70 md:block">{rangeBands?.s ?? "-"}</div>
@@ -473,29 +454,32 @@ export function ActionsTab({
                                 <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
                                   {action.properties.map((prop, propIndex) => (
                                     <span key={prop} className="text-xs font-semibold text-gray-400">
-                                      {rulesIndex.propertyDescriptionByName[prop] ? (
-                                        <button onClick={() => openPropertyInfo(prop, action.properties)} className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm">
-                                          {prop}
-                                        </button>
-                                      ) : (
-                                        <span>{prop}</span>
-                                      )}
+                                      {prop}
                                       {propIndex < action.properties.length - 1 ? "," : ""}
                                     </span>
                                   ))}
                                 </div>
-                              </summary>
-                              <SheetDataMobileDetails
-                                fields={[
+                                <SheetDataDisclosureChevron />
+                              </>
+                            )}
+                          >
+                            <SheetDataAccordionDetails
+                              description={rulesIndex.actionDescriptionByName[action.name] || action.note}
+                              rows={[
                                   { label: "Weapon", value: weapon.name },
+                                  { label: "Roll", value: totalActionValue },
                                   { label: "Dmg", value: action.damage },
                                   { label: "Range", value: weaponStats.reach },
                                   { label: "Bands", value: `PB ${rangeBands?.pb ?? "-"} / S ${rangeBands?.s ?? "-"} / A ${rangeBands?.a ?? "-"} / L ${rangeBands?.l ?? "-"} / E ${rangeBands?.e ?? "-"}` },
                                   { label: "Properties", value: action.properties.length ? action.properties.join(", ") : "-" },
-                                ]}
-                              />
-                            </details>
-                          </SheetDataRow>
+                              ]}
+                            >
+                              {action.note && rulesIndex.actionDescriptionByName[action.name] ? (
+                                <p className="text-[11px] font-bold leading-relaxed text-wfrp-muted-text">{action.note}</p>
+                              ) : null}
+                              {renderPropertyDetails(action.properties)}
+                            </SheetDataAccordionDetails>
+                          </SheetDataAccordionRow>
                         );
                       })}
                     </SheetDataTable>
@@ -512,6 +496,7 @@ export function ActionsTab({
               <span className="wfrp-table-label text-left">Dmg</span>
               <span className="wfrp-table-label text-left">Reach</span>
               <span className="wfrp-table-label text-left">Notes</span>
+              <span className="wfrp-table-label text-center">More</span>
             </SheetDataHeader>
 
             <SheetDataTable>
@@ -530,21 +515,14 @@ export function ActionsTab({
                   const sb = Math.floor(strValue / 10);
                   const finalDamage = action.damage === "SB" ? `+${sb}` : action.damage;
                   const totalActionValue = totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
-                  const openManeuverInfo = () => setActiveInfo({
-                    type: "attack",
-                    name: action.name,
-                    extra: {
-                      ...action,
-                      totalValue: totalActionValue,
-                      damage: finalDamage,
-                      properties: action.properties,
-                    },
-                  });
-
                   return (
-                    <SheetDataRow key={action.name} className={`block group md:grid ${weaponActionGridClass}`}>
-                      <details className="group/details md:contents">
-                        <summary className={mobileActionSummaryClass}>
+                    <SheetDataAccordionRow
+                      key={action.name}
+                      className="group"
+                      summaryClassName={`${actionSummaryGridClass} md:grid ${weaponActionGridClass}`}
+                      contentClassName="px-10 pb-4 pt-1 md:px-4"
+                      summary={(
+                        <>
                           <div className="flex justify-center">
                             <button
                               onClick={(event) => {
@@ -564,33 +542,35 @@ export function ActionsTab({
                               {totalActionValue}
                             </button>
                           </div>
-                          <button type="button" onClick={(event) => { event.preventDefault(); openManeuverInfo(); }} className="wfrp-skill-link min-w-0 truncate text-left">
+                          <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                             {action.name}
-                          </button>
-                          <SheetDataInfoButton onClick={(event) => { event.preventDefault(); openManeuverInfo(); }} />
-                          <SheetDataDisclosureChevron />
+                          </span>
                           <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{finalDamage}</div>
                           <div className="hidden wfrp-list-cell-strong md:block">{action.range}</div>
                           <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
                             {action.properties.map((prop, propIndex) => (
                               <span key={prop} className="text-xs font-semibold text-gray-400">
-                                <button onClick={() => openPropertyInfo(prop)} className="cursor-pointer text-left hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 rounded-sm">
-                                  {prop}
-                                </button>
+                                {prop}
                                 {propIndex < action.properties.length - 1 ? "," : ""}
                               </span>
                             ))}
                           </div>
-                        </summary>
-                        <SheetDataMobileDetails
-                          fields={[
+                          <SheetDataDisclosureChevron />
+                        </>
+                      )}
+                    >
+                      <SheetDataAccordionDetails
+                        description={rulesIndex.actionDescriptionByName[action.name]}
+                        rows={[
+                            { label: "Roll", value: totalActionValue },
                             { label: "Dmg", value: finalDamage },
                             { label: "Reach", value: action.range },
                             { label: "Properties", value: action.properties.length ? action.properties.join(", ") : "-" },
-                          ]}
-                        />
-                      </details>
-                    </SheetDataRow>
+                        ]}
+                      >
+                        {renderPropertyDetails(action.properties)}
+                      </SheetDataAccordionDetails>
+                    </SheetDataAccordionRow>
                   );
                 })}
             </SheetDataTable>
