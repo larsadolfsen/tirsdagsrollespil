@@ -60,7 +60,7 @@ export function SkillsTab({
         onChange={setActiveSkillSubtab}
       />
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card p-2 space-y-4">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card space-y-4">
         <SheetDataPanel>
           <SheetDataHeader className={`hidden ${desktopSkillGridClass} md:grid md:gap-0`}>
             <span className="wfrp-table-label text-center">Roll</span>
