@@ -327,7 +327,7 @@ section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] {
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
-  gap: 1.5rem 2rem;
+  gap: 12px;
 }
 
 section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [class~="group/char"] {
@@ -336,17 +336,17 @@ section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [cla
 }
 
 [class~="group/char"]:hover [class~="-bottom-2"] {
-  border-color: var(--color-wfrp-accent);
-  background-color: var(--color-wfrp-accent);
+  border-color: rgb(197 160 89 / 60%);
+  background-color: var(--color-wfrp-surface-hover);
 }
 
 [class~="group/char"]:hover [class~="-bottom-2"] span {
-  color: var(--color-wfrp-dice-text);
+  color: var(--color-wfrp-gold);
 }
 
 @media (min-width: 1024px) {
   section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] {
-    gap: 1.75rem 3rem;
+    gap: 12px;
   }
 
   section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [class~="group/char"] {
