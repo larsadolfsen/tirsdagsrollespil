@@ -1361,10 +1361,8 @@ export function AppComposition() {
                         careerAdvancementData={careerAdvancementData}
                         advancementProgress={advancementProgress}
                         nextCareerAdvanceCost={nextCareerAdvanceCost}
-                        pendingCareerRank={pendingCareerRank}
                         pendingAvailableXp={pendingAvailableXp}
                         nextCareerRankRecord={nextCareerRankRecord}
-                        decreasePendingCareerRank={decreasePendingCareerRank}
                         increasePendingCareerRank={increasePendingCareerRank}
                         advancementCharacteristics={advancementCharacteristics}
                         availableCareerCharacteristicKeys={availableCareerCharacteristicKeys}

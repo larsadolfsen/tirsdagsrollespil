@@ -258,6 +258,15 @@
   font-family: var(--font-dice);
 }
 
+.wfrp-skill-row {
+  padding-block: 0.25rem;
+  padding-inline: 0.5rem;
+}
+
+.wfrp-skill-row-summary {
+  min-height: 2.25rem;
+}
+
 @utility wfrp-property-pill {
   @apply inline-flex h-8 items-center justify-start gap-2 rounded-[8px] border border-wfrp-border bg-black/30 px-4 text-[10px] font-bold text-gray-500 transition-all cursor-pointer hover:text-wfrp-gold hover:border-wfrp-border/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }

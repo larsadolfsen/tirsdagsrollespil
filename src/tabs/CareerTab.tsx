@@ -55,10 +55,8 @@ interface CareerTabProps {
   careerAdvancementData: CareerAdvancementData;
   advancementProgress: number;
   nextCareerAdvanceCost: number | null;
-  pendingCareerRank: number | null;
   pendingAvailableXp: number;
   nextCareerRankRecord: ResolvedCharacterRecord["careerRecord"]["ranks"][number] | null;
-  decreasePendingCareerRank: () => void;
   increasePendingCareerRank: () => void;
   advancementCharacteristics: AdvancementCharacteristic[];
   availableCareerCharacteristicKeys: string[];
@@ -104,10 +102,8 @@ export function CareerTab({
   careerAdvancementData,
   advancementProgress,
   nextCareerAdvanceCost,
-  pendingCareerRank,
   pendingAvailableXp,
   nextCareerRankRecord,
-  decreasePendingCareerRank,
   increasePendingCareerRank,
   advancementCharacteristics,
   availableCareerCharacteristicKeys,
@@ -132,6 +128,11 @@ export function CareerTab({
   clearRollCharacteristic,
 }: CareerTabProps) {
   const { setXpCurrent, setXpTotal } = useGameSessionContext();
+  const currentCareerRow =
+    displayedCareerRankRecord ??
+    characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank) ??
+    null;
+  const careerRows = currentCareerRow ? [currentCareerRow] : [];
   const adjustXp = (amount: number) => {
     setXpCurrent((current) => Math.max(0, current + amount));
     setXpTotal((current) => Math.max(0, current + amount));
@@ -262,71 +263,80 @@ export function CareerTab({
                 <span className="wfrp-table-label text-right">Advance</span>
               </div>
               <div className="divide-y divide-white/5">
-                <div className="grid grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row">
-                  <div className="min-w-0">
-                    <button
-                      onClick={() => {
-                        setActiveInfo({
-                          type: "career",
-                          name: `${characterData.career} ${toRoman(displayedCareerRank)}`,
-                          extra: {
-                            careerName: characterData.career,
-                            tierName: displayedCareerRankRecord?.name ?? characterData.tier,
-                            tierStatus: displayedCareerRankRecord?.status ?? characterData.status,
-                            rank: displayedCareerRank,
-                            careerSkills: careerAdvancementData.skills,
-                            careerTalents: careerAdvancementData.talents,
-                          },
-                        });
-                        clearRollCharacteristic();
-                      }}
-                      className="wfrp-skill-link truncate text-left"
+                {careerRows.map((rankRecord) => {
+                  const isActiveCareerRow = rankRecord.rank === displayedCareerRank;
+                  const rowProgress = isActiveCareerRow ? advancementProgress : 100;
+
+                  return (
+                    <div
+                      key={rankRecord.rank}
+                      className="grid grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row"
                     >
-                      {characterData.career} {toRoman(displayedCareerRank)}
-                    </button>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden shadow-inner">
-                      <div
-                        className="h-full bg-white/30 transition-all duration-500"
-                        style={{ width: `${advancementProgress}%` }}
-                        role="progressbar"
-                        aria-valuenow={advancementProgress}
-                        aria-valuemin={0}
-                        aria-valuemax={100}
-                        aria-label="Career step progress"
-                      />
+                      <div className="min-w-0">
+                        <button
+                          onClick={() => {
+                            setActiveInfo({
+                              type: "career",
+                              name: `${characterData.career} ${toRoman(rankRecord.rank)}`,
+                              extra: {
+                                careerName: characterData.career,
+                                tierName: rankRecord.name,
+                                tierStatus: rankRecord.status,
+                                rank: rankRecord.rank,
+                                careerSkills: careerAdvancementData.skills,
+                                careerTalents: careerAdvancementData.talents,
+                              },
+                            });
+                            clearRollCharacteristic();
+                          }}
+                          className="wfrp-skill-link truncate text-left"
+                        >
+                          {characterData.career} {toRoman(rankRecord.rank)}
+                        </button>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden shadow-inner">
+                          <div
+                            className="h-full bg-white/30 transition-all duration-500"
+                            style={{ width: `${rowProgress}%` }}
+                            role="progressbar"
+                            aria-valuenow={rowProgress}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-label={`${characterData.career} ${toRoman(rankRecord.rank)} progress`}
+                          />
+                        </div>
+                      </div>
+                      <div className="wfrp-list-cell-strong text-left truncate">
+                        {rankRecord.name}
+                      </div>
+                      <div className="wfrp-list-cell-strong text-center font-mono">
+                        {isActiveCareerRow ? nextCareerAdvanceCost ?? "-" : "-"}
+                      </div>
+                      <div className="flex justify-end">
+                        {isActiveCareerRow ? (
+                          <button
+                            onClick={increasePendingCareerRank}
+                            disabled={
+                              !nextCareerRankRecord ||
+                              nextCareerAdvanceCost === null ||
+                              pendingAvailableXp < nextCareerAdvanceCost
+                            }
+                            className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label={`Advance ${characterData.career} from rank ${rankRecord.rank}`}
+                            title="Advance career"
+                          >
+                            <Plus size={12} />
+                          </button>
+                        ) : (
+                          <span className="wfrp-list-cell text-right" aria-label="Read-only career rank">
+                            -
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="wfrp-list-cell-strong text-left truncate">
-                    {displayedCareerRankRecord?.name ?? characterData.tier}
-                  </div>
-                  <div className="wfrp-list-cell-strong text-center font-mono">
-                    {nextCareerAdvanceCost ?? "-"}
-                  </div>
-                  <div className="flex justify-end gap-1">
-                    <button
-                      onClick={decreasePendingCareerRank}
-                      disabled={pendingCareerRank === null}
-                      className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
-                      aria-label={`Decrease career rank for ${characterData.career}`}
-                    >
-                      <Minus size={10} />
-                    </button>
-                    <button
-                      onClick={increasePendingCareerRank}
-                      disabled={
-                        !nextCareerRankRecord ||
-                        nextCareerAdvanceCost === null ||
-                        pendingAvailableXp < nextCareerAdvanceCost
-                      }
-                      className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
-                      aria-label={`Increase career rank for ${characterData.career}`}
-                    >
-                      <Plus size={12} />
-                    </button>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
           </AdvancementSection>

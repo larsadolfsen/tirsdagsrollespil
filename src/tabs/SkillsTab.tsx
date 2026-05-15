@@ -81,7 +81,8 @@ export function SkillsTab({
               return (
                 <SheetDataAccordionRow
                   key={skill.key}
-                  summaryClassName={`grid-cols-[40px_minmax(0,1fr)_48px] md:grid ${desktopSkillGridClass} md:gap-0`}
+                  className="wfrp-skill-row"
+                  summaryClassName={`wfrp-skill-row-summary grid-cols-[40px_minmax(0,1fr)_48px] md:grid ${desktopSkillGridClass} md:gap-0`}
                   contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                   summary={(
                     <>
