@@ -73,20 +73,21 @@ export function DiceLogSidebar({
       motionKey="dice-roller"
       onClose={closeDiceLog}
       className="w-[360px]"
-      contentClassName="overflow-x-hidden p-4 pt-8"
+      contentClassName="overflow-x-hidden px-4 pb-4 pt-4"
       title="Dice Log"
       kicker="Roll & Results"
       closeLabel="Close dice log"
     >
       <div className="flex flex-col">
-        <div className="flex flex-col gap-12 mb-12">
-          {rollHistory.map((item) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col gap-3 px-1"
-            >
+        {rollHistory.length > 0 && (
+          <div className="flex flex-col gap-12 mb-12">
+            {rollHistory.map((item) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col gap-3 px-1"
+              >
               <h3 className="wfrp-sidebar-title text-[11px] uppercase tracking-tight text-white/60">
                 {item.title ?? getTestTypeTitle(item.testType)}
               </h3>
@@ -192,9 +193,10 @@ export function DiceLogSidebar({
                   <div />
                 </div>
               )}
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {rollState.characteristic && (
           <div

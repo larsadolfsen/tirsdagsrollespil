@@ -766,6 +766,7 @@ export function AppComposition() {
         characteristic:
           characterSkill?.characteristic ?? skillCharacteristicById[option.skillId] ?? "",
         advances: characterSkill?.advances ?? 0,
+        description: skillDef?.description,
         isTrained: (characterSkill?.advances ?? 0) > 0,
         skillId: option.skillId,
         isGrouped: skillDef?.grouped ?? false,
@@ -810,6 +811,7 @@ export function AppComposition() {
       displayName: skill.displayName,
       characteristic: skill.characteristic,
       advances: skill.advances,
+      description: skillDefinitionById.get(skill.skillId)?.description,
     }))
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
   const basicVisibleSkillRows = [...trainedBasicSkillRows, ...untrainedBasicSkillRows].sort((a, b) =>
