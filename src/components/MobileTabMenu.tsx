@@ -67,13 +67,13 @@ export function MobileTabMenu({
             onClick={closeMobileNavigation}
           />
           <motion.aside
-            className="absolute left-0 top-0 flex h-full w-[min(86vw,340px)] flex-col border-r border-wfrp-brass-border bg-wfrp-dark shadow-2xl"
+            className="absolute left-0 top-0 flex h-full w-[min(86vw,340px)] flex-col border-r border-wfrp-brass-border bg-sidebar shadow-2xl"
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 260 }}
           >
-            <div className="border-b border-wfrp-border bg-wfrp-surface px-5 py-5">
+            <div className="border-b border-wfrp-border bg-sidebar px-5 py-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex min-w-0 items-start gap-3">
                   <Menu size={18} className="mt-1 shrink-0 text-wfrp-gold/70" />
@@ -101,7 +101,7 @@ export function MobileTabMenu({
               </div>
 
               {isMobileCharacterListOpen && (
-                <div className="mt-4 overflow-hidden rounded border border-wfrp-border bg-black/25 p-1">
+                <div className="mt-4 overflow-hidden rounded border border-wfrp-border bg-sidebar p-1">
                   {availableCharacters.map((character) => {
                     const isSelected = character.id === selectedCharacterId;
 
