@@ -15,12 +15,7 @@ import { useInventoryViewModel } from "./inventory/useInventoryViewModel";
 import type { ResolvedCharacterEquipment, ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { InventorySubtab } from "./tabTypes";
 import type { InventoryDragState, InventoryDropTargetId, InventoryMenuState } from "../types/inventory";
-import {
-  getConsumableBaseName,
-  getConsumableCount,
-  getInventoryEncumbrance,
-  isPacksAndContainersItem,
-} from "./inventory/inventoryUtils";
+import { getConsumableBaseName } from "./inventory/inventoryUtils";
 
 export function InventoryTab({
   activeInventorySubtab,
@@ -118,6 +113,7 @@ export function InventoryTab({
     containers,
     getContainerContents,
     getContainerUsedEncumbrance,
+    formatItemValue,
     inventoryDrag,
     wornItems,
   });
@@ -289,14 +285,7 @@ export function InventoryTab({
                           <span className="wfrp-list-cell-strong flex items-center gap-1.5 text-gray-200">Coins</span>
                           <SheetDataDisclosureChevron className="md:inline" />
                         </summary>
-                        <SheetDataMobileDetails
-                          fields={[
-                            { label: "Type", value: "Currency" },
-                            { label: "Qty", value: wallet.coinCount },
-                            { label: "Enc", value: wallet.encumbrance || "-" },
-                            { label: "Value", value: wallet.value },
-                          ]}
-                        />
+                        <SheetDataMobileDetails fields={wallet.mobileDetails} />
                       </details>
 
                       <div className="hidden flex-1 grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center md:grid">
@@ -310,21 +299,19 @@ export function InventoryTab({
                     </SheetDataListRow>
                   )}
 
-                  {section.items.map((item) => {
-                    const quantity = getConsumableCount(item) ?? 1;
-                    const itemEncumbrance = getInventoryEncumbrance(item) || "-";
-                    const itemValue = formatItemValue(item);
+                  {section.itemRows.map((row) => {
+                    const { item } = row;
 
                     return (
                       <SheetDataListRow
                         key={item.id}
-                        draggable={!isPacksAndContainersItem(item)}
+                        draggable={row.isDraggable}
                         onDragStart={(event) => handleInventoryDragStart(item, event)}
                         onDragEnd={handleInventoryDragEnd}
                         className={`border-0 group md:flex md:min-w-[700px] ${
-                          inventoryDrag?.itemId === item.id ? "opacity-45" : ""
+                          row.isDragging ? "opacity-45" : ""
                         } ${
-                          isPacksAndContainersItem(item) ? "" : "cursor-grab active:cursor-grabbing"
+                          row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                         }`}
                       >
                         <details className="group/details md:hidden">
@@ -347,14 +334,7 @@ export function InventoryTab({
                             <SheetDataDisclosureChevron className="md:inline" />
                           </summary>
 
-                          <SheetDataMobileDetails
-                            fields={[
-                              { label: "Type", value: item.type },
-                              { label: "Qty", value: quantity },
-                              { label: "Enc", value: itemEncumbrance },
-                              { label: "Value", value: itemValue },
-                            ]}
-                          />
+                          <SheetDataMobileDetails fields={row.mobileDetails} />
                         </details>
 
                         <div className="hidden flex-1 grid-cols-[1fr_140px_48px_60px_60px_132px] gap-2 lg:gap-4 items-center md:grid">
@@ -366,9 +346,9 @@ export function InventoryTab({
                             <span className="truncate">{item.name}</span>
                           </button>
                           <div className="wfrp-list-cell-strong truncate">{item.type}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">{quantity}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">{itemEncumbrance}</div>
-                          <div className="wfrp-list-cell-strong text-center font-mono">{itemValue}</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{row.quantity}</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{row.encumbrance}</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{row.value}</div>
                           <div className="relative flex items-center justify-end gap-1 pr-1">
                             {renderItemActions(item)}
                           </div>
@@ -377,7 +357,7 @@ export function InventoryTab({
                     );
                   })}
 
-                  {section.items.length === 0 && section.id !== "carried" && (
+                  {section.itemRows.length === 0 && section.id !== "carried" && (
                     <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-700">
                       {canDropHere ? "Drop here" : "Empty"}
                     </div>
