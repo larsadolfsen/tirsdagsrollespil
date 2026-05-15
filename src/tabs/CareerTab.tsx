@@ -133,6 +133,8 @@ export function CareerTab({
     characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank) ??
     null;
   const careerRows = currentCareerRow ? [currentCareerRow] : [];
+  const canRemove10Xp = characterData.xpTotal >= 10;
+  const canRemove100Xp = characterData.xpTotal >= 100;
   const adjustXp = (amount: number) => {
     setXpCurrent((current) => Math.max(0, current + amount));
     setXpTotal((current) => Math.max(0, current + amount));
@@ -199,56 +201,77 @@ export function CareerTab({
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 border-b border-white/5 bg-wfrp-bg px-2 py-2 sm:px-3 lg:px-4">
-        <button
-          onClick={() => adjustXp(-100)}
-          className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-          aria-label="Remove 100 current and total XP"
-        >
-          -100
-        </button>
-        <button
-          onClick={() => adjustXp(-10)}
-          className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-          aria-label="Remove 10 current and total XP"
-        >
-          -10
-        </button>
-        <div className="flex items-center justify-center gap-1.5 rounded bg-black/40 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-gray-300">
-          <span className="text-gray-500">XP</span>
-          <span className="font-mono text-white">{pendingAvailableXp}</span>
-          <span className="text-gray-600">/</span>
-          <span className="font-mono text-gray-300">{characterData.xpTotal}</span>
+      <div className="border-b border-white/5 bg-wfrp-bg px-2 py-2 sm:px-3 lg:px-4">
+        <div className="flex gap-2 pb-2">
+          <button
+            onClick={isAdvancementEditMode ? cancelAdvancementEdit : beginAdvancementEdit}
+            className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300"
+            aria-label={isAdvancementEditMode ? "Cancel advancement edits" : "Edit initial and advances"}
+          >
+            {isAdvancementEditMode ? "Cancel" : "Edit"}
+          </button>
+          <button
+            onClick={handleSaveCareerClick}
+            disabled={!hasPendingCareerChanges && !isAdvancementEditMode}
+            className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label="Save career changes"
+          >
+            Save
+          </button>
         </div>
-        <button
-          onClick={() => adjustXp(10)}
-          className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-          aria-label="Add 10 current and total XP"
-        >
-          +10
-        </button>
-        <button
-          onClick={() => adjustXp(100)}
-          className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-          aria-label="Add 100 current and total XP"
-        >
-          +100
-        </button>
-        <button
-          onClick={isAdvancementEditMode ? cancelAdvancementEdit : beginAdvancementEdit}
-          className="wfrp-action-btn ml-auto h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300"
-          aria-label={isAdvancementEditMode ? "Cancel advancement edits" : "Edit initial and advances"}
-        >
-          {isAdvancementEditMode ? "Cancel" : "Edit"}
-        </button>
-        <button
-          onClick={handleSaveCareerClick}
-          disabled={!hasPendingCareerChanges && !isAdvancementEditMode}
-          className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
-          aria-label="Save career changes"
-        >
-          Save
-        </button>
+        <div className="wfrp-subpanel-shell flex min-w-0 flex-col">
+          <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_72px_72px_minmax(150px,auto)] items-center gap-2 lg:gap-3">
+            <span className="wfrp-table-label text-left">XP</span>
+            <span className="wfrp-table-label text-center">Current</span>
+            <span className="wfrp-table-label text-center">Total</span>
+            <span className="wfrp-table-label text-right">Adjust</span>
+          </div>
+          <div className="divide-y divide-white/5">
+            <div className="grid grid-cols-[minmax(0,1fr)_72px_72px_minmax(150px,auto)] items-center gap-2 lg:gap-3 wfrp-table-row">
+              <div className="wfrp-list-cell-strong text-left">Experience</div>
+              <div className="wfrp-list-cell-strong text-center font-mono text-white">
+                {pendingAvailableXp}
+              </div>
+              <div className="wfrp-list-cell-strong text-center font-mono">
+                {characterData.xpTotal}
+              </div>
+              <div className="flex flex-wrap justify-end gap-1">
+                {canRemove100Xp && (
+                  <button
+                    onClick={() => adjustXp(-100)}
+                    className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+                    aria-label="Remove 100 current and total XP"
+                  >
+                    -100
+                  </button>
+                )}
+                {canRemove10Xp && (
+                  <button
+                    onClick={() => adjustXp(-10)}
+                    className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+                    aria-label="Remove 10 current and total XP"
+                  >
+                    -10
+                  </button>
+                )}
+                <button
+                  onClick={() => adjustXp(10)}
+                  className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+                  aria-label="Add 10 current and total XP"
+                >
+                  +10
+                </button>
+                <button
+                  onClick={() => adjustXp(100)}
+                  className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
+                  aria-label="Add 100 current and total XP"
+                >
+                  +100
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4 no-scrollbar">

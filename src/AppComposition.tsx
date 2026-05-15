@@ -1213,26 +1213,28 @@ export function AppComposition() {
           <section className={`w-full flex-col overflow-visible self-start min-h-[500px] p-0! md:flex md:flex-1 md:overflow-hidden md:rounded-lg md:border md:border-wfrp-border md:bg-wfrp-surface md:shadow-lg ${
             activeMobileMainView === "characteristics" ? "hidden" : "flex"
           }`}>
-              <ScrollableTabStrip className="hidden md:flex px-4 bg-wfrp-surface-subtle border-b border-wfrp-border gap-4 lg:gap-6 overflow-x-auto no-scrollbar">
-                {mainTabOptions.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => selectMainTab(tab.id)}
-                    className={cn(
-                      mainTabButtonBaseClassName,
-                      activeMainTab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
-                    )}
-                    aria-current={activeMainTab === tab.id ? 'page' : undefined}
-                  >
-                    {tab.label}
-                    {activeMainTab === tab.id && (
-                      <motion.div 
-                        layoutId="activeTabUnderline"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-400"
-                      />
-                    )}
-                  </button>
-                ))}
+              <ScrollableTabStrip className="hidden sm:flex px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
+                <div className="mx-auto flex w-full min-w-max justify-center gap-4 lg:mx-0 lg:w-max lg:min-w-0 lg:justify-start lg:gap-6">
+                  {mainTabOptions.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => selectMainTab(tab.id)}
+                      className={cn(
+                        mainTabButtonBaseClassName,
+                        activeMainTab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
+                      )}
+                      aria-current={activeMainTab === tab.id ? 'page' : undefined}
+                    >
+                      {tab.label}
+                      {activeMainTab === tab.id && (
+                        <motion.div 
+                          layoutId="activeTabUnderline"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-400"
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
               </ScrollableTabStrip>
 
               <div className="flex-1 flex flex-col min-h-0 bg-wfrp-bg/50">
