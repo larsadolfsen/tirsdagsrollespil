@@ -1,6 +1,12 @@
 import { Check, ChevronDown, Menu, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type { Dispatch, SetStateAction } from "react";
+import { cn } from "../lib/utils";
+import {
+  mobileTabButtonActiveClassName,
+  mobileTabButtonBaseClassName,
+  mobileTabButtonInactiveClassName,
+} from "../lib/tabStyles";
 import type { MobileTabMenuTarget, TabOption } from "../tabs/tabTypes";
 
 type MobileCharacterOption = {
@@ -152,11 +158,10 @@ export function MobileTabMenu({
                       handleMobileMainViewSelect(item.id);
                       closeMobileNavigation();
                     }}
-                    className={`mx-3 flex h-11 w-[calc(100%-1.5rem)] items-center rounded border px-4 text-left text-[11px] font-black uppercase tracking-widest transition-colors ${
-                      isActive
-                        ? "border-wfrp-gold/50 bg-wfrp-gold/15 text-wfrp-gold"
-                        : "border-transparent text-gray-300 hover:border-wfrp-border hover:bg-wfrp-surface hover:text-wfrp-gold"
-                    }`}
+                    className={cn(
+                      mobileTabButtonBaseClassName,
+                      isActive ? mobileTabButtonActiveClassName : mobileTabButtonInactiveClassName,
+                    )}
                     aria-current={isActive ? "page" : undefined}
                   >
                     {item.label}
@@ -169,7 +174,7 @@ export function MobileTabMenu({
               <button
                 type="button"
                 onClick={onOpenDiceLog}
-                className="mx-3 flex h-11 w-[calc(100%-1.5rem)] items-center rounded border border-transparent px-4 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:border-wfrp-border hover:bg-wfrp-surface hover:text-wfrp-gold"
+                className={cn(mobileTabButtonBaseClassName, mobileTabButtonInactiveClassName)}
               >
                 Dice
               </button>
