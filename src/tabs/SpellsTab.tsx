@@ -5,6 +5,7 @@ import {
   SheetDataDesktopCell,
   SheetDataDisclosureChevron,
   SheetDataHeader,
+  SheetDataHeaderCell,
   SheetDataPanel,
   SheetDataTable,
 } from "../components/wfrp";
@@ -58,13 +59,13 @@ export function SpellsTab({
       <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card space-y-4">
         <SheetDataPanel>
           <SheetDataHeader className={`hidden ${desktopSpellGridClass} md:grid md:gap-0`}>
-            <span className="wfrp-table-label text-center">Channel</span>
-            <span className="wfrp-table-label text-left">Spell</span>
-            <span className="wfrp-table-label text-center">CN</span>
-            <span className="wfrp-table-label text-left">Range</span>
-            <span className="wfrp-table-label text-left">Target</span>
-            <span className="wfrp-table-label text-left">Duration</span>
-            <span className="wfrp-table-label text-center">More</span>
+            <SheetDataHeaderCell align="center">Channel</SheetDataHeaderCell>
+            <SheetDataHeaderCell>Spell</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">CN</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">Range</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">Target</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">Duration</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
           </SheetDataHeader>
 
           <SheetDataTable>
@@ -94,10 +95,10 @@ export function SpellsTab({
                         {spell.name}
                       </span>
 
-                      <SheetDataDesktopCell align="center">{spell.cn}</SheetDataDesktopCell>
-                      <SheetDataDesktopCell truncate>{formatted.range}</SheetDataDesktopCell>
-                      <SheetDataDesktopCell truncate>{formatted.target}</SheetDataDesktopCell>
-                      <SheetDataDesktopCell>{formatted.duration}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell align="right">{spell.cn}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell align="right" truncate>{formatted.range}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell align="right" truncate>{formatted.target}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell align="right">{formatted.duration}</SheetDataDesktopCell>
                       <SheetDataDisclosureChevron className="md:inline-flex" />
                     </>
                   )}

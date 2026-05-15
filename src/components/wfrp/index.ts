@@ -3,6 +3,7 @@ export {
   SheetDataAccordionRow,
   SheetDataButtonRow,
   SheetDataHeader,
+  SheetDataHeaderCell,
   SheetDataPanel,
   SheetDataRow,
   SheetDataTable,

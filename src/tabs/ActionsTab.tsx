@@ -5,6 +5,7 @@ import {
   SheetDataAccordionRow,
   SheetDataDisclosureChevron,
   SheetDataHeader,
+  SheetDataHeaderCell,
   SheetDataPanel,
   SheetDataTable,
 } from "../components/wfrp";
@@ -49,10 +50,10 @@ type CombatAction = {
 
 const offensiveProperties = ["Damaging", "Hack", "Impact", "Impale", "Precise", "Pummel", "Trap-blade", "Wrap"];
 const defensiveProperties = ["Defensive", "Shield"];
-const channelingGridClass = "md:grid-cols-[56px_minmax(0,1fr)_minmax(0,1fr)_48px]";
-const weaponActionGridClass = "md:grid-cols-[56px_minmax(0,1fr)_60px_80px_minmax(0,1fr)_48px]";
+const channelingGridClass = "md:grid-cols-[56px_minmax(0,1fr)_160px_48px]";
+const weaponActionGridClass = "md:grid-cols-[56px_minmax(0,1fr)_56px_80px_160px_48px]";
 const rangedActionGridClass =
-  "md:grid-cols-[56px_minmax(0,1fr)_60px_32px_32px_32px_32px_32px_minmax(0,1fr)_48px]";
+  "md:grid-cols-[56px_minmax(0,1fr)_56px_32px_32px_32px_32px_32px_160px_48px]";
 const actionSummaryGridClass = "grid-cols-[40px_minmax(0,1fr)_48px]";
 
 const getRelevantWeaponProperties = (actionId: string, properties: string[]) => {
@@ -85,15 +86,12 @@ function ActionSection({
   return (
     <div className="mt-4 first:mt-0">
       <SheetDataHeader className={`hidden ${gridClassName} md:grid md:gap-0`}>
-        <span className="wfrp-table-label text-center">Roll</span>
-        <span className="wfrp-table-label text-left">{sectionLabel}</span>
+        <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
+        <SheetDataHeaderCell>{sectionLabel}</SheetDataHeaderCell>
         {valueLabels.map((label) => (
-          <span
-            key={label}
-            className={`wfrp-table-label ${label === "More" ? "text-center" : "text-left"}`}
-          >
+          <SheetDataHeaderCell key={label} align={label === "More" ? "center" : "right"}>
             {label}
-          </span>
+          </SheetDataHeaderCell>
         ))}
       </SheetDataHeader>
 
@@ -213,7 +211,7 @@ export function ActionsTab({
                       <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                         {channelingAction.name}
                       </span>
-                      <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
+                      <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                         {channelingAction.properties.map((prop, propIndex) => (
                           <span key={prop} className="text-xs font-semibold text-gray-400">
                             {prop === "Spellcasting" ? "Spell Focus" : prop}
@@ -386,9 +384,9 @@ export function ActionsTab({
                             <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                               {action.name}
                             </span>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{action.damage}</div>
-                            <div className="hidden wfrp-list-cell-strong md:block">{action.range}</div>
-                            <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{action.damage}</div>
+                            <div className="hidden wfrp-list-cell-strong text-right md:block">{action.range}</div>
+                            <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                               {action.properties.map((prop, propIndex) => (
                                 <span key={prop} className="text-xs font-semibold text-gray-400">
                                   {prop}
@@ -459,13 +457,13 @@ export function ActionsTab({
                             <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                               {action.name}
                             </span>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{action.damage}</div>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-50 md:block">{rangeBands?.pb ?? "-"}</div>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-70 md:block">{rangeBands?.s ?? "-"}</div>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono text-wfrp-gold md:block">{rangeBands?.a ?? "-"}</div>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-70 md:block">{rangeBands?.l ?? "-"}</div>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-50 md:block">{rangeBands?.e ?? "-"}</div>
-                            <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{action.damage}</div>
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono opacity-50 md:block">{rangeBands?.pb ?? "-"}</div>
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono opacity-70 md:block">{rangeBands?.s ?? "-"}</div>
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono text-wfrp-gold md:block">{rangeBands?.a ?? "-"}</div>
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono opacity-70 md:block">{rangeBands?.l ?? "-"}</div>
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono opacity-50 md:block">{rangeBands?.e ?? "-"}</div>
+                            <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                               {action.properties.map((prop, propIndex) => (
                                 <span key={prop} className="text-xs font-semibold text-gray-400">
                                   {prop}
@@ -551,9 +549,9 @@ export function ActionsTab({
                           <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                             {action.name}
                           </span>
-                          <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{finalDamage}</div>
-                          <div className="hidden wfrp-list-cell-strong md:block">{action.range}</div>
-                          <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
+                          <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{finalDamage}</div>
+                          <div className="hidden wfrp-list-cell-strong text-right md:block">{action.range}</div>
+                          <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                             {action.properties.map((prop, propIndex) => (
                               <span key={prop} className="text-xs font-semibold text-gray-400">
                                 {prop}

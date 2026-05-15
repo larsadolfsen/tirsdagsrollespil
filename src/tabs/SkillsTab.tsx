@@ -4,6 +4,7 @@ import {
   SheetDataAccordionRow,
   SheetDataDisclosureChevron,
   SheetDataHeader,
+  SheetDataHeaderCell,
   SheetDataPanel,
   SheetDataTable,
 } from "../components/wfrp";
@@ -63,13 +64,13 @@ export function SkillsTab({
       <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card space-y-4">
         <SheetDataPanel>
           <SheetDataHeader className={`hidden ${desktopSkillGridClass} md:grid md:gap-0`}>
-            <span className="wfrp-table-label text-center">Roll</span>
-            <span className="wfrp-table-label text-left">Skill</span>
-            <span className="wfrp-table-label text-center">Char.</span>
-            <span className="wfrp-table-label text-center">Score</span>
-            <span className="wfrp-table-label text-center">Adv.</span>
-            <span className="wfrp-table-label text-center">Total</span>
-            <span className="wfrp-table-label text-center">More</span>
+            <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
+            <SheetDataHeaderCell>Skill</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">Char.</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">Score</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">Adv.</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">Total</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
           </SheetDataHeader>
 
           <SheetDataTable>
@@ -110,19 +111,19 @@ export function SkillsTab({
                         {skill.displayName}
                       </button>
 
-                      <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">
+                      <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">
                         {skill.characteristic}
                       </div>
 
-                      <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">
+                      <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">
                         {charValue}
                       </div>
 
-                      <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">
+                      <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">
                         {formattedAdvances}
                       </div>
 
-                      <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">
+                      <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">
                         {totalValue}
                       </div>
 

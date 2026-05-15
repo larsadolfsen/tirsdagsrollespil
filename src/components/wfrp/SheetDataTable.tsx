@@ -7,6 +7,10 @@ type SheetDataPanelProps = DivProps & {
   as?: "div" | "section";
 };
 
+type SheetDataHeaderCellProps = HTMLAttributes<HTMLSpanElement> & {
+  align?: "left" | "center" | "right";
+};
+
 const rowClasses = "wfrp-table-row grid items-center gap-2";
 
 export function SheetDataPanel({ as: Component = "section", className, ...props }: SheetDataPanelProps) {
@@ -18,7 +22,30 @@ export function SheetDataTable({ className, ...props }: DivProps) {
 }
 
 export function SheetDataHeader({ className, ...props }: DivProps) {
-  return <div className={cn("wfrp-subpanel-header grid items-center gap-2 bg-card rounded-t-none", className)} {...props} />;
+  return (
+    <div
+      className={cn(
+        "wfrp-subpanel-header grid items-center gap-2 border-t border-white/5 bg-card rounded-t-none",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+export function SheetDataHeaderCell({ align = "left", className, ...props }: SheetDataHeaderCellProps) {
+  return (
+    <span
+      className={cn(
+        "wfrp-table-label",
+        align === "center" && "text-center",
+        align === "left" && "text-left",
+        align === "right" && "text-right",
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function SheetDataRow({ className, ...props }: DivProps) {

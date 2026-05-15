@@ -6,6 +6,7 @@ import {
   SheetDataAccordionRow,
   SheetDataDisclosureChevron,
   SheetDataHeader,
+  SheetDataHeaderCell,
   SheetDataPanel,
   SheetDataTable,
   SheetRowActionButton,
@@ -251,22 +252,22 @@ export function InventoryTab({
                 }`}
               >
                 <SheetDataHeader className={`hidden ${desktopInventoryGridClass} md:grid md:gap-0`}>
-                  <span className="wfrp-table-label flex min-w-0 items-center gap-2 text-left">
+                  <SheetDataHeaderCell className="flex min-w-0 items-center gap-2">
                     <span className="truncate">{section.title}</span>
                     {section.subtitle ? (
                       <span className="truncate font-mono text-[9px] font-bold uppercase tracking-wider text-gray-600">
                         {section.subtitle}
                       </span>
                     ) : null}
-                  </span>
-                  <span className="wfrp-table-label text-left">Type</span>
-                  <span className="wfrp-table-label text-center">Qty</span>
-                  <span className="wfrp-table-label text-center">Enc</span>
-                  <span className="wfrp-table-label text-center">Value</span>
-                  <span className="wfrp-table-label text-center">More</span>
+                  </SheetDataHeaderCell>
+                  <SheetDataHeaderCell>Type</SheetDataHeaderCell>
+                  <SheetDataHeaderCell align="right">Qty</SheetDataHeaderCell>
+                  <SheetDataHeaderCell align="right">Enc</SheetDataHeaderCell>
+                  <SheetDataHeaderCell align="right">Value</SheetDataHeaderCell>
+                  <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
                 </SheetDataHeader>
 
-                <div className="border-b border-white/5 bg-card px-2 py-1 md:hidden">
+                <div className="border-b border-t border-white/5 bg-card px-2 py-1 md:hidden">
                   <span className="wfrp-table-label flex min-w-0 items-center gap-2 text-left">
                     <span className="truncate">{section.title}</span>
                     {section.subtitle ? (
@@ -289,9 +290,9 @@ export function InventoryTab({
                             <span className="truncate">Coins</span>
                           </span>
                           <div className="hidden wfrp-list-cell-strong truncate md:block">Currency</div>
-                          <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{wallet.coinCount}</div>
-                          <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{wallet.encumbrance || "-"}</div>
-                          <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{wallet.value}</div>
+                          <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{wallet.coinCount}</div>
+                          <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{wallet.encumbrance || "-"}</div>
+                          <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{wallet.value}</div>
                           <SheetDataDisclosureChevron className="md:inline-flex" />
                         </>
                       )}
@@ -323,9 +324,9 @@ export function InventoryTab({
                             </span>
 
                             <div className="hidden wfrp-list-cell-strong truncate md:block">{item.type}</div>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{row.quantity}</div>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{row.encumbrance}</div>
-                            <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{row.value}</div>
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{row.quantity}</div>
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{row.encumbrance}</div>
+                            <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{row.value}</div>
                             <SheetDataDisclosureChevron className="md:inline-flex" />
                           </>
                         )}
