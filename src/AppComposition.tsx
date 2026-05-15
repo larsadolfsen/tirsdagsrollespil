@@ -1144,7 +1144,7 @@ export function AppComposition() {
           </section>
 
           <div className="flex flex-col md:flex-row gap-6">
-            <div className={`w-full flex-col gap-6 md:flex md:w-[28%] xl:w-[24%] ${
+            <div className={`w-full min-w-0 flex-col gap-6 md:flex md:w-[28%] md:min-w-[320px] xl:w-[24%] ${
               activeMobileMainView === "characteristics" ? "flex" : "hidden"
             }`}>
             <CharacterResourcesCards
