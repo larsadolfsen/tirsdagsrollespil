@@ -1,7 +1,9 @@
-import { ChevronDown } from "lucide-react";
 import { InlineSubtabs } from "../components/ui";
 import {
+  SheetDataDesktopCell,
+  SheetDataDisclosureChevron,
   SheetDataHeader,
+  SheetDataInfoButton,
   SheetDataList,
   SheetDataListRow,
   SheetDataMobileDetails,
@@ -133,39 +135,20 @@ export function SpellsTab({
                         {spell.name}
                       </button>
 
-                      <button
-                        type="button"
+                      <SheetDataInfoButton
                         onClick={(event) => {
                           event.preventDefault();
                           openCurrentSpellInfo();
                         }}
-                        className="min-h-8 rounded border border-white/10 px-2 text-[10px] font-black uppercase tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden"
                         aria-label={`Show ${spell.name} details`}
-                      >
-                        Info
-                      </button>
-
-                      <ChevronDown
-                        size={14}
-                        className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden"
-                        aria-hidden="true"
                       />
 
-                      <div className="hidden wfrp-list-cell-strong text-center md:block">
-                        {spell.cn}
-                      </div>
+                      <SheetDataDisclosureChevron />
 
-                      <div className="hidden wfrp-list-cell-strong truncate md:block">
-                        {spellRange}
-                      </div>
-
-                      <div className="hidden wfrp-list-cell-strong truncate md:block">
-                        {spellTarget}
-                      </div>
-
-                      <div className="hidden wfrp-list-cell-strong md:block">
-                        {spellDuration}
-                      </div>
+                      <SheetDataDesktopCell align="center">{spell.cn}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell truncate>{spellRange}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell truncate>{spellTarget}</SheetDataDesktopCell>
+                      <SheetDataDesktopCell>{spellDuration}</SheetDataDesktopCell>
                     </summary>
 
                     <SheetDataMobileDetails fields={mobileDetails} />

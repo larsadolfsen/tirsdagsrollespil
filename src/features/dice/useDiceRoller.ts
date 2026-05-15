@@ -4,11 +4,11 @@ import type {
   ResolvedCharacterRecord,
   ResolvedCharacterSkill,
   ResolvedCharacterTalent,
-} from "../data/characters/resolved";
-import { getApplicableTalentEffects, getTalentSlBonus } from "../lib/talentEffects";
-import type { ActiveInfoState } from "../components/appTypes";
-import type { Characteristic, Ruleset } from "../types";
-import type { RollBonusSource, RollHistoryItem, RollState } from "../types/dice";
+} from "../../data/characters/resolved";
+import { getApplicableTalentEffects, getTalentSlBonusSources } from "../../lib/talentEffects";
+import type { ActiveInfoState } from "../../components/appTypes";
+import type { Characteristic, Ruleset } from "../../types";
+import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/dice";
 
 const createInitialRollState = (): RollState => ({
   characteristic: null,
@@ -234,27 +234,23 @@ export function useDiceRoller({
       ?? (options?.slBonusLabel || options?.slBonus
         ? [{ label: options?.slBonusLabel ?? "Bonus", value: options?.slBonus ?? 0 }]
         : []);
+    const testType = options?.testType ?? (damage === undefined ? "dramatic" : "attack");
     const talentEffects = getApplicableTalentEffects({
       talents: characterTalents,
       talentDefinitions: ruleset.talents,
-      context: { testName: char.label },
+      context: {
+        testName: testType === "corruption" ? "Corruption Test" : char.label,
+        testType,
+      },
     });
-    const talentSlBonus = getTalentSlBonus(talentEffects);
-    const bonusSources = talentSlBonus === 0
-      ? optionBonusSources
-      : [
-          ...optionBonusSources,
-          {
-            label: "Talents",
-            value: talentSlBonus,
-          },
-        ];
+    const talentBonusSources = getTalentSlBonusSources(talentEffects);
+    const bonusSources = [...optionBonusSources, ...talentBonusSources];
 
     setRollState({
       characteristic: char,
       title: options?.title ?? null,
       baseValueOverride: options?.baseValueOverride ?? null,
-      testType: options?.testType ?? (damage === undefined ? "dramatic" : "attack"),
+      testType,
       modifier: 0,
       targetBonusSources: [],
       result: null,

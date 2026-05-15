@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { SheetDataRow, SheetDataTable } from "./SheetDataTable";
 
@@ -35,6 +36,65 @@ export function SheetDataMobileDetails({
         </div>
       ))}
     </div>
+  );
+}
+
+export function SheetDataDesktopCell({
+  align = "left",
+  children,
+  className,
+  fontMono = false,
+  truncate = false,
+}: {
+  align?: "left" | "center" | "right";
+  children: ReactNode;
+  className?: string;
+  fontMono?: boolean;
+  truncate?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "hidden wfrp-list-cell-strong md:block",
+        align === "center" && "text-center",
+        align === "right" && "text-right",
+        fontMono && "font-mono",
+        truncate && "truncate",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function SheetDataInfoButton({
+  children = "Info",
+  className,
+  type = "button",
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type={type}
+      className={cn(
+        "min-h-8 rounded border border-white/10 px-2 text-[10px] font-black uppercase tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+export function SheetDataDisclosureChevron({ className }: { className?: string }) {
+  return (
+    <ChevronDown
+      size={14}
+      className={cn("text-gray-500 transition-transform group-open/details:rotate-180 md:hidden", className)}
+      aria-hidden="true"
+    />
   );
 }
 

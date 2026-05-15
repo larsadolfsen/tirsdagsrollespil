@@ -1,5 +1,7 @@
 import { useRef } from "react";
 import type { KeyboardEvent, ReactNode } from "react";
+import { cn } from "@/src/lib/utils";
+import { inlineSubtabButtonActiveClassName, inlineSubtabButtonBaseClassName, inlineSubtabButtonInactiveClassName } from "@/src/lib/tabStyles";
 import { ScrollableTabStrip } from "./ScrollableTabStrip";
 
 type InlineSubtabOption<T extends string> = {
@@ -61,11 +63,10 @@ export function InlineSubtabs<T extends string>({
                 tabIndex={isActive ? 0 : -1}
                 onKeyDown={(event) => onTabKeyDown(event, index)}
                 onClick={() => onChange(option.id)}
-                className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30 sm:px-3 ${
-                  isActive
-                    ? "bg-wfrp-tab-active text-white shadow-lg"
-                    : "bg-black/40 text-gray-400 hover:bg-wfrp-surface-raised hover:text-gray-200"
-                }`}
+                className={cn(
+                  inlineSubtabButtonBaseClassName,
+                  isActive ? inlineSubtabButtonActiveClassName : inlineSubtabButtonInactiveClassName,
+                )}
               >
                 {option.label}
               </button>

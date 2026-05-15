@@ -7,6 +7,9 @@ export {
   SheetEmptyState,
 } from "./SheetDataTable";
 export {
+  SheetDataDesktopCell,
+  SheetDataDisclosureChevron,
+  SheetDataInfoButton,
   SheetDataList,
   SheetDataListRow,
   SheetDataMobileDetails,
