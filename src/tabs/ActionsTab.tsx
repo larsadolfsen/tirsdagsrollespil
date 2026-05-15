@@ -1,6 +1,13 @@
-import { ChevronDown } from "lucide-react";
 import { InlineSubtabs } from "../components/ui";
-import { SheetDataHeader, SheetDataPanel, SheetDataRow, SheetDataTable } from "../components/wfrp";
+import {
+  SheetDataDisclosureChevron,
+  SheetDataHeader,
+  SheetDataInfoButton,
+  SheetDataMobileDetails,
+  SheetDataPanel,
+  SheetDataRow,
+  SheetDataTable,
+} from "../components/wfrp";
 import type { ActiveInfoState } from "../components/appTypes";
 import type {
   ResolvedCharacterEquipment,
@@ -45,10 +52,6 @@ const offensiveProperties = ["Damaging", "Hack", "Impact", "Impale", "Precise", 
 const defensiveProperties = ["Defensive", "Shield"];
 const mobileActionSummaryClass =
   "grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden";
-const mobileActionInfoButtonClass =
-  "min-h-8 rounded border border-white/10 px-2 text-[10px] font-black uppercase tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden";
-const mobileActionDetailsClass =
-  "mt-2 grid grid-cols-2 gap-2 rounded border border-white/5 bg-black/20 p-2 md:hidden";
 const channelingGridClass = "md:grid-cols-[60px_1fr_1fr] md:gap-2 lg:gap-4";
 const weaponActionGridClass = "md:grid-cols-[60px_1fr_60px_80px_1fr] md:gap-2 lg:gap-4";
 const rangedActionGridClass =
@@ -69,15 +72,6 @@ const getRelevantWeaponProperties = (actionId: string, properties: string[]) => 
 
   return [];
 };
-
-function MobileDetail({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div>
-      <div className="wfrp-table-label">{label}</div>
-      <div className="wfrp-list-cell-strong">{value}</div>
-    </div>
-  );
-}
 
 export function ActionsTab({
   activeActionCategory,
@@ -194,10 +188,8 @@ export function ActionsTab({
                       >
                         {channelingAction.name}
                       </button>
-                      <button type="button" onClick={(event) => { event.preventDefault(); openChannelingInfo(); }} className={mobileActionInfoButtonClass}>
-                        Info
-                      </button>
-                      <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden" aria-hidden="true" />
+                      <SheetDataInfoButton onClick={(event) => { event.preventDefault(); openChannelingInfo(); }} />
+                      <SheetDataDisclosureChevron />
                       <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
                         {channelingAction.properties.map((prop, propIndex) => (
                           <span key={prop} className="text-xs font-semibold text-gray-400">
@@ -212,10 +204,12 @@ export function ActionsTab({
                         ))}
                       </div>
                     </summary>
-                    <div className={mobileActionDetailsClass}>
-                      <MobileDetail label="Type" value="Channeling" />
-                      <MobileDetail label="Notes" value="Spell Focus" />
-                    </div>
+                    <SheetDataMobileDetails
+                      fields={[
+                        { label: "Type", value: "Channeling" },
+                        { label: "Notes", value: "Spell Focus" },
+                      ]}
+                    />
                   </details>
                 </SheetDataRow>
               </SheetDataTable>
@@ -381,10 +375,8 @@ export function ActionsTab({
                                 <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className="wfrp-skill-link min-w-0 truncate text-left">
                                   {action.name}
                                 </button>
-                                <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className={mobileActionInfoButtonClass}>
-                                  Info
-                                </button>
-                                <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden" aria-hidden="true" />
+                                <SheetDataInfoButton onClick={(event) => { event.preventDefault(); openActionInfo(); }} />
+                                <SheetDataDisclosureChevron />
                                 <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{action.damage}</div>
                                 <div className="hidden wfrp-list-cell-strong md:block">{action.range}</div>
                                 <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
@@ -402,12 +394,14 @@ export function ActionsTab({
                                   ))}
                                 </div>
                               </summary>
-                              <div className={mobileActionDetailsClass}>
-                                <MobileDetail label="Weapon" value={weapon.name} />
-                                <MobileDetail label="Dmg" value={action.damage} />
-                                <MobileDetail label="Reach" value={action.range} />
-                                <MobileDetail label="Properties" value={action.properties.length ? action.properties.join(", ") : "-"} />
-                              </div>
+                              <SheetDataMobileDetails
+                                fields={[
+                                  { label: "Weapon", value: weapon.name },
+                                  { label: "Dmg", value: action.damage },
+                                  { label: "Reach", value: action.range },
+                                  { label: "Properties", value: action.properties.length ? action.properties.join(", ") : "-" },
+                                ]}
+                              />
                             </details>
                           </SheetDataRow>
                         );
@@ -468,10 +462,8 @@ export function ActionsTab({
                                 <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className="wfrp-skill-link min-w-0 truncate text-left">
                                   {action.name}
                                 </button>
-                                <button type="button" onClick={(event) => { event.preventDefault(); openActionInfo(); }} className={mobileActionInfoButtonClass}>
-                                  Info
-                                </button>
-                                <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden" aria-hidden="true" />
+                                <SheetDataInfoButton onClick={(event) => { event.preventDefault(); openActionInfo(); }} />
+                                <SheetDataDisclosureChevron />
                                 <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{action.damage}</div>
                                 <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-50 md:block">{rangeBands?.pb ?? "-"}</div>
                                 <div className="hidden wfrp-list-cell-strong text-center font-mono opacity-70 md:block">{rangeBands?.s ?? "-"}</div>
@@ -493,13 +485,15 @@ export function ActionsTab({
                                   ))}
                                 </div>
                               </summary>
-                              <div className={mobileActionDetailsClass}>
-                                <MobileDetail label="Weapon" value={weapon.name} />
-                                <MobileDetail label="Dmg" value={action.damage} />
-                                <MobileDetail label="Range" value={weaponStats.reach} />
-                                <MobileDetail label="Bands" value={`PB ${rangeBands?.pb ?? "-"} / S ${rangeBands?.s ?? "-"} / A ${rangeBands?.a ?? "-"} / L ${rangeBands?.l ?? "-"} / E ${rangeBands?.e ?? "-"}`} />
-                                <MobileDetail label="Properties" value={action.properties.length ? action.properties.join(", ") : "-"} />
-                              </div>
+                              <SheetDataMobileDetails
+                                fields={[
+                                  { label: "Weapon", value: weapon.name },
+                                  { label: "Dmg", value: action.damage },
+                                  { label: "Range", value: weaponStats.reach },
+                                  { label: "Bands", value: `PB ${rangeBands?.pb ?? "-"} / S ${rangeBands?.s ?? "-"} / A ${rangeBands?.a ?? "-"} / L ${rangeBands?.l ?? "-"} / E ${rangeBands?.e ?? "-"}` },
+                                  { label: "Properties", value: action.properties.length ? action.properties.join(", ") : "-" },
+                                ]}
+                              />
                             </details>
                           </SheetDataRow>
                         );
@@ -573,10 +567,8 @@ export function ActionsTab({
                           <button type="button" onClick={(event) => { event.preventDefault(); openManeuverInfo(); }} className="wfrp-skill-link min-w-0 truncate text-left">
                             {action.name}
                           </button>
-                          <button type="button" onClick={(event) => { event.preventDefault(); openManeuverInfo(); }} className={mobileActionInfoButtonClass}>
-                            Info
-                          </button>
-                          <ChevronDown size={14} className="text-gray-500 transition-transform group-open/details:rotate-180 md:hidden" aria-hidden="true" />
+                          <SheetDataInfoButton onClick={(event) => { event.preventDefault(); openManeuverInfo(); }} />
+                          <SheetDataDisclosureChevron />
                           <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">{finalDamage}</div>
                           <div className="hidden wfrp-list-cell-strong md:block">{action.range}</div>
                           <div className="hidden w-full flex-wrap content-start items-center gap-x-1 md:flex">
@@ -590,11 +582,13 @@ export function ActionsTab({
                             ))}
                           </div>
                         </summary>
-                        <div className={mobileActionDetailsClass}>
-                          <MobileDetail label="Dmg" value={finalDamage} />
-                          <MobileDetail label="Reach" value={action.range} />
-                          <MobileDetail label="Properties" value={action.properties.length ? action.properties.join(", ") : "-"} />
-                        </div>
+                        <SheetDataMobileDetails
+                          fields={[
+                            { label: "Dmg", value: finalDamage },
+                            { label: "Reach", value: action.range },
+                            { label: "Properties", value: action.properties.length ? action.properties.join(", ") : "-" },
+                          ]}
+                        />
                       </details>
                     </SheetDataRow>
                   );
