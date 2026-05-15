@@ -42,7 +42,7 @@ export function InlineSubtabs<T extends string>({
   };
 
   return (
-    <div className="flex flex-col items-stretch gap-2 border-b border-white/5 bg-transparent md:flex-row md:items-start md:bg-black/20">
+    <div className="flex flex-col items-stretch gap-2 border-b border-white/5 bg-card md:flex-row md:items-start">
       <div className="min-w-0 flex-1 self-stretch">
         <ScrollableTabStrip
           className="flex w-full min-w-max flex-nowrap items-center justify-center gap-1.5 overflow-x-auto py-3 px-0 !px-0 sm:gap-2 md:flex-nowrap md:overflow-x-auto md:p-3 md:!px-3 lg:w-max lg:min-w-0 lg:justify-start lg:p-4 lg:!px-4 no-scrollbar"

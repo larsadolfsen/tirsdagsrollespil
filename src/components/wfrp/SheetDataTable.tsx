@@ -10,19 +10,19 @@ type SheetDataPanelProps = DivProps & {
 const rowClasses = "wfrp-table-row grid items-center gap-2";
 
 export function SheetDataPanel({ as: Component = "section", className, ...props }: SheetDataPanelProps) {
-  return <Component className={cn("wfrp-subpanel-shell flex flex-col", className)} {...props} />;
+  return <Component className={cn("wfrp-subpanel-shell flex flex-col bg-card", className)} {...props} />;
 }
 
 export function SheetDataTable({ className, ...props }: DivProps) {
-  return <div className={cn("divide-y divide-white/5", className)} {...props} />;
+  return <div className={cn("bg-card divide-y divide-white/5", className)} {...props} />;
 }
 
 export function SheetDataHeader({ className, ...props }: DivProps) {
-  return <div className={cn("wfrp-subpanel-header grid items-center gap-2", className)} {...props} />;
+  return <div className={cn("wfrp-subpanel-header grid items-center gap-2 bg-card", className)} {...props} />;
 }
 
 export function SheetDataRow({ className, ...props }: DivProps) {
-  return <div className={cn(rowClasses, className)} {...props} />;
+  return <div className={cn(rowClasses, "bg-card", className)} {...props} />;
 }
 
 export function SheetDataButtonRow({ className, type = "button", ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
@@ -31,7 +31,7 @@ export function SheetDataButtonRow({ className, type = "button", ...props }: But
       type={type}
       className={cn(
         rowClasses,
-        "w-full cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+        "w-full cursor-pointer bg-card text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
         className,
       )}
       {...props}
