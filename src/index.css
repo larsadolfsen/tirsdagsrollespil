@@ -73,6 +73,8 @@
   --color-wfrp-body-text: #d4d4d4;
   --color-wfrp-muted-text: #9ca3af;
   --color-wfrp-mid-text: #BDBDBD;
+  --color-wfrp-dice-bg: #757575;
+  --color-wfrp-dice-text: #FFFFFF;
   --shadow-wfrp-gold-glow: 0 0 4px rgb(214 168 86 / 65%);
   --shadow-wfrp-popover: 0 14px 40px rgb(0 0 0 / 45%);
 
@@ -184,11 +186,11 @@
 }
 
 @utility wfrp-dice-adjust-btn {
-  @apply h-5 w-5 flex items-center justify-center rounded border border-wfrp-border bg-wfrp-dark text-gray-500 transition-all hover:bg-wfrp-surface-raised hover:text-white disabled:opacity-20 cursor-pointer;
+  @apply h-5 w-5 flex items-center justify-center rounded border border-wfrp-border bg-wfrp-dice-bg text-wfrp-dice-text transition-all hover:bg-wfrp-dice-bg hover:text-wfrp-dice-text disabled:opacity-20 cursor-pointer;
 }
 
 @utility wfrp-roll-cta {
-  @apply w-fit px-6 py-1.5 bg-wfrp-border text-[9px] font-bold uppercase tracking-widest text-gray-300 rounded transition-all active:scale-95 cursor-pointer hover:bg-wfrp-control-hover hover:text-white;
+  @apply w-fit px-6 py-1.5 bg-wfrp-dice-bg text-[9px] font-bold uppercase tracking-widest text-wfrp-dice-text rounded transition-all active:scale-95 cursor-pointer hover:bg-wfrp-dice-bg hover:text-wfrp-dice-text;
 }
 
 @utility wfrp-subpanel {
@@ -252,7 +254,7 @@
 }
 
 @utility wfrp-roll-btn {
-  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded bg-wfrp-border text-sm font-bold text-gray-300 shadow-sm transition-all cursor-pointer active:scale-95 hover:bg-wfrp-control-hover hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded bg-wfrp-dice-bg text-sm font-bold text-wfrp-dice-text shadow-sm transition-all cursor-pointer active:scale-95 hover:bg-wfrp-dice-bg hover:text-wfrp-dice-text focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
   font-family: var(--font-dice);
 }
 
