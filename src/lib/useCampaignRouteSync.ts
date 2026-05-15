@@ -13,7 +13,7 @@ type UseCampaignRouteSyncOptions = {
   handleMobileMainViewSelect: (target: MobileTabMenuTarget) => void;
   selectedCharacterId: string;
   setActiveMainTab: (tab: MainTab) => void;
-  setActiveMobileMainView: (target: MainTab) => void;
+  setActiveMobileMainView: (target: MobileTabMenuTarget) => void;
   setSelectedCharacterId: (characterId: string) => void;
 };
 
@@ -21,6 +21,7 @@ type SyncRouteOptions = {
   characterId?: string;
   tab?: MainTab;
   mode?: "push" | "replace";
+  omitDefaultTab?: boolean;
 };
 
 const getCurrentPathname = () => window.location.pathname;
@@ -42,16 +43,23 @@ export function useCampaignRouteSync({
     characterId = selectedCharacterId,
     tab = activeMainTab,
     mode = "replace",
+    omitDefaultTab = currentCampaignRoute.current?.hasExplicitTab === false,
   }: SyncRouteOptions = {}) => {
     const campaignId = currentCampaignRoute.current?.campaignId ?? defaultCampaignId;
     const nextPath = buildCampaignCharacterPath({
       campaignId,
       characterId,
       tab,
+      omitDefaultTab,
     });
     const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
 
-    currentCampaignRoute.current = { campaignId, characterId, tab };
+    currentCampaignRoute.current = {
+      campaignId,
+      characterId,
+      tab,
+      hasExplicitTab: !omitDefaultTab,
+    };
 
     if (getCurrentPathname() === nextPath) {
       return;
@@ -77,7 +85,7 @@ export function useCampaignRouteSync({
       }
 
       setActiveMainTab(route.tab);
-      setActiveMobileMainView(route.tab);
+      setActiveMobileMainView(route.hasExplicitTab ? route.tab : "characteristics");
     };
 
     applyRoute(getCurrentPathname());
@@ -95,14 +103,14 @@ export function useCampaignRouteSync({
   }, [syncCampaignRoute]);
 
   const selectMainTab = useCallback((tab: MainTab) => {
-    syncCampaignRoute({ tab, mode: "push" });
+    syncCampaignRoute({ tab, mode: "push", omitDefaultTab: false });
     setActiveMainTab(tab);
     setActiveMobileMainView(tab);
   }, [setActiveMainTab, setActiveMobileMainView, syncCampaignRoute]);
 
   const selectMobileMainView = useCallback((target: MobileTabMenuTarget) => {
     if (target !== "characteristics") {
-      syncCampaignRoute({ tab: target, mode: "push" });
+      syncCampaignRoute({ tab: target, mode: "push", omitDefaultTab: false });
     }
 
     handleMobileMainViewSelect(target);
