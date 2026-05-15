@@ -39,14 +39,12 @@ export function SkillsTab({
   visibleSkillRows,
   attributes,
   handleRoll,
-  openSkillInfo,
 }: {
   activeSkillSubtab: SkillSubtab;
   setActiveSkillSubtab: (subtab: SkillSubtab) => void;
   visibleSkillRows: SkillRow[];
   attributes: Record<string, number>;
   handleRoll: (characteristic: { key: string; label: string }) => void;
-  openSkillInfo: (skillName: string) => void;
 }) {
   return (
     <div className="flex flex-col h-full bg-card">
@@ -100,16 +98,9 @@ export function SkillsTab({
                         </button>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          openSkillInfo(skill.displayName);
-                        }}
-                        className="wfrp-skill-link min-w-0 truncate text-left"
-                      >
+                      <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                         {skill.displayName}
-                      </button>
+                      </span>
 
                       <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">
                         {skill.characteristic}
