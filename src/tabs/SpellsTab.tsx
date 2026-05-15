@@ -5,9 +5,8 @@ import {
   SheetDataHeader,
   SheetDataInfoButton,
   SheetDataList,
-  SheetDataListRow,
-  SheetDataMobileDetails,
   SheetDataPanel,
+  SheetDataResponsiveListRow,
 } from "../components/wfrp";
 import type { ResolvedCharacterSpell } from "../data/characters/resolved";
 import type { SpellListRow } from "./spells/useSpellsViewModel";
@@ -81,12 +80,12 @@ export function SpellsTab({
               };
 
               return (
-                <SheetDataListRow
+                <SheetDataResponsiveListRow
                   key={spell.name}
-                  className="md:grid md:min-w-[640px] md:grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] md:gap-2 md:px-4 md:py-2 lg:gap-4"
-                >
-                  <details className="group/details md:contents">
-                    <summary className="grid min-h-11 cursor-pointer list-none grid-cols-[40px_minmax(0,1fr)_auto_auto] items-center gap-2 md:contents [&::-webkit-details-marker]:hidden">
+                  className="md:min-w-[640px] md:px-4 md:py-2"
+                  summaryClassName="grid-cols-[40px_minmax(0,1fr)_auto_auto]"
+                  mobileSummary={(
+                    <>
                       <div className="flex justify-center">
                         <button
                           onClick={(event) => {
@@ -119,16 +118,39 @@ export function SpellsTab({
                       />
 
                       <SheetDataDisclosureChevron />
+                    </>
+                  )}
+                  mobileDetails={mobileDetails}
+                  desktopClassName="grid-cols-[72px_minmax(0,1.4fr)_52px_minmax(0,1fr)_minmax(0,1fr)_88px] gap-2 lg:gap-4"
+                  desktopContent={(
+                    <>
+                      <div className="flex justify-center">
+                        <button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleRoll({ key: "WP", label: spell.name }, undefined, { testType: "channeling" });
+                          }}
+                          className="wfrp-roll-btn"
+                          aria-label={`Channel ${spell.name}`}
+                        >
+                          {channelValue}
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={openCurrentSpellInfo}
+                        className="wfrp-skill-link min-w-0 truncate text-left"
+                      >
+                        {spell.name}
+                      </button>
 
                       <SheetDataDesktopCell align="center">{spell.cn}</SheetDataDesktopCell>
                       <SheetDataDesktopCell truncate>{formatted.range}</SheetDataDesktopCell>
                       <SheetDataDesktopCell truncate>{formatted.target}</SheetDataDesktopCell>
                       <SheetDataDesktopCell>{formatted.duration}</SheetDataDesktopCell>
-                    </summary>
-
-                    <SheetDataMobileDetails fields={mobileDetails} />
-                  </details>
-                </SheetDataListRow>
+                    </>
+                  )}
+                />
               );
             })}
           </SheetDataList>
