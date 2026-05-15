@@ -33,6 +33,7 @@ export type CampaignCharacterRoute = {
   campaignId: string;
   characterId: string;
   tab: MainTab;
+  hasExplicitTab: boolean;
 };
 
 const decodePathSegment = (value: string) => {
@@ -48,10 +49,11 @@ export function parseCampaignCharacterPath(pathname: string): CampaignCharacterR
   const match = campaignCharacterRoutePattern.exec(pathname);
   if (!match) return null;
 
-  const [, campaignIdSegment, characterIdSegment, tabSegment = mainTabPathSegments.skills] = match;
+  const [, campaignIdSegment, characterIdSegment, tabSegment] = match;
   const campaignId = decodePathSegment(campaignIdSegment);
   const characterId = decodePathSegment(characterIdSegment);
-  const tab = tabAliases[tabSegment.toLowerCase()];
+  const hasExplicitTab = Boolean(tabSegment);
+  const tab = tabAliases[(tabSegment ?? mainTabPathSegments.skills).toLowerCase()];
 
   if (!campaignId || !characterId || !tab) return null;
 
@@ -59,6 +61,7 @@ export function parseCampaignCharacterPath(pathname: string): CampaignCharacterR
     campaignId,
     characterId,
     tab,
+    hasExplicitTab,
   };
 }
 
@@ -66,10 +69,18 @@ export function buildCampaignCharacterPath({
   campaignId = defaultCampaignId,
   characterId,
   tab,
+  omitDefaultTab = false,
 }: {
   campaignId?: string;
   characterId: string;
   tab: MainTab;
+  omitDefaultTab?: boolean;
 }) {
-  return `/${encodePathSegment(campaignId)}/${encodePathSegment(characterId)}/${mainTabPathSegments[tab]}`;
+  const characterPath = `/${encodePathSegment(campaignId)}/${encodePathSegment(characterId)}`;
+
+  if (omitDefaultTab && tab === "skills") {
+    return characterPath;
+  }
+
+  return `${characterPath}/${mainTabPathSegments[tab]}`;
 }
