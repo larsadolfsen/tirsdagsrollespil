@@ -38,9 +38,9 @@ export function SheetDataHeaderCell({ align = "left", className, ...props }: She
     <span
       className={cn(
         "wfrp-table-label min-w-0 truncate",
-        align === "center" && "text-center",
-        align === "left" && "text-left",
-        align === "right" && "text-right",
+        align === "center" && "justify-self-center text-center",
+        align === "left" && "justify-self-start text-left",
+        align === "right" && "justify-self-end text-right",
         className,
       )}
       {...props}
