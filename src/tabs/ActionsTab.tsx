@@ -78,6 +78,7 @@ function ActionSection({
   sectionLabel,
   valueLabels,
 }: {
+  key?: string;
   children: ReactNode;
   gridClassName: string;
   sectionLabel: string;

@@ -20,6 +20,7 @@ type SkillRow = {
 
 const desktopSkillGridClass = "md:grid-cols-[56px_minmax(0,1fr)_56px_56px_56px_56px_48px]";
 const mobileSkillGridClass = "grid-cols-[40px_minmax(0,1fr)_40px_48px]";
+const skillContentGridClass = `${mobileSkillGridClass} ${desktopSkillGridClass}`;
 
 const characteristicNames: Record<string, string> = {
   Ag: "Agility",
@@ -49,7 +50,7 @@ export function SkillsTab({
   openSkillInfo?: (skillName: string) => void;
 }) {
   return (
-    <div className="flex flex-col h-full bg-card">
+    <div className="flex h-full min-w-0 flex-col bg-card">
       <InlineSubtabs<SkillSubtab>
         options={[
           { id: "all", label: "All" },
@@ -61,7 +62,7 @@ export function SkillsTab({
         onChange={setActiveSkillSubtab}
       />
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card space-y-4">
+      <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden bg-card space-y-4">
         <SheetDataPanel>
           <SheetDataHeader className={`${mobileSkillGridClass} ${desktopSkillGridClass} gap-0`}>
             <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
@@ -84,7 +85,8 @@ export function SkillsTab({
                   key={skill.key}
                   className="wfrp-skill-row"
                   summaryClassName={`wfrp-skill-row-summary ${mobileSkillGridClass} md:grid ${desktopSkillGridClass} md:gap-0`}
-                  contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
+                  contentGridClassName={skillContentGridClass}
+                  contentClassName="col-start-2 col-end-5 min-w-0 pb-4 pr-2 pt-1 md:col-start-2 md:col-end-8 md:pb-4 md:pr-14"
                   summary={(
                     <>
                       <div className="flex justify-center">

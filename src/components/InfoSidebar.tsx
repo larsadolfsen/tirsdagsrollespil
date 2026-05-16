@@ -125,6 +125,7 @@ function RuleListEntry({
   children,
   innerRef,
 }: {
+  key?: string;
   title: ReactNode;
   meta?: ReactNode;
   isActive?: boolean;
