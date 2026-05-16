@@ -65,8 +65,8 @@ export function SpellsTab({
           <SheetDataHeaderCell align="center">Channel</SheetDataHeaderCell>
           <SheetDataHeaderCell>Spell</SheetDataHeaderCell>
           <SheetDataHeaderCell className="hidden md:block" align="right">CN</SheetDataHeaderCell>
-          <SheetDataHeaderCell align="right">RNG</SheetDataHeaderCell>
-          <SheetDataHeaderCell align="right">Target</SheetDataHeaderCell>
+          <SheetDataHeaderCell align="left">RNG</SheetDataHeaderCell>
+          <SheetDataHeaderCell align="left">Target</SheetDataHeaderCell>
           <SheetDataHeaderCell className="hidden md:block" align="right">Duration</SheetDataHeaderCell>
           <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
         </SheetDataHeader>
@@ -99,10 +99,10 @@ export function SpellsTab({
                     </span>
 
                     <SheetDataDesktopCell align="right">{spell.cn}</SheetDataDesktopCell>
-                    <div className="wfrp-list-cell-strong truncate text-right font-mono md:font-sans">
+                    <div className="wfrp-list-cell-strong truncate text-left font-mono md:font-sans">
                       {formatted.range}
                     </div>
-                    <div className="wfrp-list-cell-strong truncate text-right font-mono md:font-sans">
+                    <div className="wfrp-list-cell-strong truncate text-left font-mono md:font-sans">
                       {formatted.target}
                     </div>
                     <SheetDataDesktopCell align="right">{formatted.duration}</SheetDataDesktopCell>
