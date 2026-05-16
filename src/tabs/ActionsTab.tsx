@@ -85,11 +85,15 @@ function ActionSection({
 }) {
   return (
     <div className="mt-4 first:mt-0">
-      <SheetDataHeader className={`hidden ${gridClassName} md:grid md:gap-0`}>
+      <SheetDataHeader className={`${actionSummaryGridClass} ${gridClassName} gap-0`}>
         <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
         <SheetDataHeaderCell>{sectionLabel}</SheetDataHeaderCell>
         {valueLabels.map((label) => (
-          <SheetDataHeaderCell key={label} align={label === "More" ? "center" : "right"}>
+          <SheetDataHeaderCell
+            key={label}
+            align={label === "More" ? "center" : "right"}
+            className={label === "More" ? undefined : "hidden md:block"}
+          >
             {label}
           </SheetDataHeaderCell>
         ))}
