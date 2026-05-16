@@ -86,7 +86,7 @@ export function SkillsTab({
                   className="wfrp-skill-row"
                   summaryClassName={`wfrp-skill-row-summary ${mobileSkillGridClass} md:grid ${desktopSkillGridClass} md:gap-0`}
                   contentGridClassName={skillContentGridClass}
-                  contentClassName="col-start-2 col-end-5 min-w-0 pb-4 pr-2 pt-1 md:col-start-2 md:col-end-8 md:pb-4 md:pr-14"
+                  contentClassName="col-span-full min-w-0 max-w-full px-3 pb-4 pt-1 md:col-start-2 md:col-end-8 md:px-0 md:pr-14 md:pb-4"
                   summary={(
                     <>
                       <div className="flex justify-center">
