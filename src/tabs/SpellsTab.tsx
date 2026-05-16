@@ -62,7 +62,7 @@ export function SpellsTab({
     >
       <SheetDataPanel>
         <SheetDataHeader className={`${mobileSpellGridClass} ${desktopSpellGridClass} gap-0`}>
-          <SheetDataHeaderCell align="center">Channel</SheetDataHeaderCell>
+          <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
           <SheetDataHeaderCell>Spell</SheetDataHeaderCell>
           <SheetDataHeaderCell className="hidden md:block" align="right">CN</SheetDataHeaderCell>
           <SheetDataHeaderCell align="left">RNG</SheetDataHeaderCell>
