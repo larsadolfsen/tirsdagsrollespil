@@ -19,7 +19,7 @@ type SkillRow = {
 };
 
 const desktopSkillGridClass = "md:grid-cols-[56px_minmax(0,1fr)_56px_56px_56px_56px_48px]";
-const mobileSkillGridClass = "grid-cols-[40px_minmax(0,1fr)_48px]";
+const mobileSkillGridClass = "grid-cols-[40px_minmax(0,1fr)_40px_48px]";
 
 const characteristicNames: Record<string, string> = {
   Ag: "Agility",
@@ -66,7 +66,7 @@ export function SkillsTab({
           <SheetDataHeader className={`${mobileSkillGridClass} ${desktopSkillGridClass} gap-0`}>
             <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
             <SheetDataHeaderCell>Skill</SheetDataHeaderCell>
-            <SheetDataHeaderCell className="hidden md:block" align="right">Char.</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">Char.</SheetDataHeaderCell>
             <SheetDataHeaderCell className="hidden md:block" align="right">Score</SheetDataHeaderCell>
             <SheetDataHeaderCell className="hidden md:block" align="right">Adv.</SheetDataHeaderCell>
             <SheetDataHeaderCell className="hidden md:block" align="right">Total</SheetDataHeaderCell>
@@ -104,7 +104,7 @@ export function SkillsTab({
                         {skill.displayName}
                       </span>
 
-                      <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">
+                      <div className="wfrp-list-cell-strong text-right font-mono">
                         {skill.characteristic}
                       </div>
 
