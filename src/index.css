@@ -322,6 +322,17 @@ body {
   border-width: 1px;
 }
 
+@media (max-width: 767px) {
+  .wfrp-subpanel-shell:has(> .wfrp-subpanel-header + .divide-y) {
+    overflow-x: auto;
+  }
+
+  .wfrp-subpanel-shell:has(> .wfrp-subpanel-header + .divide-y) > .wfrp-subpanel-header,
+  .wfrp-subpanel-shell:has(> .wfrp-subpanel-header + .divide-y) > .divide-y {
+    min-width: max-content;
+  }
+}
+
 section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] {
   display: flex;
   flex-wrap: wrap;
