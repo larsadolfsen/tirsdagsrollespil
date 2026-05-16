@@ -42,7 +42,7 @@ export function InlineSubtabs<T extends string>({
   };
 
   return (
-    <div className="flex flex-col items-stretch gap-2 bg-transparent md:flex-row md:items-start">
+    <div className="flex flex-col items-stretch gap-2 bg-wfrp-bg/50 md:flex-row md:items-start">
       <div className="min-w-0 flex-1 self-stretch">
         <ScrollableTabStrip
           className="flex w-full min-w-max flex-nowrap items-center justify-center gap-1.5 overflow-x-auto px-0 pb-3 pt-0 !px-0 sm:gap-2 md:flex-nowrap md:overflow-x-auto md:pb-3 md:pt-0 lg:w-max lg:min-w-0 lg:justify-start no-scrollbar"
@@ -75,7 +75,7 @@ export function InlineSubtabs<T extends string>({
         </ScrollableTabStrip>
       </div>
       {trailingContent ? (
-        <div className="shrink-0 px-0 pb-3 md:pb-3 md:pr-0">
+        <div className="shrink-0 bg-wfrp-bg/50 px-0 pb-3 md:pb-3 md:pr-0">
           {trailingContent}
         </div>
       ) : null}
