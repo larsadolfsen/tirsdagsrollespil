@@ -135,7 +135,7 @@ export function SheetDataDisclosureChevron({ className }: { className?: string }
   return (
     <span
       className={cn(
-        "inline-flex h-12 min-h-12 w-12 min-w-12 items-center justify-center rounded text-gray-500 transition-colors hover:text-wfrp-gold group-open/details:text-wfrp-gold",
+        "inline-flex h-12 min-h-12 w-12 min-w-12 items-center justify-center rounded text-gray-500 transition-colors hover:text-wfrp-gold",
         className,
       )}
       aria-hidden="true"
