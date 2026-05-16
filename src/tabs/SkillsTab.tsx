@@ -68,7 +68,7 @@ export function SkillsTab({
         <SheetDataHeader className={`${mobileSkillGridClass} ${desktopSkillGridClass} gap-0`}>
           <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
           <SheetDataHeaderCell>Skill</SheetDataHeaderCell>
-          <SheetDataHeaderCell align="right">Char.</SheetDataHeaderCell>
+          <SheetDataHeaderCell align="center">Char.</SheetDataHeaderCell>
           <SheetDataHeaderCell className="hidden md:block" align="right">Score</SheetDataHeaderCell>
           <SheetDataHeaderCell className="hidden md:block" align="right">Adv.</SheetDataHeaderCell>
           <SheetDataHeaderCell className="hidden md:block" align="right">Total</SheetDataHeaderCell>
@@ -107,7 +107,7 @@ export function SkillsTab({
                       {skill.displayName}
                     </span>
 
-                    <div className="wfrp-list-cell-strong text-right font-mono">
+                    <div className="wfrp-list-cell-strong text-center font-mono">
                       {skill.characteristic}
                     </div>
 
