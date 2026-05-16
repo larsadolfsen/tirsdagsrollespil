@@ -19,6 +19,7 @@ import type { InventoryDragState, InventoryDropTargetId, InventoryMenuState } fr
 import { getConsumableBaseName } from "./inventory/inventoryUtils";
 
 const desktopInventoryGridClass = "md:grid-cols-[minmax(0,1fr)_140px_48px_60px_60px_48px]";
+const mobileInventoryGridClass = "grid-cols-[minmax(0,1fr)_44px_44px_48px]";
 
 export function InventoryTab({
   activeInventorySubtab,
@@ -251,7 +252,7 @@ export function InventoryTab({
                       : ""
                 }`}
               >
-                <SheetDataHeader className={`hidden ${desktopInventoryGridClass} md:grid md:gap-0`}>
+                <SheetDataHeader className={`${mobileInventoryGridClass} ${desktopInventoryGridClass} gap-0`}>
                   <SheetDataHeaderCell className="flex min-w-0 items-center gap-2">
                     <span className="truncate">{section.title}</span>
                     {section.subtitle ? (
@@ -260,29 +261,18 @@ export function InventoryTab({
                       </span>
                     ) : null}
                   </SheetDataHeaderCell>
-                  <SheetDataHeaderCell>Type</SheetDataHeaderCell>
+                  <SheetDataHeaderCell className="hidden md:block">Type</SheetDataHeaderCell>
                   <SheetDataHeaderCell align="right">Qty</SheetDataHeaderCell>
                   <SheetDataHeaderCell align="right">Enc</SheetDataHeaderCell>
-                  <SheetDataHeaderCell align="right">Value</SheetDataHeaderCell>
+                  <SheetDataHeaderCell className="hidden md:block" align="right">Value</SheetDataHeaderCell>
                   <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
                 </SheetDataHeader>
-
-                <div className="border-b border-t border-white/5 bg-card px-2 py-1 md:hidden">
-                  <span className="wfrp-table-label flex min-w-0 items-center gap-2 text-left">
-                    <span className="truncate">{section.title}</span>
-                    {section.subtitle ? (
-                      <span className="truncate font-mono text-[9px] font-bold uppercase tracking-wider text-gray-600">
-                        {section.subtitle}
-                      </span>
-                    ) : null}
-                  </span>
-                </div>
 
                 <SheetDataTable>
                   {section.id === "carried" && (
                     <SheetDataAccordionRow
                       className="wfrp-skill-row"
-                      summaryClassName={`wfrp-skill-row-summary grid-cols-[minmax(0,1fr)_48px] md:grid ${desktopInventoryGridClass} md:gap-0`}
+                      summaryClassName={`wfrp-skill-row-summary ${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
@@ -290,8 +280,8 @@ export function InventoryTab({
                             <span className="truncate">Coins</span>
                           </span>
                           <div className="hidden wfrp-list-cell-strong truncate md:block">Currency</div>
-                          <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{wallet.coinCount}</div>
-                          <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{wallet.encumbrance || "-"}</div>
+                          <div className="wfrp-list-cell-strong text-right font-mono">{wallet.coinCount}</div>
+                          <div className="wfrp-list-cell-strong text-right font-mono">{wallet.encumbrance || "-"}</div>
                           <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{wallet.value}</div>
                           <SheetDataDisclosureChevron className="md:inline-flex" />
                         </>
@@ -315,7 +305,7 @@ export function InventoryTab({
                         className={`wfrp-skill-row ${row.isDragging ? "opacity-45" : ""} ${
                           row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                         }`}
-                        summaryClassName={`wfrp-skill-row-summary grid-cols-[minmax(0,1fr)_48px] md:grid ${desktopInventoryGridClass} md:gap-0`}
+                        summaryClassName={`wfrp-skill-row-summary ${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
                         contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                         summary={(
                           <>
@@ -324,8 +314,8 @@ export function InventoryTab({
                             </span>
 
                             <div className="hidden wfrp-list-cell-strong truncate md:block">{item.type}</div>
-                            <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{row.quantity}</div>
-                            <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{row.encumbrance}</div>
+                            <div className="wfrp-list-cell-strong text-right font-mono">{row.quantity}</div>
+                            <div className="wfrp-list-cell-strong text-right font-mono">{row.encumbrance}</div>
                             <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{row.value}</div>
                             <SheetDataDisclosureChevron className="md:inline-flex" />
                           </>
