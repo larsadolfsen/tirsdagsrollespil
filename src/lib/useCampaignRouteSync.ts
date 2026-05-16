@@ -19,12 +19,13 @@ type UseCampaignRouteSyncOptions = {
 
 type SyncRouteOptions = {
   characterId?: string;
-  tab?: MainTab;
+  view?: MobileTabMenuTarget;
   mode?: "push" | "replace";
-  omitDefaultTab?: boolean;
+  omitDefaultView?: boolean;
 };
 
 const getCurrentPathname = () => window.location.pathname;
+const isMainTab = (target: MobileTabMenuTarget): target is MainTab => target !== "characteristics";
 
 export function useCampaignRouteSync({
   activeMainTab,
@@ -41,25 +42,23 @@ export function useCampaignRouteSync({
 
   const syncCampaignRoute = useCallback(({
     characterId = selectedCharacterId,
-    tab = activeMainTab,
+    view = currentCampaignRoute.current?.view ?? activeMainTab,
     mode = "replace",
-    omitDefaultTab = currentCampaignRoute.current?.hasExplicitTab === false,
+    omitDefaultView = currentCampaignRoute.current?.hasExplicitView === false,
   }: SyncRouteOptions = {}) => {
     const campaignId = currentCampaignRoute.current?.campaignId ?? defaultCampaignId;
     const nextPath = buildCampaignCharacterPath({
       campaignId,
       characterId,
-      tab,
-      omitDefaultTab,
+      view,
+      omitDefaultView,
     });
     const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
+    const route = parseCampaignCharacterPath(nextPath);
 
-    currentCampaignRoute.current = {
-      campaignId,
-      characterId,
-      tab,
-      hasExplicitTab: !omitDefaultTab,
-    };
+    if (route) {
+      currentCampaignRoute.current = route;
+    }
 
     if (getCurrentPathname() === nextPath) {
       return;
@@ -85,7 +84,7 @@ export function useCampaignRouteSync({
       }
 
       setActiveMainTab(route.tab);
-      setActiveMobileMainView(route.hasExplicitTab ? route.tab : "characteristics");
+      setActiveMobileMainView(route.view);
     };
 
     applyRoute(getCurrentPathname());
@@ -103,18 +102,21 @@ export function useCampaignRouteSync({
   }, [syncCampaignRoute]);
 
   const selectMainTab = useCallback((tab: MainTab) => {
-    syncCampaignRoute({ tab, mode: "push", omitDefaultTab: false });
+    syncCampaignRoute({ view: tab, mode: "push", omitDefaultView: false });
     setActiveMainTab(tab);
     setActiveMobileMainView(tab);
   }, [setActiveMainTab, setActiveMobileMainView, syncCampaignRoute]);
 
   const selectMobileMainView = useCallback((target: MobileTabMenuTarget) => {
-    if (target !== "characteristics") {
-      syncCampaignRoute({ tab: target, mode: "push", omitDefaultTab: false });
+    syncCampaignRoute({ view: target, mode: "push", omitDefaultView: false });
+    setActiveMobileMainView(target);
+
+    if (isMainTab(target)) {
+      setActiveMainTab(target);
     }
 
     handleMobileMainViewSelect(target);
-  }, [handleMobileMainViewSelect, syncCampaignRoute]);
+  }, [handleMobileMainViewSelect, setActiveMainTab, setActiveMobileMainView, syncCampaignRoute]);
 
   const selectCharacter = useCallback((characterId: string) => {
     syncCampaignRoute({ characterId, mode: "push" });
