@@ -3,7 +3,6 @@ export { HeaderResourceSlider, ResourceCounterBar } from "./ResourceCounterBar";
 export { InlineSubtabs } from "./InlineSubtabs";
 export { PanelSectionHeader } from "./PanelSectionHeader";
 export { ScrollableTabStrip } from "./ScrollableTabStrip";
-export { SubtabContentFrame } from "./SubtabContentFrame";
 
 export { Badge } from "./badge";
 export type { BadgeProps } from "./badge";
