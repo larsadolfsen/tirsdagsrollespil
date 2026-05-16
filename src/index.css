@@ -220,7 +220,7 @@
 }
 
 @utility wfrp-subpanel-header {
-  @apply border-b border-wfrp-border bg-card px-2 py-1 sm:px-3;
+  @apply border-y border-wfrp-border bg-card px-2 py-1 sm:px-3;
 }
 
 @utility wfrp-panel-copy {
