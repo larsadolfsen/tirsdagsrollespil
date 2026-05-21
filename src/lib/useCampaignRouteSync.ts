@@ -43,7 +43,11 @@ export function useCampaignRouteSync({
 
   const syncCampaignRoute = useCallback(({
     characterId = selectedCharacterId,
-    tab = activeMobileMainView === "characteristics" ? activeMobileMainView : activeMainTab,
+    tab = currentCampaignRoute.current?.hasExplicitTab
+      ? currentCampaignRoute.current.tab
+      : activeMobileMainView === "characteristics"
+        ? activeMobileMainView
+        : activeMainTab,
     mode = "replace",
     omitDefaultTab = currentCampaignRoute.current?.hasExplicitTab === false,
   }: SyncRouteOptions = {}) => {

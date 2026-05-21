@@ -85,7 +85,7 @@ function ActionSection({
   valueLabels: string[];
 }) {
   return (
-    <div className="mt-4 first:mt-0">
+    <SheetDataPanel>
       <SheetDataHeader className={`${actionSummaryGridClass} ${gridClassName} gap-0`}>
         <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
         <SheetDataHeaderCell>{sectionLabel}</SheetDataHeaderCell>
@@ -101,7 +101,7 @@ function ActionSection({
       </SheetDataHeader>
 
       <SheetDataTable>{children}</SheetDataTable>
-    </div>
+    </SheetDataPanel>
   );
 }
 
@@ -177,8 +177,7 @@ export function ActionsTab({
         onChange={setActiveActionCategory}
       />
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card">
-        <SheetDataPanel>
+      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-card">
           {characterData.spells.length > 0 && (activeActionCategory === "all" || activeActionCategory === "other") && (() => {
             const baseWP = attributes.WP || 0;
             const channellingSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
@@ -584,7 +583,6 @@ export function ActionsTab({
                 })}
             </ActionSection>
           )}
-        </SheetDataPanel>
       </div>
     </div>
   );
