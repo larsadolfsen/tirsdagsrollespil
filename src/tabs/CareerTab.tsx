@@ -11,6 +11,7 @@ import {
   SheetDataHeaderCell,
   SheetDataPanel,
   SheetDataTable,
+  SheetEmptyState,
 } from "../components/wfrp";
 import { useGameSessionContext } from "../context/GameSessionContext";
 import type {
@@ -101,6 +102,7 @@ const careerSubtabOptions: Array<{ id: CareerSubtab; label: string }> = [
 const careerXpGridClass = "grid-cols-[minmax(0,1fr)_42px_42px_minmax(88px,auto)_36px] md:grid-cols-[minmax(0,1fr)_72px_72px_minmax(150px,auto)_48px]";
 const careerPathGridClass = "grid-cols-[minmax(0,1fr)_52px_40px_36px] md:grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px_48px]";
 const characteristicAdvanceGridClass = "grid-cols-[minmax(0,1fr)_56px_52px_64px_36px] md:grid-cols-[minmax(0,1fr)_64px_72px_62px_74px_48px]";
+const skillAdvanceGridClass = "grid-cols-[minmax(0,1fr)_56px_52px_64px_36px] md:grid-cols-[minmax(0,1fr)_56px_62px_62px_74px_48px]";
 
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
 
@@ -604,19 +606,20 @@ export function CareerTab({
           <AdvancementSection title="Skills" hideHeader>
             <div className="flex flex-col gap-3">
               {advancementSkillSections.map((section) => (
-                <div key={section.id} className="wfrp-subpanel-shell flex flex-col">
-                  <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_56px_62px_62px_74px] gap-2 lg:gap-3 items-center">
-                    <span className="wfrp-table-label text-left">{section.title}</span>
-                    <span className="wfrp-table-label text-center">Initial</span>
-                    <span className="wfrp-table-label text-center">Advances</span>
-                    <span className="wfrp-table-label text-center">Cost</span>
-                    <span className="wfrp-table-label text-right">Advance</span>
-                  </div>
-                  <div className="divide-y divide-white/5">
+                <SheetDataPanel key={section.id}>
+                  <SheetDataHeader className={`${skillAdvanceGridClass} gap-0`}>
+                    <SheetDataHeaderCell>{section.title}</SheetDataHeaderCell>
+                    <SheetDataHeaderCell className="hidden md:block" align="center">Initial</SheetDataHeaderCell>
+                    <SheetDataHeaderCell align="center">Adv.</SheetDataHeaderCell>
+                    <SheetDataHeaderCell align="center">Cost</SheetDataHeaderCell>
+                    <SheetDataHeaderCell align="right">Advance</SheetDataHeaderCell>
+                    <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
+                  </SheetDataHeader>
+                  <SheetDataTable>
                     {section.skills.length === 0 ? (
-                      <div className="px-3 py-4 text-[10px] italic text-gray-600">
-                        No {section.title.toLowerCase()} skills listed.
-                      </div>
+                      <SheetEmptyState title={`No ${section.title.toLowerCase()} skills`}>
+                        No skills listed for this section.
+                      </SheetEmptyState>
                     ) : (
                       section.skills.map((skillRow) => {
                         const canPurchase =
@@ -627,76 +630,103 @@ export function CareerTab({
                               ? `+${skillRow.pendingAdvances}`
                               : "-"
                             : `${skillRow.baseAdvances}${skillRow.pendingAdvances > 0 ? ` +${skillRow.pendingAdvances}` : ""}`;
+                        const initialDisplay =
+                          skillRow.baseCharacteristicValue === 0
+                            ? "-"
+                            : skillRow.baseCharacteristicValue;
+                        const advancesControl = isAdvancementEditMode ? (
+                          <input
+                            type="number"
+                            min={0}
+                            value={skillAdvanceDrafts[skillRow.skillName] ?? skillRow.baseAdvances}
+                            onChange={(event) =>
+                              setSkillAdvanceDrafts((prev) => ({
+                                ...prev,
+                                [skillRow.skillName]: parseDraftNumber(event.target.value),
+                              }))
+                            }
+                            className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-center font-mono text-[11px] text-white"
+                            aria-label={`Advances for ${skillRow.skillName}`}
+                          />
+                        ) : (
+                          advancesDisplay
+                        );
 
                         return (
-                          <div
+                          <SheetDataAccordionRow
                             key={skillRow.skillName}
-                            className={`grid grid-cols-[minmax(0,1fr)_56px_62px_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row group ${
+                            className={`group ${
                               !skillRow.isCareerSkill ? "opacity-70" : ""
                             }`}
-                          >
-                            <div className="min-w-0">
+                            summaryClassName={`wfrp-skill-row-summary ${skillAdvanceGridClass} gap-0`}
+                            contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
+                            summary={(
+                              <>
                               <button
-                                onClick={() => {
+                                type="button"
+                                onClick={(event) => {
+                                  event.preventDefault();
                                   setActiveInfo({ type: "skill", name: skillRow.skillName });
                                   clearRollCharacteristic();
                                 }}
-                                className="wfrp-skill-link truncate text-left"
+                                className="wfrp-skill-link min-w-0 truncate text-left"
                               >
                                 {skillRow.skillName} ({skillRow.characteristicKey || "-"})
                               </button>
-                            </div>
-                            <div className="wfrp-list-cell-strong text-center font-mono">
-                              {skillRow.baseCharacteristicValue === 0
-                                ? "-"
-                                : skillRow.baseCharacteristicValue}
-                            </div>
-                            <div className="wfrp-list-cell-strong text-center font-mono">
-                              {isAdvancementEditMode ? (
-                                <input
-                                  type="number"
-                                  min={0}
-                                  value={skillAdvanceDrafts[skillRow.skillName] ?? skillRow.baseAdvances}
-                                  onChange={(event) =>
-                                    setSkillAdvanceDrafts((prev) => ({
-                                      ...prev,
-                                      [skillRow.skillName]: parseDraftNumber(event.target.value),
-                                    }))
-                                  }
-                                  className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-center font-mono text-[11px] text-white"
-                                  aria-label={`Advances for ${skillRow.skillName}`}
-                                />
-                              ) : (
-                                advancesDisplay
-                              )}
-                            </div>
-                            <div className="wfrp-list-cell-strong text-center font-mono">
-                              {skillRow.isCareerSkill ? skillRow.nextSkillCost : "-"}
-                            </div>
-                            <div className="flex justify-end gap-1">
-                              <button
-                                onClick={() => removePendingSkillAdvance(skillRow.skillName)}
-                                disabled={skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
-                                className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
-                                aria-label={`Decrease skill advances for ${skillRow.skillName}`}
-                              >
-                                <Minus size={10} />
-                              </button>
-                              <button
-                                onClick={() => purchaseSkillAdvance(skillRow.skillName)}
-                                disabled={!canPurchase}
-                                className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
-                                aria-label={`Advance skill ${skillRow.skillName}`}
-                              >
-                                <Plus size={12} />
-                              </button>
-                            </div>
-                          </div>
+                              <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">
+                                {initialDisplay}
+                              </div>
+                              <div className="wfrp-list-cell-strong text-center font-mono">
+                                {advancesControl}
+                              </div>
+                              <div className="wfrp-list-cell-strong text-center font-mono">
+                                {skillRow.isCareerSkill ? skillRow.nextSkillCost : "-"}
+                              </div>
+                              <div className="flex justify-end gap-1">
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    removePendingSkillAdvance(skillRow.skillName);
+                                  }}
+                                  disabled={skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
+                                  className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-wfrp-red/50"
+                                  aria-label={`Decrease skill advances for ${skillRow.skillName}`}
+                                >
+                                  <Minus size={10} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    purchaseSkillAdvance(skillRow.skillName);
+                                  }}
+                                  disabled={!canPurchase}
+                                  className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-green-600/50"
+                                  aria-label={`Advance skill ${skillRow.skillName}`}
+                                >
+                                  <Plus size={12} />
+                                </button>
+                              </div>
+                              <SheetDataDisclosureChevron className="md:inline-flex" />
+                              </>
+                            )}
+                          >
+                            <SheetDataAccordionDetails
+                              description={`${skillRow.skillName} is ${skillRow.isCareerSkill ? "available" : "not available"} in the current career path.`}
+                              rows={[
+                                { label: "Initial", value: initialDisplay },
+                                { label: "Characteristic", value: skillRow.characteristicKey || "-" },
+                                { label: "Advances", value: advancesDisplay },
+                                { bordered: true, label: "Next cost", value: skillRow.isCareerSkill ? skillRow.nextSkillCost : "-" },
+                              ]}
+                            />
+                          </SheetDataAccordionRow>
                         );
                       })
                     )}
-                  </div>
-                </div>
+                  </SheetDataTable>
+                </SheetDataPanel>
               ))}
             </div>
           </AdvancementSection>
