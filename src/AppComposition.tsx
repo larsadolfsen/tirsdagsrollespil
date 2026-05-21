@@ -11,8 +11,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { AppShell } from "./components/AppShell";
 import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
-import { CharacterHeader } from "./components/CharacterHeader";
-import { MobileCharacterHeader } from "./components/MobileCharacterHeader";
+import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
 import { MobileTabMenu } from "./components/MobileTabMenu";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
@@ -884,6 +883,32 @@ export function AppComposition() {
     selectMainTab("career");
   };
 
+  const openCharacterBuilder = () => {
+    setActiveInfo(null);
+    setIsShopOpen(false);
+    setIsSpellShopOpen(false);
+    setIsDiceLogOpen(false);
+    setRollState((prev) => ({ ...prev, characteristic: null }));
+    setIsCharacterBuilderOpen(true);
+  };
+
+  const openDiceLog = () => {
+    setActiveInfo(null);
+    setIsShopOpen(false);
+    setIsDiceLogOpen(true);
+  };
+
+  const openMobileAdvanceView = () => {
+    openAdvanceView();
+    setIsMobilePortraitMenuOpen(false);
+  };
+
+  const openMobileCharacterActions = () => {
+    setIsMobileNavigationOpen(false);
+    setIsMobileCharacterListOpen(false);
+    setIsMobilePortraitMenuOpen((isOpen) => !isOpen);
+  };
+
   const mobileAddAction =
     activeMobileMainView === "inventory"
       ? {
@@ -945,18 +970,11 @@ export function AppComposition() {
           isMobileNavigationOpen={isMobileNavigationOpen}
           mobileTabMenuOptions={mobileTabMenuOptions}
           onCreateCharacter={() => {
-            setActiveInfo(null);
-            setIsShopOpen(false);
-            setIsSpellShopOpen(false);
-            setIsDiceLogOpen(false);
-            setRollState((prev) => ({ ...prev, characteristic: null }));
-            setIsCharacterBuilderOpen(true);
+            openCharacterBuilder();
             closeMobileNavigation();
           }}
           onOpenDiceLog={() => {
-            setActiveInfo(null);
-            setIsShopOpen(false);
-            setIsDiceLogOpen(true);
+            openDiceLog();
             closeMobileNavigation();
           }}
           selectedCharacterId={selectedCharacterId}
@@ -1038,50 +1056,41 @@ export function AppComposition() {
           
           <CharacterSheetFrame
             desktopHeader={(
-              <CharacterHeader
-              characterData={characterData}
-              availableCharacters={availableCharacters}
-              selectedCharacterId={selectedCharacterId}
-              xpCurrent={xpCurrent}
-              onSelectCharacter={selectCharacter}
-              onCreateCharacter={() => {
-                setActiveInfo(null);
-                setIsShopOpen(false);
-                setIsSpellShopOpen(false);
-                setIsDiceLogOpen(false);
-                setRollState((prev) => ({ ...prev, characteristic: null }));
-                setIsCharacterBuilderOpen(true);
-              }}
-              onOpenDice={() => {
-                setActiveInfo(null);
-                setIsShopOpen(false);
-                setIsDiceLogOpen(true);
-              }}
-              onOpenAdvance={() => {
-                openAdvanceView();
-              }}
+              <CharacterSheetHeader
+                availableCharacters={availableCharacters}
+                characterData={characterData}
+                isMobileNavigationOpen={isMobileNavigationOpen}
+                isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
+                onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
+                onCreateCharacter={openCharacterBuilder}
+                onOpenAdvance={openAdvanceView}
+                onOpenDice={openDiceLog}
+                onOpenMobileCharacterActions={openMobileCharacterActions}
+                onOpenMobileCharacterList={() => openMobileNavigation(true)}
+                onOpenMobileNavigation={() => openMobileNavigation(false)}
+                onSelectCharacter={selectCharacter}
+                selectedCharacterId={selectedCharacterId}
+                variant="desktop"
+                xpCurrent={xpCurrent}
               />
             )}
             mobileHeader={(
-              <MobileCharacterHeader
-                campaignName={UI_LABELS.CAMPAIGN_NAME}
-                characterName={characterData.name}
+              <CharacterSheetHeader
+                availableCharacters={availableCharacters}
+                characterData={characterData}
                 isMobileNavigationOpen={isMobileNavigationOpen}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
-                onClosePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
-                onOpenAdvance={() => {
-                  openAdvanceView();
-                  setIsMobilePortraitMenuOpen(false);
-                }}
-                onOpenCharacterActions={() => {
-                  setIsMobileNavigationOpen(false);
-                  setIsMobileCharacterListOpen(false);
-                  setIsMobilePortraitMenuOpen((isOpen) => !isOpen);
-                }}
-                onOpenCharacterList={() => openMobileNavigation(true)}
-                onOpenNavigation={() => openMobileNavigation(false)}
+                onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
+                onCreateCharacter={openCharacterBuilder}
+                onOpenAdvance={openMobileAdvanceView}
+                onOpenDice={openDiceLog}
+                onOpenMobileCharacterActions={openMobileCharacterActions}
+                onOpenMobileCharacterList={() => openMobileNavigation(true)}
+                onOpenMobileNavigation={() => openMobileNavigation(false)}
+                onSelectCharacter={selectCharacter}
+                selectedCharacterId={selectedCharacterId}
+                variant="mobile"
                 xpCurrent={xpCurrent}
-                xpTotal={characterData.xpTotal}
               />
             )}
             mobileTitle={mobilePageTitleByView[activeMobileMainView]}
