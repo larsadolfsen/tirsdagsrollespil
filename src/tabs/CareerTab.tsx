@@ -103,6 +103,7 @@ const careerXpGridClass = "grid-cols-[minmax(0,1fr)_42px_42px_minmax(88px,auto)_
 const careerPathGridClass = "grid-cols-[minmax(0,1fr)_52px_40px_36px] md:grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px_48px]";
 const characteristicAdvanceGridClass = "grid-cols-[minmax(0,1fr)_56px_52px_64px_36px] md:grid-cols-[minmax(0,1fr)_64px_72px_62px_74px_48px]";
 const skillAdvanceGridClass = "grid-cols-[minmax(0,1fr)_56px_52px_64px_36px] md:grid-cols-[minmax(0,1fr)_56px_62px_62px_74px_48px]";
+const talentAdvanceGridClass = "grid-cols-[minmax(0,1fr)_52px_52px_64px_36px] md:grid-cols-[minmax(0,1fr)_72px_62px_74px_48px]";
 
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
 
@@ -734,14 +735,15 @@ export function CareerTab({
 
         {(activeCareerSubtab === "all" || activeCareerSubtab === "talents") && (
           <AdvancementSection title="Talents" hideHeader>
-            <div className="wfrp-subpanel-shell flex flex-col">
-              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_72px_62px_74px] gap-2 lg:gap-3 items-center">
-                <span className="wfrp-table-label text-left">Talents</span>
-                <span className="wfrp-table-label text-center">Taken</span>
-                <span className="wfrp-table-label text-center">Cost</span>
-                <span className="wfrp-table-label text-right">Advance</span>
-              </div>
-              <div className="divide-y divide-white/5">
+            <SheetDataPanel>
+              <SheetDataHeader className={`${talentAdvanceGridClass} gap-0`}>
+                <SheetDataHeaderCell>Talents</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="center">Taken</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="center">Cost</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="right">Advance</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
+              </SheetDataHeader>
+              <SheetDataTable>
                 {advancementTalentNames.map((talentName) => {
                   const takenCount = characterTalents.filter(
                     (talent) => talent.name === talentName,
@@ -758,49 +760,75 @@ export function CareerTab({
                       : `${takenCount}${pendingTakenCount > 0 ? ` +${pendingTakenCount}` : ""}`;
 
                   return (
-                    <div
+                    <SheetDataAccordionRow
                       key={talentName}
-                      className={`grid grid-cols-[minmax(0,1fr)_72px_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row group ${
+                      className={`group ${
                         !isCareerTalent && takenCount === 0 ? "opacity-70" : ""
                       }`}
-                    >
-                      <div className="min-w-0">
+                      summaryClassName={`wfrp-skill-row-summary ${talentAdvanceGridClass} gap-0`}
+                      contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
+                      summary={(
+                        <>
                         <button
-                          onClick={() => openTalentInfo(talentName)}
-                          className="wfrp-skill-link truncate text-left"
+                          type="button"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            openTalentInfo(talentName);
+                          }}
+                          className="wfrp-skill-link min-w-0 truncate text-left"
                         >
                           {talentName}
                         </button>
-                      </div>
-                      <div className="wfrp-list-cell-strong text-center font-mono">
-                        {takenDisplay}
-                      </div>
-                      <div className="wfrp-list-cell-strong text-center font-mono">
-                        {isCareerTalent ? nextTalentCost : "-"}
-                      </div>
-                      <div className="flex justify-end gap-1">
-                        <button
-                          onClick={() => removePendingTalentPurchase(talentName)}
-                          disabled={pendingTakenCount === 0}
-                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
-                          aria-label={`Decrease talent purchases for ${talentName}`}
-                        >
-                          <Minus size={10} />
-                        </button>
-                        <button
-                          onClick={() => purchaseTalent(talentName)}
-                          disabled={!canPurchase}
-                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
-                          aria-label={`Purchase talent ${talentName}`}
-                        >
-                          <Plus size={12} />
-                        </button>
-                      </div>
-                    </div>
+                        <div className="wfrp-list-cell-strong text-center font-mono">
+                          {takenDisplay}
+                        </div>
+                        <div className="wfrp-list-cell-strong text-center font-mono">
+                          {isCareerTalent ? nextTalentCost : "-"}
+                        </div>
+                        <div className="flex justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              removePendingTalentPurchase(talentName);
+                            }}
+                            disabled={pendingTakenCount === 0}
+                            className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-wfrp-red/50"
+                            aria-label={`Decrease talent purchases for ${talentName}`}
+                          >
+                            <Minus size={10} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              purchaseTalent(talentName);
+                            }}
+                            disabled={!canPurchase}
+                            className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-green-600/50"
+                            aria-label={`Purchase talent ${talentName}`}
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+                        <SheetDataDisclosureChevron className="md:inline-flex" />
+                        </>
+                      )}
+                    >
+                      <SheetDataAccordionDetails
+                        description={`${talentName} is ${isCareerTalent ? "available" : "not available"} in the current career path.`}
+                        rows={[
+                          { label: "Taken", value: takenDisplay },
+                          { label: "Current", value: takenCount },
+                          { label: "Pending", value: pendingTakenCount },
+                          { bordered: true, label: "Next cost", value: isCareerTalent ? nextTalentCost : "-" },
+                        ]}
+                      />
+                    </SheetDataAccordionRow>
                   );
                 })}
-              </div>
-            </div>
+              </SheetDataTable>
+            </SheetDataPanel>
           </AdvancementSection>
         )}
       </div>
