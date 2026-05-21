@@ -100,6 +100,7 @@ const careerSubtabOptions: Array<{ id: CareerSubtab; label: string }> = [
 
 const careerXpGridClass = "grid-cols-[minmax(0,1fr)_42px_42px_minmax(88px,auto)_36px] md:grid-cols-[minmax(0,1fr)_72px_72px_minmax(150px,auto)_48px]";
 const careerPathGridClass = "grid-cols-[minmax(0,1fr)_52px_40px_36px] md:grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px_48px]";
+const characteristicAdvanceGridClass = "grid-cols-[minmax(0,1fr)_56px_52px_64px_36px] md:grid-cols-[minmax(0,1fr)_64px_72px_62px_74px_48px]";
 
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
 
@@ -452,15 +453,16 @@ export function CareerTab({
 
         {(activeCareerSubtab === "all" || activeCareerSubtab === "characteristics") && (
           <AdvancementSection title="Characteristics" meta="Scaffolded" hideHeader>
-            <div className="wfrp-subpanel-shell flex flex-col">
-              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_64px_72px_62px_74px] gap-2 lg:gap-3 items-center">
-                <span className="wfrp-table-label text-left">Characteristics</span>
-                <span className="wfrp-table-label text-left">Initial</span>
-                <span className="wfrp-table-label text-center">Advances</span>
-                <span className="wfrp-table-label text-center">Cost</span>
-                <span className="wfrp-table-label text-right">Advance</span>
-              </div>
-              <div className="divide-y divide-white/5">
+            <SheetDataPanel>
+              <SheetDataHeader className={`${characteristicAdvanceGridClass} gap-0`}>
+                <SheetDataHeaderCell>Characteristics</SheetDataHeaderCell>
+                <SheetDataHeaderCell className="hidden md:block" align="center">Initial</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="center">Adv.</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="center">Cost</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="right">Advance</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
+              </SheetDataHeader>
+              <SheetDataTable>
                 {advancementCharacteristics.map((item) => {
                   const totalAdvances = item.advances + item.pendingAdvances;
                   const advancesDisplay =
@@ -471,104 +473,130 @@ export function CareerTab({
                       : `${item.advances}${item.pendingAdvances > 0 ? ` +${item.pendingAdvances}` : ""}`;
                   const isAvailable = availableCareerCharacteristicKeys.includes(item.key);
                   const nextCharacteristicCost = getCharacteristicAdvanceCost(totalAdvances);
+                  const initialControl = isAdvancementEditMode ? (
+                    <input
+                      type="number"
+                      min={0}
+                      value={characteristicInitialDrafts[item.key] ?? item.initial}
+                      onChange={(event) =>
+                        setCharacteristicInitialDrafts((prev) => ({
+                          ...prev,
+                          [item.key]: parseDraftNumber(event.target.value),
+                        }))
+                      }
+                      className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-center font-mono text-[11px] text-white"
+                      aria-label={`Initial value for ${item.label}`}
+                    />
+                  ) : (
+                    item.initial
+                  );
+                  const advancesControl = isAdvancementEditMode ? (
+                    <input
+                      type="number"
+                      min={0}
+                      value={characteristicAdvanceDrafts[item.key] ?? item.advances}
+                      onChange={(event) =>
+                        setCharacteristicAdvanceDrafts((prev) => ({
+                          ...prev,
+                          [item.key]: parseDraftNumber(event.target.value),
+                        }))
+                      }
+                      className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-center font-mono text-[11px] text-white"
+                      aria-label={`Advances for ${item.label}`}
+                    />
+                  ) : (
+                    advancesDisplay
+                  );
 
                   return (
-                    <div
+                    <SheetDataAccordionRow
                       key={item.key}
-                      className={`grid grid-cols-[minmax(0,1fr)_64px_72px_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row ${
+                      className={`group ${
                         !isAvailable ? "opacity-70" : ""
                       }`}
+                      summaryClassName={`wfrp-skill-row-summary ${characteristicAdvanceGridClass} gap-0`}
+                      contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
+                      summary={(
+                        <>
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              setActiveInfo({
+                                type: "characteristic",
+                                name: `${item.label} (${item.key})`,
+                                extra: {
+                                  key: item.key,
+                                  label: getCharacteristicLabel(item.key),
+                                  advances: item.advances,
+                                  pendingAdvances: item.pendingAdvances,
+                                  currentValue: item.value,
+                                  nextCost: isAvailable ? nextCharacteristicCost : null,
+                                  availableFromRank:
+                                    careerAdvancementData.characteristics.find(
+                                      (entry) => entry.key === item.key,
+                                    )?.availableFromRank ?? null,
+                                },
+                              });
+                              clearRollCharacteristic();
+                            }}
+                            className="wfrp-skill-link min-w-0 truncate text-left"
+                          >
+                            {item.label} ({item.key})
+                          </button>
+                          <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">
+                            {initialControl}
+                          </div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">
+                            {advancesControl}
+                          </div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">
+                            {isAvailable ? nextCharacteristicCost : "-"}
+                          </div>
+                          <div className="flex justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                removePendingCharacteristicAdvance(item.key);
+                              }}
+                              disabled={item.pendingAdvances === 0 || !isAvailable}
+                              className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-wfrp-red/50"
+                              aria-label={`Decrease ${item.label}`}
+                            >
+                              <Minus size={10} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                purchaseCharacteristicAdvance(item.key);
+                              }}
+                              disabled={!isAvailable || pendingAvailableXp < nextCharacteristicCost}
+                              className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-green-600/50"
+                              aria-label={`Increase ${item.label}`}
+                            >
+                              <Plus size={12} />
+                            </button>
+                          </div>
+                          <SheetDataDisclosureChevron className="md:inline-flex" />
+                        </>
+                      )}
                     >
-                      <div className="min-w-0">
-                        <button
-                          onClick={() => {
-                            setActiveInfo({
-                              type: "characteristic",
-                              name: `${item.label} (${item.key})`,
-                              extra: {
-                                key: item.key,
-                                label: getCharacteristicLabel(item.key),
-                                advances: item.advances,
-                                pendingAdvances: item.pendingAdvances,
-                                currentValue: item.value,
-                                nextCost: isAvailable ? nextCharacteristicCost : null,
-                                availableFromRank:
-                                  careerAdvancementData.characteristics.find(
-                                    (entry) => entry.key === item.key,
-                                  )?.availableFromRank ?? null,
-                              },
-                            });
-                            clearRollCharacteristic();
-                          }}
-                          className="wfrp-skill-link truncate text-left"
-                        >
-                          {item.label} ({item.key})
-                        </button>
-                      </div>
-                      <div className="wfrp-list-cell-strong text-left font-mono">
-                        {isAdvancementEditMode ? (
-                          <input
-                            type="number"
-                            min={0}
-                            value={characteristicInitialDrafts[item.key] ?? item.initial}
-                            onChange={(event) =>
-                              setCharacteristicInitialDrafts((prev) => ({
-                                ...prev,
-                                [item.key]: parseDraftNumber(event.target.value),
-                              }))
-                            }
-                            className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-center font-mono text-[11px] text-white"
-                            aria-label={`Initial value for ${item.label}`}
-                          />
-                        ) : (
-                          item.initial
-                        )}
-                      </div>
-                      <div className="wfrp-list-cell-strong text-center font-mono">
-                        {isAdvancementEditMode ? (
-                          <input
-                            type="number"
-                            min={0}
-                            value={characteristicAdvanceDrafts[item.key] ?? item.advances}
-                            onChange={(event) =>
-                              setCharacteristicAdvanceDrafts((prev) => ({
-                                ...prev,
-                                [item.key]: parseDraftNumber(event.target.value),
-                              }))
-                            }
-                            className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-center font-mono text-[11px] text-white"
-                            aria-label={`Advances for ${item.label}`}
-                          />
-                        ) : (
-                          advancesDisplay
-                        )}
-                      </div>
-                      <div className="wfrp-list-cell-strong text-center font-mono">
-                        {isAvailable ? nextCharacteristicCost : "-"}
-                      </div>
-                      <div className="flex justify-end gap-1">
-                        <button
-                          onClick={() => removePendingCharacteristicAdvance(item.key)}
-                          disabled={item.pendingAdvances === 0 || !isAvailable}
-                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-wfrp-red/50"
-                          aria-label={`Decrease ${item.label}`}
-                        >
-                          <Minus size={10} />
-                        </button>
-                        <button
-                          onClick={() => purchaseCharacteristicAdvance(item.key)}
-                          disabled={!isAvailable || pendingAvailableXp < nextCharacteristicCost}
-                          className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-green-600/50"
-                          aria-label={`Increase ${item.label}`}
-                        >
-                          <Plus size={12} />
-                        </button>
-                      </div>
-                    </div>
+                      <SheetDataAccordionDetails
+                        description={`${getCharacteristicLabel(item.key)} is ${isAvailable ? "available" : "not available"} at the current career rank.`}
+                        rows={[
+                          { label: "Initial", value: initialControl },
+                          { label: "Current", value: item.value },
+                          { label: "Advances", value: advancesDisplay },
+                          { bordered: true, label: "Next cost", value: isAvailable ? nextCharacteristicCost : "-" },
+                        ]}
+                      />
+                    </SheetDataAccordionRow>
                   );
                 })}
-              </div>
-            </div>
+              </SheetDataTable>
+            </SheetDataPanel>
           </AdvancementSection>
         )}
 
