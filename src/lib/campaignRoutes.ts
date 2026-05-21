@@ -1,10 +1,11 @@
-import type { MainTab } from "../tabs/tabTypes";
+import type { MainTab, MobileTabMenuTarget } from "../tabs/tabTypes";
 import { defaultCampaignId } from "../data/campaigns";
 
 export { defaultCampaignId } from "../data/campaigns";
 
 const campaignCharacterRoutePattern = /^\/([^/]+)\/([^/]+)(?:\/([^/?#]+))?\/?$/;
-const mainTabPathSegments: Record<MainTab, string> = {
+const mainTabPathSegments: Record<MobileTabMenuTarget, string> = {
+  characteristics: "characteristics",
   skills: "faner",
   actions: "actions",
   inventory: "inventory",
@@ -13,12 +14,14 @@ const mainTabPathSegments: Record<MainTab, string> = {
   journal: "journal",
   career: "advance",
 };
-const tabAliases: Record<string, MainTab> = {
+const tabAliases: Record<string, MobileTabMenuTarget> = {
   actions: "actions",
   action: "actions",
   advance: "career",
   career: "career",
   careers: "career",
+  characteristics: "characteristics",
+  karakteristika: "characteristics",
   faner: "skills",
   features: "features",
   inventory: "inventory",
@@ -32,7 +35,7 @@ const tabAliases: Record<string, MainTab> = {
 export type CampaignCharacterRoute = {
   campaignId: string;
   characterId: string;
-  tab: MainTab;
+  tab: MobileTabMenuTarget;
 };
 
 const decodePathSegment = (value: string) => {
@@ -48,7 +51,7 @@ export function parseCampaignCharacterPath(pathname: string): CampaignCharacterR
   const match = campaignCharacterRoutePattern.exec(pathname);
   if (!match) return null;
 
-  const [, campaignIdSegment, characterIdSegment, tabSegment = mainTabPathSegments.skills] = match;
+  const [, campaignIdSegment, characterIdSegment, tabSegment = mainTabPathSegments.characteristics] = match;
   const campaignId = decodePathSegment(campaignIdSegment);
   const characterId = decodePathSegment(characterIdSegment);
   const tab = tabAliases[tabSegment.toLowerCase()];
@@ -69,7 +72,7 @@ export function buildCampaignCharacterPath({
 }: {
   campaignId?: string;
   characterId: string;
-  tab: MainTab;
+  tab: MobileTabMenuTarget;
 }) {
   return `/${encodePathSegment(campaignId)}/${encodePathSegment(characterId)}/${mainTabPathSegments[tab]}`;
 }

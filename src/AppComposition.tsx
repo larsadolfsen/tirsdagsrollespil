@@ -331,6 +331,7 @@ export function AppComposition() {
     selectMobileMainView,
   } = useCampaignRouteSync({
     activeMainTab,
+    activeMobileMainView,
     availableCharacters,
     handleMobileMainViewSelect,
     selectedCharacterId,
@@ -347,7 +348,9 @@ export function AppComposition() {
 
     const route = getCurrentCampaignRoute();
     if (route?.characterId === characterData.id) {
-      setActiveMainTab(route.tab);
+      if (route.tab !== "characteristics") {
+        setActiveMainTab(route.tab);
+      }
       setActiveMobileMainView(route.tab);
     }
   }, [characterData.id, getCurrentCampaignRoute, resetDiceRoller, setActiveMainTab, setActiveMobileMainView]);
@@ -772,24 +775,7 @@ export function AppComposition() {
     })
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
   
-  // For untrained grouped skills, deduplicate to show parent skill once
-  const untrainedBasicSkillRows = (() => {
-    const untrained = basicSkillRows.filter((skill) => !skill.isTrained);
-    const seen = new Set<string>();
-    return untrained.filter((skill) => {
-      // For grouped skills, use the skill ID to deduplicate
-      const key = skill.isGrouped ? skill.skillId : skill.key;
-      if (seen.has(key)) {
-        return false;
-      }
-      seen.add(key);
-      // For grouped skills, show parent skill name
-      if (skill.isGrouped) {
-        skill.displayName = skill.skillName;
-      }
-      return true;
-    });
-  })();
+  const untrainedBasicSkillRows = basicSkillRows.filter((skill) => !skill.isTrained);
   
   const trainedBasicSkillRows = basicSkillRows.filter((skill) => skill.isTrained);
   const advancedSkillRows = characterSkills
@@ -1210,7 +1196,7 @@ export function AppComposition() {
           <section className={`w-full flex-col overflow-visible self-start min-h-[500px] p-0! md:flex md:flex-1 md:overflow-hidden md:rounded-lg md:border md:border-wfrp-border md:bg-wfrp-surface md:shadow-lg ${
             activeMobileMainView === "characteristics" ? "hidden" : "flex"
           }`}>
-              <ScrollableTabStrip className="hidden sm:flex px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
+              <ScrollableTabStrip className="hidden sm:flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
                 <div className="mx-auto flex w-full min-w-max justify-center gap-4 lg:mx-0 lg:w-max lg:min-w-0 lg:justify-start lg:gap-6">
                   {mainTabOptions.map((tab) => (
                     <button

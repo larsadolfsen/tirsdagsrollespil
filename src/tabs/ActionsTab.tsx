@@ -80,6 +80,7 @@ function ActionSection({
 }: {
   children: ReactNode;
   gridClassName: string;
+  key?: string;
   sectionLabel: string;
   valueLabels: string[];
 }) {
