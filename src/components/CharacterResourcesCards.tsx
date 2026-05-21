@@ -1,4 +1,4 @@
-import { HeaderResourceSlider } from "./ui";
+import { FateResolveCard } from "./FateResolveCard";
 import { WoundsCorruptionCard } from "./WoundsCorruptionCard";
 import type { CoinKey } from "../tabs/tabTypes";
 import type { Characteristic } from "../types";
@@ -30,7 +30,6 @@ type CharacterResourcesCardsProps = {
   onOpenRoll?: (characteristic: { key: Characteristic["key"]; label: string }) => void;
 };
 
-const sliderContentClassName = "flex min-w-0 flex-1 flex-col gap-1";
 const coinRows = [
   ["gc", "Gold Crowns", "bg-wfrp-gold"],
   ["s", "Silver Shillings", "bg-wfrp-silver"],
@@ -72,50 +71,19 @@ export function CharacterResourcesCards({
         woundsMax={woundsMax}
       />
 
-      <section className="wfrp-card overflow-hidden p-0!">
-        <div className="wfrp-card-tab-header">
-          <h3 className="wfrp-panel-title">FATE & RESILIENCE</h3>
-        </div>
-        <div className="wfrp-card-tab-body space-y-5 px-4 py-4">
-          <div className="grid grid-cols-1 gap-3">
-            <HeaderResourceSlider
-              label="Fate"
-              current={fateCurrent}
-              max={fateMax}
-              onAdjust={onAdjustFate}
-              barClassName="bg-wfrp-amber"
-              contentClassName={sliderContentClassName}
-            />
-            <HeaderResourceSlider
-              label="Fortune"
-              current={fortuneCurrent}
-              max={fateCurrent}
-              onAdjust={onAdjustFortune}
-              barClassName="bg-wfrp-amber"
-              contentClassName={sliderContentClassName}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 gap-3">
-            <HeaderResourceSlider
-              label="Resilience"
-              current={resilienceCurrent}
-              max={resilienceMax}
-              onAdjust={onAdjustResilience}
-              barClassName="bg-wfrp-aqua"
-              contentClassName={sliderContentClassName}
-            />
-            <HeaderResourceSlider
-              label="Resolve"
-              current={resolveCurrent}
-              max={resolveMax}
-              onAdjust={onAdjustResolve}
-              barClassName="bg-wfrp-aqua"
-              contentClassName={sliderContentClassName}
-            />
-          </div>
-        </div>
-      </section>
+      <FateResolveCard
+        fateCurrent={fateCurrent}
+        fateMax={fateMax}
+        fortuneCurrent={fortuneCurrent}
+        onAdjustFate={onAdjustFate}
+        onAdjustFortune={onAdjustFortune}
+        onAdjustResilience={onAdjustResilience}
+        onAdjustResolve={onAdjustResolve}
+        resilienceCurrent={resilienceCurrent}
+        resilienceMax={resilienceMax}
+        resolveCurrent={resolveCurrent}
+        resolveMax={resolveMax}
+      />
 
       <section className="wfrp-card overflow-hidden p-0!">
         <div className="wfrp-card-tab-header">
