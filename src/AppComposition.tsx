@@ -1087,7 +1087,7 @@ export function AppComposition() {
           {/* Layout for Characteristics and Skills */}
           {/* Characteristics Section */}
           <section className={activeMobileMainView === "characteristics" ? "block" : "hidden md:block"}>
-            <div className="grid grid-cols-5 md:grid-cols-10 gap-2 lg:gap-3">
+            <div className="grid grid-cols-5 gap-1 md:grid-cols-10 md:gap-2 lg:gap-3">
               {(UI_LABELS.CHARACTERISTICS as Characteristic[]).map((c) => {
                 const value = attributes[c.key] || 0;
                 const bonus = Math.floor(value / 10);
@@ -1096,26 +1096,23 @@ export function AppComposition() {
                     key={c.key} 
                     className="flex flex-col items-center group/char"
                   >
-                    <span className="text-[10px] lg:text-[11px] font-bold text-gray-400 uppercase tracking-tighter mb-1.5 transition-colors group-hover/char:text-wfrp-gold whitespace-nowrap">
+                    <span className="mb-1 text-[9px] font-bold uppercase tracking-tighter text-gray-400 transition-colors group-hover/char:text-wfrp-gold lg:mb-1.5 lg:text-[11px]">
                       {c.label}
                     </span>
                     
                     <div className="relative">
                       <button 
                         onClick={() => handleRoll(c)}
-                        className="w-[60px] lg:w-[80px] h-[80px] lg:h-[100px] flex flex-col items-center justify-center bg-wfrp-surface border-2 border-wfrp-border rounded-lg shadow-lg hover:border-wfrp-gold/60 hover:bg-wfrp-surface-hover transition-all cursor-pointer active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                        className="flex h-[72px] w-14 flex-col items-center justify-center rounded-lg border-2 border-wfrp-border bg-wfrp-surface shadow-lg transition-all hover:border-wfrp-gold/60 hover:bg-wfrp-surface-hover active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 lg:h-[100px] lg:w-[80px]"
                         aria-label={`Roll for ${c.label}`}
                       >
                         <div className="text-xl lg:text-3xl font-bold tracking-tight transition-colors group-hover/char:text-wfrp-gold">
                           {value}
                         </div>
-                        <div className="absolute top-0 right-1.5 text-[8px] font-bold text-gray-700 transition-colors group-hover/char:text-wfrp-gold/30">
-                          {c.key}
-                        </div>
                       </button>
 
-                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full border-2 border-wfrp-border bg-wfrp-surface flex items-center justify-center z-10 transition-colors group-hover/char:border-wfrp-gold/40">
-                        <span className="text-[11px] font-bold text-gray-400 group-hover/char:text-wfrp-gold/60">
+                      <div className="absolute -bottom-1.5 left-1/2 z-10 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full border-2 border-wfrp-border bg-wfrp-surface transition-colors group-hover/char:border-wfrp-gold/40 lg:-bottom-2 lg:h-8 lg:w-8">
+                        <span className="text-[10px] font-bold text-gray-400 group-hover/char:text-wfrp-gold/60 lg:text-[11px]">
                           {bonus}
                         </span>
                       </div>
