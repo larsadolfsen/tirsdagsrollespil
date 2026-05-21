@@ -912,8 +912,17 @@ export function AppComposition() {
               setIsMobilePortraitMenuOpen(false);
               setIsSpellShopOpen(true);
             },
-          }
-        : null;
+        }
+      : null;
+
+  const navigateMobileMainView = (direction: -1 | 1) => {
+    const currentIndex = mobileTabMenuOptions.findIndex((option) => option.id === activeMobileMainView);
+    const safeCurrentIndex = currentIndex >= 0 ? currentIndex : 0;
+    const nextIndex =
+      (safeCurrentIndex + direction + mobileTabMenuOptions.length) % mobileTabMenuOptions.length;
+
+    selectMobileMainView(mobileTabMenuOptions[nextIndex].id);
+  };
 
   if (isCharacterBuilderOpen) {
     return (
@@ -1082,6 +1091,8 @@ export function AppComposition() {
               />
             )}
             mobileTitle={mobilePageTitleByView[activeMobileMainView]}
+            onMobileNextView={() => navigateMobileMainView(1)}
+            onMobilePreviousView={() => navigateMobileMainView(-1)}
           >
 
           {/* Layout for Characteristics and Skills */}
