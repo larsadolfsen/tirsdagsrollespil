@@ -220,7 +220,7 @@
 }
 
 @utility wfrp-subpanel-header {
-  @apply border-b border-wfrp-border bg-card px-2 py-1 sm:px-3;
+  @apply border-y border-wfrp-border bg-card px-2 py-1 sm:px-3;
 }
 
 @utility wfrp-panel-copy {
@@ -320,6 +320,17 @@ body {
 .wfrp-card [class~="border-2"][class*="border-wfrp"] {
   border-color: var(--color-wfrp-border);
   border-width: 1px;
+}
+
+@media (max-width: 767px) {
+  .wfrp-subpanel-shell:has(> .wfrp-subpanel-header + .divide-y) {
+    overflow-x: auto;
+  }
+
+  .wfrp-subpanel-shell:has(> .wfrp-subpanel-header + .divide-y) > .wfrp-subpanel-header,
+  .wfrp-subpanel-shell:has(> .wfrp-subpanel-header + .divide-y) > .divide-y {
+    min-width: max-content;
+  }
 }
 
 section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] {

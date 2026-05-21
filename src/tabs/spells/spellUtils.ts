@@ -34,6 +34,8 @@ export function formatSpellRange(range: string, willpower: number, willpowerBonu
   return range
     .replace(/Willpower Bonus/gi, `${willpowerBonus}`)
     .replace(/Willpower/gi, `${willpower}`)
+    .replace(/\byards\b/gi, "yd")
+    .replace(/\byard\b/gi, "yd")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -42,7 +44,7 @@ export function formatSpellTarget(target: string, willpower: number, willpowerBo
   return target
     .replace(/Willpower Bonus/gi, `${willpowerBonus}`)
     .replace(/Willpower/gi, `${willpower}`)
-    .replace(/\(\s*(\d+)\s+yards\s*\)/gi, "($1 yards)")
+    .replace(/\(\s*(\d+)\s+yards\s*\)/gi, "($1 yd)")
     .replace(/\s+/g, " ")
     .trim();
 }

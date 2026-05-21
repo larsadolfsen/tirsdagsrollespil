@@ -22,6 +22,7 @@ type SyncRouteOptions = {
   characterId?: string;
   tab?: MobileTabMenuTarget;
   mode?: "push" | "replace";
+  omitDefaultTab?: boolean;
 };
 
 const getCurrentPathname = () => window.location.pathname;
@@ -44,16 +45,23 @@ export function useCampaignRouteSync({
     characterId = selectedCharacterId,
     tab = activeMobileMainView === "characteristics" ? activeMobileMainView : activeMainTab,
     mode = "replace",
+    omitDefaultTab = currentCampaignRoute.current?.hasExplicitTab === false,
   }: SyncRouteOptions = {}) => {
     const campaignId = currentCampaignRoute.current?.campaignId ?? defaultCampaignId;
     const nextPath = buildCampaignCharacterPath({
       campaignId,
       characterId,
       tab,
+      omitDefaultTab,
     });
     const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
 
-    currentCampaignRoute.current = { campaignId, characterId, tab };
+    currentCampaignRoute.current = {
+      campaignId,
+      characterId,
+      tab,
+      hasExplicitTab: !omitDefaultTab,
+    };
 
     if (getCurrentPathname() === nextPath) {
       return;
@@ -81,7 +89,7 @@ export function useCampaignRouteSync({
       if (route.tab !== "characteristics") {
         setActiveMainTab(route.tab);
       }
-      setActiveMobileMainView(route.tab);
+      setActiveMobileMainView(route.hasExplicitTab ? route.tab : "characteristics");
     };
 
     applyRoute(getCurrentPathname());
@@ -99,13 +107,13 @@ export function useCampaignRouteSync({
   }, [syncCampaignRoute]);
 
   const selectMainTab = useCallback((tab: MainTab) => {
-    syncCampaignRoute({ tab, mode: "push" });
+    syncCampaignRoute({ tab, mode: "push", omitDefaultTab: false });
     setActiveMainTab(tab);
     setActiveMobileMainView(tab);
   }, [setActiveMainTab, setActiveMobileMainView, syncCampaignRoute]);
 
   const selectMobileMainView = useCallback((target: MobileTabMenuTarget) => {
-    syncCampaignRoute({ tab: target, mode: "push" });
+    syncCampaignRoute({ tab: target, mode: "push", omitDefaultTab: false });
     handleMobileMainViewSelect(target);
   }, [handleMobileMainViewSelect, syncCampaignRoute]);
 

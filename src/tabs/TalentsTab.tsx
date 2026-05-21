@@ -3,6 +3,8 @@ import type { ResolvedCharacterTalent } from "../data/characters/resolved";
 
 type TalentEffect = NonNullable<ResolvedCharacterTalent["effects"]>[number];
 
+const talentGridClass = "grid-cols-[minmax(0,1fr)_72px] md:grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)]";
+
 export function TalentsTab({
   characterTalentRows,
   openTalentInfo,
@@ -18,26 +20,26 @@ export function TalentsTab({
     <div className="flex-1 overflow-y-auto p-2">
       {characterTalentRows.length > 0 ? (
         <SheetDataPanel>
-          <SheetDataHeader className="grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)]">
+          <SheetDataHeader className={talentGridClass}>
             <span className="wfrp-table-label text-left">Talent</span>
             <span className="wfrp-table-label text-center">Taken</span>
-            <span className="wfrp-table-label text-left">Description</span>
+            <span className="hidden wfrp-table-label text-left md:block">Description</span>
           </SheetDataHeader>
           <SheetDataTable>
             {characterTalentRows.map(({ talent, count }) => (
               <SheetDataButtonRow
                 key={talent.name}
                 onClick={() => openTalentInfo(talent.name)}
-                className="group grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)] items-start"
+                className={`group ${talentGridClass} items-start`}
                 aria-label={`Open ${talent.name} talent rule`}
               >
-                <span className="min-w-0 text-xs font-semibold text-gray-400 transition-colors group-hover:text-wfrp-gold">
+                <span className="min-w-0 truncate text-xs font-semibold text-gray-400 transition-colors group-hover:text-wfrp-gold md:whitespace-normal">
                   {talent.name}
                 </span>
                 <span className="min-w-0 text-center text-xs leading-relaxed text-gray-500">
                   {count}/{getTalentMaxDisplay(talent.max)}
                 </span>
-                <span className="min-w-0 text-xs leading-relaxed text-gray-500">
+                <span className="hidden min-w-0 text-xs leading-relaxed text-gray-500 md:block">
                   {talent.effects?.length
                     ? talent.effects.map(formatTalentEffect).join("; ")
                     : talent.description}

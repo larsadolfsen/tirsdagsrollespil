@@ -3,6 +3,15 @@ import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
 import { AdvancementSection, InlineSubtabs } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
+import {
+  SheetDataAccordionDetails,
+  SheetDataAccordionRow,
+  SheetDataDisclosureChevron,
+  SheetDataHeader,
+  SheetDataHeaderCell,
+  SheetDataPanel,
+  SheetDataTable,
+} from "../components/wfrp";
 import { useGameSessionContext } from "../context/GameSessionContext";
 import type {
   ResolvedCharacterRecord,
@@ -89,6 +98,9 @@ const careerSubtabOptions: Array<{ id: CareerSubtab; label: string }> = [
   { id: "talents", label: "Talents" },
 ];
 
+const careerXpGridClass = "grid-cols-[minmax(0,1fr)_42px_42px_minmax(88px,auto)_36px] md:grid-cols-[minmax(0,1fr)_72px_72px_minmax(150px,auto)_48px]";
+const careerPathGridClass = "grid-cols-[minmax(0,1fr)_52px_40px_36px] md:grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px_48px]";
+
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
 
 export function CareerTab({
@@ -139,6 +151,55 @@ export function CareerTab({
     setXpCurrent((current) => Math.max(0, current + amount));
     setXpTotal((current) => Math.max(0, current + amount));
   };
+
+  const xpAdjustActions = (
+    <div className="flex flex-wrap justify-end gap-1 [&_.wfrp-stepper-btn]:h-6 [&_.wfrp-stepper-btn]:min-w-10 [&_.wfrp-stepper-btn]:px-1.5">
+      {canRemove100Xp && (
+        <button
+          onClick={(event) => {
+            event.preventDefault();
+            adjustXp(-100);
+          }}
+          className="wfrp-stepper-btn w-auto text-[10px] font-black"
+          aria-label="Remove 100 current and total XP"
+        >
+          -100
+        </button>
+      )}
+      {canRemove10Xp && (
+        <button
+          onClick={(event) => {
+            event.preventDefault();
+            adjustXp(-10);
+          }}
+          className="wfrp-stepper-btn w-auto text-[10px] font-black"
+          aria-label="Remove 10 current and total XP"
+        >
+          -10
+        </button>
+      )}
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          adjustXp(10);
+        }}
+        className="wfrp-stepper-btn w-auto text-[10px] font-black"
+        aria-label="Add 10 current and total XP"
+      >
+        +10
+      </button>
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          adjustXp(100);
+        }}
+        className="wfrp-stepper-btn w-auto text-[10px] font-black"
+        aria-label="Add 100 current and total XP"
+      >
+        +100
+      </button>
+    </div>
+  );
 
   const [isAdvancementEditMode, setIsAdvancementEditMode] = useState(false);
   const [characteristicInitialDrafts, setCharacteristicInitialDrafts] = useState<Record<string, number>>({});
@@ -219,149 +280,173 @@ export function CareerTab({
             Save
           </button>
         </div>
-        <div className="wfrp-subpanel-shell flex min-w-0 flex-col">
-          <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_72px_72px_minmax(150px,auto)] items-center gap-2 lg:gap-3">
-            <span className="wfrp-table-label text-left">XP</span>
-            <span className="wfrp-table-label text-center">Current</span>
-            <span className="wfrp-table-label text-center">Total</span>
-            <span className="wfrp-table-label text-right">Adjust</span>
-          </div>
-          <div className="divide-y divide-white/5">
-            <div className="grid grid-cols-[minmax(0,1fr)_72px_72px_minmax(150px,auto)] items-center gap-2 lg:gap-3 wfrp-table-row">
-              <div className="wfrp-list-cell-strong text-left">Experience</div>
-              <div className="wfrp-list-cell-strong text-center font-mono text-white">
-                {pendingAvailableXp}
-              </div>
-              <div className="wfrp-list-cell-strong text-center font-mono">
-                {characterData.xpTotal}
-              </div>
-              <div className="flex flex-wrap justify-end gap-1">
-                {canRemove100Xp && (
-                  <button
-                    onClick={() => adjustXp(-100)}
-                    className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-                    aria-label="Remove 100 current and total XP"
-                  >
-                    -100
-                  </button>
-                )}
-                {canRemove10Xp && (
-                  <button
-                    onClick={() => adjustXp(-10)}
-                    className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-                    aria-label="Remove 10 current and total XP"
-                  >
-                    -10
-                  </button>
-                )}
-                <button
-                  onClick={() => adjustXp(10)}
-                  className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-                  aria-label="Add 10 current and total XP"
-                >
-                  +10
-                </button>
-                <button
-                  onClick={() => adjustXp(100)}
-                  className="wfrp-stepper-btn w-auto px-2 text-[10px] font-black"
-                  aria-label="Add 100 current and total XP"
-                >
-                  +100
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SheetDataPanel>
+          <SheetDataHeader className={careerXpGridClass}>
+            <SheetDataHeaderCell className="text-[9px] md:text-[10px]">XP</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="text-[9px] md:text-[10px]" align="center">Current</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="text-[9px] md:text-[10px]" align="center">Total</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="text-[9px] md:text-[10px]" align="right">Adjust</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="text-[9px] md:text-[10px]" align="center">More</SheetDataHeaderCell>
+          </SheetDataHeader>
+          <SheetDataTable>
+            <SheetDataAccordionRow
+              summaryClassName={careerXpGridClass}
+              contentClassName="px-3 pb-4 pt-1 md:px-4"
+              summary={(
+                <>
+                  <div className="wfrp-list-cell-strong min-w-0 truncate text-left">Experience</div>
+                  <div className="wfrp-list-cell-strong text-center font-mono text-white">
+                    {pendingAvailableXp}
+                  </div>
+                  <div className="wfrp-list-cell-strong text-center font-mono">
+                    {characterData.xpTotal}
+                  </div>
+                  {xpAdjustActions}
+                  <SheetDataDisclosureChevron />
+                </>
+              )}
+            >
+              <SheetDataAccordionDetails
+                description="Current and total XP are adjusted together."
+                rows={[
+                  { label: "Current XP", value: pendingAvailableXp },
+                  { label: "Total XP", value: characterData.xpTotal },
+                ]}
+              />
+            </SheetDataAccordionRow>
+          </SheetDataTable>
+        </SheetDataPanel>
       </div>
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4 no-scrollbar">
         {(activeCareerSubtab === "all" || activeCareerSubtab === "careers") && (
           <AdvancementSection title="Careers" meta="Current Path" hideHeader>
-            <div className="wfrp-subpanel-shell flex flex-col">
-              <div className="wfrp-subpanel-header grid grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px] gap-2 lg:gap-3 items-center">
-                <span className="wfrp-table-label text-left">Careers</span>
-                <span className="wfrp-table-label text-left">Progress</span>
-                <span className="wfrp-table-label text-left">Tier</span>
-                <span className="wfrp-table-label text-center">Cost</span>
-                <span className="wfrp-table-label text-right">Advance</span>
-              </div>
-              <div className="divide-y divide-white/5">
+            <SheetDataPanel>
+              <SheetDataHeader className={careerPathGridClass}>
+                <SheetDataHeaderCell>Career</SheetDataHeaderCell>
+                <SheetDataHeaderCell className="hidden md:block">Progress</SheetDataHeaderCell>
+                <SheetDataHeaderCell className="hidden md:block">Tier</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="center">Cost</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="right">Advance</SheetDataHeaderCell>
+                <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
+              </SheetDataHeader>
+              <SheetDataTable>
                 {careerRows.map((rankRecord) => {
                   const isActiveCareerRow = rankRecord.rank === displayedCareerRank;
                   const rowProgress = isActiveCareerRow ? advancementProgress : 100;
+                  const costDisplay = isActiveCareerRow ? nextCareerAdvanceCost ?? "-" : "-";
+                  const advanceAction = isActiveCareerRow ? (
+                    <button
+                      onClick={(event) => {
+                        event.preventDefault();
+                        increasePendingCareerRank();
+                      }}
+                      disabled={
+                        !nextCareerRankRecord ||
+                        nextCareerAdvanceCost === null ||
+                        pendingAvailableXp < nextCareerAdvanceCost
+                      }
+                      className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
+                      aria-label={`Advance ${characterData.career} from rank ${rankRecord.rank}`}
+                      title="Advance career"
+                    >
+                      <Plus size={12} />
+                    </button>
+                  ) : (
+                    <span className="wfrp-list-cell text-right" aria-label="Read-only career rank">
+                      -
+                    </span>
+                  );
 
                   return (
-                    <div
+                    <SheetDataAccordionRow
                       key={rankRecord.rank}
-                      className="grid grid-cols-[minmax(0,1fr)_minmax(180px,1.4fr)_minmax(0,1fr)_62px_74px] items-center gap-2 lg:gap-3 wfrp-table-row"
+                      summaryClassName={careerPathGridClass}
+                      contentClassName="px-3 pb-4 pt-1 md:px-4"
+                      summary={(
+                        <>
+                          <div className="min-w-0">
+                            <button
+                              onClick={(event) => {
+                                event.preventDefault();
+                                setActiveInfo({
+                                  type: "career",
+                                  name: `${characterData.career} ${toRoman(rankRecord.rank)}`,
+                                  extra: {
+                                    careerName: characterData.career,
+                                    tierName: rankRecord.name,
+                                    tierStatus: rankRecord.status,
+                                    rank: rankRecord.rank,
+                                    careerSkills: careerAdvancementData.skills,
+                                    careerTalents: careerAdvancementData.talents,
+                                  },
+                                });
+                                clearRollCharacteristic();
+                              }}
+                              className="wfrp-skill-link truncate text-left"
+                            >
+                              {characterData.career} {toRoman(rankRecord.rank)}
+                            </button>
+                          </div>
+                          <div className="hidden min-w-0 md:block">
+                            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden shadow-inner">
+                              <div
+                                className="h-full bg-white/30 transition-all duration-500"
+                                style={{ width: `${rowProgress}%` }}
+                                role="progressbar"
+                                aria-valuenow={rowProgress}
+                                aria-valuemin={0}
+                                aria-valuemax={100}
+                                aria-label={`${characterData.career} ${toRoman(rankRecord.rank)} progress`}
+                              />
+                            </div>
+                          </div>
+                          <div className="hidden wfrp-list-cell-strong text-left truncate md:block">
+                            {rankRecord.name}
+                          </div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">
+                            {costDisplay}
+                          </div>
+                          <div className="flex justify-end">{advanceAction}</div>
+                          <SheetDataDisclosureChevron />
+                        </>
+                      )}
                     >
-                      <div className="min-w-0">
-                        <button
-                          onClick={() => {
-                            setActiveInfo({
-                              type: "career",
-                              name: `${characterData.career} ${toRoman(rankRecord.rank)}`,
-                              extra: {
-                                careerName: characterData.career,
-                                tierName: rankRecord.name,
-                                tierStatus: rankRecord.status,
-                                rank: rankRecord.rank,
-                                careerSkills: careerAdvancementData.skills,
-                                careerTalents: careerAdvancementData.talents,
-                              },
-                            });
-                            clearRollCharacteristic();
-                          }}
-                          className="wfrp-skill-link truncate text-left"
-                        >
-                          {characterData.career} {toRoman(rankRecord.rank)}
-                        </button>
-                      </div>
-                      <div className="min-w-0">
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden shadow-inner">
-                          <div
-                            className="h-full bg-white/30 transition-all duration-500"
-                            style={{ width: `${rowProgress}%` }}
-                            role="progressbar"
-                            aria-valuenow={rowProgress}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                            aria-label={`${characterData.career} ${toRoman(rankRecord.rank)} progress`}
-                          />
+                      <SheetDataAccordionDetails
+                        rows={[
+                          {
+                            label: "Progress",
+                            value: `${Math.round(rowProgress)}%`,
+                          },
+                          {
+                            label: "Tier",
+                            value: rankRecord.name,
+                          },
+                          {
+                            label: "Status",
+                            value: rankRecord.status,
+                          },
+                        ]}
+                      >
+                        <div className="pt-2 md:hidden">
+                          <div className="h-1.5 bg-white/5 rounded-full overflow-hidden shadow-inner">
+                            <div
+                              className="h-full bg-white/30 transition-all duration-500"
+                              style={{ width: `${rowProgress}%` }}
+                              role="progressbar"
+                              aria-valuenow={rowProgress}
+                              aria-valuemin={0}
+                              aria-valuemax={100}
+                              aria-label={`${characterData.career} ${toRoman(rankRecord.rank)} progress`}
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <div className="wfrp-list-cell-strong text-left truncate">
-                        {rankRecord.name}
-                      </div>
-                      <div className="wfrp-list-cell-strong text-center font-mono">
-                        {isActiveCareerRow ? nextCareerAdvanceCost ?? "-" : "-"}
-                      </div>
-                      <div className="flex justify-end">
-                        {isActiveCareerRow ? (
-                          <button
-                            onClick={increasePendingCareerRank}
-                            disabled={
-                              !nextCareerRankRecord ||
-                              nextCareerAdvanceCost === null ||
-                              pendingAvailableXp < nextCareerAdvanceCost
-                            }
-                            className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
-                            aria-label={`Advance ${characterData.career} from rank ${rankRecord.rank}`}
-                            title="Advance career"
-                          >
-                            <Plus size={12} />
-                          </button>
-                        ) : (
-                          <span className="wfrp-list-cell text-right" aria-label="Read-only career rank">
-                            -
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                      </SheetDataAccordionDetails>
+                    </SheetDataAccordionRow>
                   );
                 })}
-              </div>
-            </div>
+              </SheetDataTable>
+            </SheetDataPanel>
           </AdvancementSection>
         )}
 

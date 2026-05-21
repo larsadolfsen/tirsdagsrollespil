@@ -1,13 +1,9 @@
-import { useEffect, useRef } from "react";
 import type { Dispatch, MutableRefObject, ReactNode, SetStateAction } from "react";
 import { WfrpSidebar } from "./wfrp";
 import type {
   ResolvedCharacterRecord,
-  ResolvedCharacterEquipment,
   ResolvedCharacterSkill,
 } from "../data/characters/resolved";
-import { armourFlaws, armourQualities } from "../data/rules/wfrp4e/armourProperties";
-import { formatItemValue, getCharacterSkillKey } from "../lib/gameSession";
 import type { RulesIndex } from "../lib/gameSession";
 import { formatTalentEffect, getTalentLevel } from "../lib/talentEffects";
 import type { Characteristic, Ruleset } from "../types";
@@ -35,210 +31,17 @@ type RuleStat = {
 
 type RuleDetailSection = {
   title: ReactNode;
-  body?: ReactNode;
   entries?: Array<{
     title: ReactNode;
     description?: ReactNode;
   }>;
 };
 
-const compactStats = (stats: Array<RuleStat | false | null | undefined>) =>
-  stats.filter(Boolean) as RuleStat[];
-
-const sidebarTitleByType: Record<ActiveInfoState["type"], string> = {
-  skill: "Skill Compendium",
+const sidebarTitleByType: Partial<Record<ActiveInfoState["type"], string>> = {
   talent: "Talent Ledger",
   career: "Career Ledger",
   characteristic: "Characteristic Ledger",
-  equipment: "Equipment Manifest",
-  property: "Weapon Properties",
-  attack: "Combat Action",
-  spell: "Grimoire",
 };
-
-const armourLocationLabels: Record<string, string> = {
-  head: "Head",
-  arms: "Arms",
-  body: "Body",
-  legs: "Legs",
-};
-
-const formatArmourLocations = (locations?: string[]) =>
-  locations?.map((location) => armourLocationLabels[location] ?? location).join(", ");
-
-const formatAvailability = (availability?: string) =>
-  availability
-    ? availability.charAt(0).toUpperCase() + availability.slice(1)
-    : undefined;
-
-const formatArmourCategory = (category?: string) =>
-  category
-    ?.split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-
-const formatArmourFeatureNames = (features?: { id: string; value?: number | string }[]) =>
-  features
-    ?.map((feature) => {
-      const definition = armourQualities[feature.id] ?? armourFlaws[feature.id];
-      return feature.value !== undefined
-        ? `${definition?.name ?? feature.id} ${feature.value}`
-        : definition?.name ?? feature.id;
-    })
-    .join(", ");
-
-const formatArmourPenalty = (
-  penalty: { skillId: string; value: number },
-  ruleset: Ruleset,
-) => {
-  const skillName = ruleset.skills.find((skill) => skill.id === penalty.skillId)?.name ?? penalty.skillId;
-  return `${penalty.value > 0 ? "+" : ""}${penalty.value} ${skillName}`;
-};
-
-const getEquipmentStats = (
-  item: ResolvedCharacterEquipment,
-  ruleset: Ruleset,
-) =>
-  compactStats([
-    { label: "Type", value: item.type },
-    { label: "Price", value: formatItemValue(item) },
-    item.armourLocations?.length
-      ? { label: "Locations", value: formatArmourLocations(item.armourLocations) }
-      : null,
-    item.armourAps !== undefined ? { label: "APs", value: item.armourAps } : null,
-    item.armourCategory
-      ? { label: "Armour Type", value: formatArmourCategory(item.armourCategory) }
-      : null,
-    { label: "Enc", value: item.encumbrance },
-    item.carries !== undefined ? { label: "Carries", value: item.carries } : null,
-    item.availability
-      ? { label: "Availability", value: formatAvailability(item.availability) }
-      : null,
-    item.armourPenalties?.length
-      ? {
-          label: "Penalty",
-          value: item.armourPenalties
-            .map((penalty) => formatArmourPenalty(penalty, ruleset))
-            .join(", "),
-        }
-      : null,
-    item.armourQualities?.length
-      ? { label: "Qualities", value: formatArmourFeatureNames(item.armourQualities) }
-      : null,
-    item.armourFlaws?.length
-      ? { label: "Flaws", value: formatArmourFeatureNames(item.armourFlaws) }
-      : null,
-    { label: "Equipped", value: item.equipped ? "Yes" : "No" },
-  ]);
-
-const getEquipmentSections = (item: ResolvedCharacterEquipment): RuleDetailSection[] => [
-    ...(item.armourQualities?.length
-      ? [
-          {
-            title: "Qualities",
-            entries: item.armourQualities.map((quality) => {
-              const definition = armourQualities[quality.id];
-              return {
-                title: `${definition?.name ?? quality.id}${
-                  quality.value !== undefined ? ` ${quality.value}` : ""
-                }`,
-                description: definition?.description,
-              };
-            }),
-          },
-        ]
-      : []),
-    ...(item.armourFlaws?.length
-      ? [
-          {
-            title: "Flaws",
-            entries: item.armourFlaws.map((flaw) => {
-              const definition = armourFlaws[flaw.id];
-              return {
-                title: `${definition?.name ?? flaw.id}${
-                  flaw.value !== undefined ? ` ${flaw.value}` : ""
-                }`,
-                description: definition?.description,
-              };
-            }),
-          },
-        ]
-      : []),
-    ...(item.armourNotes?.length
-      ? [
-          {
-            title: "Notes",
-            entries: item.armourNotes.map((note) => ({
-              title: note,
-            })),
-          },
-        ]
-      : []),
-  ];
-
-const getSpellStats = (
-  spell: ResolvedCharacterRecord["spells"][number],
-  formatSpellDuration: (duration: string) => string,
-) =>
-  compactStats([
-    { label: "CN", value: spell.cn },
-    { label: "Duration", value: formatSpellDuration(spell.duration) },
-    { label: "Range", value: spell.range },
-    { label: "Target", value: spell.target },
-    spell.damage && spell.damage !== "-" ? { label: "Damage", value: spell.damage } : null,
-  ]);
-
-function RuleSidebarShell({
-  activeInfo,
-  onClose,
-  scrollContainerRef,
-  children,
-}: {
-  activeInfo: ActiveInfoState | null;
-  onClose: () => void;
-  scrollContainerRef: MutableRefObject<HTMLDivElement | null>;
-  children: ReactNode;
-}) {
-  return (
-    <WfrpSidebar
-      isOpen={Boolean(activeInfo)}
-      motionKey="info-sidebar"
-      onClose={onClose}
-      className="w-[400px]"
-      contentClassName="scroll-smooth pb-[80vh]"
-      title={activeInfo ? sidebarTitleByType[activeInfo.type] : ""}
-      kicker="Knowledge is power"
-      closeLabel="Close sidebar"
-      contentRef={scrollContainerRef}
-    >
-      {children}
-    </WfrpSidebar>
-  );
-}
-
-function RuleSummaryPanel({
-  title,
-  subtitle,
-  stats,
-  children,
-}: {
-  title: ReactNode;
-  subtitle: ReactNode;
-  stats?: RuleStat[];
-  children?: ReactNode;
-}) {
-  return (
-    <div className="wfrp-subpanel rounded-lg p-5 flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <h3 className="wfrp-sidebar-title text-xl">{title}</h3>
-        <span className="wfrp-sidebar-section border-white/5 text-gray-500">{subtitle}</span>
-      </div>
-
-      {stats && stats.length > 0 && <RuleInfoTable rows={stats} />}
-      {children}
-    </div>
-  );
-}
 
 function RuleInfoTable({ rows }: { rows: RuleStat[] }) {
   return (
@@ -274,7 +77,6 @@ function RuleDetailSections({ sections }: { sections: RuleDetailSection[] }) {
       {sections.map((section) => (
         <div key={String(section.title)} className="flex flex-col gap-2">
           <RuleSectionTitle>{section.title}</RuleSectionTitle>
-          {section.body && <div className="text-gray-500">{section.body}</div>}
           {section.entries?.map((entry) => (
             <div key={String(entry.title)} className="flex flex-col gap-1">
               <span className="font-semibold text-gray-300">{entry.title}</span>
@@ -283,6 +85,30 @@ function RuleDetailSections({ sections }: { sections: RuleDetailSection[] }) {
           ))}
         </div>
       ))}
+    </div>
+  );
+}
+
+function RuleSummaryPanel({
+  title,
+  subtitle,
+  stats,
+  children,
+}: {
+  title: ReactNode;
+  subtitle: ReactNode;
+  stats?: RuleStat[];
+  children?: ReactNode;
+}) {
+  return (
+    <div className="wfrp-subpanel flex flex-col gap-5 rounded-lg p-5">
+      <div className="flex flex-col gap-1">
+        <h3 className="wfrp-sidebar-title text-xl">{title}</h3>
+        <span className="wfrp-sidebar-section border-white/5 text-gray-500">{subtitle}</span>
+      </div>
+
+      {stats && stats.length > 0 && <RuleInfoTable rows={stats} />}
+      {children}
     </div>
   );
 }
@@ -298,7 +124,6 @@ function RuleListEntry({
   details,
   children,
   innerRef,
-  descriptionClassName = "",
 }: {
   key?: string;
   title: ReactNode;
@@ -307,17 +132,16 @@ function RuleListEntry({
   details?: RuleStat[];
   children: ReactNode;
   innerRef?: (el: HTMLDivElement | null) => void;
-  descriptionClassName?: string;
 }) {
   return (
     <div
       ref={innerRef}
-      className={`p-4 border-b border-white/5 transition-all ${isActive ? "bg-wfrp-gold/5" : ""}`}
+      className={`border-b border-white/5 p-4 transition-all ${isActive ? "bg-wfrp-gold/5" : ""}`}
     >
-      <div className="flex items-start justify-between gap-4 mb-2">
+      <div className="mb-2 flex items-start justify-between gap-4">
         <div className="flex flex-col">
           <h3
-            className={`wfrp-sidebar-title text-base uppercase tracking-tight mb-0.5 ${
+            className={`wfrp-sidebar-title mb-0.5 text-base uppercase tracking-tight ${
               isActive ? "text-wfrp-gold" : "text-white"
             }`}
           >
@@ -326,7 +150,7 @@ function RuleListEntry({
           {meta && <span className="wfrp-sidebar-label">{meta}</span>}
         </div>
       </div>
-      <div className={`wfrp-sidebar-body ${descriptionClassName}`}>{children}</div>
+      <div className="wfrp-sidebar-body">{children}</div>
       {details && details.length > 0 && <RuleInfoTable rows={details} />}
     </div>
   );
@@ -336,181 +160,28 @@ export function InfoSidebar({
   activeInfo,
   setActiveInfo,
   characterData,
-  characterSkills,
   advancementTalentNames,
   ruleset,
-  rulesIndex,
   getCharacteristicDescription,
-  formatSpellDuration,
-  skillListRefs,
-  propertyListRefs,
   talentListRefs,
 }: InfoSidebarProps) {
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const equipmentListRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const spellListRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const attackProperties = Array.isArray(activeInfo?.extra?.properties)
-    ? activeInfo.extra.properties
-    : [];
-
-  useEffect(() => {
-    if (!activeInfo) {
-      return;
-    }
-
-    const refsByType: Partial<
-      Record<ActiveInfoState["type"], MutableRefObject<Record<string, HTMLDivElement | null>>>
-    > = {
-      skill: skillListRefs,
-      property: propertyListRefs,
-      talent: talentListRefs,
-      equipment: equipmentListRefs,
-      spell: spellListRefs,
-    };
-    const frame = window.requestAnimationFrame(() => {
-      const entry = refsByType[activeInfo.type]?.current[activeInfo.name];
-      const container = scrollContainerRef.current;
-      if (!entry || !container) {
-        return;
-      }
-
-      const entryTop = entry.getBoundingClientRect().top;
-      const containerTop = container.getBoundingClientRect().top;
-      container.scrollTop += entryTop - containerTop;
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [activeInfo, propertyListRefs, skillListRefs, talentListRefs]);
+  if (!activeInfo || !(activeInfo.type === "talent" || activeInfo.type === "career" || activeInfo.type === "characteristic")) {
+    return null;
+  }
 
   return (
-    <RuleSidebarShell
-      activeInfo={activeInfo}
+    <WfrpSidebar
+      isOpen={Boolean(activeInfo)}
+      motionKey="info-sidebar"
       onClose={() => setActiveInfo(null)}
-      scrollContainerRef={scrollContainerRef}
+      className="w-[400px]"
+      contentClassName="scroll-smooth pb-[80vh]"
+      title={sidebarTitleByType[activeInfo.type] ?? ""}
+      kicker="Knowledge is power"
+      closeLabel="Close sidebar"
     >
-      {activeInfo?.type === "attack" && (
-        <div className="p-6 flex flex-col gap-8">
-          <RuleSummaryPanel
-            title={activeInfo.name}
-            subtitle={activeInfo.extra?.weaponName || "Combat Action"}
-            stats={[
-              { label: "Type", value: activeInfo.extra?.weaponType || "Action" },
-              { label: "Roll", value: activeInfo.extra?.totalValue ?? "-" },
-              ...(activeInfo.extra?.range
-                ? [{ label: "Reach", value: activeInfo.extra.range }]
-                : []),
-              ...(activeInfo.extra?.damage !== undefined
-                ? [{ label: "Damage", value: activeInfo.extra.damage }]
-                : []),
-            ]}
-          >
-            <RuleDescription>
-              "
-              {rulesIndex.actionDescriptionByName[activeInfo.name] ||
-                "A standard combat maneuver. Consult the WFRP Core Rulebook for deep tactical situational rules."}
-              "
-            </RuleDescription>
-            {activeInfo.extra?.note && (
-              <p className="wfrp-sidebar-body mt-3 text-wfrp-gold/80">
-                {activeInfo.extra.note}
-              </p>
-            )}
-          </RuleSummaryPanel>
-
-          <div className="flex flex-col gap-4">
-            <RuleSectionTitle>Rule-Book Properties</RuleSectionTitle>
-            <div className="flex flex-col gap-2">
-              {attackProperties.map((prop: string) => (
-                <button
-                  key={prop}
-                  onClick={() => setActiveInfo({ type: "property", name: prop })}
-                  className="flex flex-col gap-2 p-4 bg-white/[0.02] border border-white/5 rounded-lg text-left group hover:border-wfrp-gold/40 hover:bg-white/[0.04] transition-all cursor-pointer shadow-inner"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="wfrp-sidebar-body font-bold text-gray-300 group-hover:text-wfrp-gold transition-colors">
-                      {prop}
-                    </span>
-                  </div>
-                  <p className="wfrp-sidebar-body text-gray-500 line-clamp-2">
-                    {rulesIndex.propertyDescriptionByName[prop] ||
-                      "No sanctioned rules found for this property."}
-                  </p>
-                </button>
-              ))}
-              {attackProperties.length === 0 && (
-                <p className="text-[10px] text-gray-700 italic px-2">
-                  No special properties apply to this standard action.
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeInfo?.type === "property" &&
-        Object.entries(rulesIndex.propertyDescriptionByName)
-          .filter(([name]) =>
-            activeInfo.extra?.weaponProperties
-              ? activeInfo.extra.weaponProperties.includes(name)
-              : true,
-          )
-          .sort((a, b) => a[0].localeCompare(b[0]))
-          .map(([name, desc]) => (
-            <RuleListEntry
-              key={name}
-              title={name}
-              isActive={activeInfo.name === name}
-              innerRef={(el) => {
-                propertyListRefs.current[name] = el;
-              }}
-            >
-              "{desc}"
-            </RuleListEntry>
-          ))}
-
-      {activeInfo?.type === "skill" &&
-        [...characterSkills]
-          .sort((a, b) => a.displayName.localeCompare(b.displayName))
-          .map((skill) => {
-            const baseValue =
-              (characterData.attributes as Record<string, number>)[skill.characteristic] ?? 0;
-            const totalValue = baseValue + skill.advances;
-
-            return (
-              <div
-                key={getCharacterSkillKey(skill)}
-                ref={(el) => {
-                  skillListRefs.current[skill.displayName] = el;
-                }}
-                className="transition-colors p-4 border-b border-white/5 last:border-0"
-              >
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <div className="flex flex-col">
-                    <h3 className="wfrp-sidebar-title text-base uppercase tracking-tight text-white mb-0.5">
-                      {skill.displayName}
-                    </h3>
-                    <span className="wfrp-sidebar-label">{skill.characteristic}</span>
-                  </div>
-                </div>
-
-                <RuleDescription>
-                  {rulesIndex.skillDescriptionByName[skill.displayName] ||
-                    "Detailed rules for this skill can be found in the WFRP Core Rulebook."}
-                </RuleDescription>
-
-                <RuleInfoTable
-                  rows={[
-                    { label: "Base", value: baseValue },
-                    { label: "Advances", value: skill.advances },
-                    { label: "Total", value: totalValue },
-                  ]}
-                />
-              </div>
-            );
-          })}
-
-      {activeInfo?.type === "career" && (
-        <div className="p-6 flex flex-col gap-6">
+      {activeInfo.type === "career" && (
+        <div className="flex flex-col gap-6 p-6">
           <RuleSummaryPanel
             title={activeInfo.name}
             subtitle={activeInfo.extra?.tierName ?? "Career Step"}
@@ -539,8 +210,8 @@ export function InfoSidebar({
         </div>
       )}
 
-      {activeInfo?.type === "characteristic" && (
-        <div className="p-6 flex flex-col gap-6">
+      {activeInfo.type === "characteristic" && (
+        <div className="flex flex-col gap-6 p-6">
           <RuleSummaryPanel
             title={activeInfo.extra?.label ?? activeInfo.name}
             subtitle={activeInfo.extra?.key ?? ""}
@@ -566,28 +237,7 @@ export function InfoSidebar({
         </div>
       )}
 
-      {activeInfo?.type === "spell" && (
-        <>
-          {[...characterData.spells]
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((spell) => (
-              <RuleListEntry
-                key={spell.name}
-                title={spell.name}
-                isActive={activeInfo.name === spell.name}
-                details={getSpellStats(spell, formatSpellDuration)}
-                innerRef={(el) => {
-                  spellListRefs.current[spell.name] = el;
-                }}
-              >
-                {spell.description ||
-                  "A standard spell. Consult the WFRP Core Rulebook for deep tactical situational rules."}
-              </RuleListEntry>
-            ))}
-        </>
-      )}
-
-      {activeInfo?.type === "talent" &&
+      {activeInfo.type === "talent" &&
         [...new Set([...advancementTalentNames, ...characterData.talents.map((talent) => talent.name)])]
           .sort((a, b) => a.localeCompare(b))
           .map((talentName) => {
@@ -643,26 +293,6 @@ export function InfoSidebar({
               </RuleListEntry>
             );
           })}
-
-      {activeInfo?.type === "equipment" &&
-        [...characterData.equipment]
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .map((item) => (
-          <RuleListEntry
-            key={item.name}
-            title={item.name}
-            isActive={activeInfo.name === item.name}
-            details={getEquipmentStats(item, ruleset)}
-            innerRef={(el) => {
-              equipmentListRefs.current[item.name] = el;
-            }}
-          >
-            <div className="flex flex-col gap-4">
-              <p>{item.description}</p>
-              <RuleDetailSections sections={getEquipmentSections(item)} />
-            </div>
-          </RuleListEntry>
-        ))}
-    </RuleSidebarShell>
+    </WfrpSidebar>
   );
 }

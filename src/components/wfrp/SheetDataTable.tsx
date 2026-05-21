@@ -11,21 +11,21 @@ type SheetDataHeaderCellProps = HTMLAttributes<HTMLSpanElement> & {
   align?: "left" | "center" | "right";
 };
 
-const rowClasses = "wfrp-table-row grid items-center gap-2";
+const rowClasses = "wfrp-table-row grid min-w-0 max-w-full items-center gap-2";
 
 export function SheetDataPanel({ as: Component = "section", className, ...props }: SheetDataPanelProps) {
-  return <Component className={cn("wfrp-subpanel-shell flex flex-col bg-card rounded-t-none", className)} {...props} />;
+  return <Component className={cn("wfrp-subpanel-shell flex min-w-0 max-w-full flex-col overflow-hidden bg-card rounded-t-none", className)} {...props} />;
 }
 
 export function SheetDataTable({ className, ...props }: DivProps) {
-  return <div className={cn("bg-card divide-y divide-white/5", className)} {...props} />;
+  return <div className={cn("min-w-0 max-w-full bg-card divide-y divide-white/5", className)} {...props} />;
 }
 
 export function SheetDataHeader({ className, ...props }: DivProps) {
   return (
     <div
       className={cn(
-        "wfrp-subpanel-header grid items-center gap-2 border-t border-white/5 bg-card rounded-t-none",
+        "wfrp-subpanel-header grid min-w-0 max-w-full items-center gap-2 border-t border-white/5 bg-card rounded-t-none",
         className,
       )}
       {...props}
@@ -37,10 +37,10 @@ export function SheetDataHeaderCell({ align = "left", className, ...props }: She
   return (
     <span
       className={cn(
-        "wfrp-table-label",
-        align === "center" && "text-center",
-        align === "left" && "text-left",
-        align === "right" && "text-right",
+        "wfrp-table-label min-w-0 truncate",
+        align === "center" && "justify-self-center text-center",
+        align === "left" && "justify-self-start text-left",
+        align === "right" && "justify-self-end text-right",
         className,
       )}
       {...props}
@@ -70,28 +70,32 @@ export function SheetDataAccordionRow({
   children,
   className,
   contentClassName,
+  contentGridClassName,
   detailsClassName,
   summary,
   summaryClassName,
   ...props
 }: DetailsHTMLAttributes<HTMLDetailsElement> & {
   contentClassName?: string;
+  contentGridClassName?: string;
   detailsClassName?: string;
   summary: ReactNode;
   summaryClassName?: string;
 }) {
+  const content = <div className={cn("min-w-0 max-w-full", contentClassName)}>{children}</div>;
+
   return (
     <SheetDataRow className={cn("block group", className)}>
-      <details className={cn("group/details", detailsClassName)} {...props}>
+      <details className={cn("group/details min-w-0 max-w-full", detailsClassName)} {...props}>
         <summary
           className={cn(
-            "grid min-h-11 cursor-pointer list-none items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
+            "grid min-h-11 min-w-0 max-w-full cursor-pointer list-none items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
             summaryClassName,
           )}
         >
           {summary}
         </summary>
-        <div className={contentClassName}>{children}</div>
+        {contentGridClassName ? <div className={cn("grid min-w-0 max-w-full", contentGridClassName)}>{content}</div> : content}
       </details>
     </SheetDataRow>
   );
@@ -115,25 +119,25 @@ export function SheetDataAccordionDetails({
   }>;
 }) {
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <div>
-        <p className="max-w-3xl text-[11px] font-bold leading-relaxed text-wfrp-muted-text">
+    <div className={cn("flex min-w-0 max-w-full flex-col gap-2", className)}>
+      <div className="min-w-0 max-w-full">
+        <p className="max-w-full break-words text-[11px] font-bold leading-relaxed text-wfrp-muted-text md:max-w-3xl">
           {description || <span className="italic text-wfrp-muted-text">{descriptionFallback}</span>}
         </p>
       </div>
 
       {rows.length > 0 ? (
-        <div className="inline-flex w-fit max-w-full flex-col gap-1 pt-2">
+        <div className="inline-flex w-fit max-w-full min-w-0 flex-col gap-1 pt-2">
           {rows.map((row) => (
             <div
               key={row.label}
               className={cn(
-                "grid grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 text-[11px] font-bold text-wfrp-muted-text",
+                "grid min-w-0 grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 text-[11px] font-bold text-wfrp-muted-text",
                 row.bordered && "border-y border-white/10 py-1",
               )}
             >
               <span className="wfrp-list-cell-strong text-wfrp-muted-text">{row.label}</span>
-              <span className="wfrp-sidebar-body text-right text-card-foreground">{row.value}</span>
+              <span className="wfrp-sidebar-body min-w-0 text-right text-card-foreground">{row.value}</span>
             </div>
           ))}
         </div>

@@ -40,25 +40,31 @@ export function useSpellsViewModel({
   const channellingSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
   const channelValue = channellingSkill ? baseWp + channellingSkill.advances : baseWp;
 
-  const spellRows: SpellListRow[] = filterSpellsBySubtab(spells, activeSpellSubtab).map((spell) => {
-    const formatted = {
-      range: formatSpellRange(spell.range),
-      target: formatSpellTarget(spell.target),
-      duration: formatSpellDuration(spell.duration),
-    };
+  const spellRows: SpellListRow[] = filterSpellsBySubtab(spells, activeSpellSubtab)
+    .sort((first, second) =>
+      first.name.localeCompare(second.name, undefined, {
+        sensitivity: "base",
+      }),
+    )
+    .map((spell) => {
+      const formatted = {
+        range: formatSpellRange(spell.range),
+        target: formatSpellTarget(spell.target),
+        duration: formatSpellDuration(spell.duration),
+      };
 
-    return {
-      spell,
-      channelValue,
-      formatted,
-      mobileDetails: [
-        { label: "CN", value: spell.cn, valueClassName: "font-mono" },
-        { label: "Range", value: formatted.range },
-        { label: "Target", value: formatted.target },
-        { label: "Duration", value: formatted.duration },
-      ],
-    };
-  });
+      return {
+        spell,
+        channelValue,
+        formatted,
+        mobileDetails: [
+          { label: "CN", value: spell.cn, valueClassName: "font-mono" },
+          { label: "Range", value: formatted.range },
+          { label: "Target", value: formatted.target },
+          { label: "Duration", value: formatted.duration },
+        ],
+      };
+    });
 
   const openSpellShop = () => setIsSpellShopOpen(true);
 
