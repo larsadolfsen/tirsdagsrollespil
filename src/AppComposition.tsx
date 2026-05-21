@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { AppShell } from "./components/AppShell";
 import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
 import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
+import { CharacteristicsView } from "./components/CharacteristicsView";
 import { MobileTabMenu } from "./components/MobileTabMenu";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
@@ -1098,44 +1099,11 @@ export function AppComposition() {
             onMobilePreviousView={() => navigateMobileMainView(-1)}
           >
 
-          {/* Layout for Characteristics and Skills */}
-          {/* Characteristics Section */}
-          <section className={activeMobileMainView === "characteristics" ? "block" : "hidden md:block"}>
-            <div className="grid grid-cols-5 gap-1 md:grid-cols-10 md:gap-2 lg:gap-3">
-              {(UI_LABELS.CHARACTERISTICS as Characteristic[]).map((c) => {
-                const value = attributes[c.key] || 0;
-                const bonus = Math.floor(value / 10);
-                return (
-                  <div 
-                    key={c.key} 
-                    className="flex flex-col items-center group/char"
-                  >
-                    <span className="mb-1 text-[9px] font-bold uppercase tracking-tighter text-gray-400 transition-colors group-hover/char:text-wfrp-gold lg:mb-1.5 lg:text-[11px]">
-                      {c.label}
-                    </span>
-                    
-                    <div className="relative">
-                      <button 
-                        onClick={() => handleRoll(c)}
-                        className="flex h-[72px] w-14 flex-col items-center justify-center rounded-lg border-2 border-wfrp-border bg-wfrp-surface shadow-lg transition-all hover:border-wfrp-gold/60 hover:bg-wfrp-surface-hover active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 lg:h-[100px] lg:w-[80px]"
-                        aria-label={`Roll for ${c.label}`}
-                      >
-                        <div className="text-xl lg:text-3xl font-bold tracking-tight transition-colors group-hover/char:text-wfrp-gold">
-                          {value}
-                        </div>
-                      </button>
-
-                      <div className="absolute -bottom-1.5 left-1/2 z-10 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full border-2 border-wfrp-border bg-wfrp-surface transition-colors group-hover/char:border-wfrp-gold/40 lg:-bottom-2 lg:h-8 lg:w-8">
-                        <span className="text-[10px] font-bold text-gray-400 group-hover/char:text-wfrp-gold/60 lg:text-[11px]">
-                          {bonus}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+          <CharacteristicsView
+            activeMobileMainView={activeMobileMainView}
+            attributes={attributes}
+            onRoll={handleRoll}
+          />
 
           <div className="flex flex-col md:flex-row gap-6">
             <div className={`w-full min-w-0 flex-col gap-6 md:flex md:w-[28%] md:min-w-[320px] xl:w-[24%] ${
