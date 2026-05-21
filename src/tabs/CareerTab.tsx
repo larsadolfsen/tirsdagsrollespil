@@ -455,7 +455,7 @@ export function CareerTab({
         )}
 
         {(activeCareerSubtab === "all" || activeCareerSubtab === "characteristics") && (
-          <AdvancementSection title="Characteristics" meta="Scaffolded" hideHeader>
+          <AdvancementSection title="Characteristics" hideHeader>
             <SheetDataPanel>
               <SheetDataHeader className={`${characteristicAdvanceGridClass} gap-0`}>
                 <SheetDataHeaderCell>Characteristics</SheetDataHeaderCell>

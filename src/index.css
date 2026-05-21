@@ -322,17 +322,6 @@ body {
   border-width: 1px;
 }
 
-@media (max-width: 767px) {
-  .wfrp-subpanel-shell:has(> .wfrp-subpanel-header + .divide-y) {
-    overflow-x: auto;
-  }
-
-  .wfrp-subpanel-shell:has(> .wfrp-subpanel-header + .divide-y) > .wfrp-subpanel-header,
-  .wfrp-subpanel-shell:has(> .wfrp-subpanel-header + .divide-y) > .divide-y {
-    min-width: max-content;
-  }
-}
-
 [class~="group/char"]:hover [class~="-bottom-2"] {
   border-color: rgb(197 160 89 / 60%);
   background-color: var(--color-wfrp-surface-hover);
