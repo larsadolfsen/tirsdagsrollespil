@@ -341,8 +341,8 @@ body {
   }
 
   section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [class~="group/char"] {
-    flex: 0 0 5.75rem;
-    width: 5.75rem;
+    flex: 0 0 4rem;
+    width: 4rem;
   }
 }
 
@@ -352,7 +352,7 @@ body {
   }
 
   section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [class~="group/char"] {
-    flex-basis: 7rem;
-    width: 7rem;
+    flex-basis: 4rem;
+    width: 4rem;
   }
 }
