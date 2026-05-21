@@ -325,7 +325,7 @@ export function AppComposition() {
   });
 
   const {
-    getCurrentCampaignRoute,
+    restoreRouteForCharacter,
     selectCharacter,
     selectMainTab,
     selectMobileMainView,
@@ -346,14 +346,8 @@ export function AppComposition() {
     resetPendingAdvancements();
     resetDiceRoller();
 
-    const route = getCurrentCampaignRoute();
-    if (route?.characterId === characterData.id) {
-      if (route.tab !== "characteristics") {
-        setActiveMainTab(route.tab);
-      }
-      setActiveMobileMainView(route.tab);
-    }
-  }, [characterData.id, getCurrentCampaignRoute, resetDiceRoller, setActiveMainTab, setActiveMobileMainView]);
+    restoreRouteForCharacter(characterData.id);
+  }, [characterData.id, resetDiceRoller, restoreRouteForCharacter]);
 
   useEffect(() => {
     if (activeInfo) {

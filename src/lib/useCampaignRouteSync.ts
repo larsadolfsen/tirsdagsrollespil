@@ -126,10 +126,21 @@ export function useCampaignRouteSync({
     setSelectedCharacterId(characterId);
   }, [setSelectedCharacterId, syncCampaignRoute]);
 
-  const getCurrentCampaignRoute = useCallback(() => currentCampaignRoute.current, []);
+  const restoreRouteForCharacter = useCallback((characterId: string) => {
+    const route = currentCampaignRoute.current;
+    if (route?.characterId !== characterId) {
+      return false;
+    }
+
+    if (route.tab !== "characteristics") {
+      setActiveMainTab(route.tab);
+    }
+    setActiveMobileMainView(route.hasExplicitTab ? route.tab : "characteristics");
+    return true;
+  }, [setActiveMainTab, setActiveMobileMainView]);
 
   return {
-    getCurrentCampaignRoute,
+    restoreRouteForCharacter,
     selectCharacter,
     selectMainTab,
     selectMobileMainView,
