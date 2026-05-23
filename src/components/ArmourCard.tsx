@@ -44,7 +44,7 @@ export function ArmourCard({
             </div>
           ))}
         </div>
-        <div className="flex flex-col items-start gap-1">
+        <div className="flex flex-col items-center gap-1 text-center">
           <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
             Equipped
           </span>

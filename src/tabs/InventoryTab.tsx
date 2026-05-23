@@ -163,7 +163,7 @@ export function InventoryTab({
         activeId={activeInventorySubtab}
         onChange={setActiveInventorySubtab}
         trailingContent={
-          <div className="flex items-center gap-4">
+          <div className="flex w-full items-center justify-between gap-4">
             <div className="hidden w-32 flex-col gap-1 sm:flex lg:w-40">
               <div className="flex items-end justify-between leading-none">
                 <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
