@@ -13,7 +13,6 @@ import {
   SheetDataTable,
   SheetEmptyState,
 } from "../components/wfrp";
-import { useGameSessionContext } from "../context/GameSessionContext";
 import type {
   ResolvedCharacterRecord,
   ResolvedCharacterTalent,
@@ -66,6 +65,8 @@ interface CareerTabProps {
   advancementProgress: number;
   nextCareerAdvanceCost: number | null;
   pendingAvailableXp: number;
+  pendingXpAdjustment: number;
+  setPendingXpAdjustment: Dispatch<SetStateAction<number>>;
   nextCareerRankRecord: ResolvedCharacterRecord["careerRecord"]["ranks"][number] | null;
   increasePendingCareerRank: () => void;
   advancementCharacteristics: AdvancementCharacteristic[];
@@ -119,6 +120,8 @@ export function CareerTab({
   advancementProgress,
   nextCareerAdvanceCost,
   pendingAvailableXp,
+  pendingXpAdjustment,
+  setPendingXpAdjustment,
   nextCareerRankRecord,
   increasePendingCareerRank,
   advancementCharacteristics,
@@ -143,45 +146,47 @@ export function CareerTab({
   setActiveInfo,
   clearRollCharacteristic,
 }: CareerTabProps) {
-  const { setXpCurrent, setXpTotal } = useGameSessionContext();
   const currentCareerRow =
     displayedCareerRankRecord ??
     characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank) ??
     null;
   const careerRows = currentCareerRow ? [currentCareerRow] : [];
-  const canRemove10Xp = characterData.xpTotal >= 10;
-  const canRemove100Xp = characterData.xpTotal >= 100;
+  const pendingXpBaseDisplay = pendingAvailableXp - pendingXpAdjustment;
+  const currentXpDisplay =
+    pendingXpAdjustment > 0
+      ? `${pendingXpBaseDisplay} +${pendingXpAdjustment}`
+      : pendingAvailableXp;
+  const pendingTotalXp = characterData.xpTotal + pendingXpAdjustment;
+  const canRemove10Xp = pendingXpAdjustment >= 10;
+  const canRemove100Xp = pendingXpAdjustment >= 100;
   const adjustXp = (amount: number) => {
-    setXpCurrent((current) => Math.max(0, current + amount));
-    setXpTotal((current) => Math.max(0, current + amount));
+    setPendingXpAdjustment((current) => Math.max(0, current + amount));
   };
 
   const xpAdjustActions = (
     <div className="flex flex-wrap justify-end gap-1 [&_.wfrp-stepper-btn]:h-6 [&_.wfrp-stepper-btn]:min-w-10 [&_.wfrp-stepper-btn]:px-1.5">
-      {canRemove100Xp && (
-        <button
-          onClick={(event) => {
-            event.preventDefault();
-            adjustXp(-100);
-          }}
-          className="wfrp-stepper-btn w-auto text-[10px] font-black"
-          aria-label="Remove 100 current and total XP"
-        >
-          -100
-        </button>
-      )}
-      {canRemove10Xp && (
-        <button
-          onClick={(event) => {
-            event.preventDefault();
-            adjustXp(-10);
-          }}
-          className="wfrp-stepper-btn w-auto text-[10px] font-black"
-          aria-label="Remove 10 current and total XP"
-        >
-          -10
-        </button>
-      )}
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          adjustXp(-100);
+        }}
+        disabled={!canRemove100Xp}
+        className="wfrp-stepper-btn w-auto text-[10px] font-black"
+        aria-label="Remove 100 pending XP"
+      >
+        -100
+      </button>
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          adjustXp(-10);
+        }}
+        disabled={!canRemove10Xp}
+        className="wfrp-stepper-btn w-auto text-[10px] font-black"
+        aria-label="Remove 10 pending XP"
+      >
+        -10
+      </button>
       <button
         onClick={(event) => {
           event.preventDefault();
@@ -253,6 +258,7 @@ export function CareerTab({
     }
   };
 
+  const shouldHighlightSave = hasPendingCareerChanges || isAdvancementEditMode;
   const parseDraftNumber = (value: string) => Math.max(0, Math.floor(Number(value) || 0));
 
   return (
@@ -278,7 +284,11 @@ export function CareerTab({
           <button
             onClick={handleSaveCareerClick}
             disabled={!hasPendingCareerChanges && !isAdvancementEditMode}
-            className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            className={`wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest disabled:cursor-not-allowed disabled:opacity-40 ${
+              shouldHighlightSave
+                ? "border-wfrp-gold/60 bg-wfrp-gold/15 text-wfrp-gold shadow-[0_0_18px_rgb(197_160_89_/_0.16)]"
+                : "text-gray-300"
+            }`}
             aria-label="Save career changes"
           >
             Save
@@ -300,10 +310,10 @@ export function CareerTab({
                 <>
                   <div className="wfrp-list-cell-strong min-w-0 truncate text-left">Experience</div>
                   <div className="wfrp-list-cell-strong text-center font-mono text-white">
-                    {pendingAvailableXp}
+                    {currentXpDisplay}
                   </div>
                   <div className="wfrp-list-cell-strong text-center font-mono">
-                    {characterData.xpTotal}
+                    {pendingTotalXp}
                   </div>
                   {xpAdjustActions}
                   <SheetDataDisclosureChevron />
@@ -313,8 +323,8 @@ export function CareerTab({
               <SheetDataAccordionDetails
                 description="Current and total XP are adjusted together."
                 rows={[
-                  { label: "Current XP", value: pendingAvailableXp },
-                  { label: "Total XP", value: characterData.xpTotal },
+                  { label: "Current XP", value: currentXpDisplay },
+                  { label: "Total XP", value: pendingTotalXp },
                 ]}
               />
             </SheetDataAccordionRow>

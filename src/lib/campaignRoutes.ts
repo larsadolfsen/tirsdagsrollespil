@@ -6,7 +6,7 @@ export { defaultCampaignId } from "../data/campaigns";
 const campaignCharacterRoutePattern = /^\/([^/]+)\/([^/]+)(?:\/([^/?#]+))?\/?$/;
 const mainTabPathSegments: Record<MobileTabMenuTarget, string> = {
   characteristics: "characteristics",
-  skills: "faner",
+  skills: "skills",
   actions: "actions",
   inventory: "inventory",
   spells: "spells",
@@ -39,6 +39,8 @@ export type CampaignCharacterRoute = {
   hasExplicitTab: boolean;
 };
 
+export const defaultCampaignCharacterTab: MobileTabMenuTarget = "characteristics";
+
 const decodePathSegment = (value: string) => {
   try {
     return decodeURIComponent(value);
@@ -56,7 +58,7 @@ export function parseCampaignCharacterPath(pathname: string): CampaignCharacterR
   const campaignId = decodePathSegment(campaignIdSegment);
   const characterId = decodePathSegment(characterIdSegment);
   const hasExplicitTab = Boolean(tabSegment);
-  const tab = tabAliases[(tabSegment ?? mainTabPathSegments.skills).toLowerCase()];
+  const tab = tabAliases[(tabSegment ?? mainTabPathSegments[defaultCampaignCharacterTab]).toLowerCase()];
 
   if (!campaignId || !characterId || !tab) return null;
 
@@ -81,7 +83,7 @@ export function buildCampaignCharacterPath({
 }) {
   const characterPath = `/${encodePathSegment(campaignId)}/${encodePathSegment(characterId)}`;
 
-  if (omitDefaultTab && tab === "skills") {
+  if (omitDefaultTab && tab === defaultCampaignCharacterTab) {
     return characterPath;
   }
 

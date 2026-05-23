@@ -165,7 +165,7 @@ export function ActionsTab({
   };
 
   return (
-    <div className="flex h-full flex-col bg-card">
+    <div className="flex h-full flex-col bg-transparent">
       <InlineSubtabs<ActionCategory>
         options={[
           { id: "all", label: "All" },
@@ -177,7 +177,7 @@ export function ActionsTab({
         onChange={setActiveActionCategory}
       />
 
-      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-card">
+      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent">
           {characterData.spells.length > 0 && (activeActionCategory === "all" || activeActionCategory === "other") && (() => {
             const baseWP = attributes.WP || 0;
             const channellingSkill = characterSkills.find((skill) => skill.baseName === "Channelling");

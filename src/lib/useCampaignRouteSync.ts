@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { CampaignCharacterRoute } from "./campaignRoutes";
-import { buildCampaignCharacterPath, defaultCampaignId, parseCampaignCharacterPath } from "./campaignRoutes";
+import {
+  buildCampaignCharacterPath,
+  defaultCampaignCharacterTab,
+  defaultCampaignId,
+  parseCampaignCharacterPath,
+} from "./campaignRoutes";
 import type { MainTab, MobileTabMenuTarget } from "../tabs/tabTypes";
 
 type CharacterRouteOption = {
@@ -45,7 +50,7 @@ export function useCampaignRouteSync({
     characterId = selectedCharacterId,
     tab = currentCampaignRoute.current?.hasExplicitTab
       ? currentCampaignRoute.current.tab
-      : activeMobileMainView === "characteristics"
+      : activeMobileMainView === defaultCampaignCharacterTab
         ? activeMobileMainView
         : activeMainTab,
     mode = "replace",
@@ -93,7 +98,7 @@ export function useCampaignRouteSync({
       if (route.tab !== "characteristics") {
         setActiveMainTab(route.tab);
       }
-      setActiveMobileMainView(route.hasExplicitTab ? route.tab : "characteristics");
+      setActiveMobileMainView(route.hasExplicitTab ? route.tab : defaultCampaignCharacterTab);
     };
 
     applyRoute(getCurrentPathname());
@@ -135,7 +140,7 @@ export function useCampaignRouteSync({
     if (route.tab !== "characteristics") {
       setActiveMainTab(route.tab);
     }
-    setActiveMobileMainView(route.hasExplicitTab ? route.tab : "characteristics");
+    setActiveMobileMainView(route.hasExplicitTab ? route.tab : defaultCampaignCharacterTab);
     return true;
   }, [setActiveMainTab, setActiveMobileMainView]);
 

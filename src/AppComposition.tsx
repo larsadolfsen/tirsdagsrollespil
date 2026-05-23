@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { lazy, Suspense, useEffect, useMemo, useRef } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Dice5,
@@ -110,6 +110,7 @@ export function AppComposition() {
     setResolveCurrent,
     xpCurrent,
     setXpCurrent,
+    setXpTotal,
     setCharacterCoins,
     currentCareerRank,
     setCurrentCareerRank,
@@ -128,6 +129,7 @@ export function AppComposition() {
     notes,
     setNotes,
   } = useGameSessionContext();
+  const [pendingXpAdjustment, setPendingXpAdjustment] = useState(0);
   const availableCharacters = useMemo(() => listCharacters(), []);
   const {
     activeInfo,
@@ -258,8 +260,9 @@ export function AppComposition() {
     currentCharacteristicAdvances,
     rulesIndex,
     ruleset,
-    xpCurrent,
+    xpCurrent: xpCurrent + pendingXpAdjustment,
   });
+  const hasPendingAdvanceChanges = hasPendingCareerChanges || pendingXpAdjustment > 0;
   useEffect(() => {
     document.title = `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
   }, [characterData.name]);
@@ -345,6 +348,7 @@ export function AppComposition() {
     resetAppShellState();
     setActiveInventoryMenu(null);
     resetPendingAdvancements();
+    setPendingXpAdjustment(0);
     resetDiceRoller();
 
     restoreRouteForCharacter(characterData.id);
@@ -628,7 +632,7 @@ export function AppComposition() {
   };
 
   const saveCareerChanges = () => {
-    if (!hasPendingCareerChanges) return;
+    if (!hasPendingAdvanceChanges) return;
 
     if (Object.keys(pendingCharacteristicAdvances).length > 0) {
       setCurrentCharacteristicAdvances((prev) => {
@@ -713,7 +717,11 @@ export function AppComposition() {
       setCurrentCareerRank(pendingCareerRank);
     }
 
-    setXpCurrent((prev) => Math.max(0, prev - pendingSpentXp));
+    if (pendingXpAdjustment > 0) {
+      setXpTotal((prev) => prev + pendingXpAdjustment);
+    }
+    setXpCurrent((prev) => Math.max(0, prev + pendingXpAdjustment - pendingSpentXp));
+    setPendingXpAdjustment(0);
     resetPendingAdvancements();
   };
 
@@ -1279,8 +1287,10 @@ export function AppComposition() {
                         activeCareerSubtab={activeCareerSubtab}
                         setActiveCareerSubtab={setActiveCareerSubtab}
                         saveCareerChanges={saveCareerChanges}
-                        hasPendingCareerChanges={hasPendingCareerChanges}
+                        hasPendingCareerChanges={hasPendingAdvanceChanges}
                         characterData={characterData}
+                        pendingXpAdjustment={pendingXpAdjustment}
+                        setPendingXpAdjustment={setPendingXpAdjustment}
                         displayedCareerRank={displayedCareerRank}
                         displayedCareerRankRecord={displayedCareerRankRecord}
                         careerAdvancementData={careerAdvancementData}

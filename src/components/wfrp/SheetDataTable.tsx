@@ -14,7 +14,7 @@ type SheetDataHeaderCellProps = HTMLAttributes<HTMLSpanElement> & {
 const rowClasses = "wfrp-table-row grid min-w-0 max-w-full items-center gap-2";
 
 export function SheetDataPanel({ as: Component = "section", className, ...props }: SheetDataPanelProps) {
-  return <Component className={cn("wfrp-subpanel-shell flex min-w-0 max-w-full flex-col overflow-hidden bg-card rounded-t-none", className)} {...props} />;
+  return <Component className={cn("wfrp-subpanel-shell flex min-w-0 max-w-full flex-col overflow-hidden bg-card", className)} {...props} />;
 }
 
 export function SheetDataTable({ className, ...props }: DivProps) {
@@ -25,7 +25,7 @@ export function SheetDataHeader({ className, ...props }: DivProps) {
   return (
     <div
       className={cn(
-        "wfrp-subpanel-header grid min-w-0 max-w-full items-center gap-2 border-t border-white/5 bg-card rounded-t-none",
+        "wfrp-subpanel-header grid min-w-0 max-w-full items-center gap-2 border-t border-white/5 bg-card",
         className,
       )}
       {...props}
