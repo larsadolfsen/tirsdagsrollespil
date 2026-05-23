@@ -7,10 +7,7 @@ import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
   SheetDataDisclosureChevron,
-  SheetDataHeader,
-  SheetDataHeaderCell,
-  SheetDataPanel,
-  SheetDataTable,
+  SheetDataSection,
   SheetEmptyState,
 } from "../components/wfrp";
 import type {
@@ -294,15 +291,16 @@ export function CareerTab({
             Save
           </button>
         </div>
-        <SheetDataPanel>
-          <SheetDataHeader className={careerXpGridClass}>
-            <SheetDataHeaderCell className="text-[9px] md:text-[10px]">XP</SheetDataHeaderCell>
-            <SheetDataHeaderCell className="text-[9px] md:text-[10px]" align="center">Current</SheetDataHeaderCell>
-            <SheetDataHeaderCell className="text-[9px] md:text-[10px]" align="center">Total</SheetDataHeaderCell>
-            <SheetDataHeaderCell className="text-[9px] md:text-[10px]" align="right">Adjust</SheetDataHeaderCell>
-            <SheetDataHeaderCell className="text-[9px] md:text-[10px]" align="center">More</SheetDataHeaderCell>
-          </SheetDataHeader>
-          <SheetDataTable>
+        <SheetDataSection
+          gridClassName={careerXpGridClass}
+          sectionLabel="XP"
+          valueLabels={[
+            { align: "center", className: "text-[9px] md:text-[10px]", label: "Current" },
+            { align: "center", className: "text-[9px] md:text-[10px]", label: "Total" },
+            { align: "right", className: "text-[9px] md:text-[10px]", label: "Adjust" },
+            { align: "center", className: "text-[9px] md:text-[10px]", label: "More" },
+          ]}
+        >
             <SheetDataAccordionRow
               summaryClassName={careerXpGridClass}
               contentClassName="px-3 pb-4 pt-1 md:px-4"
@@ -328,23 +326,23 @@ export function CareerTab({
                 ]}
               />
             </SheetDataAccordionRow>
-          </SheetDataTable>
-        </SheetDataPanel>
+        </SheetDataSection>
       </div>
 
       <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden p-2 sm:p-3 lg:p-4 no-scrollbar">
         {(activeCareerSubtab === "all" || activeCareerSubtab === "careers") && (
           <AdvancementSection title="Careers" meta="Current Path" hideHeader>
-            <SheetDataPanel>
-              <SheetDataHeader className={careerPathGridClass}>
-                <SheetDataHeaderCell>Career</SheetDataHeaderCell>
-                <SheetDataHeaderCell className="hidden md:block">Progress</SheetDataHeaderCell>
-                <SheetDataHeaderCell className="hidden md:block">Tier</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="center">Cost</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="right">Advance</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
-              </SheetDataHeader>
-              <SheetDataTable>
+            <SheetDataSection
+              gridClassName={careerPathGridClass}
+              sectionLabel="Career"
+              valueLabels={[
+                { className: "hidden md:block", label: "Progress" },
+                { className: "hidden md:block", label: "Tier" },
+                { align: "center", label: "Cost" },
+                { align: "right", label: "Advance" },
+                { align: "center", label: "More" },
+              ]}
+            >
                 {careerRows.map((rankRecord) => {
                   const isActiveCareerRow = rankRecord.rank === displayedCareerRank;
                   const rowProgress = isActiveCareerRow ? advancementProgress : 100;
@@ -459,23 +457,23 @@ export function CareerTab({
                     </SheetDataAccordionRow>
                   );
                 })}
-              </SheetDataTable>
-            </SheetDataPanel>
+            </SheetDataSection>
           </AdvancementSection>
         )}
 
         {(activeCareerSubtab === "all" || activeCareerSubtab === "characteristics") && (
           <AdvancementSection title="Characteristics" hideHeader>
-            <SheetDataPanel>
-              <SheetDataHeader className={`${characteristicAdvanceGridClass} gap-0`}>
-                <SheetDataHeaderCell>Characteristics</SheetDataHeaderCell>
-                <SheetDataHeaderCell className="hidden md:block" align="center">Initial</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="center">Adv.</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="center">Cost</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="right">Advance</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
-              </SheetDataHeader>
-              <SheetDataTable>
+            <SheetDataSection
+              gridClassName={characteristicAdvanceGridClass}
+              sectionLabel="Characteristics"
+              valueLabels={[
+                { align: "center", className: "hidden md:block", label: "Initial" },
+                { align: "center", label: "Adv." },
+                { align: "center", label: "Cost" },
+                { align: "right", label: "Advance" },
+                { align: "center", label: "More" },
+              ]}
+            >
                 {advancementCharacteristics.map((item) => {
                   const totalAdvances = item.advances + item.pendingAdvances;
                   const advancesDisplay =
@@ -608,8 +606,7 @@ export function CareerTab({
                     </SheetDataAccordionRow>
                   );
                 })}
-              </SheetDataTable>
-            </SheetDataPanel>
+            </SheetDataSection>
           </AdvancementSection>
         )}
 
@@ -617,16 +614,18 @@ export function CareerTab({
           <AdvancementSection title="Skills" hideHeader>
             <div className="flex flex-col gap-3">
               {advancementSkillSections.map((section) => (
-                <SheetDataPanel key={section.id}>
-                  <SheetDataHeader className={`${skillAdvanceGridClass} gap-0`}>
-                    <SheetDataHeaderCell>{section.title}</SheetDataHeaderCell>
-                    <SheetDataHeaderCell className="hidden md:block" align="center">Initial</SheetDataHeaderCell>
-                    <SheetDataHeaderCell align="center">Adv.</SheetDataHeaderCell>
-                    <SheetDataHeaderCell align="center">Cost</SheetDataHeaderCell>
-                    <SheetDataHeaderCell align="right">Advance</SheetDataHeaderCell>
-                    <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
-                  </SheetDataHeader>
-                  <SheetDataTable>
+                <SheetDataSection
+                  key={section.id}
+                  gridClassName={skillAdvanceGridClass}
+                  sectionLabel={section.title}
+                  valueLabels={[
+                    { align: "center", className: "hidden md:block", label: "Initial" },
+                    { align: "center", label: "Adv." },
+                    { align: "center", label: "Cost" },
+                    { align: "right", label: "Advance" },
+                    { align: "center", label: "More" },
+                  ]}
+                >
                     {section.skills.length === 0 ? (
                       <SheetEmptyState title={`No ${section.title.toLowerCase()} skills`}>
                         No skills listed for this section.
@@ -736,8 +735,7 @@ export function CareerTab({
                         );
                       })
                     )}
-                  </SheetDataTable>
-                </SheetDataPanel>
+                </SheetDataSection>
               ))}
             </div>
           </AdvancementSection>
@@ -745,15 +743,16 @@ export function CareerTab({
 
         {(activeCareerSubtab === "all" || activeCareerSubtab === "talents") && (
           <AdvancementSection title="Talents" hideHeader>
-            <SheetDataPanel>
-              <SheetDataHeader className={`${talentAdvanceGridClass} gap-0`}>
-                <SheetDataHeaderCell>Talents</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="center">Taken</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="center">Cost</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="right">Advance</SheetDataHeaderCell>
-                <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
-              </SheetDataHeader>
-              <SheetDataTable>
+            <SheetDataSection
+              gridClassName={talentAdvanceGridClass}
+              sectionLabel="Talents"
+              valueLabels={[
+                { align: "center", label: "Taken" },
+                { align: "center", label: "Cost" },
+                { align: "right", label: "Advance" },
+                { align: "center", label: "More" },
+              ]}
+            >
                 {advancementTalentNames.map((talentName) => {
                   const takenCount = characterTalents.filter(
                     (talent) => talent.name === talentName,
@@ -837,8 +836,7 @@ export function CareerTab({
                     </SheetDataAccordionRow>
                   );
                 })}
-              </SheetDataTable>
-            </SheetDataPanel>
+            </SheetDataSection>
           </AdvancementSection>
         )}
       </div>

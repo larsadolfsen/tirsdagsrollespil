@@ -21,6 +21,63 @@ export function SheetDataTable({ className, ...props }: DivProps) {
   return <div className={cn("min-w-0 max-w-full bg-card divide-y divide-white/5", className)} {...props} />;
 }
 
+export function SheetDataSection({
+  children,
+  className,
+  gridClassName,
+  headerClassName,
+  leadingLabels = [],
+  sectionLabel,
+  valueLabels,
+  ...props
+}: DivProps & {
+  children: ReactNode;
+  className?: string;
+  gridClassName: string;
+  headerClassName?: string;
+  leadingLabels?: Array<{
+    align?: "left" | "center" | "right";
+    className?: string;
+    key?: string;
+    label: ReactNode;
+  }>;
+  sectionLabel: ReactNode;
+  valueLabels: Array<{
+    align?: "left" | "center" | "right";
+    className?: string;
+    key?: string;
+    label: ReactNode;
+  }>;
+}) {
+  return (
+    <SheetDataPanel className={className} {...props}>
+      <SheetDataHeader className={cn(gridClassName, "gap-0", headerClassName)}>
+        {leadingLabels.map(({ align, className: valueClassName, key, label }) => (
+          <SheetDataHeaderCell
+            key={key ?? String(label)}
+            align={align}
+            className={valueClassName}
+          >
+            {label}
+          </SheetDataHeaderCell>
+        ))}
+        <SheetDataHeaderCell>{sectionLabel}</SheetDataHeaderCell>
+        {valueLabels.map(({ align, className: valueClassName, key, label }) => (
+          <SheetDataHeaderCell
+            key={key ?? String(label)}
+            align={align}
+            className={valueClassName}
+          >
+            {label}
+          </SheetDataHeaderCell>
+        ))}
+      </SheetDataHeader>
+
+      <SheetDataTable>{children}</SheetDataTable>
+    </SheetDataPanel>
+  );
+}
+
 export function SheetDataHeader({ className, ...props }: DivProps) {
   return (
     <div

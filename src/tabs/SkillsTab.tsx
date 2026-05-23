@@ -3,10 +3,7 @@ import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
   SheetDataDisclosureChevron,
-  SheetDataHeader,
-  SheetDataHeaderCell,
-  SheetDataPanel,
-  SheetDataTable,
+  SheetDataSection,
 } from "../components/wfrp";
 import type { SkillSubtab } from "./tabTypes";
 
@@ -64,18 +61,18 @@ export function SkillsTab({
         />
       )}
     >
-      <SheetDataPanel>
-        <SheetDataHeader className={`${mobileSkillGridClass} ${desktopSkillGridClass} gap-0`}>
-          <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
-          <SheetDataHeaderCell>Skill</SheetDataHeaderCell>
-          <SheetDataHeaderCell align="center">Char.</SheetDataHeaderCell>
-          <SheetDataHeaderCell className="hidden md:block" align="right">Score</SheetDataHeaderCell>
-          <SheetDataHeaderCell className="hidden md:block" align="right">Adv.</SheetDataHeaderCell>
-          <SheetDataHeaderCell className="hidden md:block" align="right">Total</SheetDataHeaderCell>
-          <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
-        </SheetDataHeader>
-
-        <SheetDataTable>
+      <SheetDataSection
+        gridClassName={`${mobileSkillGridClass} ${desktopSkillGridClass}`}
+        leadingLabels={[{ align: "center", label: "Roll" }]}
+        sectionLabel="Skill"
+        valueLabels={[
+          { align: "center", label: "Char." },
+          { align: "right", className: "hidden md:block", label: "Score" },
+          { align: "right", className: "hidden md:block", label: "Adv." },
+          { align: "right", className: "hidden md:block", label: "Total" },
+          { align: "center", label: "More" },
+        ]}
+      >
           {visibleSkillRows.map((skill) => {
             const charValue = attributes[skill.characteristic] || 0;
             const totalValue = charValue + skill.advances;
@@ -139,8 +136,7 @@ export function SkillsTab({
               </SheetDataAccordionRow>
             );
           })}
-        </SheetDataTable>
-      </SheetDataPanel>
+      </SheetDataSection>
     </SubtabContentFrame>
   );
 }

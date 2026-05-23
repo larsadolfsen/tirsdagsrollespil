@@ -1,4 +1,4 @@
-export type ActionCategory = "all" | "melee" | "ranged" | "other";
+export type ActionCategory = "all" | "magic" | "melee" | "ranged" | "other";
 export type MainTab = "skills" | "actions" | "inventory" | "spells" | "features" | "journal" | "career";
 export type MobileTabMenuTarget = MainTab | "characteristics";
 export type JournalSubtab = "sessions" | "npcs" | "backgrounds";

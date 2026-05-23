@@ -4,10 +4,7 @@ import {
   SheetDataAccordionRow,
   SheetDataDesktopCell,
   SheetDataDisclosureChevron,
-  SheetDataHeader,
-  SheetDataHeaderCell,
-  SheetDataPanel,
-  SheetDataTable,
+  SheetDataSection,
 } from "../components/wfrp";
 import type { SpellListRow } from "./spells/useSpellsViewModel";
 import type { Characteristic } from "../types";
@@ -60,18 +57,18 @@ export function SpellsTab({
         />
       )}
     >
-      <SheetDataPanel>
-        <SheetDataHeader className={`${mobileSpellGridClass} ${desktopSpellGridClass} gap-0`}>
-          <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
-          <SheetDataHeaderCell>Spell</SheetDataHeaderCell>
-          <SheetDataHeaderCell className="hidden md:block" align="right">CN</SheetDataHeaderCell>
-          <SheetDataHeaderCell align="left">RNG</SheetDataHeaderCell>
-          <SheetDataHeaderCell align="left">Target</SheetDataHeaderCell>
-          <SheetDataHeaderCell className="hidden md:block" align="right">Duration</SheetDataHeaderCell>
-          <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
-        </SheetDataHeader>
-
-        <SheetDataTable>
+      <SheetDataSection
+        gridClassName={`${mobileSpellGridClass} ${desktopSpellGridClass}`}
+        leadingLabels={[{ align: "center", label: "Roll" }]}
+        sectionLabel="Spell"
+        valueLabels={[
+          { align: "right", className: "hidden md:block", label: "CN" },
+          { align: "left", label: "RNG" },
+          { align: "left", label: "Target" },
+          { align: "right", className: "hidden md:block", label: "Duration" },
+          { align: "center", label: "More" },
+        ]}
+      >
           {spellRows.map(({ channelValue, formatted, mobileDetails, spell }) => {
             return (
               <SheetDataAccordionRow
@@ -122,8 +119,7 @@ export function SpellsTab({
               </SheetDataAccordionRow>
             );
           })}
-        </SheetDataTable>
-      </SheetDataPanel>
+      </SheetDataSection>
     </SubtabContentFrame>
   );
 }

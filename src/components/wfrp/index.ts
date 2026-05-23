@@ -6,6 +6,7 @@ export {
   SheetDataHeaderCell,
   SheetDataPanel,
   SheetDataRow,
+  SheetDataSection,
   SheetDataTable,
   SheetEmptyState,
 } from "./SheetDataTable";

@@ -2,10 +2,7 @@ import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
   SheetDataDisclosureChevron,
-  SheetDataHeader,
-  SheetDataHeaderCell,
-  SheetDataPanel,
-  SheetDataTable,
+  SheetDataSection,
   SheetEmptyState,
 } from "../components/wfrp";
 import type { ResolvedCharacterTalent } from "../data/characters/resolved";
@@ -28,14 +25,15 @@ export function TalentsTab({
   return (
     <div className="flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4">
       {characterTalentRows.length > 0 ? (
-        <SheetDataPanel>
-          <SheetDataHeader className={talentGridClass}>
-            <SheetDataHeaderCell>Talent</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="center">Taken</SheetDataHeaderCell>
-            <SheetDataHeaderCell className="hidden md:block">Description</SheetDataHeaderCell>
-            <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
-          </SheetDataHeader>
-          <SheetDataTable>
+        <SheetDataSection
+          gridClassName={talentGridClass}
+          sectionLabel="Talent"
+          valueLabels={[
+            { align: "center", label: "Taken" },
+            { className: "hidden md:block", label: "Description" },
+            { align: "center", label: "More" },
+          ]}
+        >
             {characterTalentRows.map(({ talent, count }) => {
               const takenDisplay = `${count}/${getTalentMaxDisplay(talent.max)}`;
               const effectText = talent.effects?.length
@@ -91,8 +89,7 @@ export function TalentsTab({
                 </SheetDataAccordionRow>
               );
             })}
-          </SheetDataTable>
-        </SheetDataPanel>
+        </SheetDataSection>
       ) : (
         <SheetEmptyState title="No Talents">Talents bought during play will appear here.</SheetEmptyState>
       )}

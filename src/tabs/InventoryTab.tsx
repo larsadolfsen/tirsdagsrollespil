@@ -5,10 +5,8 @@ import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
   SheetDataDisclosureChevron,
-  SheetDataHeader,
-  SheetDataHeaderCell,
   SheetDataPanel,
-  SheetDataTable,
+  SheetDataSection,
   SheetRowActionButton,
 } from "../components/wfrp";
 import { InventoryContextMenu } from "./inventory/InventoryContextMenu";
@@ -201,8 +199,7 @@ export function InventoryTab({
           </div>
         </SheetDataPanel>
 
-        <SheetDataPanel>
-          {visibleSections.map((section) => {
+        {visibleSections.map((section) => {
             const isActiveDropTarget = inventoryDropTarget === section.id;
             const acceptsDrops = section.acceptsDrops !== false;
             const dropsToWorn = section.dropWorn === true;
@@ -217,7 +214,7 @@ export function InventoryTab({
               : false;
 
             return (
-              <div
+              <SheetDataSection
                 key={section.id}
                 onDragOver={(event) =>
                   acceptsDrops
@@ -245,31 +242,32 @@ export function InventoryTab({
                       )
                     : undefined
                 }
-                className={`mt-4 first:mt-0 ${
+                className={`${
                   isActiveDropTarget
                     ? "bg-wfrp-gold/5 ring-1 ring-inset ring-wfrp-gold/50"
                     : canDropHere
                       ? "ring-1 ring-inset ring-wfrp-gold/20"
                       : ""
                 }`}
-              >
-                <SheetDataHeader className={`${mobileInventoryGridClass} ${desktopInventoryGridClass} gap-0`}>
-                  <SheetDataHeaderCell className="flex min-w-0 items-center gap-2">
+                gridClassName={`${mobileInventoryGridClass} ${desktopInventoryGridClass}`}
+                sectionLabel={(
+                  <span className="flex min-w-0 items-center gap-2">
                     <span className="truncate">{section.title}</span>
                     {section.subtitle ? (
                       <span className="truncate font-mono text-[9px] font-bold uppercase tracking-wider text-gray-600">
                         {section.subtitle}
                       </span>
                     ) : null}
-                  </SheetDataHeaderCell>
-                  <SheetDataHeaderCell className="hidden md:block">Type</SheetDataHeaderCell>
-                  <SheetDataHeaderCell align="right">Qty</SheetDataHeaderCell>
-                  <SheetDataHeaderCell align="right">Enc</SheetDataHeaderCell>
-                  <SheetDataHeaderCell className="hidden md:block" align="right">Value</SheetDataHeaderCell>
-                  <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
-                </SheetDataHeader>
-
-                <SheetDataTable>
+                  </span>
+                )}
+                valueLabels={[
+                  { className: "hidden md:block", label: "Type" },
+                  { align: "right", label: "Qty" },
+                  { align: "right", label: "Enc" },
+                  { align: "right", className: "hidden md:block", label: "Value" },
+                  { align: "center", label: "More" },
+                ]}
+              >
                   {section.id === "carried" && (
                     <SheetDataAccordionRow
                       className="wfrp-skill-row"
@@ -338,17 +336,14 @@ export function InventoryTab({
                       </SheetDataAccordionRow>
                     );
                   })}
-                </SheetDataTable>
-
                 {section.itemRows.length === 0 && section.id !== "carried" && (
                   <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-700">
                     {canDropHere ? "Drop here" : "Empty"}
                   </div>
                 )}
-              </div>
+              </SheetDataSection>
             );
           })}
-        </SheetDataPanel>
       </div>
 
       <InventoryContextMenu

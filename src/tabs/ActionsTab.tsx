@@ -1,13 +1,10 @@
-import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
   SheetDataDisclosureChevron,
-  SheetDataHeader,
-  SheetDataHeaderCell,
-  SheetDataPanel,
-  SheetDataTable,
+  SheetDataSection,
 } from "../components/wfrp";
 import type {
   ResolvedCharacterEquipment,
@@ -72,39 +69,6 @@ const getRelevantWeaponProperties = (actionId: string, properties: string[]) => 
   return [];
 };
 
-function ActionSection({
-  children,
-  gridClassName,
-  sectionLabel,
-  valueLabels,
-}: {
-  key?: string;
-  children: ReactNode;
-  gridClassName: string;
-  sectionLabel: string;
-  valueLabels: string[];
-}) {
-  return (
-    <SheetDataPanel>
-      <SheetDataHeader className={`${actionSummaryGridClass} ${gridClassName} gap-0`}>
-        <SheetDataHeaderCell align="center">Roll</SheetDataHeaderCell>
-        <SheetDataHeaderCell>{sectionLabel}</SheetDataHeaderCell>
-        {valueLabels.map((label) => (
-          <SheetDataHeaderCell
-            key={label}
-            align={label === "More" ? "center" : "right"}
-            className={label === "More" ? undefined : "hidden md:block"}
-          >
-            {label}
-          </SheetDataHeaderCell>
-        ))}
-      </SheetDataHeader>
-
-      <SheetDataTable>{children}</SheetDataTable>
-    </SheetDataPanel>
-  );
-}
-
 export function ActionsTab({
   activeActionCategory,
   setActiveActionCategory,
@@ -133,6 +97,32 @@ export function ActionsTab({
   setRollAdjustments: (modifier: number, targetBonusSources: RollBonusSource[]) => void;
 }) {
   const attributes = characterData.attributes;
+  const hasMagicActions = characterData.spells.length > 0;
+  const hasMeleeActions = equipmentState.some((item) => item.type.includes("Weapon") && item.type.includes("Melee") && !item.containerId);
+  const hasRangedActions = equipmentState.some((item) => item.type.includes("Weapon") && item.type.includes("Ranged") && !item.containerId);
+  const maneuverActions = [
+    { name: "Move", char: "Ag" as Characteristic["key"], range: `${characterData.move}`, properties: [], modifier: 0, damage: "-", type: "other" },
+    { name: "Defend", char: "WS" as Characteristic["key"], range: "-", properties: [], modifier: 0, targetBonusSources: [{ label: "Defense", value: 20 }], damage: "-", type: "other" },
+    { name: "Disengage", char: "Ag" as Characteristic["key"], range: "-", properties: ["Retreat"], modifier: 0, damage: "-", type: "other" },
+    { name: "Grapple", char: "WS" as Characteristic["key"], range: "Reach", properties: ["Stun"], modifier: 0, damage: "SB", type: "melee" },
+  ];
+  const hasOtherActions = maneuverActions.some((action) => action.type === "other");
+  const actionCategoryOptions = [
+    { id: "all" as const, label: "All" },
+    ...(hasMagicActions ? [{ id: "magic" as const, label: "Magic" }] : []),
+    ...(hasMeleeActions ? [{ id: "melee" as const, label: "Melee" }] : []),
+    ...(hasRangedActions ? [{ id: "ranged" as const, label: "Ranged" }] : []),
+    ...(hasOtherActions ? [{ id: "other" as const, label: "Other" }] : []),
+  ];
+  const visibleActionCategory = actionCategoryOptions.some((option) => option.id === activeActionCategory)
+    ? activeActionCategory
+    : "all";
+
+  useEffect(() => {
+    if (visibleActionCategory !== activeActionCategory) {
+      setActiveActionCategory(visibleActionCategory);
+    }
+  }, [activeActionCategory, setActiveActionCategory, visibleActionCategory]);
 
   const renderPropertyDetails = (properties: string[]) => {
     const describedProperties = properties
@@ -168,87 +158,111 @@ export function ActionsTab({
     <SubtabContentFrame
       subtabBar={(
         <InlineSubtabs<ActionCategory>
-          options={[
-            { id: "all", label: "All" },
-            { id: "melee", label: "Melee" },
-            { id: "ranged", label: "Ranged" },
-            { id: "other", label: "Other" },
-          ]}
-          activeId={activeActionCategory}
+          options={actionCategoryOptions}
+          activeId={visibleActionCategory}
           onChange={setActiveActionCategory}
         />
       )}
     >
-          {characterData.spells.length > 0 && (activeActionCategory === "all" || activeActionCategory === "other") && (() => {
+          {hasMagicActions && (visibleActionCategory === "all" || visibleActionCategory === "magic") && (() => {
             const baseWP = attributes.WP || 0;
             const channellingSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
+            const languageMagickSkill = characterSkills.find((skill) => skill.displayName === "Language (Magick)");
             const totalChannelingValue = channellingSkill ? baseWP + channellingSkill.advances : baseWP;
-            const channelingAction = {
-              name: "Language (Magick)",
-              char: "WP" as Characteristic["key"],
-              properties: ["Spellcasting"],
-            };
+            const baseInt = attributes.Int || 0;
+            const totalDispelValue = languageMagickSkill ? baseInt + languageMagickSkill.advances : baseInt;
+            const magicActions = [
+              {
+                name: "Channeling",
+                rollLabel: channellingSkill?.displayName ?? "Channelling",
+                char: "WP" as Characteristic["key"],
+                totalValue: totalChannelingValue,
+                properties: ["Spell Focus"],
+              },
+              {
+                name: "Dispell Magic",
+                rollLabel: "Language (Magick)",
+                char: "Int" as Characteristic["key"],
+                totalValue: totalDispelValue,
+                properties: ["Spell Focus"],
+              },
+            ];
 
             return (
-              <ActionSection
+              <SheetDataSection
                 gridClassName={channelingGridClass}
-                sectionLabel="Channeling"
-                valueLabels={["Notes", "More"]}
+                headerClassName={actionSummaryGridClass}
+                leadingLabels={[{ align: "center", label: "Roll" }]}
+                sectionLabel="Magic"
+                valueLabels={[
+                  { align: "right", className: "hidden md:block", label: "Notes" },
+                  { align: "center", label: "More" },
+                ]}
               >
-                <SheetDataAccordionRow
-                  className="wfrp-skill-row"
-                  summaryClassName={`wfrp-skill-row-summary ${actionSummaryGridClass} md:grid ${channelingGridClass} md:gap-0`}
-                  contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
-                  summary={(
-                    <>
-                      <div className="flex justify-center">
-                        <button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            handleRoll({ key: "WP", label: "Language (Magick)" }, undefined, { testType: "channeling" });
-                          }}
-                          className="wfrp-roll-btn"
-                          aria-label="Roll Channeling"
-                        >
-                          {totalChannelingValue}
-                        </button>
-                      </div>
-                      <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
-                        {channelingAction.name}
-                      </span>
-                      <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
-                        {channelingAction.properties.map((prop, propIndex) => (
-                          <span key={prop} className="text-xs font-semibold text-gray-400">
-                            {prop === "Spellcasting" ? "Spell Focus" : prop}
-                            {propIndex < channelingAction.properties.length - 1 ? "," : ""}
-                          </span>
-                        ))}
-                      </div>
-                      <SheetDataDisclosureChevron className="md:inline-flex" />
-                    </>
-                  )}
-                >
-                  <SheetDataAccordionDetails
-                    description={rulesIndex.actionDescriptionByName.Channeling}
-                    rows={[
-                      { label: "Type", value: "Channeling" },
-                      { label: "Roll", value: totalChannelingValue },
-                      { label: "Notes", value: "Spell Focus" },
-                    ]}
+                {magicActions.map((action) => (
+                  <SheetDataAccordionRow
+                    key={action.name}
+                    className="wfrp-skill-row"
+                    summaryClassName={`wfrp-skill-row-summary ${actionSummaryGridClass} md:grid ${channelingGridClass} md:gap-0`}
+                    contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
+                    summary={(
+                      <>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={(event) => {
+                              event.preventDefault();
+                              handleRoll(
+                                { key: action.char, label: action.rollLabel },
+                                undefined,
+                                {
+                                  testType: "channeling",
+                                  title: action.name,
+                                },
+                              );
+                            }}
+                            className="wfrp-roll-btn"
+                            aria-label={`Roll ${action.name}`}
+                          >
+                            {action.totalValue}
+                          </button>
+                        </div>
+                        <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
+                          {action.name}
+                        </span>
+                        <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
+                          {action.properties.map((prop, propIndex) => (
+                            <span key={prop} className="text-xs font-semibold text-gray-400">
+                              {prop}
+                              {propIndex < action.properties.length - 1 ? "," : ""}
+                            </span>
+                          ))}
+                        </div>
+                        <SheetDataDisclosureChevron className="md:inline-flex" />
+                      </>
+                    )}
                   >
-                    {renderPropertyDetails(channelingAction.properties)}
-                  </SheetDataAccordionDetails>
-                </SheetDataAccordionRow>
-              </ActionSection>
+                    <SheetDataAccordionDetails
+                      description={rulesIndex.actionDescriptionByName.Magic}
+                      rows={[
+                        { label: "Type", value: "Magic" },
+                        { label: "Roll", value: action.totalValue },
+                        { label: "Notes", value: action.properties.join(", ") },
+                      ]}
+                    >
+                      {renderPropertyDetails(action.properties)}
+                    </SheetDataAccordionDetails>
+                  </SheetDataAccordionRow>
+                ))}
+              </SheetDataSection>
             );
           })()}
 
           {equipmentState
             .filter((item) => item.type.includes("Weapon") && !item.containerId)
             .filter((item) => {
-              if (activeActionCategory === "all") return true;
-              if (activeActionCategory === "melee") return item.type.includes("Melee");
-              if (activeActionCategory === "ranged") return item.type.includes("Ranged");
+              if (visibleActionCategory === "all") return true;
+              if (visibleActionCategory === "melee") return item.type.includes("Melee");
+              if (visibleActionCategory === "ranged") return item.type.includes("Ranged");
               return false;
             })
             .map((weapon) => {
@@ -350,11 +364,18 @@ export function ActionsTab({
               } : null;
 
               return isMelee ? (
-                <ActionSection
+                <SheetDataSection
                   key={weapon.name}
                   gridClassName={weaponActionGridClass}
+                  headerClassName={actionSummaryGridClass}
+                  leadingLabels={[{ align: "center", label: "Roll" }]}
                   sectionLabel={weapon.name}
-                  valueLabels={["Dmg", "Reach", "Properties", "More"]}
+                  valueLabels={[
+                    { align: "right", className: "hidden md:block", label: "Dmg" },
+                    { align: "right", className: "hidden md:block", label: "Reach" },
+                    { align: "right", className: "hidden md:block", label: "Properties" },
+                    { align: "center", label: "More" },
+                  ]}
                 >
                   {actions.map((action, idx) => {
                     const totalActionValue = action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
@@ -421,13 +442,24 @@ export function ActionsTab({
                       </SheetDataAccordionRow>
                     );
                   })}
-                </ActionSection>
+                </SheetDataSection>
               ) : (
-                <ActionSection
+                <SheetDataSection
                   key={weapon.name}
                   gridClassName={rangedActionGridClass}
+                  headerClassName={actionSummaryGridClass}
+                  leadingLabels={[{ align: "center", label: "Roll" }]}
                   sectionLabel={weapon.name}
-                  valueLabels={["Dmg", "PB", "S", "A", "L", "E", "Properties", "More"]}
+                  valueLabels={[
+                    { align: "right", className: "hidden md:block", label: "Dmg" },
+                    { align: "right", className: "hidden md:block", label: "PB" },
+                    { align: "right", className: "hidden md:block", label: "S" },
+                    { align: "right", className: "hidden md:block", label: "A" },
+                    { align: "right", className: "hidden md:block", label: "L" },
+                    { align: "right", className: "hidden md:block", label: "E" },
+                    { align: "right", className: "hidden md:block", label: "Properties" },
+                    { align: "center", label: "More" },
+                  ]}
                 >
                   {actions.map((action, idx) => {
                     const totalActionValue = action.totalValue + action.modifier + getTargetBonusTotal(action.targetBonusSources ?? []);
@@ -499,23 +531,25 @@ export function ActionsTab({
                       </SheetDataAccordionRow>
                     );
                   })}
-                </ActionSection>
+                </SheetDataSection>
               );
             })}
 
-          {(activeActionCategory === "all" || activeActionCategory === "other") && (
-            <ActionSection
+          {(visibleActionCategory === "all" || visibleActionCategory === "other") && (
+            <SheetDataSection
               gridClassName={weaponActionGridClass}
+              headerClassName={actionSummaryGridClass}
+              leadingLabels={[{ align: "center", label: "Roll" }]}
               sectionLabel="Maneuvers"
-              valueLabels={["Dmg", "Reach", "Notes", "More"]}
+              valueLabels={[
+                { align: "right", className: "hidden md:block", label: "Dmg" },
+                { align: "right", className: "hidden md:block", label: "Reach" },
+                { align: "right", className: "hidden md:block", label: "Notes" },
+                { align: "center", label: "More" },
+              ]}
             >
-              {[
-                { name: "Move", char: "Ag" as Characteristic["key"], range: `${characterData.move}`, properties: [], modifier: 0, damage: "-", type: "other" },
-                { name: "Defend", char: "WS" as Characteristic["key"], range: "-", properties: [], modifier: 0, targetBonusSources: [{ label: "Defense", value: 20 }], damage: "-", type: "other" },
-                { name: "Disengage", char: "Ag" as Characteristic["key"], range: "-", properties: ["Retreat"], modifier: 0, damage: "-", type: "other" },
-                { name: "Grapple", char: "WS" as Characteristic["key"], range: "Reach", properties: ["Stun"], modifier: 0, damage: "SB", type: "melee" },
-              ]
-                .filter((action) => activeActionCategory === "all" || action.type === activeActionCategory)
+              {maneuverActions
+                .filter((action) => visibleActionCategory === "all" || action.type === visibleActionCategory)
                 .map((action) => {
                   const baseValue = attributes[action.char] || 0;
                   const skill = characterSkills.find((entry) => entry.displayName.includes(action.name));
@@ -582,7 +616,7 @@ export function ActionsTab({
                     </SheetDataAccordionRow>
                   );
                 })}
-            </ActionSection>
+            </SheetDataSection>
           )}
     </SubtabContentFrame>
   );
