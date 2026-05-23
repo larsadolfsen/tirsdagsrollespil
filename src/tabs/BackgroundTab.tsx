@@ -8,7 +8,7 @@ export function BackgroundTab({
   setBackgroundText: (value: string) => void;
 }) {
   return (
-    <div className="flex-1 overflow-y-auto p-3 lg:p-4 flex flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-2 sm:p-3 lg:p-4">
       <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
         <div className="flex items-center justify-between gap-3">
           <h3 className="wfrp-panel-title">

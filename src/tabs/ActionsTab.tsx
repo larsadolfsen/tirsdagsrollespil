@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { InlineSubtabs } from "../components/ui";
+import { InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -165,19 +165,20 @@ export function ActionsTab({
   };
 
   return (
-    <div className="flex h-full flex-col bg-transparent">
-      <InlineSubtabs<ActionCategory>
-        options={[
-          { id: "all", label: "All" },
-          { id: "melee", label: "Melee" },
-          { id: "ranged", label: "Ranged" },
-          { id: "other", label: "Other" },
-        ]}
-        activeId={activeActionCategory}
-        onChange={setActiveActionCategory}
-      />
-
-      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent">
+    <SubtabContentFrame
+      subtabBar={(
+        <InlineSubtabs<ActionCategory>
+          options={[
+            { id: "all", label: "All" },
+            { id: "melee", label: "Melee" },
+            { id: "ranged", label: "Ranged" },
+            { id: "other", label: "Other" },
+          ]}
+          activeId={activeActionCategory}
+          onChange={setActiveActionCategory}
+        />
+      )}
+    >
           {characterData.spells.length > 0 && (activeActionCategory === "all" || activeActionCategory === "other") && (() => {
             const baseWP = attributes.WP || 0;
             const channellingSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
@@ -583,7 +584,6 @@ export function ActionsTab({
                 })}
             </ActionSection>
           )}
-      </div>
-    </div>
+    </SubtabContentFrame>
   );
 }

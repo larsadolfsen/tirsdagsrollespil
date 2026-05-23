@@ -272,7 +272,7 @@ export function CareerTab({
         />
       </div>
 
-      <div className="border-b border-white/5 bg-wfrp-bg px-2 py-2 sm:px-3 lg:px-4">
+      <div className="border-b border-white/5 bg-wfrp-bg p-2 sm:p-3 lg:p-4">
         <div className="flex gap-2 pb-2">
           <button
             onClick={isAdvancementEditMode ? cancelAdvancementEdit : beginAdvancementEdit}
@@ -332,7 +332,7 @@ export function CareerTab({
         </SheetDataPanel>
       </div>
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-4 no-scrollbar">
+      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden p-2 sm:p-3 lg:p-4 no-scrollbar">
         {(activeCareerSubtab === "all" || activeCareerSubtab === "careers") && (
           <AdvancementSection title="Careers" meta="Current Path" hideHeader>
             <SheetDataPanel>

@@ -45,33 +45,45 @@ export function InlineSubtabs<T extends string>({
     <div className="flex flex-col items-stretch bg-transparent pt-3">
       <div className="min-w-0 flex-1 self-stretch">
         <ScrollableTabStrip
-          className="flex w-full min-w-max flex-nowrap items-center justify-center gap-1.5 overflow-x-auto px-0 pb-2 pt-0 !px-0 sm:gap-2 md:flex-nowrap md:overflow-x-auto md:pb-2 md:pt-0 lg:w-max lg:min-w-0 lg:justify-start no-scrollbar"
-          role="tablist"
-          ariaLabel={ariaLabel}
+          className="flex w-full min-w-max flex-nowrap items-center justify-center overflow-x-auto px-0 pb-2 pt-0 !px-0 md:flex-nowrap md:overflow-x-auto md:pb-2 md:pt-0 lg:w-max lg:min-w-0 lg:justify-start no-scrollbar"
         >
-          {options.map((option, index) => {
-            const isActive = activeId === option.id;
+          <div
+            className="inline-flex h-12 items-center"
+            role="tablist"
+            aria-label={ariaLabel}
+          >
+            {options.map((option, index) => {
+              const isActive = activeId === option.id;
 
-            return (
-              <button
-                key={option.id}
-                ref={(element) => {
-                  tabRefs.current[index] = element;
-                }}
-                role="tab"
-                aria-selected={isActive}
-                tabIndex={isActive ? 0 : -1}
-                onKeyDown={(event) => onTabKeyDown(event, index)}
-                onClick={() => onChange(option.id)}
-                className={cn(
-                  inlineSubtabButtonBaseClassName,
-                  isActive ? inlineSubtabButtonActiveClassName : inlineSubtabButtonInactiveClassName,
-                )}
-              >
-                {option.label}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={option.id}
+                  ref={(element) => {
+                    tabRefs.current[index] = element;
+                  }}
+                  role="tab"
+                  aria-selected={isActive}
+                  tabIndex={isActive ? 0 : -1}
+                  onKeyDown={(event) => onTabKeyDown(event, index)}
+                  onClick={() => onChange(option.id)}
+                  className={cn(
+                    inlineSubtabButtonBaseClassName,
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "inline-flex h-6 items-center justify-center border-y border-r border-wfrp-border px-3 transition-colors sm:px-4",
+                      index === 0 && "rounded-l border-l",
+                      index === options.length - 1 && "rounded-r",
+                      isActive ? inlineSubtabButtonActiveClassName : inlineSubtabButtonInactiveClassName,
+                    )}
+                  >
+                    {option.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </ScrollableTabStrip>
       </div>
       {trailingContent ? (

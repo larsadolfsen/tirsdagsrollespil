@@ -188,7 +188,7 @@ export function CharacterHeader({
           <button
             type="button"
             onClick={() => portraitInputRef.current?.click()}
-            className="hidden h-10 w-10 overflow-hidden rounded-full border border-wfrp-gold p-0.5 shadow-inner transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:block sm:h-12 sm:w-12"
+            className="hidden h-10 w-10 cursor-pointer overflow-hidden rounded-full border border-wfrp-gold p-0.5 shadow-inner transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:block sm:h-12 sm:w-12"
             aria-label="Upload character portrait"
             title={portraitError ?? "Upload character portrait"}
           >
@@ -251,7 +251,7 @@ export function CharacterHeader({
             <button
               type="button"
               onClick={startEditingName}
-              className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-left font-serif text-base font-bold leading-tight tracking-tight transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:text-xl"
+              className="min-w-0 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-left font-serif text-base font-bold leading-tight tracking-tight transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:text-xl"
               aria-label="Edit character name"
             >
               {characterData.name}
@@ -340,7 +340,7 @@ export function CharacterHeader({
                           onSelectCharacter(character.id);
                           setIsCampaignMenuOpen(false);
                         }}
-                        className={`flex w-full items-center justify-between rounded px-3 py-2 text-left transition-colors ${
+                        className={`flex w-full cursor-pointer items-center justify-between rounded px-3 py-2 text-left transition-colors ${
                           isSelected
                             ? "bg-wfrp-gold-surface text-wfrp-gold"
                             : "text-gray-200 hover:bg-wfrp-surface-raised"

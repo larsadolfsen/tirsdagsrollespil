@@ -28,7 +28,7 @@ export function SubtabContentFrame(props: SubtabContentFrameProps) {
       </div>
       <div
         className={cn(
-          "min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden space-y-4",
+          "min-h-0 min-w-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden p-2 sm:p-3 lg:p-4",
           contentClassName,
         )}
       >

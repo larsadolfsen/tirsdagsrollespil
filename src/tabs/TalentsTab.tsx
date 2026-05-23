@@ -1,9 +1,18 @@
-import { SheetDataButtonRow, SheetDataHeader, SheetDataPanel, SheetDataTable, SheetEmptyState } from "../components/wfrp";
+import {
+  SheetDataAccordionDetails,
+  SheetDataAccordionRow,
+  SheetDataDisclosureChevron,
+  SheetDataHeader,
+  SheetDataHeaderCell,
+  SheetDataPanel,
+  SheetDataTable,
+  SheetEmptyState,
+} from "../components/wfrp";
 import type { ResolvedCharacterTalent } from "../data/characters/resolved";
 
 type TalentEffect = NonNullable<ResolvedCharacterTalent["effects"]>[number];
 
-const talentGridClass = "grid-cols-[minmax(0,1fr)_72px] md:grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)]";
+const talentGridClass = "grid-cols-[minmax(0,1fr)_72px_48px] md:grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)_48px]";
 
 export function TalentsTab({
   characterTalentRows,
@@ -17,35 +26,71 @@ export function TalentsTab({
   formatTalentEffect: (effect: TalentEffect) => string;
 }) {
   return (
-    <div className="flex-1 overflow-y-auto p-2">
+    <div className="flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4">
       {characterTalentRows.length > 0 ? (
         <SheetDataPanel>
           <SheetDataHeader className={talentGridClass}>
-            <span className="wfrp-table-label text-left">Talent</span>
-            <span className="wfrp-table-label text-center">Taken</span>
-            <span className="hidden wfrp-table-label text-left md:block">Description</span>
+            <SheetDataHeaderCell>Talent</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="center">Taken</SheetDataHeaderCell>
+            <SheetDataHeaderCell className="hidden md:block">Description</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="center">More</SheetDataHeaderCell>
           </SheetDataHeader>
           <SheetDataTable>
-            {characterTalentRows.map(({ talent, count }) => (
-              <SheetDataButtonRow
-                key={talent.name}
-                onClick={() => openTalentInfo(talent.name)}
-                className={`group ${talentGridClass} items-start`}
-                aria-label={`Open ${talent.name} talent rule`}
-              >
-                <span className="min-w-0 truncate text-xs font-semibold text-gray-400 transition-colors group-hover:text-wfrp-gold md:whitespace-normal">
-                  {talent.name}
-                </span>
-                <span className="min-w-0 text-center text-xs leading-relaxed text-gray-500">
-                  {count}/{getTalentMaxDisplay(talent.max)}
-                </span>
-                <span className="hidden min-w-0 text-xs leading-relaxed text-gray-500 md:block">
-                  {talent.effects?.length
-                    ? talent.effects.map(formatTalentEffect).join("; ")
-                    : talent.description}
-                </span>
-              </SheetDataButtonRow>
-            ))}
+            {characterTalentRows.map(({ talent, count }) => {
+              const takenDisplay = `${count}/${getTalentMaxDisplay(talent.max)}`;
+              const effectText = talent.effects?.length
+                ? talent.effects.map(formatTalentEffect).join("; ")
+                : talent.description;
+
+              return (
+                <SheetDataAccordionRow
+                  key={talent.name}
+                  className="wfrp-skill-row"
+                  summaryClassName={`wfrp-skill-row-summary ${talentGridClass} gap-0`}
+                  contentClassName="px-3 pb-4 pt-1 md:col-start-1 md:col-end-5 md:px-4 md:pb-4"
+                  summary={(
+                    <>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          openTalentInfo(talent.name);
+                        }}
+                        className="wfrp-skill-link min-w-0 truncate text-left text-gray-200"
+                        aria-label={`Open ${talent.name} talent rule`}
+                      >
+                        {talent.name}
+                      </button>
+                      <div className="wfrp-list-cell-strong text-center font-mono">
+                        {takenDisplay}
+                      </div>
+                      <div className="hidden min-w-0 truncate text-xs font-semibold leading-relaxed text-wfrp-muted-text md:block">
+                        {effectText}
+                      </div>
+                      <SheetDataDisclosureChevron className="md:inline-flex" />
+                    </>
+                  )}
+                >
+                  <SheetDataAccordionDetails
+                    description={talent.description}
+                    rows={[
+                      { label: "Taken", value: count },
+                      { label: "Maximum", value: getTalentMaxDisplay(talent.max) },
+                    ]}
+                  >
+                    {talent.effects?.length ? (
+                      <div className="flex flex-col gap-1 border-t border-white/10 pt-2">
+                        {talent.effects.map((effect, index) => (
+                          <p key={index} className="text-[11px] font-bold leading-relaxed text-card-foreground">
+                            {formatTalentEffect(effect)}
+                          </p>
+                        ))}
+                      </div>
+                    ) : null}
+                  </SheetDataAccordionDetails>
+                </SheetDataAccordionRow>
+              );
+            })}
           </SheetDataTable>
         </SheetDataPanel>
       ) : (

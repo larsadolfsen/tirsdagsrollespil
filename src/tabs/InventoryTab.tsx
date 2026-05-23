@@ -163,30 +163,7 @@ export function InventoryTab({
         activeId={activeInventorySubtab}
         onChange={setActiveInventorySubtab}
         trailingContent={
-          <div className="flex w-full items-center justify-between gap-4">
-            <div className="hidden w-32 flex-col gap-1 sm:flex lg:w-40">
-              <div className="flex items-end justify-between leading-none">
-                <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
-                  Encumbrance
-                </span>
-                <span className="font-mono text-[10px] font-bold text-gray-200">
-                  {totalEncumbrance} / {carryCapacity}
-                </span>
-              </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-wfrp-border shadow-inner">
-                <div
-                  className={`h-full transition-all duration-500 ease-out ${
-                    totalEncumbrance > carryCapacity ? "bg-wfrp-red" : "bg-wfrp-gold"
-                  }`}
-                  style={{ width: `${encumbrancePercent}%` }}
-                  role="progressbar"
-                  aria-valuenow={totalEncumbrance}
-                  aria-valuemin={0}
-                  aria-valuemax={carryCapacity}
-                  aria-label="Current encumbrance"
-                />
-              </div>
-            </div>
+          <div className="flex w-full items-center justify-end">
             <button
               type="button"
               onClick={openShop}
@@ -199,7 +176,31 @@ export function InventoryTab({
         }
       />
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-card">
+      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent p-2 sm:p-3 lg:p-4">
+        <SheetDataPanel className="px-3 py-3 sm:px-4">
+          <div className="flex items-end justify-between leading-none">
+            <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
+              Encumbrance
+            </span>
+            <span className="font-mono text-[10px] font-bold text-gray-200">
+              {totalEncumbrance} / {carryCapacity}
+            </span>
+          </div>
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-wfrp-border shadow-inner">
+            <div
+              className={`h-full transition-all duration-500 ease-out ${
+                totalEncumbrance > carryCapacity ? "bg-wfrp-red" : "bg-wfrp-gold"
+              }`}
+              style={{ width: `${encumbrancePercent}%` }}
+              role="progressbar"
+              aria-valuenow={totalEncumbrance}
+              aria-valuemin={0}
+              aria-valuemax={carryCapacity}
+              aria-label="Current encumbrance"
+            />
+          </div>
+        </SheetDataPanel>
+
         <SheetDataPanel>
           {visibleSections.map((section) => {
             const isActiveDropTarget = inventoryDropTarget === section.id;
