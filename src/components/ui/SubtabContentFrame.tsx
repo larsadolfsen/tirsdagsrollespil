@@ -1,5 +1,6 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/src/lib/utils";
+import { useMobileMainViewSwipeHandlers } from "../MobileMainViewSwipeContext";
 
 type SubtabContentFrameProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
@@ -17,6 +18,7 @@ export function SubtabContentFrame(props: SubtabContentFrameProps) {
     subtabBarClassName,
     ...rest
   } = props;
+  const mobileMainViewSwipeHandlers = useMobileMainViewSwipeHandlers();
 
   return (
     <div
@@ -29,6 +31,7 @@ export function SubtabContentFrame(props: SubtabContentFrameProps) {
         </div>
       ) : null}
       <div
+        {...(mobileMainViewSwipeHandlers ?? {})}
         className={cn(
           "min-h-0 min-w-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-2 pb-2 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4",
           subtabBar ? "pt-1" : "pt-4",

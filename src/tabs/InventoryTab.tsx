@@ -1,5 +1,6 @@
 import { Minus } from "lucide-react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, RefObject } from "react";
+import { useMobileMainViewSwipeHandlers } from "../components/MobileMainViewSwipeContext";
 import { InlineSubtabs, SubtabActionButton } from "../components/ui";
 import {
   SheetDataAccordionDetails,
@@ -106,6 +107,7 @@ export function InventoryTab({
   formatItemValue: (item: ResolvedCharacterEquipment) => string;
   openShop: () => void;
 }) {
+  const mobileMainViewSwipeHandlers = useMobileMainViewSwipeHandlers();
   const { inventorySubtabOptions, visibleSections, wallet } = useInventoryViewModel({
     activeInventorySubtab,
     carriedItems,
@@ -171,7 +173,10 @@ export function InventoryTab({
         }
       />
 
-      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4">
+      <div
+        {...(mobileMainViewSwipeHandlers ?? {})}
+        className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4"
+      >
         <SheetDataPanel className="bg-wfrp-table px-3 py-3 sm:px-4">
           <div className="flex items-end justify-between leading-none">
             <span className="text-[9px] font-bold uppercase tracking-tight text-wfrp-muted-text">

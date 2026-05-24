@@ -14,6 +14,7 @@ import { ArmourCard } from "./components/ArmourCard";
 import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
 import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
 import { CharacteristicsView } from "./components/CharacteristicsView";
+import { MobileMainViewSwipeProvider } from "./components/MobileMainViewSwipeContext";
 import { MobileTabMenu } from "./components/MobileTabMenu";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
@@ -21,6 +22,7 @@ import { useCharacterDerivedStats } from "./hooks/useCharacterDerivedStats";
 import { DiceLogSidebar, useDiceRoller } from "./features/dice";
 import { useCareerAdvancement } from "./hooks/useCareerAdvancement";
 import { useInventoryActions } from "./hooks/useInventoryActions";
+import { useHorizontalSwipePager } from "./hooks/useHorizontalSwipePager";
 import { useNotesViewModel } from "./hooks/useNotesViewModel";
 import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
@@ -1006,6 +1008,10 @@ export function AppComposition() {
 
     selectMobileMainView(displayedMobileTabMenuOptions[nextIndex].id);
   };
+  const mobileMainViewSwipeHandlers = useHorizontalSwipePager({
+    onNext: () => navigateMobileMainView(1),
+    onPrevious: () => navigateMobileMainView(-1),
+  });
 
   if (isCharacterBuilderOpen) {
     return (
@@ -1241,7 +1247,8 @@ export function AppComposition() {
                     exit={{ opacity: 0, y: -5 }}
                     className="flex-1 flex flex-col min-h-0"
                   >
-                    <LazyTabPanel>
+                    <MobileMainViewSwipeProvider handlers={mobileMainViewSwipeHandlers}>
+                      <LazyTabPanel>
                       {activeMainTab === 'skills' && (
                         <SkillsTab
                           activeSkillSubtab={activeSkillSubtab}
@@ -1403,7 +1410,8 @@ export function AppComposition() {
                         setBackgroundText={setBackgroundText}
                       />
                       )}
-                    </LazyTabPanel>
+                      </LazyTabPanel>
+                    </MobileMainViewSwipeProvider>
                   </motion.div>
                 </AnimatePresence>
               </div>

@@ -1,6 +1,6 @@
-import { useRef } from "react";
-import type { ReactNode, TouchEvent } from "react";
+import type { ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useHorizontalSwipePager } from "../hooks/useHorizontalSwipePager";
 
 interface CharacterSheetFrameProps {
   children: ReactNode;
@@ -20,39 +20,12 @@ function MobileTitlePager({
   onPrevious: () => void;
   title: string;
 }) {
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
-
-  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
-    const touch = event.changedTouches[0];
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-  };
-
-  const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
-    const start = touchStartRef.current;
-    touchStartRef.current = null;
-    if (!start) return;
-
-    const touch = event.changedTouches[0];
-    const deltaX = touch.clientX - start.x;
-    const deltaY = touch.clientY - start.y;
-
-    if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) {
-      return;
-    }
-
-    if (deltaX < 0) {
-      onNext();
-      return;
-    }
-
-    onPrevious();
-  };
+  const swipeHandlers = useHorizontalSwipePager({ onNext, onPrevious });
 
   return (
     <div
       className="grid grid-cols-[40px_minmax(0,1fr)_40px] items-center gap-2 md:hidden"
-      onTouchEnd={handleTouchEnd}
-      onTouchStart={handleTouchStart}
+      {...swipeHandlers}
     >
       <button
         type="button"
