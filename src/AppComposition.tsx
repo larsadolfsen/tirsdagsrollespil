@@ -212,9 +212,13 @@ export function AppComposition() {
   });
   const {
     addNote,
+    cancelNoteComposer,
     deleteNote,
+    editingNoteId,
+    editNote,
     formatNoteDate,
     formatNoteDay,
+    isNoteComposerOpen,
     newNoteText,
     newNoteTitle,
     noteGroups,
@@ -223,6 +227,7 @@ export function AppComposition() {
     npcNoteGroups,
     npcNoteHashtags,
     npcNotes,
+    openNoteComposer,
     setNewNoteText,
     setNewNoteTitle,
     setNoteSearch,
@@ -975,6 +980,21 @@ export function AppComposition() {
     setIsMobilePortraitMenuOpen((isOpen) => !isOpen);
   };
 
+  const openMobileJournalEntry = () => {
+    setIsMobileNavigationOpen(false);
+    setIsMobileCharacterListOpen(false);
+    setIsMobilePortraitMenuOpen(false);
+    openNoteComposer();
+
+    if (activeJournalSubtab === "npcs" && !/(^|\s)#npcs?(\s|$)/i.test(newNoteText)) {
+      setNewNoteText(newNoteText.trim() ? `${newNoteText.trim()}\n\n#npc` : "#npc");
+    }
+
+    window.setTimeout(() => {
+      document.getElementById("journal-new-note-title")?.focus();
+    }, 0);
+  };
+
   const mobileAddAction =
     activeMobileMainView === "inventory"
       ? {
@@ -997,7 +1017,12 @@ export function AppComposition() {
               setIsMobilePortraitMenuOpen(false);
               setIsSpellShopOpen(true);
             },
-        }
+          }
+      : activeMobileMainView === "journal" && activeJournalSubtab !== "background"
+        ? {
+            label: activeJournalSubtab === "npcs" ? "Add NPC" : "Add session",
+            onClick: openMobileJournalEntry,
+          }
       : null;
 
   const navigateMobileMainView = (direction: -1 | 1) => {
@@ -1249,19 +1274,19 @@ export function AppComposition() {
                   >
                     <MobileMainViewSwipeProvider handlers={mobileMainViewSwipeHandlers}>
                       <LazyTabPanel>
-                      {activeMainTab === 'skills' && (
-                        <SkillsTab
-                          activeSkillSubtab={activeSkillSubtab}
-                          setActiveSkillSubtab={setActiveSkillSubtab}
-                          visibleSkillRows={visibleSkillRows}
-                          attributes={attributes}
-                          handleRoll={handleRoll}
-                          openSkillInfo={(skillName) => {
-                            setActiveInfo({ type: 'skill', name: skillName });
-                            setRollState(prev => ({ ...prev, characteristic: null }));
-                          }}
-                        />
-                      )}
+                        {activeMainTab === 'skills' && (
+                          <SkillsTab
+                            activeSkillSubtab={activeSkillSubtab}
+                            setActiveSkillSubtab={setActiveSkillSubtab}
+                            visibleSkillRows={visibleSkillRows}
+                            attributes={attributes}
+                            handleRoll={handleRoll}
+                            openSkillInfo={(skillName) => {
+                              setActiveInfo({ type: 'skill', name: skillName });
+                              setRollState(prev => ({ ...prev, characteristic: null }));
+                            }}
+                          />
+                        )}
 
                       {activeMainTab === 'actions' && (
                         <ActionsTab
@@ -1403,7 +1428,12 @@ export function AppComposition() {
                         newNoteText={newNoteText}
                         setNewNoteText={setNewNoteText}
                         addNote={addNote}
+                        cancelNoteComposer={cancelNoteComposer}
                         deleteNote={deleteNote}
+                        editingNoteId={editingNoteId}
+                        editNote={editNote}
+                        isNoteComposerOpen={isNoteComposerOpen}
+                        openNoteComposer={openNoteComposer}
                         formatNoteDay={formatNoteDay}
                         formatNoteDate={formatNoteDate}
                         backgroundText={backgroundText}
