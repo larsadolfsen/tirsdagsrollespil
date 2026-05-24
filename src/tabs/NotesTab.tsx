@@ -1,6 +1,8 @@
-import { Trash2 } from "lucide-react";
-import { Button, Input, Textarea } from "../components/ui";
+import { Button, Input, SubtabActionButton, Textarea } from "../components/ui";
 import {
+  SheetDataAccordionDetails,
+  SheetDataAccordionRow,
+  SheetDataDisclosureCell,
   SheetDataHeaderCell,
   SheetDataPanel,
   SheetDataRow,
@@ -15,7 +17,16 @@ type NoteGroup = {
   notes: CharacterNoteData[];
 };
 
+const journalEntryGridClass = "grid-cols-[52px_minmax(0,1.2fr)_minmax(90px,0.8fr)_48px] md:grid-cols-[72px_minmax(220px,1.25fr)_minmax(150px,0.75fr)_48px]";
+const npcEntryGridClass = "grid-cols-[52px_minmax(0,1fr)_48px] md:grid-cols-[72px_minmax(0,1fr)_48px]";
+
+const formatEntryDate = (value: string) =>
+  new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+  }).format(new Date(value));
+
 export function NotesTab({
+  entryLabel,
   sortedNotes,
   noteGroups,
   noteHashtags,
@@ -26,10 +37,15 @@ export function NotesTab({
   newNoteText,
   setNewNoteText,
   addNote,
+  cancelNoteComposer,
   deleteNote,
+  editingNoteId,
+  editNote,
+  isNoteComposerOpen,
   formatNoteDay,
   formatNoteDate,
 }: {
+  entryLabel: string;
   sortedNotes: CharacterNoteData[];
   noteGroups: NoteGroup[];
   noteHashtags: string[];
@@ -40,142 +56,197 @@ export function NotesTab({
   newNoteText: string;
   setNewNoteText: (value: string) => void;
   addNote: () => void;
+  cancelNoteComposer: () => void;
   deleteNote: (noteId: string) => void;
+  editingNoteId: string | null;
+  editNote: (note: CharacterNoteData) => void;
+  isNoteComposerOpen: boolean;
   formatNoteDay: (value: string) => string;
   formatNoteDate: (value: string) => string;
 }) {
+  const isNpcList = entryLabel === "NPC";
+  const entryGridClass = isNpcList ? npcEntryGridClass : journalEntryGridClass;
+  const displayedNotes = noteGroups.flatMap((group) => group.notes);
+  const noteNumberById = new Map(
+    [...displayedNotes]
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      .map((note, index) => [note.id, index + 1]),
+  );
+
   return (
     <>
       {sortedNotes.length > 0 && (
-        <SheetDataPanel className="p-3">
-          <Input
-            value={noteSearch}
-            onChange={(event) => setNoteSearch(event.target.value)}
-            className="h-9"
-            placeholder="Search notes or #hashtags"
-            aria-label="Search notes or hashtags"
-          />
-        </SheetDataPanel>
+        <Input
+          value={noteSearch}
+          onChange={(event) => setNoteSearch(event.target.value)}
+          className="h-9"
+          placeholder="Search notes or #hashtags"
+          aria-label="Search notes or hashtags"
+        />
       )}
 
-      <SheetDataPanel className="divide-y divide-white/5">
-        <div className="grid grid-cols-[minmax(0,1fr)_96px] items-center gap-0 border-t border-white/5 bg-wfrp-table px-4 py-3">
-          <SheetDataHeaderCell>Campaign Journal</SheetDataHeaderCell>
-          <SheetDataHeaderCell align="right">
-            {sortedNotes.length} {sortedNotes.length === 1 ? "Entry" : "Entries"}
-          </SheetDataHeaderCell>
-        </div>
-
-        <div className="grid gap-3 p-4 md:grid-cols-[minmax(12rem,0.35fr)_minmax(0,1fr)_auto] md:items-start">
-          <Input
-            id="journal-new-note-title"
-            value={newNoteTitle}
-            onChange={(event) => setNewNoteTitle(event.target.value)}
-            className="h-10 font-semibold"
-            placeholder="Entry title"
-            aria-label="New note title"
-          />
-          <Textarea
-            value={newNoteText}
-            onChange={(event) => setNewNoteText(event.target.value)}
-            rows={3}
-            className="min-h-24"
-            placeholder="Write a note... Use #tags to create a chip."
-            aria-label="New note text"
-          />
-          <Button
-            onClick={addNote}
-            disabled={!newNoteTitle.trim() || !newNoteText.trim()}
-            size="sm"
-            className="md:mt-1"
-          >
-            Add Note
-          </Button>
-        </div>
-
-        {noteHashtags.length > 0 && (
-          <div className="flex flex-wrap gap-2 px-4 py-3">
-            {noteHashtags.map((tag) => {
-              const tagSearch = `#${tag}`;
-              const isActive = noteSearch.trim().toLowerCase() === tagSearch;
-
-              return (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => setNoteSearch(isActive ? "" : tagSearch)}
-                  className={`rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${
-                    isActive
-                      ? "border-wfrp-gold/60 bg-wfrp-gold/15 text-wfrp-gold"
-                      : "border-white/10 bg-black/25 text-wfrp-muted-text hover:text-gray-200 hover:border-white/20"
-                  }`}
-                >
-                  #{tag}
-                </button>
-              );
-            })}
+      {isNoteComposerOpen && !editingNoteId ? (
+        <SheetDataPanel className="divide-y divide-white/5">
+          <div className="grid grid-cols-[minmax(0,1fr)_96px] items-center gap-0 border-t border-white/5 bg-wfrp-table px-4 py-3">
+            <SheetDataHeaderCell>{editingNoteId ? "Edit Entry" : `Add ${entryLabel}`}</SheetDataHeaderCell>
+            <SheetDataHeaderCell align="right">
+              {sortedNotes.length} {sortedNotes.length === 1 ? "Entry" : "Entries"}
+            </SheetDataHeaderCell>
           </div>
-        )}
-      </SheetDataPanel>
 
-      {sortedNotes.length === 0 ? (
-        <SheetEmptyState title="No Notes">Entries will appear here by date written.</SheetEmptyState>
-      ) : noteGroups.length === 0 ? (
+          <div className="flex flex-col gap-3 p-4">
+            <Input
+              id="journal-new-note-title"
+              value={newNoteTitle}
+              onChange={(event) => setNewNoteTitle(event.target.value)}
+              className="h-10 font-semibold"
+              placeholder="Entry title"
+              aria-label="New note title"
+            />
+            <Textarea
+              value={newNoteText}
+              onChange={(event) => setNewNoteText(event.target.value)}
+              rows={3}
+              className="min-h-24"
+              placeholder="Write a note... Use #tags to create a chip."
+              aria-label="New note text"
+            />
+            <div className="flex flex-wrap justify-start gap-3">
+              <SubtabActionButton
+                onClick={addNote}
+                disabled={!newNoteTitle.trim() || !newNoteText.trim()}
+              >
+                {editingNoteId ? "Update Note" : "Save"}
+              </SubtabActionButton>
+              <SubtabActionButton
+                onClick={cancelNoteComposer}
+              >
+                Cancel
+              </SubtabActionButton>
+            </div>
+          </div>
+
+          {noteHashtags.length > 0 && (
+            <div className="flex flex-wrap gap-2 px-4 py-3">
+              {noteHashtags.map((tag) => {
+                const tagSearch = `#${tag}`;
+                const isActive = noteSearch.trim().toLowerCase() === tagSearch;
+
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setNoteSearch(isActive ? "" : tagSearch)}
+                    className={`rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                      isActive
+                        ? "border-wfrp-gold/60 bg-wfrp-gold/15 text-wfrp-gold"
+                        : "border-white/10 bg-black/25 text-wfrp-muted-text hover:text-gray-200 hover:border-white/20"
+                    }`}
+                  >
+                    #{tag}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </SheetDataPanel>
+      ) : null}
+
+      {sortedNotes.length > 0 && noteGroups.length === 0 ? (
         <SheetEmptyState title="No Matches">Try another word or hashtag.</SheetEmptyState>
       ) : (
-        <div className="flex flex-col gap-4">
-          {noteGroups.map((group) => (
-            <SheetDataSection
-              key={group.dayKey}
-              gridClassName="grid-cols-[minmax(0,1fr)_84px_44px] md:grid-cols-[minmax(10rem,0.35fr)_minmax(0,1fr)_132px_44px]"
-              sectionLabel={formatNoteDay(group.date)}
-              valueLabels={[
-                { className: "hidden md:block", label: "Text" },
-                { align: "right", label: "Created" },
-                { align: "center", label: "More" },
-              ]}
-            >
-              {group.notes.map((note) => (
-                <SheetDataRow
-                  key={note.id}
-                  className="grid-cols-[minmax(0,1fr)_84px_44px] px-0 py-0 md:grid-cols-[minmax(10rem,0.35fr)_minmax(0,1fr)_132px_44px]"
-                >
-                  <div className="min-w-0 px-4 py-3">
-                    <h4 className="truncate text-xs font-bold uppercase tracking-wide text-gray-100">
-                      {note.title ?? "Untitled Entry"}
-                    </h4>
-                    <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-xs leading-relaxed text-wfrp-muted-text md:hidden">
-                      {note.text}
-                    </p>
+        <SheetDataSection
+          gridClassName={entryGridClass}
+          sectionLabelClassName="pl-4"
+          leadingLabels={[{ align: "center", label: "#" }]}
+          sectionLabel="Title"
+          valueLabels={
+            isNpcList
+              ? [{ align: "center", label: "More" }]
+              : [
+                  { label: "Date" },
+                  { align: "center", label: "More" },
+                ]
+          }
+        >
+          {displayedNotes.map((note) => (
+            <SheetDataAccordionRow
+              key={note.id}
+              summaryClassName={`${entryGridClass} gap-0`}
+              contentClassName={`px-3 pb-1 pt-1 md:col-start-1 md:px-4 md:pb-1 ${isNpcList ? "md:col-end-4" : "md:col-end-5"}`}
+              summary={(
+                <>
+                  <div className="wfrp-list-cell-strong min-w-0 text-center font-mono text-gray-200">
+                    {noteNumberById.get(note.id)}
                   </div>
-
-                  <p className="hidden min-w-0 whitespace-pre-wrap px-4 py-3 text-xs font-semibold leading-relaxed text-gray-200 md:block">
-                    {note.text}
-                  </p>
-
-                  <time
-                    className="wfrp-list-cell-strong min-w-0 truncate px-2 py-3 text-right font-mono text-[11px]"
-                    dateTime={note.createdAt}
-                  >
-                    {formatNoteDate(note.createdAt)}
-                  </time>
-
-                  <div className="flex justify-center px-2 py-2">
-                    <Button
+                  <div className="min-w-0 truncate text-[12px] font-semibold leading-relaxed text-wfrp-muted-text">
+                    {note.title ?? "Untitled Entry"}
+                  </div>
+                  {!isNpcList ? (
+                    <time
+                      className="wfrp-list-cell-strong min-w-0 truncate text-left font-mono text-[11px] uppercase tracking-wider text-wfrp-muted-text"
+                      dateTime={note.createdAt}
+                    >
+                      {formatEntryDate(note.createdAt)}
+                    </time>
+                  ) : null}
+                  <SheetDataDisclosureCell />
+                </>
+              )}
+            >
+              <SheetDataAccordionDetails className="gap-0" description={editingNoteId === note.id ? null : note.text}>
+                {editingNoteId === note.id ? (
+                  <div className="flex flex-col gap-3">
+                    <Input
+                      id="journal-new-note-title"
+                      value={newNoteTitle}
+                      onChange={(event) => setNewNoteTitle(event.target.value)}
+                      className="h-10 font-semibold"
+                      placeholder="Entry title"
+                      aria-label="Edit note title"
+                    />
+                    <Textarea
+                      value={newNoteText}
+                      onChange={(event) => setNewNoteText(event.target.value)}
+                      rows={3}
+                      className="min-h-24"
+                      placeholder="Write a note... Use #tags to create a chip."
+                      aria-label="Edit note text"
+                    />
+                    <div className="-mt-1 flex flex-wrap justify-start gap-3">
+                      <SubtabActionButton onClick={cancelNoteComposer}>
+                        Cancel
+                      </SubtabActionButton>
+                      <SubtabActionButton
+                        onClick={addNote}
+                        disabled={!newNoteTitle.trim() || !newNoteText.trim()}
+                      >
+                        Save
+                      </SubtabActionButton>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <SubtabActionButton
+                      onClick={() => editNote(note)}
+                      className="h-8"
+                      aria-label={`Edit note from ${formatNoteDate(note.createdAt)}`}
+                    >
+                      Edit
+                    </SubtabActionButton>
+                    <SubtabActionButton
                       onClick={() => deleteNote(note.id)}
-                      variant="destructive"
-                      size="icon"
-                      className="h-7 w-7 shrink-0"
+                      className="h-8"
                       aria-label={`Delete note from ${formatNoteDate(note.createdAt)}`}
                     >
-                      <Trash2 size={12} />
-                    </Button>
+                      Delete
+                    </SubtabActionButton>
                   </div>
-                </SheetDataRow>
-              ))}
-            </SheetDataSection>
+                )}
+              </SheetDataAccordionDetails>
+            </SheetDataAccordionRow>
           ))}
-        </div>
+        </SheetDataSection>
       )}
     </>
   );

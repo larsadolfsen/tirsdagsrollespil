@@ -14,6 +14,7 @@ import { ArmourCard } from "./components/ArmourCard";
 import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
 import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
 import { CharacteristicsView } from "./components/CharacteristicsView";
+import { MobileMainViewSwipeProvider } from "./components/MobileMainViewSwipeContext";
 import { MobileTabMenu } from "./components/MobileTabMenu";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
@@ -21,6 +22,7 @@ import { useCharacterDerivedStats } from "./hooks/useCharacterDerivedStats";
 import { DiceLogSidebar, useDiceRoller } from "./features/dice";
 import { useCareerAdvancement } from "./hooks/useCareerAdvancement";
 import { useInventoryActions } from "./hooks/useInventoryActions";
+import { useHorizontalSwipePager } from "./hooks/useHorizontalSwipePager";
 import { useNotesViewModel } from "./hooks/useNotesViewModel";
 import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
@@ -210,9 +212,13 @@ export function AppComposition() {
   });
   const {
     addNote,
+    cancelNoteComposer,
     deleteNote,
+    editingNoteId,
+    editNote,
     formatNoteDate,
     formatNoteDay,
+    isNoteComposerOpen,
     newNoteText,
     newNoteTitle,
     noteGroups,
@@ -221,6 +227,7 @@ export function AppComposition() {
     npcNoteGroups,
     npcNoteHashtags,
     npcNotes,
+    openNoteComposer,
     setNewNoteText,
     setNewNoteTitle,
     setNoteSearch,
@@ -973,6 +980,21 @@ export function AppComposition() {
     setIsMobilePortraitMenuOpen((isOpen) => !isOpen);
   };
 
+  const openMobileJournalEntry = () => {
+    setIsMobileNavigationOpen(false);
+    setIsMobileCharacterListOpen(false);
+    setIsMobilePortraitMenuOpen(false);
+    openNoteComposer();
+
+    if (activeJournalSubtab === "npcs" && !/(^|\s)#npcs?(\s|$)/i.test(newNoteText)) {
+      setNewNoteText(newNoteText.trim() ? `${newNoteText.trim()}\n\n#npc` : "#npc");
+    }
+
+    window.setTimeout(() => {
+      document.getElementById("journal-new-note-title")?.focus();
+    }, 0);
+  };
+
   const mobileAddAction =
     activeMobileMainView === "inventory"
       ? {
@@ -995,7 +1017,12 @@ export function AppComposition() {
               setIsMobilePortraitMenuOpen(false);
               setIsSpellShopOpen(true);
             },
-        }
+          }
+      : activeMobileMainView === "journal" && activeJournalSubtab !== "background"
+        ? {
+            label: activeJournalSubtab === "npcs" ? "Add NPC" : "Add session",
+            onClick: openMobileJournalEntry,
+          }
       : null;
 
   const navigateMobileMainView = (direction: -1 | 1) => {
@@ -1006,6 +1033,10 @@ export function AppComposition() {
 
     selectMobileMainView(displayedMobileTabMenuOptions[nextIndex].id);
   };
+  const mobileMainViewSwipeHandlers = useHorizontalSwipePager({
+    onNext: () => navigateMobileMainView(1),
+    onPrevious: () => navigateMobileMainView(-1),
+  });
 
   if (isCharacterBuilderOpen) {
     return (
@@ -1241,20 +1272,21 @@ export function AppComposition() {
                     exit={{ opacity: 0, y: -5 }}
                     className="flex-1 flex flex-col min-h-0"
                   >
-                    <LazyTabPanel>
-                      {activeMainTab === 'skills' && (
-                        <SkillsTab
-                          activeSkillSubtab={activeSkillSubtab}
-                          setActiveSkillSubtab={setActiveSkillSubtab}
-                          visibleSkillRows={visibleSkillRows}
-                          attributes={attributes}
-                          handleRoll={handleRoll}
-                          openSkillInfo={(skillName) => {
-                            setActiveInfo({ type: 'skill', name: skillName });
-                            setRollState(prev => ({ ...prev, characteristic: null }));
-                          }}
-                        />
-                      )}
+                    <MobileMainViewSwipeProvider handlers={mobileMainViewSwipeHandlers}>
+                      <LazyTabPanel>
+                        {activeMainTab === 'skills' && (
+                          <SkillsTab
+                            activeSkillSubtab={activeSkillSubtab}
+                            setActiveSkillSubtab={setActiveSkillSubtab}
+                            visibleSkillRows={visibleSkillRows}
+                            attributes={attributes}
+                            handleRoll={handleRoll}
+                            openSkillInfo={(skillName) => {
+                              setActiveInfo({ type: 'skill', name: skillName });
+                              setRollState(prev => ({ ...prev, characteristic: null }));
+                            }}
+                          />
+                        )}
 
                       {activeMainTab === 'actions' && (
                         <ActionsTab
@@ -1396,14 +1428,20 @@ export function AppComposition() {
                         newNoteText={newNoteText}
                         setNewNoteText={setNewNoteText}
                         addNote={addNote}
+                        cancelNoteComposer={cancelNoteComposer}
                         deleteNote={deleteNote}
+                        editingNoteId={editingNoteId}
+                        editNote={editNote}
+                        isNoteComposerOpen={isNoteComposerOpen}
+                        openNoteComposer={openNoteComposer}
                         formatNoteDay={formatNoteDay}
                         formatNoteDate={formatNoteDate}
                         backgroundText={backgroundText}
                         setBackgroundText={setBackgroundText}
                       />
                       )}
-                    </LazyTabPanel>
+                      </LazyTabPanel>
+                    </MobileMainViewSwipeProvider>
                   </motion.div>
                 </AnimatePresence>
               </div>

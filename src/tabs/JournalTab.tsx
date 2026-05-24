@@ -32,7 +32,12 @@ export function JournalTab({
   newNoteText,
   setNewNoteText,
   addNote,
+  cancelNoteComposer,
   deleteNote,
+  editingNoteId,
+  editNote,
+  isNoteComposerOpen,
+  openNoteComposer,
   formatNoteDay,
   formatNoteDate,
   backgroundText,
@@ -53,7 +58,12 @@ export function JournalTab({
   newNoteText: string;
   setNewNoteText: (value: string) => void;
   addNote: () => void;
+  cancelNoteComposer: () => void;
   deleteNote: (noteId: string) => void;
+  editingNoteId: string | null;
+  editNote: (note: CharacterNoteData) => void;
+  isNoteComposerOpen: boolean;
+  openNoteComposer: () => void;
   formatNoteDay: (value: string) => string;
   formatNoteDate: (value: string) => string;
   backgroundText: string;
@@ -67,11 +77,13 @@ export function JournalTab({
 
   const startSessionEntry = () => {
     setActiveJournalSubtab("sessions");
+    openNoteComposer();
     focusNewEntryTitle();
   };
 
   const startNpcEntry = () => {
     setActiveJournalSubtab("npcs");
+    openNoteComposer();
 
     if (!/(^|\s)#npcs?(\s|$)/i.test(newNoteText)) {
       setNewNoteText(newNoteText.trim() ? `${newNoteText.trim()}\n\n#npc` : "#npc");
@@ -87,22 +99,26 @@ export function JournalTab({
           options={journalSubtabOptions}
           activeId={activeJournalSubtab}
           onChange={setActiveJournalSubtab}
-          trailingContent={(
+          trailingContent={activeJournalSubtab === "background" ? null : (
             <>
-              <SubtabActionButton
-                onClick={startSessionEntry}
-                hideOnMobile
-                aria-label="Add session"
-              >
-                Add Session
-              </SubtabActionButton>
-              <SubtabActionButton
-                onClick={startNpcEntry}
-                hideOnMobile
-                aria-label="Add NPC"
-              >
-                Add NPC
-              </SubtabActionButton>
+              {activeJournalSubtab === "sessions" ? (
+                <SubtabActionButton
+                  onClick={startSessionEntry}
+                  hideOnMobile
+                  aria-label="Add session"
+                >
+                  Add Session
+                </SubtabActionButton>
+              ) : null}
+              {activeJournalSubtab === "npcs" ? (
+                <SubtabActionButton
+                  onClick={startNpcEntry}
+                  hideOnMobile
+                  aria-label="Add NPC"
+                >
+                  Add NPC
+                </SubtabActionButton>
+              ) : null}
             </>
           )}
         />
@@ -110,6 +126,7 @@ export function JournalTab({
     >
       {activeJournalSubtab === "sessions" ? (
         <NotesTab
+          entryLabel="Session"
           sortedNotes={sortedNotes}
           noteGroups={noteGroups}
           noteHashtags={noteHashtags}
@@ -120,7 +137,11 @@ export function JournalTab({
           newNoteText={newNoteText}
           setNewNoteText={setNewNoteText}
           addNote={addNote}
+          cancelNoteComposer={cancelNoteComposer}
           deleteNote={deleteNote}
+          editingNoteId={editingNoteId}
+          editNote={editNote}
+          isNoteComposerOpen={isNoteComposerOpen}
           formatNoteDay={formatNoteDay}
           formatNoteDate={formatNoteDate}
         />
@@ -128,6 +149,7 @@ export function JournalTab({
 
       {activeJournalSubtab === "npcs" ? (
         <NotesTab
+          entryLabel="NPC"
           sortedNotes={npcNotes}
           noteGroups={npcNoteGroups}
           noteHashtags={npcNoteHashtags}
@@ -138,7 +160,11 @@ export function JournalTab({
           newNoteText={newNoteText}
           setNewNoteText={setNewNoteText}
           addNote={addNote}
+          cancelNoteComposer={cancelNoteComposer}
           deleteNote={deleteNote}
+          editingNoteId={editingNoteId}
+          editNote={editNote}
+          isNoteComposerOpen={isNoteComposerOpen}
           formatNoteDay={formatNoteDay}
           formatNoteDate={formatNoteDate}
         />

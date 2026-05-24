@@ -30,7 +30,7 @@ export function AppShell({
           <button
             type="button"
             onClick={mobileAddAction.onClick}
-            className="fixed bottom-6 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-wfrp-gold/50 bg-wfrp-surface text-wfrp-gold shadow-xl shadow-black/50 transition-colors hover:border-wfrp-gold/70 hover:bg-wfrp-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wfrp-gold/60 md:hidden"
+            className="fixed bottom-6 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border border-wfrp-gold/70 bg-wfrp-gold text-black shadow-xl shadow-black/50 transition-colors hover:border-wfrp-gold hover:bg-wfrp-gold/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wfrp-gold/60 md:hidden"
             aria-label={mobileAddAction.label}
           >
             <Plus size={24} />
