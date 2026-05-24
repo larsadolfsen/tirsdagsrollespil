@@ -1,7 +1,7 @@
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
-  SheetDataDisclosureChevron,
+  SheetDataDisclosureCell,
   SheetDataSection,
   SheetEmptyState,
 } from "../components/wfrp";
@@ -23,28 +23,27 @@ export function TalentsTab({
   formatTalentEffect: (effect: TalentEffect) => string;
 }) {
   return (
-    <div className="flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4">
+    <div className="flex-1 overflow-y-auto px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4">
       {characterTalentRows.length > 0 ? (
         <SheetDataSection
           gridClassName={talentGridClass}
           sectionLabel="Talent"
           valueLabels={[
             { align: "center", label: "Taken" },
-            { className: "hidden md:block", label: "Description" },
+            { className: "hidden md:block", label: "Rule" },
             { align: "center", label: "More" },
           ]}
         >
             {characterTalentRows.map(({ talent, count }) => {
               const takenDisplay = `${count}/${getTalentMaxDisplay(talent.max)}`;
-              const effectText = talent.effects?.length
+              const ruleText = talent.effects?.length
                 ? talent.effects.map(formatTalentEffect).join("; ")
                 : talent.description;
 
               return (
                 <SheetDataAccordionRow
                   key={talent.name}
-                  className="wfrp-skill-row"
-                  summaryClassName={`wfrp-skill-row-summary ${talentGridClass} gap-0`}
+                  summaryClassName={`${talentGridClass} gap-0`}
                   contentClassName="px-3 pb-4 pt-1 md:col-start-1 md:col-end-5 md:px-4 md:pb-4"
                   summary={(
                     <>
@@ -63,29 +62,19 @@ export function TalentsTab({
                         {takenDisplay}
                       </div>
                       <div className="hidden min-w-0 truncate text-xs font-semibold leading-relaxed text-wfrp-muted-text md:block">
-                        {effectText}
+                        {ruleText}
                       </div>
-                      <SheetDataDisclosureChevron className="md:inline-flex" />
+                      <SheetDataDisclosureCell />
                     </>
                   )}
                 >
                   <SheetDataAccordionDetails
-                    description={talent.description}
+                    description={ruleText}
                     rows={[
                       { label: "Taken", value: count },
                       { label: "Maximum", value: getTalentMaxDisplay(talent.max) },
                     ]}
-                  >
-                    {talent.effects?.length ? (
-                      <div className="flex flex-col gap-1 border-t border-white/10 pt-2">
-                        {talent.effects.map((effect, index) => (
-                          <p key={index} className="text-[11px] font-bold leading-relaxed text-card-foreground">
-                            {formatTalentEffect(effect)}
-                          </p>
-                        ))}
-                      </div>
-                    ) : null}
-                  </SheetDataAccordionDetails>
+                  />
                 </SheetDataAccordionRow>
               );
             })}

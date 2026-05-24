@@ -108,7 +108,7 @@ export function WoundsCorruptionCard({
             contentClassName={sliderContentClassName}
           />
           <div className="px-1 pt-1">
-            <div className="mb-2 text-center text-[8px] font-bold uppercase tracking-[0.18em] text-gray-500">
+            <div className="mb-2 text-center text-[8px] font-bold uppercase tracking-[0.18em] text-wfrp-muted-text">
               Corruption Check
             </div>
             <div className="grid grid-cols-2 gap-2">

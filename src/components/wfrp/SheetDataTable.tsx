@@ -82,7 +82,7 @@ export function SheetDataHeader({ className, ...props }: DivProps) {
   return (
     <div
       className={cn(
-        "wfrp-subpanel-header grid min-w-0 max-w-full items-center gap-2 border-t border-white/5 bg-card",
+        "wfrp-subpanel-header grid min-w-0 max-w-full items-center gap-2 border-t border-white/5 bg-wfrp-table",
         className,
       )}
       {...props}
@@ -91,6 +91,8 @@ export function SheetDataHeader({ className, ...props }: DivProps) {
 }
 
 export function SheetDataHeaderCell({ align = "left", className, ...props }: SheetDataHeaderCellProps) {
+  const isDisclosureLabel = typeof props.children === "string" && props.children.toLowerCase() === "more";
+
   return (
     <span
       className={cn(
@@ -101,12 +103,15 @@ export function SheetDataHeaderCell({ align = "left", className, ...props }: She
         className,
       )}
       {...props}
-    />
+      aria-hidden={isDisclosureLabel ? true : props["aria-hidden"]}
+    >
+      {isDisclosureLabel ? "" : props.children}
+    </span>
   );
 }
 
 export function SheetDataRow({ className, ...props }: DivProps) {
-  return <div className={cn(rowClasses, "bg-card", className)} {...props} />;
+  return <div className={cn(rowClasses, "bg-card even:bg-wfrp-table", className)} {...props} />;
 }
 
 export function SheetDataButtonRow({ className, type = "button", ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
@@ -115,7 +120,7 @@ export function SheetDataButtonRow({ className, type = "button", ...props }: But
       type={type}
       className={cn(
         rowClasses,
-        "w-full cursor-pointer bg-card text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+        "w-full cursor-pointer bg-card text-left transition-colors even:bg-wfrp-table hover:bg-wfrp-control-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
         className,
       )}
       {...props}
@@ -142,11 +147,11 @@ export function SheetDataAccordionRow({
   const content = <div className={cn("min-w-0 max-w-full", contentClassName)}>{children}</div>;
 
   return (
-    <SheetDataRow className={cn("block group", className)}>
+    <SheetDataRow className={cn("wfrp-data-accordion-row block group", className)}>
       <details className={cn("group/details min-w-0 max-w-full", detailsClassName)} {...props}>
         <summary
           className={cn(
-            "grid min-h-11 min-w-0 max-w-full cursor-pointer list-none items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
+            "wfrp-data-accordion-summary grid min-w-0 max-w-full cursor-pointer list-none items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
             summaryClassName,
           )}
         >

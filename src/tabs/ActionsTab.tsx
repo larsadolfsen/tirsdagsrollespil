@@ -3,7 +3,8 @@ import { InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
-  SheetDataDisclosureChevron,
+  SheetDataDisclosureCell,
+  SheetDataRollCell,
   SheetDataSection,
 } from "../components/wfrp";
 import type {
@@ -47,7 +48,7 @@ type CombatAction = {
 
 const offensiveProperties = ["Damaging", "Hack", "Impact", "Impale", "Precise", "Pummel", "Trap-blade", "Wrap"];
 const defensiveProperties = ["Defensive", "Shield"];
-const channelingGridClass = "md:grid-cols-[56px_minmax(0,1fr)_160px_48px]";
+const channelingGridClass = "md:grid-cols-[56px_minmax(0,1fr)_48px]";
 const weaponActionGridClass = "md:grid-cols-[56px_minmax(0,1fr)_56px_80px_160px_48px]";
 const rangedActionGridClass =
   "md:grid-cols-[56px_minmax(0,1fr)_56px_32px_32px_32px_32px_32px_160px_48px]";
@@ -194,20 +195,16 @@ export function ActionsTab({
                 headerClassName={actionSummaryGridClass}
                 leadingLabels={[{ align: "center", label: "Roll" }]}
                 sectionLabel="Magic"
-                valueLabels={[
-                  { align: "right", className: "hidden md:block", label: "Notes" },
-                  { align: "center", label: "More" },
-                ]}
+                valueLabels={[{ align: "center", label: "More" }]}
               >
                 {magicActions.map((action) => (
                   <SheetDataAccordionRow
                     key={action.name}
-                    className="wfrp-skill-row"
-                    summaryClassName={`wfrp-skill-row-summary ${actionSummaryGridClass} md:grid ${channelingGridClass} md:gap-0`}
+                    summaryClassName={`${actionSummaryGridClass} md:grid ${channelingGridClass} md:gap-0`}
                     contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                     summary={(
                       <>
-                        <div className="flex justify-center">
+                        <SheetDataRollCell>
                           <button
                             onClick={(event) => {
                               event.preventDefault();
@@ -225,19 +222,11 @@ export function ActionsTab({
                           >
                             {action.totalValue}
                           </button>
-                        </div>
+                        </SheetDataRollCell>
                         <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                           {action.name}
                         </span>
-                        <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
-                          {action.properties.map((prop, propIndex) => (
-                            <span key={prop} className="text-xs font-semibold text-gray-400">
-                              {prop}
-                              {propIndex < action.properties.length - 1 ? "," : ""}
-                            </span>
-                          ))}
-                        </div>
-                        <SheetDataDisclosureChevron className="md:inline-flex" />
+                        <SheetDataDisclosureCell />
                       </>
                     )}
                   >
@@ -246,7 +235,6 @@ export function ActionsTab({
                       rows={[
                         { label: "Type", value: "Magic" },
                         { label: "Roll", value: action.totalValue },
-                        { label: "Notes", value: action.properties.join(", ") },
                       ]}
                     >
                       {renderPropertyDetails(action.properties)}
@@ -382,12 +370,11 @@ export function ActionsTab({
                     return (
                       <SheetDataAccordionRow
                         key={idx}
-                        className="wfrp-skill-row"
-                        summaryClassName={`wfrp-skill-row-summary ${actionSummaryGridClass} md:grid ${weaponActionGridClass} md:gap-0`}
+                        summaryClassName={`${actionSummaryGridClass} md:grid ${weaponActionGridClass} md:gap-0`}
                         contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                         summary={(
                           <>
-                            <div className="flex justify-center">
+                            <SheetDataRollCell>
                               <button
                                 onClick={(event) => {
                                   event.preventDefault();
@@ -406,7 +393,7 @@ export function ActionsTab({
                               >
                                 {totalActionValue}
                               </button>
-                            </div>
+                            </SheetDataRollCell>
                             <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                               {action.name}
                             </span>
@@ -420,7 +407,7 @@ export function ActionsTab({
                                 </span>
                               ))}
                             </div>
-                            <SheetDataDisclosureChevron className="md:inline-flex" />
+                            <SheetDataDisclosureCell />
                           </>
                         )}
                       >
@@ -466,12 +453,11 @@ export function ActionsTab({
                     return (
                       <SheetDataAccordionRow
                         key={idx}
-                        className="wfrp-skill-row"
-                        summaryClassName={`wfrp-skill-row-summary ${actionSummaryGridClass} md:grid ${rangedActionGridClass} md:gap-0`}
+                        summaryClassName={`${actionSummaryGridClass} md:grid ${rangedActionGridClass} md:gap-0`}
                         contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                         summary={(
                           <>
-                            <div className="flex justify-center">
+                            <SheetDataRollCell>
                               <button
                                 onClick={(event) => {
                                   event.preventDefault();
@@ -490,7 +476,7 @@ export function ActionsTab({
                               >
                                 {totalActionValue}
                               </button>
-                            </div>
+                            </SheetDataRollCell>
                             <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                               {action.name}
                             </span>
@@ -508,7 +494,7 @@ export function ActionsTab({
                                 </span>
                               ))}
                             </div>
-                            <SheetDataDisclosureChevron className="md:inline-flex" />
+                            <SheetDataDisclosureCell />
                           </>
                         )}
                       >
@@ -561,12 +547,11 @@ export function ActionsTab({
                   return (
                     <SheetDataAccordionRow
                       key={action.name}
-                      className="wfrp-skill-row"
-                      summaryClassName={`wfrp-skill-row-summary ${actionSummaryGridClass} md:grid ${weaponActionGridClass} md:gap-0`}
+                      summaryClassName={`${actionSummaryGridClass} md:grid ${weaponActionGridClass} md:gap-0`}
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
-                          <div className="flex justify-center">
+                          <SheetDataRollCell>
                             <button
                               onClick={(event) => {
                                 event.preventDefault();
@@ -584,7 +569,7 @@ export function ActionsTab({
                             >
                               {totalActionValue}
                             </button>
-                          </div>
+                          </SheetDataRollCell>
                           <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                             {action.name}
                           </span>
@@ -598,7 +583,7 @@ export function ActionsTab({
                               </span>
                             ))}
                           </div>
-                          <SheetDataDisclosureChevron className="md:inline-flex" />
+                          <SheetDataDisclosureCell />
                         </>
                       )}
                     >

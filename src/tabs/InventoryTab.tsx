@@ -4,7 +4,7 @@ import { InlineSubtabs } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
-  SheetDataDisclosureChevron,
+  SheetDataDisclosureCell,
   SheetDataPanel,
   SheetDataSection,
   SheetRowActionButton,
@@ -161,21 +161,21 @@ export function InventoryTab({
         activeId={activeInventorySubtab}
         onChange={setActiveInventorySubtab}
         trailingContent={
-          <div className="flex w-full items-center justify-end">
-            <button
-              type="button"
-              onClick={openShop}
-              className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em] max-md:hidden"
-              aria-label="Add item"
-            >
-              <span className="whitespace-nowrap">Add item</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={openShop}
+            className="group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 font-black tracking-[0.12em] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 max-md:hidden"
+            aria-label="Add item"
+          >
+            <span className="inline-flex h-6 items-center justify-center whitespace-nowrap rounded bg-wfrp-border px-3 text-[9px] font-bold uppercase tracking-widest text-gray-300 transition-all group-active:scale-95 group-hover:bg-wfrp-control-hover group-hover:text-white">
+              Add item
+            </span>
+          </button>
         }
       />
 
-      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent p-2 sm:p-3 lg:p-4">
-        <SheetDataPanel className="px-3 py-3 sm:px-4">
+      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4">
+        <SheetDataPanel className="bg-wfrp-table px-3 py-3 sm:px-4">
           <div className="flex items-end justify-between leading-none">
             <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
               Encumbrance
@@ -265,13 +265,12 @@ export function InventoryTab({
                   { align: "right", label: "Qty" },
                   { align: "right", label: "Enc" },
                   { align: "right", className: "hidden md:block", label: "Value" },
-                  { align: "center", label: "More" },
+                  { align: "center", label: "" },
                 ]}
               >
                   {section.id === "carried" && (
                     <SheetDataAccordionRow
-                      className="wfrp-skill-row"
-                      summaryClassName={`wfrp-skill-row-summary ${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
+                      summaryClassName={`${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
@@ -282,7 +281,7 @@ export function InventoryTab({
                           <div className="wfrp-list-cell-strong text-right font-mono">{wallet.coinCount}</div>
                           <div className="wfrp-list-cell-strong text-right font-mono">{wallet.encumbrance || "-"}</div>
                           <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{wallet.value}</div>
-                          <SheetDataDisclosureChevron className="md:inline-flex" />
+                          <SheetDataDisclosureCell />
                         </>
                       )}
                     >
@@ -301,10 +300,10 @@ export function InventoryTab({
                         draggable={row.isDraggable}
                         onDragStart={(event) => handleInventoryDragStart(item, event as unknown as ReactDragEvent<HTMLDivElement>)}
                         onDragEnd={handleInventoryDragEnd}
-                        className={`wfrp-skill-row ${row.isDragging ? "opacity-45" : ""} ${
+                        className={`${row.isDragging ? "opacity-45" : ""} ${
                           row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                         }`}
-                        summaryClassName={`wfrp-skill-row-summary ${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
+                        summaryClassName={`${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
                         contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                         summary={(
                           <>
@@ -316,7 +315,7 @@ export function InventoryTab({
                             <div className="wfrp-list-cell-strong text-right font-mono">{row.quantity}</div>
                             <div className="wfrp-list-cell-strong text-right font-mono">{row.encumbrance}</div>
                             <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{row.value}</div>
-                            <SheetDataDisclosureChevron className="md:inline-flex" />
+                            <SheetDataDisclosureCell />
                           </>
                         )}
                       >

@@ -6,7 +6,7 @@ import type { ActiveInfoState } from "../components/appTypes";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
-  SheetDataDisclosureChevron,
+  SheetDataDisclosureCell,
   SheetDataSection,
   SheetEmptyState,
 } from "../components/wfrp";
@@ -314,7 +314,7 @@ export function CareerTab({
                     {pendingTotalXp}
                   </div>
                   {xpAdjustActions}
-                  <SheetDataDisclosureChevron />
+                  <SheetDataDisclosureCell />
                 </>
               )}
             >
@@ -329,7 +329,7 @@ export function CareerTab({
         </SheetDataSection>
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden p-2 sm:p-3 lg:p-4 no-scrollbar">
+      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4 no-scrollbar">
         {(activeCareerSubtab === "all" || activeCareerSubtab === "careers") && (
           <AdvancementSection title="Careers" meta="Current Path" hideHeader>
             <SheetDataSection
@@ -420,7 +420,7 @@ export function CareerTab({
                             {costDisplay}
                           </div>
                           <div className="flex justify-end">{advanceAction}</div>
-                          <SheetDataDisclosureChevron />
+                          <SheetDataDisclosureCell />
                         </>
                       )}
                     >
@@ -525,7 +525,7 @@ export function CareerTab({
                       className={`group ${
                         !isAvailable ? "opacity-70" : ""
                       }`}
-                      summaryClassName={`wfrp-skill-row-summary ${characteristicAdvanceGridClass} gap-0`}
+                      summaryClassName={`${characteristicAdvanceGridClass} gap-0`}
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
@@ -590,7 +590,7 @@ export function CareerTab({
                               <Plus size={12} />
                             </button>
                           </div>
-                          <SheetDataDisclosureChevron className="md:inline-flex" />
+                          <SheetDataDisclosureCell />
                         </>
                       )}
                     >
@@ -668,7 +668,7 @@ export function CareerTab({
                             className={`group ${
                               !skillRow.isCareerSkill ? "opacity-70" : ""
                             }`}
-                            summaryClassName={`wfrp-skill-row-summary ${skillAdvanceGridClass} gap-0`}
+                            summaryClassName={`${skillAdvanceGridClass} gap-0`}
                             contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                             summary={(
                               <>
@@ -718,7 +718,7 @@ export function CareerTab({
                                   <Plus size={12} />
                                 </button>
                               </div>
-                              <SheetDataDisclosureChevron className="md:inline-flex" />
+                              <SheetDataDisclosureCell />
                               </>
                             )}
                           >
@@ -774,7 +774,7 @@ export function CareerTab({
                       className={`group ${
                         !isCareerTalent && takenCount === 0 ? "opacity-70" : ""
                       }`}
-                      summaryClassName={`wfrp-skill-row-summary ${talentAdvanceGridClass} gap-0`}
+                      summaryClassName={`${talentAdvanceGridClass} gap-0`}
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
@@ -820,7 +820,7 @@ export function CareerTab({
                             <Plus size={12} />
                           </button>
                         </div>
-                        <SheetDataDisclosureChevron className="md:inline-flex" />
+                        <SheetDataDisclosureCell />
                         </>
                       )}
                     >

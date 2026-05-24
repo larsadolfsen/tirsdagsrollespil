@@ -23,12 +23,12 @@ export function SubtabContentFrame(props: SubtabContentFrameProps) {
       className={cn("flex h-full min-h-0 min-w-0 flex-col bg-transparent", className)}
       {...rest}
     >
-      <div className={cn("shrink-0 pb-3", subtabBarClassName)}>
+      <div className={cn("shrink-0", subtabBarClassName)}>
         {subtabBar}
       </div>
       <div
         className={cn(
-          "min-h-0 min-w-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden p-2 sm:p-3 lg:p-4",
+          "min-h-0 min-w-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4",
           contentClassName,
         )}
       >

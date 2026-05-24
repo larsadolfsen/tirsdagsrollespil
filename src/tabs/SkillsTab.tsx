@@ -2,7 +2,8 @@ import { InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
-  SheetDataDisclosureChevron,
+  SheetDataDisclosureCell,
+  SheetDataRollCell,
   SheetDataSection,
 } from "../components/wfrp";
 import type { SkillSubtab } from "./tabTypes";
@@ -81,13 +82,12 @@ export function SkillsTab({
             return (
               <SheetDataAccordionRow
                 key={skill.key}
-                className="wfrp-skill-row"
-                summaryClassName={`wfrp-skill-row-summary ${mobileSkillGridClass} md:grid ${desktopSkillGridClass} md:gap-0`}
+                summaryClassName={`${mobileSkillGridClass} md:grid ${desktopSkillGridClass} md:gap-0`}
                 contentGridClassName={skillContentGridClass}
                 contentClassName="col-span-full min-w-0 max-w-full px-3 pb-4 pt-1 md:col-start-2 md:col-end-8 md:px-0 md:pr-14 md:pb-4"
                 summary={(
                   <>
-                    <div className="flex justify-center">
+                    <SheetDataRollCell>
                       <button
                         onClick={(event) => {
                           event.preventDefault();
@@ -98,7 +98,7 @@ export function SkillsTab({
                       >
                         {totalValue}
                       </button>
-                    </div>
+                    </SheetDataRollCell>
 
                     <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                       {skill.displayName}
@@ -120,7 +120,7 @@ export function SkillsTab({
                       {totalValue}
                     </div>
 
-                    <SheetDataDisclosureChevron className="md:inline-flex" />
+                    <SheetDataDisclosureCell />
                   </>
                 )}
               >

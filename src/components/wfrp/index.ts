@@ -12,12 +12,14 @@ export {
 } from "./SheetDataTable";
 export {
   SheetDataDesktopCell,
+  SheetDataDisclosureCell,
   SheetDataDisclosureChevron,
   SheetDataInfoButton,
   SheetDataList,
   SheetDataListRow,
   SheetDataMobileDetails,
   SheetDataResponsiveListRow,
+  SheetDataRollCell,
   SheetRowActionButton,
 } from "./SheetDataList";
 export type { SheetDataMobileDetailField } from "./SheetDataList";

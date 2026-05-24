@@ -1150,7 +1150,7 @@ export function AppComposition() {
           </div>
 
           {/* Tabbed Info Box - 2/3 width on Desktop/Tablet */}
-          <section className={`w-full flex-col overflow-visible self-start min-h-[500px] p-0! md:flex md:flex-1 md:overflow-hidden md:rounded-lg md:border md:border-wfrp-border md:bg-wfrp-surface md:shadow-lg ${
+          <section className={`w-full flex-col overflow-visible self-start min-h-[500px] p-0! md:flex md:flex-1 md:overflow-hidden md:rounded-lg md:border md:border-wfrp-border md:bg-card md:shadow-lg ${
             activeMobileMainView === "characteristics" ? "hidden" : "flex"
           }`}>
               <ScrollableTabStrip className="hidden sm:flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
@@ -1177,7 +1177,7 @@ export function AppComposition() {
                 </div>
               </ScrollableTabStrip>
 
-              <div className="flex-1 flex flex-col min-h-0 bg-wfrp-bg/50">
+              <div className="flex-1 flex flex-col min-h-0 bg-card">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeMainTab}

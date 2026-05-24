@@ -55,6 +55,8 @@
   --color-wfrp-surface-hover: #1E1E1E;
   --color-wfrp-surface-muted-hover: #1E1E1E;
   --color-wfrp-surface-subtle: #1E1E1E;
+  --color-wfrp-table: #252525;
+  --color-wfrp-table-header: #2a2a2a;
   --color-wfrp-popover: #1E1E1E;
   --color-wfrp-menu: #303030;
   --color-wfrp-border: #303030;
@@ -269,6 +271,21 @@
   min-height: 2.75rem;
 }
 
+.wfrp-data-accordion-row {
+  padding-block: 0;
+  padding-left: 1rem;
+  padding-right: 0;
+}
+
+.wfrp-data-accordion-summary {
+  min-height: 3rem;
+}
+
+.wfrp-roll-cell {
+  margin-left: -0.5rem;
+  justify-content: flex-start;
+}
+
 @utility wfrp-property-pill {
   @apply inline-flex h-8 items-center justify-start gap-2 rounded-[8px] border border-wfrp-border bg-card px-4 text-[10px] font-bold text-wfrp-muted-text transition-all cursor-pointer hover:text-wfrp-gold hover:border-wfrp-border/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
@@ -352,7 +369,7 @@ body {
   }
 
   section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [class~="group/char"] {
-    flex-basis: 4rem;
-    width: 4rem;
+    flex-basis: 5rem;
+    width: 5rem;
   }
 }

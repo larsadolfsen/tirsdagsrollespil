@@ -3,7 +3,8 @@ import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
   SheetDataDesktopCell,
-  SheetDataDisclosureChevron,
+  SheetDataDisclosureCell,
+  SheetDataRollCell,
   SheetDataSection,
 } from "../components/wfrp";
 import type { SpellListRow } from "./spells/useSpellsViewModel";
@@ -73,12 +74,11 @@ export function SpellsTab({
             return (
               <SheetDataAccordionRow
                 key={spell.name}
-                className="wfrp-skill-row"
-                summaryClassName={`wfrp-skill-row-summary ${mobileSpellGridClass} md:grid ${desktopSpellGridClass} md:gap-0`}
+                summaryClassName={`${mobileSpellGridClass} md:grid ${desktopSpellGridClass} md:gap-0`}
                 contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                 summary={(
                   <>
-                    <div className="flex justify-center">
+                    <SheetDataRollCell>
                       <button
                         onClick={(event) => {
                           event.preventDefault();
@@ -89,7 +89,7 @@ export function SpellsTab({
                       >
                         {channelValue}
                       </button>
-                    </div>
+                    </SheetDataRollCell>
 
                     <span className="wfrp-list-cell-strong min-w-0 truncate text-left text-gray-200">
                       {spell.name}
@@ -103,7 +103,7 @@ export function SpellsTab({
                       {formatted.target}
                     </div>
                     <SheetDataDesktopCell align="right">{formatted.duration}</SheetDataDesktopCell>
-                    <SheetDataDisclosureChevron className="md:inline-flex" />
+                    <SheetDataDisclosureCell />
                   </>
                 )}
               >

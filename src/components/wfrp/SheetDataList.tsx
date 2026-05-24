@@ -135,7 +135,7 @@ export function SheetDataDisclosureChevron({ className }: { className?: string }
   return (
     <span
       className={cn(
-        "inline-flex h-12 min-h-12 w-12 min-w-12 items-center justify-center rounded text-gray-500 transition-colors hover:text-wfrp-gold",
+        "inline-flex h-12 min-h-12 w-12 min-w-12 items-center justify-center justify-self-end rounded text-gray-500 transition-colors hover:text-wfrp-gold",
         className,
       )}
       aria-hidden="true"
@@ -145,6 +145,18 @@ export function SheetDataDisclosureChevron({ className }: { className?: string }
         className="transition-transform group-open/details:rotate-180"
       />
     </span>
+  );
+}
+
+export function SheetDataDisclosureCell({ className }: { className?: string }) {
+  return <SheetDataDisclosureChevron className={cn("md:inline-flex", className)} />;
+}
+
+export function SheetDataRollCell({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={cn("wfrp-roll-cell flex", className)}>
+      {children}
+    </div>
   );
 }
 
