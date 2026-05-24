@@ -30,6 +30,26 @@ export const formatSpellSchoolLabel = (school: string) => {
 export const formatSpellSchoolShortLabel = (school: string) =>
   formatSpellSchoolLabel(school).replace(/^The Lore of\s+/i, "");
 
+export const isPrayerDefinition = (spell: SpellListItem) =>
+  spell.category === "school" && Boolean(spell.school?.match(/-(prayer|miracle)$/i));
+
+export const filterSpellDefinitionsForMode = <TSpell extends SpellListItem>(
+  spells: TSpell[],
+  isPrayerMode: boolean,
+) => spells.filter((spell) => (isPrayerMode ? isPrayerDefinition(spell) : !isPrayerDefinition(spell)));
+
+export const formatPrayerSchoolLabel = (school: string) => {
+  if (school.endsWith("-prayer")) {
+    return "Blessings";
+  }
+
+  if (school.endsWith("-miracle")) {
+    return "Miracles";
+  }
+
+  return formatSpellSchoolShortLabel(school);
+};
+
 export function formatSpellRange(range: string, willpower: number, willpowerBonus: number) {
   return range
     .replace(/Willpower Bonus/gi, `${willpowerBonus}`)
@@ -69,7 +89,20 @@ export function getSpellSchoolOptions<TSpell extends SpellListItem>(spells: TSpe
   );
 }
 
-export function getSpellSubtabOptions<TSpell extends SpellListItem>(spells: TSpell[]): SpellSubtabOption[] {
+export function getSpellSubtabOptions<TSpell extends SpellListItem>(
+  spells: TSpell[],
+  isPrayerMode = false,
+): SpellSubtabOption[] {
+  if (isPrayerMode) {
+    return [
+      { id: "all", label: "All" },
+      ...getSpellSchoolOptions(spells).map((school) => ({
+        id: `school:${school}` as SpellSubtab,
+        label: formatPrayerSchoolLabel(school),
+      })),
+    ];
+  }
+
   return [
     { id: "all", label: "All" },
     { id: "petty", label: "Petty" },
@@ -84,13 +117,14 @@ export function getSpellSubtabOptions<TSpell extends SpellListItem>(spells: TSpe
 export function filterSpellsBySubtab<TSpell extends SpellListItem>(
   spells: TSpell[],
   activeSpellSubtab: SpellSubtab,
+  isPrayerMode = false,
 ) {
   return spells.filter((spell) => {
     if (activeSpellSubtab === "all") {
       return true;
     }
 
-    if (activeSpellSubtab === "petty" || activeSpellSubtab === "arcane") {
+    if (!isPrayerMode && (activeSpellSubtab === "petty" || activeSpellSubtab === "arcane")) {
       return spell.category === activeSpellSubtab;
     }
 

@@ -16,13 +16,13 @@ export function Chip({
         <button
           type="button"
           onClick={onClose}
-          className="-ml-0.5 flex h-3.5 w-3.5 items-center justify-center text-gray-500 transition-colors hover:text-gray-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
+          className="-ml-0.5 flex h-3.5 w-3.5 items-center justify-center text-wfrp-muted-text transition-colors hover:text-gray-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
           aria-label={closeLabel}
         >
           <X size={10} />
         </button>
       ) : null}
-      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 transition-colors group-hover:text-gray-200">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-wfrp-muted-text transition-colors group-hover:text-gray-200">
         {children}
       </span>
     </span>

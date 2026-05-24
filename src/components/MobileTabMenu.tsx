@@ -81,7 +81,7 @@ export function MobileTabMenu({
                     <h2 className="truncate font-serif text-2xl font-bold text-wfrp-gold">
                       {characterName}
                     </h2>
-                    <p className="mt-1 truncate text-[11px] font-bold uppercase tracking-widest text-gray-500">
+                    <p className="mt-1 truncate text-[11px] font-bold uppercase tracking-widest text-wfrp-muted-text">
                       {campaignName}
                     </p>
                   </div>
@@ -89,7 +89,7 @@ export function MobileTabMenu({
                 <button
                   type="button"
                   onClick={() => setIsMobileCharacterListOpen((isOpen) => !isOpen)}
-                  className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/5 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                  className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-wfrp-muted-text transition-colors hover:bg-white/5 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                   aria-label="Change character"
                   aria-expanded={isMobileCharacterListOpen}
                 >
@@ -121,7 +121,7 @@ export function MobileTabMenu({
                       >
                         <span className="min-w-0">
                           <span className="block truncate text-sm font-semibold">{character.name}</span>
-                          <span className="block text-[9px] font-bold uppercase tracking-widest text-gray-500">
+                          <span className="block text-[9px] font-bold uppercase tracking-widest text-wfrp-muted-text">
                             {character.rulesetId}
                           </span>
                         </span>
@@ -134,7 +134,7 @@ export function MobileTabMenu({
                   <button
                     type="button"
                     onClick={onCreateCharacter}
-                    className="mt-1 flex w-full items-center gap-3 rounded px-3 py-2.5 text-left text-sm font-semibold text-gray-400 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold"
+                    className="mt-1 flex w-full items-center gap-3 rounded px-3 py-2.5 text-left text-sm font-semibold text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold"
                   >
                     <Plus size={16} />
                     Create character

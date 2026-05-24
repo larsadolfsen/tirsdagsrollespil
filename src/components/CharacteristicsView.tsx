@@ -25,7 +25,7 @@ export function CharacteristicsView({
               key={characteristic.key}
               className="flex flex-col items-center group/char"
             >
-              <span className="mb-1 text-[9px] font-bold uppercase tracking-tighter text-gray-400 transition-colors group-hover/char:text-wfrp-gold lg:mb-1.5 lg:text-[11px]">
+              <span className="mb-1 text-[9px] font-bold uppercase tracking-tighter text-wfrp-muted-text transition-colors group-hover/char:text-wfrp-gold lg:mb-1.5 lg:text-[11px]">
                 {characteristic.label}
               </span>
 
@@ -41,7 +41,7 @@ export function CharacteristicsView({
                 </button>
 
                 <div className="absolute -bottom-1.5 left-1/2 z-10 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full border-2 border-wfrp-border bg-wfrp-surface transition-colors group-hover/char:border-wfrp-gold/40 lg:-bottom-2 lg:h-8 lg:w-8">
-                  <span className="text-[10px] font-bold text-gray-400 group-hover/char:text-wfrp-gold/60 lg:text-[11px]">
+                  <span className="text-[10px] font-bold text-wfrp-muted-text group-hover/char:text-wfrp-gold/60 lg:text-[11px]">
                     {bonus}
                   </span>
                 </div>

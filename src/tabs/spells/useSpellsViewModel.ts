@@ -12,6 +12,7 @@ type FormattedSpellFields = {
 export type SpellListRow = {
   spell: ResolvedCharacterSpell;
   channelValue: number;
+  rollLabel: string;
   formatted: FormattedSpellFields;
   mobileDetails: Array<{ label: string; value: string | number; valueClassName?: string }>;
 };
@@ -23,6 +24,7 @@ export function useSpellsViewModel({
   formatSpellDuration,
   formatSpellRange,
   formatSpellTarget,
+  isPrayerMode = false,
   setIsSpellShopOpen,
   spells,
 }: {
@@ -32,15 +34,19 @@ export function useSpellsViewModel({
   formatSpellDuration: (duration: string) => string;
   formatSpellRange: (range: string) => string;
   formatSpellTarget: (target: string) => string;
+  isPrayerMode?: boolean;
   setIsSpellShopOpen: Dispatch<SetStateAction<boolean>>;
   spells: ResolvedCharacterRecord["spells"];
 }) {
-  const spellSubtabOptions = getSpellSubtabOptions(spells);
+  const spellSubtabOptions = getSpellSubtabOptions(spells, isPrayerMode);
   const baseWp = attributes.WP || 0;
-  const channellingSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
-  const channelValue = channellingSkill ? baseWp + channellingSkill.advances : baseWp;
+  const castingSkill = characterSkills.find((skill) =>
+    isPrayerMode ? skill.baseName === "Pray" : skill.baseName === "Channelling",
+  );
+  const channelValue = castingSkill ? baseWp + castingSkill.advances : baseWp;
+  const rollLabel = castingSkill?.displayName ?? (isPrayerMode ? "Pray" : "Channelling");
 
-  const spellRows: SpellListRow[] = filterSpellsBySubtab(spells, activeSpellSubtab)
+  const spellRows: SpellListRow[] = filterSpellsBySubtab(spells, activeSpellSubtab, isPrayerMode)
     .sort((first, second) =>
       first.name.localeCompare(second.name, undefined, {
         sensitivity: "base",
@@ -56,6 +62,7 @@ export function useSpellsViewModel({
       return {
         spell,
         channelValue,
+        rollLabel,
         formatted,
         mobileDetails: [
           { label: "CN", value: spell.cn, valueClassName: "font-mono" },

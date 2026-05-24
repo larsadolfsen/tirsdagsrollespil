@@ -284,7 +284,7 @@ export function ShopSidebar({
         </div>
 
         <div ref={filterRef} className="relative flex gap-2">
-          <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded border border-white/5 bg-black/30 px-3 text-gray-500 focus-within:border-wfrp-gold/40">
+          <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded border border-white/5 bg-black/30 px-3 text-wfrp-muted-text focus-within:border-wfrp-gold/40">
             <Search size={14} />
             <input
               value={searchTerm}
@@ -329,7 +329,7 @@ export function ShopSidebar({
                     className={`flex h-8 w-full items-center justify-between rounded px-2 text-left text-[10px] font-black uppercase tracking-widest transition-colors ${
                       selectedItemType === itemType
                         ? "bg-wfrp-gold/10 text-wfrp-gold"
-                        : "text-gray-500 hover:bg-white/5 hover:text-gray-200"
+                        : "text-wfrp-muted-text hover:bg-white/5 hover:text-gray-200"
                     }`}
                   >
                     <span>{itemType}</span>
@@ -360,7 +360,7 @@ export function ShopSidebar({
                     className={`flex h-8 w-full items-center justify-between rounded px-2 text-left text-[10px] font-black uppercase tracking-widest transition-colors ${
                       selectedAvailability === availability
                         ? "bg-wfrp-gold/10 text-wfrp-gold"
-                        : "text-gray-500 hover:bg-white/5 hover:text-gray-200"
+                        : "text-wfrp-muted-text hover:bg-white/5 hover:text-gray-200"
                     }`}
                   >
                     <span>{formatFilterLabel(availability)}</span>
@@ -463,7 +463,7 @@ export function ShopSidebar({
 
                       {expandedItemId === item.id && (
                         <div className="mx-2 mb-2 rounded border border-white/5 bg-black/20 p-3">
-                          <p className="text-[11px] font-semibold leading-relaxed text-gray-400">
+                          <p className="text-[11px] font-semibold leading-relaxed text-wfrp-muted-text">
                             {item.description}
                           </p>
                           <div className="mt-3 grid grid-cols-2 gap-2">

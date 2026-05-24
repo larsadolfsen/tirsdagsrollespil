@@ -1,5 +1,12 @@
 import { Trash2 } from "lucide-react";
 import { Button, Input, Textarea } from "../components/ui";
+import {
+  SheetDataHeaderCell,
+  SheetDataPanel,
+  SheetDataRow,
+  SheetDataSection,
+  SheetEmptyState,
+} from "../components/wfrp";
 import type { CharacterNoteData } from "../types/storage";
 
 type NoteGroup = {
@@ -38,9 +45,9 @@ export function NotesTab({
   formatNoteDate: (value: string) => string;
 }) {
   return (
-    <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-2 sm:p-3 lg:p-4">
+    <>
       {sortedNotes.length > 0 && (
-        <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
+        <SheetDataPanel className="p-3">
           <Input
             value={noteSearch}
             onChange={(event) => setNoteSearch(event.target.value)}
@@ -48,45 +55,46 @@ export function NotesTab({
             placeholder="Search notes or #hashtags"
             aria-label="Search notes or hashtags"
           />
-        </section>
+        </SheetDataPanel>
       )}
 
-      <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="wfrp-panel-title">
-            Campaign Journal
-            <div className="wfrp-panel-rule" />
-          </h3>
-          <span className="wfrp-table-label text-right">
+      <SheetDataPanel className="divide-y divide-white/5">
+        <div className="grid grid-cols-[minmax(0,1fr)_96px] items-center gap-0 border-t border-white/5 bg-wfrp-table px-4 py-3">
+          <SheetDataHeaderCell>Campaign Journal</SheetDataHeaderCell>
+          <SheetDataHeaderCell align="right">
             {sortedNotes.length} {sortedNotes.length === 1 ? "Entry" : "Entries"}
-          </span>
+          </SheetDataHeaderCell>
         </div>
-        <Input
-          value={newNoteTitle}
-          onChange={(event) => setNewNoteTitle(event.target.value)}
-          className="h-10 font-semibold"
-          placeholder="Entry title"
-          aria-label="New note title"
-        />
-        <Textarea
-          value={newNoteText}
-          onChange={(event) => setNewNoteText(event.target.value)}
-          rows={4}
-          className="min-h-28"
-          placeholder="Write a note... Use #tags to create a chip."
-          aria-label="New note text"
-        />
-        <div className="flex justify-end">
+
+        <div className="grid gap-3 p-4 md:grid-cols-[minmax(12rem,0.35fr)_minmax(0,1fr)_auto] md:items-start">
+          <Input
+            id="journal-new-note-title"
+            value={newNoteTitle}
+            onChange={(event) => setNewNoteTitle(event.target.value)}
+            className="h-10 font-semibold"
+            placeholder="Entry title"
+            aria-label="New note title"
+          />
+          <Textarea
+            value={newNoteText}
+            onChange={(event) => setNewNoteText(event.target.value)}
+            rows={3}
+            className="min-h-24"
+            placeholder="Write a note... Use #tags to create a chip."
+            aria-label="New note text"
+          />
           <Button
             onClick={addNote}
             disabled={!newNoteTitle.trim() || !newNoteText.trim()}
             size="sm"
+            className="md:mt-1"
           >
             Add Note
           </Button>
         </div>
+
         {noteHashtags.length > 0 && (
-          <div className="flex flex-wrap gap-2 border-t border-white/5 pt-3">
+          <div className="flex flex-wrap gap-2 px-4 py-3">
             {noteHashtags.map((tag) => {
               const tagSearch = `#${tag}`;
               const isActive = noteSearch.trim().toLowerCase() === tagSearch;
@@ -99,7 +107,7 @@ export function NotesTab({
                   className={`rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${
                     isActive
                       ? "border-wfrp-gold/60 bg-wfrp-gold/15 text-wfrp-gold"
-                      : "border-white/10 bg-black/25 text-gray-400 hover:text-gray-200 hover:border-white/20"
+                      : "border-white/10 bg-black/25 text-wfrp-muted-text hover:text-gray-200 hover:border-white/20"
                   }`}
                 >
                   #{tag}
@@ -108,65 +116,67 @@ export function NotesTab({
             })}
           </div>
         )}
-      </section>
+      </SheetDataPanel>
 
       {sortedNotes.length === 0 ? (
-        <div className="min-h-48 border border-dashed border-white/5 rounded-lg flex flex-col items-center justify-center text-gray-700 gap-2">
-          <span className="text-[9px] font-black uppercase tracking-widest">No Notes</span>
-          <p className="text-[10px] italic">Entries will appear here by date written.</p>
-        </div>
+        <SheetEmptyState title="No Notes">Entries will appear here by date written.</SheetEmptyState>
       ) : noteGroups.length === 0 ? (
-        <div className="min-h-48 border border-dashed border-white/5 rounded-lg flex flex-col items-center justify-center text-gray-700 gap-2">
-          <span className="text-[9px] font-black uppercase tracking-widest">No Matches</span>
-          <p className="text-[10px] italic">Try another word or hashtag.</p>
-        </div>
+        <SheetEmptyState title="No Matches">Try another word or hashtag.</SheetEmptyState>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           {noteGroups.map((group) => (
-            <section
+            <SheetDataSection
               key={group.dayKey}
-              className="rounded-lg border border-white/10 bg-black/25 p-4 shadow-inner"
+              gridClassName="grid-cols-[minmax(0,1fr)_84px_44px] md:grid-cols-[minmax(10rem,0.35fr)_minmax(0,1fr)_132px_44px]"
+              sectionLabel={formatNoteDay(group.date)}
+              valueLabels={[
+                { className: "hidden md:block", label: "Text" },
+                { align: "right", label: "Created" },
+                { align: "center", label: "More" },
+              ]}
             >
-              <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-3">
-                <time className="wfrp-panel-title text-gray-300" dateTime={group.date}>
-                  {formatNoteDay(group.date)}
-                </time>
-                <span className="wfrp-table-label text-gray-500">
-                  {group.notes.length} {group.notes.length === 1 ? "Note" : "Notes"}
-                </span>
-              </div>
-              <div className="mt-3 flex flex-col gap-3">
-                {group.notes.map((note) => (
-                  <article key={note.id} className="rounded border border-white/5 bg-black/20 p-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <h4 className="truncate text-sm font-bold uppercase tracking-wide text-gray-100">
-                          {note.title ?? "Untitled Entry"}
-                        </h4>
-                        <time className="mt-1 block wfrp-table-label text-gray-500" dateTime={note.createdAt}>
-                          {formatNoteDate(note.createdAt)}
-                        </time>
-                      </div>
-                      <Button
-                        onClick={() => deleteNote(note.id)}
-                        variant="destructive"
-                        size="icon"
-                        className="h-7 w-7 shrink-0"
-                        aria-label={`Delete note from ${formatNoteDate(note.createdAt)}`}
-                      >
-                        <Trash2 size={12} />
-                      </Button>
-                    </div>
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-gray-200">
+              {group.notes.map((note) => (
+                <SheetDataRow
+                  key={note.id}
+                  className="grid-cols-[minmax(0,1fr)_84px_44px] px-0 py-0 md:grid-cols-[minmax(10rem,0.35fr)_minmax(0,1fr)_132px_44px]"
+                >
+                  <div className="min-w-0 px-4 py-3">
+                    <h4 className="truncate text-xs font-bold uppercase tracking-wide text-gray-100">
+                      {note.title ?? "Untitled Entry"}
+                    </h4>
+                    <p className="mt-1 line-clamp-2 whitespace-pre-wrap text-xs leading-relaxed text-wfrp-muted-text md:hidden">
                       {note.text}
                     </p>
-                  </article>
-                ))}
-              </div>
-            </section>
+                  </div>
+
+                  <p className="hidden min-w-0 whitespace-pre-wrap px-4 py-3 text-xs font-semibold leading-relaxed text-gray-200 md:block">
+                    {note.text}
+                  </p>
+
+                  <time
+                    className="wfrp-list-cell-strong min-w-0 truncate px-2 py-3 text-right font-mono text-[11px]"
+                    dateTime={note.createdAt}
+                  >
+                    {formatNoteDate(note.createdAt)}
+                  </time>
+
+                  <div className="flex justify-center px-2 py-2">
+                    <Button
+                      onClick={() => deleteNote(note.id)}
+                      variant="destructive"
+                      size="icon"
+                      className="h-7 w-7 shrink-0"
+                      aria-label={`Delete note from ${formatNoteDate(note.createdAt)}`}
+                    >
+                      <Trash2 size={12} />
+                    </Button>
+                  </div>
+                </SheetDataRow>
+              ))}
+            </SheetDataSection>
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }

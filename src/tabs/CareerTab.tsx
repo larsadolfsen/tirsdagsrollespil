@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
-import { AdvancementSection, InlineSubtabs } from "../components/ui";
+import { AdvancementSection, InlineSubtabs, SubtabActionButton, SubtabContentFrame } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import {
   SheetDataAccordionDetails,
@@ -259,38 +259,35 @@ export function CareerTab({
   const parseDraftNumber = (value: string) => Math.max(0, Math.floor(Number(value) || 0));
 
   return (
-    <div className="flex flex-col h-full min-h-0">
-      <div className="sticky top-0 z-10 bg-wfrp-bg">
+    <SubtabContentFrame
+      className="bg-card"
+      subtabBar={(
         <InlineSubtabs<CareerSubtab>
           options={careerSubtabOptions}
           activeId={activeCareerSubtab}
           onChange={setActiveCareerSubtab}
           ariaLabel="Career section tabs"
+          trailingContent={(
+            <div className="flex items-center gap-2">
+              <SubtabActionButton
+                onClick={isAdvancementEditMode ? cancelAdvancementEdit : beginAdvancementEdit}
+                aria-label={isAdvancementEditMode ? "Cancel advancement edits" : "Edit initial and advances"}
+              >
+                {isAdvancementEditMode ? "Cancel" : "Edit"}
+              </SubtabActionButton>
+              <SubtabActionButton
+                onClick={handleSaveCareerClick}
+                disabled={!hasPendingCareerChanges && !isAdvancementEditMode}
+                isActive={shouldHighlightSave}
+                aria-label="Save career changes"
+              >
+                Save
+              </SubtabActionButton>
+            </div>
+          )}
         />
-      </div>
-
-      <div className="border-b border-white/5 bg-wfrp-bg p-2 sm:p-3 lg:p-4">
-        <div className="flex gap-2 pb-2">
-          <button
-            onClick={isAdvancementEditMode ? cancelAdvancementEdit : beginAdvancementEdit}
-            className="wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest text-gray-300"
-            aria-label={isAdvancementEditMode ? "Cancel advancement edits" : "Edit initial and advances"}
-          >
-            {isAdvancementEditMode ? "Cancel" : "Edit"}
-          </button>
-          <button
-            onClick={handleSaveCareerClick}
-            disabled={!hasPendingCareerChanges && !isAdvancementEditMode}
-            className={`wfrp-action-btn h-8 px-3 text-[10px] font-black uppercase tracking-widest disabled:cursor-not-allowed disabled:opacity-40 ${
-              shouldHighlightSave
-                ? "border-wfrp-gold/60 bg-wfrp-gold/15 text-wfrp-gold shadow-[0_0_18px_rgb(197_160_89_/_0.16)]"
-                : "text-gray-300"
-            }`}
-            aria-label="Save career changes"
-          >
-            Save
-          </button>
-        </div>
+      )}
+    >
         <SheetDataSection
           gridClassName={careerXpGridClass}
           sectionLabel="XP"
@@ -327,9 +324,7 @@ export function CareerTab({
               />
             </SheetDataAccordionRow>
         </SheetDataSection>
-      </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4 no-scrollbar">
         {(activeCareerSubtab === "all" || activeCareerSubtab === "careers") && (
           <AdvancementSection title="Careers" meta="Current Path" hideHeader>
             <SheetDataSection
@@ -839,7 +834,6 @@ export function CareerTab({
             </SheetDataSection>
           </AdvancementSection>
         )}
-      </div>
-    </div>
+    </SubtabContentFrame>
   );
 }

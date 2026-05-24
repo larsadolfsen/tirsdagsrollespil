@@ -33,7 +33,7 @@ export function MobileCharacterHeader({
         <button
           type="button"
           onClick={onOpenNavigation}
-          className="flex h-full w-14 shrink-0 items-center justify-center text-gray-400 transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+          className="flex h-full w-14 shrink-0 items-center justify-center text-wfrp-muted-text transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
           aria-label="Open navigation drawer"
           aria-haspopup="dialog"
           aria-expanded={isMobileNavigationOpen}
@@ -50,7 +50,7 @@ export function MobileCharacterHeader({
             <span className="block truncate font-serif text-xl font-bold leading-tight text-gray-100">
               {characterName}
             </span>
-            <span className="mt-0.5 block truncate text-[9px] font-black uppercase tracking-[0.22em] text-gray-500">
+            <span className="mt-0.5 block truncate text-[9px] font-black uppercase tracking-[0.22em] text-wfrp-muted-text">
               {campaignName}
             </span>
           </span>

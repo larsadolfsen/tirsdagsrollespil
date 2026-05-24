@@ -1,3 +1,4 @@
+import { SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -23,10 +24,11 @@ export function TalentsTab({
   formatTalentEffect: (effect: TalentEffect) => string;
 }) {
   return (
-    <div className="flex-1 overflow-y-auto px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4">
+    <SubtabContentFrame>
       {characterTalentRows.length > 0 ? (
         <SheetDataSection
           gridClassName={talentGridClass}
+          sectionLabelClassName="pl-4"
           sectionLabel="Talent"
           valueLabels={[
             { align: "center", label: "Taken" },
@@ -53,7 +55,7 @@ export function TalentsTab({
                           event.preventDefault();
                           openTalentInfo(talent.name);
                         }}
-                        className="wfrp-skill-link min-w-0 truncate text-left text-gray-200"
+                        className="wfrp-skill-link wfrp-no-roll-cell min-w-0 truncate text-left text-gray-200"
                         aria-label={`Open ${talent.name} talent rule`}
                       >
                         {talent.name}
@@ -82,6 +84,6 @@ export function TalentsTab({
       ) : (
         <SheetEmptyState title="No Talents">Talents bought during play will appear here.</SheetEmptyState>
       )}
-    </div>
+    </SubtabContentFrame>
   );
 }

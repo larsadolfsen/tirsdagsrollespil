@@ -1,4 +1,4 @@
-import { InlineSubtabs } from "../components/ui";
+import { InlineSubtabs, SubtabActionButton, SubtabContentFrame } from "../components/ui";
 import type { CharacterNoteData } from "../types/storage";
 import { BackgroundTab } from "./BackgroundTab";
 import { NotesTab } from "./NotesTab";
@@ -13,7 +13,7 @@ type NoteGroup = {
 const journalSubtabOptions: Array<{ id: JournalSubtab; label: string }> = [
   { id: "sessions", label: "Sessions" },
   { id: "npcs", label: "NPCs" },
-  { id: "backgrounds", label: "Backgrounds" },
+  { id: "background", label: "background" },
 ];
 
 export function JournalTab({
@@ -59,14 +59,55 @@ export function JournalTab({
   backgroundText: string;
   setBackgroundText: (value: string) => void;
 }) {
-  return (
-    <div className="flex flex-col h-full">
-      <InlineSubtabs<JournalSubtab>
-        options={journalSubtabOptions}
-        activeId={activeJournalSubtab}
-        onChange={setActiveJournalSubtab}
-      />
+  const focusNewEntryTitle = () => {
+    window.setTimeout(() => {
+      document.getElementById("journal-new-note-title")?.focus();
+    }, 0);
+  };
 
+  const startSessionEntry = () => {
+    setActiveJournalSubtab("sessions");
+    focusNewEntryTitle();
+  };
+
+  const startNpcEntry = () => {
+    setActiveJournalSubtab("npcs");
+
+    if (!/(^|\s)#npcs?(\s|$)/i.test(newNoteText)) {
+      setNewNoteText(newNoteText.trim() ? `${newNoteText.trim()}\n\n#npc` : "#npc");
+    }
+
+    focusNewEntryTitle();
+  };
+
+  return (
+    <SubtabContentFrame
+      subtabBar={(
+        <InlineSubtabs<JournalSubtab>
+          options={journalSubtabOptions}
+          activeId={activeJournalSubtab}
+          onChange={setActiveJournalSubtab}
+          trailingContent={(
+            <>
+              <SubtabActionButton
+                onClick={startSessionEntry}
+                hideOnMobile
+                aria-label="Add session"
+              >
+                Add Session
+              </SubtabActionButton>
+              <SubtabActionButton
+                onClick={startNpcEntry}
+                hideOnMobile
+                aria-label="Add NPC"
+              >
+                Add NPC
+              </SubtabActionButton>
+            </>
+          )}
+        />
+      )}
+    >
       {activeJournalSubtab === "sessions" ? (
         <NotesTab
           sortedNotes={sortedNotes}
@@ -103,12 +144,12 @@ export function JournalTab({
         />
       ) : null}
 
-      {activeJournalSubtab === "backgrounds" ? (
+      {activeJournalSubtab === "background" ? (
         <BackgroundTab
           backgroundText={backgroundText}
           setBackgroundText={setBackgroundText}
         />
       ) : null}
-    </div>
+    </SubtabContentFrame>
   );
 }

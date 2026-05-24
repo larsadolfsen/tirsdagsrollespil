@@ -406,7 +406,7 @@ export function DiceLogSidebar({
               <div className="flex flex-col gap-2">
                 {canRollCritical && (
                   <div className="flex flex-col gap-1">
-                    <span className="wfrp-table-label text-gray-500">Critical</span>
+                    <span className="wfrp-table-label text-wfrp-muted-text">Critical</span>
                     <button
                       onClick={handleRollCritical}
                       title="Critical action"
@@ -419,7 +419,7 @@ export function DiceLogSidebar({
                 )}
                 {canUseFortuneActions && (
                   <div className="flex flex-col gap-1">
-                    <span className="wfrp-table-label text-gray-500">Spend Fortune</span>
+                    <span className="wfrp-table-label text-wfrp-muted-text">Spend Fortune</span>
                     <div className="flex flex-row flex-wrap items-center gap-2">
                       <button
                         onClick={handleReroll}
@@ -442,7 +442,7 @@ export function DiceLogSidebar({
                 )}
                 {canUseResilienceAction && (
                   <div className="flex flex-col gap-1">
-                    <span className="wfrp-table-label text-gray-500">Spend Resilience</span>
+                    <span className="wfrp-table-label text-wfrp-muted-text">Spend Resilience</span>
                     <div className="flex flex-row flex-wrap items-center gap-2">
                       <button
                         onClick={handleIWillNotFail}

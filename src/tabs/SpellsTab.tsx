@@ -1,4 +1,4 @@
-import { InlineSubtabs, SubtabContentFrame } from "../components/ui";
+import { InlineSubtabs, SubtabActionButton, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -10,6 +10,7 @@ import {
 import type { SpellListRow } from "./spells/useSpellsViewModel";
 import type { Characteristic } from "../types";
 import type { SpellSubtab } from "./tabTypes";
+import { formatPrayerSchoolLabel, isPrayerDefinition } from "./spells/spellUtils";
 
 type RollOptions = {
   testType?: "dramatic" | "attack" | "channeling";
@@ -26,6 +27,7 @@ export function SpellsTab({
   spellRows,
   handleRoll,
   openSpellShop,
+  isPrayerMode = false,
 }: {
   spellSubtabOptions: Array<{ id: SpellSubtab; label: string }>;
   activeSpellSubtab: SpellSubtab;
@@ -37,7 +39,12 @@ export function SpellsTab({
     options?: RollOptions,
   ) => void;
   openSpellShop: () => void;
+  isPrayerMode?: boolean;
 }) {
+  const entryLabel = isPrayerMode ? "Prayer" : "Spell";
+  const entryPluralLabel = isPrayerMode ? "Prayers" : "Spells";
+  const actionLabel = isPrayerMode ? "Pray" : "Channel";
+
   return (
     <SubtabContentFrame
       subtabBar={(
@@ -46,14 +53,13 @@ export function SpellsTab({
           activeId={activeSpellSubtab}
           onChange={setActiveSpellSubtab}
           trailingContent={
-            <button
-              type="button"
+            <SubtabActionButton
               onClick={openSpellShop}
-              className="wfrp-standard-btn h-7 gap-1.5 px-3 font-black tracking-[0.12em] max-md:hidden"
-              aria-label="Add spells"
+              hideOnMobile
+              aria-label={`Add ${entryPluralLabel.toLowerCase()}`}
             >
-              <span className="whitespace-nowrap">Add Spells</span>
-            </button>
+              Add {entryPluralLabel}
+            </SubtabActionButton>
           }
         />
       )}
@@ -61,7 +67,7 @@ export function SpellsTab({
       <SheetDataSection
         gridClassName={`${mobileSpellGridClass} ${desktopSpellGridClass}`}
         leadingLabels={[{ align: "center", label: "Roll" }]}
-        sectionLabel="Spell"
+        sectionLabel={entryLabel}
         valueLabels={[
           { align: "right", className: "hidden md:block", label: "CN" },
           { align: "left", label: "RNG" },
@@ -70,7 +76,7 @@ export function SpellsTab({
           { align: "center", label: "More" },
         ]}
       >
-          {spellRows.map(({ channelValue, formatted, mobileDetails, spell }) => {
+          {spellRows.map(({ channelValue, formatted, mobileDetails, rollLabel, spell }) => {
             return (
               <SheetDataAccordionRow
                 key={spell.name}
@@ -82,10 +88,13 @@ export function SpellsTab({
                       <button
                         onClick={(event) => {
                           event.preventDefault();
-                          handleRoll({ key: "WP", label: spell.name }, undefined, { testType: "channeling" });
+                          handleRoll({ key: "WP", label: rollLabel }, undefined, {
+                            testType: "channeling",
+                            title: `${actionLabel} ${spell.name}`,
+                          });
                         }}
                         className="wfrp-roll-btn"
-                        aria-label={`Channel ${spell.name}`}
+                        aria-label={`${actionLabel} ${spell.name}`}
                       >
                         {channelValue}
                       </button>
@@ -111,8 +120,12 @@ export function SpellsTab({
                   description={spell.description}
                   rows={[
                     ...mobileDetails.map((field) => ({ label: field.label, value: field.value })),
-                    { label: "Category", value: spell.category },
-                    ...(spell.school ? [{ label: "School", value: spell.school }] : []),
+                    ...(isPrayerMode && isPrayerDefinition(spell) && spell.school
+                      ? [{ label: "Type", value: formatPrayerSchoolLabel(spell.school) }]
+                      : [
+                          { label: "Category", value: spell.category },
+                          ...(spell.school ? [{ label: "School", value: spell.school }] : []),
+                        ]),
                     ...(spell.damage ? [{ bordered: true, label: "Damage", value: spell.damage }] : []),
                   ]}
                 />

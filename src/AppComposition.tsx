@@ -35,6 +35,7 @@ import {
   getConsumableBaseName,
   isBackpackContainerItem,
 } from "./tabs/inventory/inventoryUtils";
+import { filterSpellDefinitionsForMode } from "./tabs/spells/spellUtils";
 import { useSpellsViewModel } from "./tabs/spells/useSpellsViewModel";
 import {
   getCharacterTalentRows,
@@ -56,9 +57,8 @@ import { formatTalentEffect } from "./lib/talentEffects";
 import { UI_LABELS } from "./labels";
 import {
   mainTabOptions,
-  mobilePageTitleByView,
-  mobileTabMenuOptions,
 } from "./tabs/tabOptions";
+import type { MobileTabMenuTarget } from "./tabs/tabTypes";
 import type { Characteristic, Ruleset, SkillDefinition } from "./types";
 
 const InfoSidebar = lazy(() =>
@@ -301,7 +301,6 @@ export function AppComposition() {
     getArmourFitConflicts,
     getContainerContents,
     getContainerUsedEncumbrance,
-    knownSpellIds,
     maxCorruption,
     ownedShopItemIds,
     totalEncumbrance,
@@ -313,6 +312,54 @@ export function AppComposition() {
   });
   const getTalentMaxDisplay = (max: string) =>
     getTalentMaxDisplayValue(max, attributes);
+  const isPrayerCaster = useMemo(() => {
+    const careerText = [
+      characterData.careerRecord.id,
+      characterData.careerRecord.name,
+      characterData.careerRecord.tier,
+      characterData.career,
+      characterData.tier,
+    ].join(" ");
+
+    return /\bpriest\b|(^|_)priest(_|$)/i.test(careerText);
+  }, [
+    characterData.career,
+    characterData.careerRecord.id,
+    characterData.careerRecord.name,
+    characterData.careerRecord.tier,
+    characterData.tier,
+  ]);
+  const displayedMainTabOptions = useMemo(
+    () =>
+      mainTabOptions.map((tab) =>
+        tab.id === "spells" ? { ...tab, label: isPrayerCaster ? "Prayers" : "Spells" } : tab,
+      ),
+    [isPrayerCaster],
+  );
+  const displayedMobileTabMenuOptions = useMemo(
+    () => [{ id: "characteristics" as const, label: "Characteristics" }, ...displayedMainTabOptions],
+    [displayedMainTabOptions],
+  );
+  const displayedMobilePageTitleByView = useMemo(
+    () =>
+      displayedMobileTabMenuOptions.reduce(
+        (titles, option) => ({ ...titles, [option.id]: option.label }),
+        {} as Record<MobileTabMenuTarget, string>,
+      ),
+    [displayedMobileTabMenuOptions],
+  );
+  const availableSpellDefinitions = useMemo(
+    () => filterSpellDefinitionsForMode(ruleset.spells, isPrayerCaster),
+    [isPrayerCaster, ruleset.spells],
+  );
+  const availableCharacterSpells = useMemo(
+    () => filterSpellDefinitionsForMode(characterData.spells, isPrayerCaster),
+    [characterData.spells, isPrayerCaster],
+  );
+  const knownAvailableSpellIds = useMemo(
+    () => new Set(availableCharacterSpells.map((spell) => spell.id)),
+    [availableCharacterSpells],
+  );
   const {
     openSpellShop,
     spellRows,
@@ -324,9 +371,16 @@ export function AppComposition() {
     formatSpellDuration,
     formatSpellRange,
     formatSpellTarget,
+    isPrayerMode: isPrayerCaster,
     setIsSpellShopOpen,
-    spells: characterData.spells,
+    spells: availableCharacterSpells,
   });
+
+  useEffect(() => {
+    if (!spellSubtabOptions.some((option) => option.id === activeSpellSubtab)) {
+      setActiveSpellSubtab("all");
+    }
+  }, [activeSpellSubtab, setActiveSpellSubtab, spellSubtabOptions]);
 
   const {
     restoreRouteForCharacter,
@@ -934,7 +988,7 @@ export function AppComposition() {
         }
       : activeMobileMainView === "spells"
         ? {
-            label: "Add spell",
+            label: isPrayerCaster ? "Add prayer" : "Add spell",
             onClick: () => {
               setIsMobileNavigationOpen(false);
               setIsMobileCharacterListOpen(false);
@@ -945,12 +999,12 @@ export function AppComposition() {
       : null;
 
   const navigateMobileMainView = (direction: -1 | 1) => {
-    const currentIndex = mobileTabMenuOptions.findIndex((option) => option.id === activeMobileMainView);
+    const currentIndex = displayedMobileTabMenuOptions.findIndex((option) => option.id === activeMobileMainView);
     const safeCurrentIndex = currentIndex >= 0 ? currentIndex : 0;
     const nextIndex =
-      (safeCurrentIndex + direction + mobileTabMenuOptions.length) % mobileTabMenuOptions.length;
+      (safeCurrentIndex + direction + displayedMobileTabMenuOptions.length) % displayedMobileTabMenuOptions.length;
 
-    selectMobileMainView(mobileTabMenuOptions[nextIndex].id);
+    selectMobileMainView(displayedMobileTabMenuOptions[nextIndex].id);
   };
 
   if (isCharacterBuilderOpen) {
@@ -978,7 +1032,7 @@ export function AppComposition() {
           handleMobileMainViewSelect={selectMobileMainView}
           isMobileCharacterListOpen={isMobileCharacterListOpen}
           isMobileNavigationOpen={isMobileNavigationOpen}
-          mobileTabMenuOptions={mobileTabMenuOptions}
+          mobileTabMenuOptions={displayedMobileTabMenuOptions}
           onCreateCharacter={() => {
             openCharacterBuilder();
             closeMobileNavigation();
@@ -1053,8 +1107,9 @@ export function AppComposition() {
             {isSpellShopOpen ? (
               <SpellShopSidebar
                 isOpen={isSpellShopOpen}
-                spells={ruleset.spells}
-                knownSpellIds={knownSpellIds}
+                spells={availableSpellDefinitions}
+                knownSpellIds={knownAvailableSpellIds}
+                isPrayerMode={isPrayerCaster}
                 onAddSpell={handleAddSpell}
                 onClose={() => setIsSpellShopOpen(false)}
               />
@@ -1103,7 +1158,7 @@ export function AppComposition() {
                 xpCurrent={xpCurrent}
               />
             )}
-            mobileTitle={mobilePageTitleByView[activeMobileMainView]}
+            mobileTitle={displayedMobilePageTitleByView[activeMobileMainView]}
             onMobileNextView={() => navigateMobileMainView(1)}
             onMobilePreviousView={() => navigateMobileMainView(-1)}
           >
@@ -1155,7 +1210,7 @@ export function AppComposition() {
           }`}>
               <ScrollableTabStrip className="hidden sm:flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
                 <div className="mx-auto flex w-full min-w-max justify-center gap-4 lg:mx-0 lg:w-max lg:min-w-0 lg:justify-start lg:gap-6">
-                  {mainTabOptions.map((tab) => (
+                  {displayedMainTabOptions.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => selectMainTab(tab.id)}
@@ -1169,7 +1224,7 @@ export function AppComposition() {
                       {activeMainTab === tab.id && (
                         <motion.div 
                           layoutId="activeTabUnderline"
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-400"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-muted-text"
                         />
                       )}
                     </button>
@@ -1177,7 +1232,7 @@ export function AppComposition() {
                 </div>
               </ScrollableTabStrip>
 
-              <div className="flex-1 flex flex-col min-h-0 bg-card">
+              <div className="flex-1 flex flex-col min-h-0 md:bg-card">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeMainTab}
@@ -1205,10 +1260,11 @@ export function AppComposition() {
                         <ActionsTab
                           activeActionCategory={activeActionCategory}
                           setActiveActionCategory={setActiveActionCategory}
-                          characterData={characterData}
-                          characterSkills={characterSkills}
-                          equipmentState={equipmentState}
-                          rulesIndex={rulesIndex}
+                          characterData={{ ...characterData, spells: availableCharacterSpells }}
+                        characterSkills={characterSkills}
+                        equipmentState={equipmentState}
+                        isPrayerMode={isPrayerCaster}
+                        rulesIndex={rulesIndex}
                           getCharacteristicLabel={getCharacteristicLabel}
                           getTargetBonusTotal={getTargetBonusTotal}
                           handleRoll={handleRoll}
@@ -1229,6 +1285,7 @@ export function AppComposition() {
                         setActiveSpellSubtab={setActiveSpellSubtab}
                         spellRows={spellRows}
                         handleRoll={handleRoll}
+                        isPrayerMode={isPrayerCaster}
                         openSpellShop={openSpellShop}
                       />
                       )}

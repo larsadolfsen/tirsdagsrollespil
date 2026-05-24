@@ -48,7 +48,7 @@ function RuleInfoTable({ rows }: { rows: RuleStat[] }) {
     <div className="mb-3 grid grid-cols-[minmax(96px,0.45fr)_minmax(0,1fr)] items-baseline gap-x-4 gap-y-1 border-y border-white/10 py-2">
       {rows.map((row) => (
         <div key={row.label} className="contents">
-          <span className="wfrp-sidebar-body font-semibold text-gray-400">{row.label}:</span>
+          <span className="wfrp-sidebar-body font-semibold text-wfrp-muted-text">{row.label}:</span>
           <span className="wfrp-sidebar-body text-left font-semibold text-gray-200">
             {row.value}
           </span>
@@ -80,7 +80,7 @@ function RuleDetailSections({ sections }: { sections: RuleDetailSection[] }) {
           {section.entries?.map((entry) => (
             <div key={String(entry.title)} className="flex flex-col gap-1">
               <span className="font-semibold text-gray-300">{entry.title}</span>
-              {entry.description && <span className="text-gray-500">{entry.description}</span>}
+              {entry.description && <span className="text-wfrp-muted-text">{entry.description}</span>}
             </div>
           ))}
         </div>
@@ -104,7 +104,7 @@ function RuleSummaryPanel({
     <div className="wfrp-subpanel flex flex-col gap-5 rounded-lg p-5">
       <div className="flex flex-col gap-1">
         <h3 className="wfrp-sidebar-title text-xl">{title}</h3>
-        <span className="wfrp-sidebar-section border-white/5 text-gray-500">{subtitle}</span>
+        <span className="wfrp-sidebar-section border-white/5 text-wfrp-muted-text">{subtitle}</span>
       </div>
 
       {stats && stats.length > 0 && <RuleInfoTable rows={stats} />}

@@ -53,7 +53,7 @@ export function ResourceCounterBar({
 
       <div className={contentClassName ?? "flex w-20 min-w-0 flex-col gap-1 sm:w-24 lg:w-36"}>
         <div className="flex items-end justify-between gap-2 leading-none">
-          <span className="truncate text-[9px] font-bold uppercase tracking-tight text-gray-400">
+          <span className="truncate text-[9px] font-bold uppercase tracking-tight text-wfrp-muted-text">
             {label}
           </span>
           <span className={`${counterClassName} shrink-0`}>

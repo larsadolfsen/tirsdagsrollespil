@@ -182,11 +182,11 @@
 }
 
 @utility wfrp-icon-btn {
-  @apply rounded text-gray-400 transition-colors cursor-pointer hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply rounded text-wfrp-muted-text transition-colors cursor-pointer hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
 @utility wfrp-mini-action-btn {
-  @apply px-2.5 py-1 bg-wfrp-surface-raised border border-wfrp-border rounded text-[9px] font-black text-gray-500 hover:text-white hover:border-wfrp-gold/50 transition-all active:scale-95 cursor-pointer shadow-sm;
+  @apply px-2.5 py-1 bg-wfrp-surface-raised border border-wfrp-border rounded text-[9px] font-black text-wfrp-muted-text hover:text-white hover:border-wfrp-gold/50 transition-all active:scale-95 cursor-pointer shadow-sm;
 }
 
 @utility wfrp-dice-adjust-btn {
@@ -222,7 +222,7 @@
 }
 
 @utility wfrp-subpanel-header {
-  @apply border-y border-wfrp-border bg-card px-2 py-1 sm:px-3;
+  @apply border-y border-wfrp-border bg-card px-0 py-1;
 }
 
 @utility wfrp-panel-copy {
@@ -273,17 +273,21 @@
 
 .wfrp-data-accordion-row {
   padding-block: 0;
-  padding-left: 1rem;
-  padding-right: 0;
+  padding-inline: 0;
 }
 
 .wfrp-data-accordion-summary {
   min-height: 3rem;
+  padding-inline: 0;
 }
 
 .wfrp-roll-cell {
-  margin-left: -0.5rem;
-  justify-content: flex-start;
+  justify-content: center;
+}
+
+.wfrp-no-roll-cell {
+  margin-left: 0;
+  padding-left: 1rem;
 }
 
 @utility wfrp-property-pill {

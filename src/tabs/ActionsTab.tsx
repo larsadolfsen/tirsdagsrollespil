@@ -80,6 +80,7 @@ export function ActionsTab({
   getCharacteristicLabel,
   getTargetBonusTotal,
   handleRoll,
+  isPrayerMode = false,
   setRollAdjustments,
 }: {
   activeActionCategory: ActionCategory;
@@ -95,6 +96,7 @@ export function ActionsTab({
     damage?: number,
     options?: RollOptions,
   ) => void;
+  isPrayerMode?: boolean;
   setRollAdjustments: (modifier: number, targetBonusSources: RollBonusSource[]) => void;
 }) {
   const attributes = characterData.attributes;
@@ -110,7 +112,7 @@ export function ActionsTab({
   const hasOtherActions = maneuverActions.some((action) => action.type === "other");
   const actionCategoryOptions = [
     { id: "all" as const, label: "All" },
-    ...(hasMagicActions ? [{ id: "magic" as const, label: "Magic" }] : []),
+    ...(hasMagicActions ? [{ id: "magic" as const, label: isPrayerMode ? "Prayer" : "Magic" }] : []),
     ...(hasMeleeActions ? [{ id: "melee" as const, label: "Melee" }] : []),
     ...(hasRangedActions ? [{ id: "ranged" as const, label: "Ranged" }] : []),
     ...(hasOtherActions ? [{ id: "other" as const, label: "Other" }] : []),
@@ -167,26 +169,30 @@ export function ActionsTab({
     >
           {hasMagicActions && (visibleActionCategory === "all" || visibleActionCategory === "magic") && (() => {
             const baseWP = attributes.WP || 0;
-            const channellingSkill = characterSkills.find((skill) => skill.baseName === "Channelling");
+            const channellingSkill = characterSkills.find((skill) =>
+              isPrayerMode ? skill.baseName === "Pray" : skill.baseName === "Channelling",
+            );
             const languageMagickSkill = characterSkills.find((skill) => skill.displayName === "Language (Magick)");
             const totalChannelingValue = channellingSkill ? baseWP + channellingSkill.advances : baseWP;
             const baseInt = attributes.Int || 0;
             const totalDispelValue = languageMagickSkill ? baseInt + languageMagickSkill.advances : baseInt;
             const magicActions = [
               {
-                name: "Channeling",
-                rollLabel: channellingSkill?.displayName ?? "Channelling",
+                name: isPrayerMode ? "Pray" : "Channeling",
+                rollLabel: channellingSkill?.displayName ?? (isPrayerMode ? "Pray" : "Channelling"),
                 char: "WP" as Characteristic["key"],
                 totalValue: totalChannelingValue,
-                properties: ["Spell Focus"],
+                properties: isPrayerMode ? [] : ["Spell Focus"],
               },
-              {
-                name: "Dispell Magic",
-                rollLabel: "Language (Magick)",
-                char: "Int" as Characteristic["key"],
-                totalValue: totalDispelValue,
-                properties: ["Spell Focus"],
-              },
+              ...(isPrayerMode
+                ? []
+                : [{
+                    name: "Dispell Magic",
+                    rollLabel: "Language (Magick)",
+                    char: "Int" as Characteristic["key"],
+                    totalValue: totalDispelValue,
+                    properties: ["Spell Focus"],
+                  }]),
             ];
 
             return (
@@ -194,7 +200,7 @@ export function ActionsTab({
                 gridClassName={channelingGridClass}
                 headerClassName={actionSummaryGridClass}
                 leadingLabels={[{ align: "center", label: "Roll" }]}
-                sectionLabel="Magic"
+                sectionLabel={isPrayerMode ? "Prayer" : "Magic"}
                 valueLabels={[{ align: "center", label: "More" }]}
               >
                 {magicActions.map((action) => (
@@ -231,9 +237,9 @@ export function ActionsTab({
                     )}
                   >
                     <SheetDataAccordionDetails
-                      description={rulesIndex.actionDescriptionByName.Magic}
+                      description={isPrayerMode ? undefined : rulesIndex.actionDescriptionByName.Magic}
                       rows={[
-                        { label: "Type", value: "Magic" },
+                        { label: "Type", value: isPrayerMode ? "Prayer" : "Magic" },
                         { label: "Roll", value: action.totalValue },
                       ]}
                     >
@@ -401,7 +407,7 @@ export function ActionsTab({
                             <div className="hidden wfrp-list-cell-strong text-right md:block">{action.range}</div>
                             <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                               {action.properties.map((prop, propIndex) => (
-                                <span key={prop} className="text-xs font-semibold text-gray-400">
+                                <span key={prop} className="text-xs font-semibold text-wfrp-muted-text">
                                   {prop}
                                   {propIndex < action.properties.length - 1 ? "," : ""}
                                 </span>
@@ -488,7 +494,7 @@ export function ActionsTab({
                             <div className="hidden wfrp-list-cell-strong text-right font-mono opacity-50 md:block">{rangeBands?.e ?? "-"}</div>
                             <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                               {action.properties.map((prop, propIndex) => (
-                                <span key={prop} className="text-xs font-semibold text-gray-400">
+                                <span key={prop} className="text-xs font-semibold text-wfrp-muted-text">
                                   {prop}
                                   {propIndex < action.properties.length - 1 ? "," : ""}
                                 </span>
@@ -577,7 +583,7 @@ export function ActionsTab({
                           <div className="hidden wfrp-list-cell-strong text-right md:block">{action.range}</div>
                           <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                             {action.properties.map((prop, propIndex) => (
-                              <span key={prop} className="text-xs font-semibold text-gray-400">
+                              <span key={prop} className="text-xs font-semibold text-wfrp-muted-text">
                                 {prop}
                                 {propIndex < action.properties.length - 1 ? "," : ""}
                               </span>

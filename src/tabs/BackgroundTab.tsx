@@ -1,4 +1,8 @@
 import { Textarea } from "../components/ui";
+import {
+  SheetDataHeaderCell,
+  SheetDataPanel,
+} from "../components/wfrp";
 
 export function BackgroundTab({
   backgroundText,
@@ -8,17 +12,15 @@ export function BackgroundTab({
   setBackgroundText: (value: string) => void;
 }) {
   return (
-    <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-2 sm:p-3 lg:p-4">
-      <section className="wfrp-subpanel-shell flex flex-col gap-3 p-4">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="wfrp-panel-title">
-            Background Editor
-            <div className="wfrp-panel-rule" />
-          </h3>
-          <span className="wfrp-table-label text-right">
-            {backgroundText.trim().length} Characters
-          </span>
-        </div>
+    <SheetDataPanel className="divide-y divide-white/5">
+      <div className="grid grid-cols-[minmax(0,1fr)_112px] items-center gap-0 border-t border-white/5 bg-wfrp-table px-4 py-3">
+        <SheetDataHeaderCell>Background</SheetDataHeaderCell>
+        <SheetDataHeaderCell align="right">
+          {backgroundText.trim().length} Characters
+        </SheetDataHeaderCell>
+      </div>
+
+      <div className="p-4">
         <Textarea
           value={backgroundText}
           onChange={(event) => setBackgroundText(event.target.value)}
@@ -27,7 +29,7 @@ export function BackgroundTab({
           placeholder="Write the character's history, relationships, goals, appearance, reputation, and anything the table should remember."
           aria-label="Character background editor"
         />
-      </section>
-    </div>
+      </div>
+    </SheetDataPanel>
   );
 }

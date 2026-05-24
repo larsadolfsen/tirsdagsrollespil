@@ -2,7 +2,12 @@ import { ArrowDown, ArrowUp, BookOpen, ChevronDown, ListFilter, Search } from "l
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chip } from "./Chip";
 import { WfrpSidebar } from "./wfrp";
-import { formatSpellSchoolLabel, formatSpellSchoolShortLabel } from "../tabs/spells/spellUtils";
+import {
+  formatPrayerSchoolLabel,
+  formatSpellSchoolLabel,
+  formatSpellSchoolShortLabel,
+  isPrayerDefinition,
+} from "../tabs/spells/spellUtils";
 import type { SpellDefinition } from "../types";
 
 const spellCategoryOrder: SpellDefinition["category"][] = ["petty", "arcane", "school"];
@@ -43,7 +48,9 @@ function getSpellTypeLabel(spell: SpellDefinition) {
   const schools = getSpellSchools(spell);
 
   if (spell.category === "school" && schools.length > 0) {
-    return schools.map(formatSpellSchoolShortLabel).join(", ");
+    return schools
+      .map((school) => (isPrayerDefinition(spell) ? formatPrayerSchoolLabel(school) : formatSpellSchoolShortLabel(school)))
+      .join(", ");
   }
 
   return formatSpellCategoryLabel(spell.category);
@@ -53,7 +60,9 @@ function getSpellGroupLabel(spell: SpellDefinition) {
   const schools = getSpellSchools(spell);
 
   if (spell.category === "school" && schools.length > 0) {
-    return schools.map(formatSpellSchoolLabel).join(" / ");
+    return schools
+      .map((school) => (isPrayerDefinition(spell) ? formatPrayerSchoolLabel(school) : formatSpellSchoolLabel(school)))
+      .join(" / ");
   }
 
   return formatSpellCategoryLabel(spell.category);
@@ -108,7 +117,7 @@ function SortHeaderButton({
       className={`inline-flex items-center gap-1 uppercase transition-colors hover:text-wfrp-gold ${alignClass} ${
         isActive ? "text-wfrp-gold" : ""
       }`}
-      aria-label={`Sort spells by ${label}`}
+      aria-label={`Sort by ${label}`}
     >
       <span>{label}</span>
       {isActive ? (
@@ -128,12 +137,14 @@ export function SpellShopSidebar({
   knownSpellIds,
   onAddSpell,
   onClose,
+  isPrayerMode = false,
 }: {
   isOpen: boolean;
   spells: SpellDefinition[];
   knownSpellIds: Set<string>;
   onAddSpell: (spell: SpellDefinition) => void;
   onClose: () => void;
+  isPrayerMode?: boolean;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<SpellFilter>("All");
@@ -220,6 +231,13 @@ export function SpellShopSidebar({
     );
   }, [searchTerm, selectedFilter, shopStock]);
 
+  const entryLabel = isPrayerMode ? "Prayer" : "Spell";
+  const entryPluralLabel = isPrayerMode ? "Prayers" : "Spells";
+  const shopTitle = isPrayerMode ? "Prayer Shop" : "Spell Shop";
+  const shopKicker = isPrayerMode ? "Blessings & invocations" : "Grimoires & formulae";
+  const lowercaseEntryLabel = entryLabel.toLowerCase();
+  const lowercaseEntryPluralLabel = entryPluralLabel.toLowerCase();
+
   const groupedStock = useMemo(() => {
     const sortSpells = (stock: SpellDefinition[]) =>
       [...stock].sort((firstSpell, secondSpell) => {
@@ -230,7 +248,7 @@ export function SpellShopSidebar({
     if (selectedFilter === "All") {
       return [
         {
-          label: "All Spells",
+          label: `All ${entryPluralLabel}`,
           spells: sortSpells(filteredStock),
         },
       ];
@@ -250,7 +268,7 @@ export function SpellShopSidebar({
     }, []);
 
     return groups.map((group) => ({ ...group, spells: sortSpells(group.spells) }));
-  }, [filteredStock, selectedFilter, sortDirection, sortKey]);
+  }, [entryPluralLabel, filteredStock, selectedFilter, sortDirection, sortKey]);
 
   const handleSort = (nextSortKey: SpellSortKey) => {
     setSortDirection((currentDirection) =>
@@ -265,18 +283,22 @@ export function SpellShopSidebar({
         formatSpellSchoolShortLabel(firstSchool).localeCompare(formatSpellSchoolShortLabel(secondSchool)),
       )
       .map((school) => ({
-        label: formatSpellSchoolShortLabel(school),
+        label: isPrayerMode ? formatPrayerSchoolLabel(school) : formatSpellSchoolShortLabel(school),
         value: getSpellSchoolFilterValue(school),
       }));
 
-    return [
-      { label: "All", value: "All" },
-      { label: "Petty", value: "petty" },
-      { label: "Arcane", value: "arcane" },
-      ...schoolOptions,
-    ];
-  }, [shopStock]);
-
+    return isPrayerMode
+      ? [
+          { label: "All", value: "All" },
+          ...schoolOptions,
+        ]
+      : [
+          { label: "All", value: "All" },
+          { label: "Petty", value: "petty" },
+          { label: "Arcane", value: "arcane" },
+          ...schoolOptions,
+        ];
+  }, [isPrayerMode, shopStock]);
   return (
     <WfrpSidebar
       isOpen={isOpen}
@@ -285,23 +307,23 @@ export function SpellShopSidebar({
       className="w-[360px] max-w-[calc(100vw-1rem)]"
       contentClassName="p-3"
       icon={<BookOpen size={18} />}
-      title="Spell Shop"
+      title={shopTitle}
       titleId="spell-shop-sidebar-title"
-      kicker="Grimoires & formulae"
-      closeLabel="Close spell shop"
+      kicker={shopKicker}
+      closeLabel={`Close ${lowercaseEntryLabel} shop`}
       sidebarRef={sidebarRef}
       closeOnOutsidePointerDown
     >
       <div className="flex flex-col gap-3">
         <div ref={filterRef} className="relative flex gap-2">
-          <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded border border-white/5 bg-black/30 px-3 text-gray-500 focus-within:border-wfrp-gold/40">
+          <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded border border-white/5 bg-black/30 px-3 text-wfrp-muted-text focus-within:border-wfrp-gold/40">
             <Search size={14} />
             <input
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
               className="min-w-0 flex-1 bg-transparent text-xs font-semibold text-gray-200 outline-none placeholder:text-gray-600"
-              placeholder="Search spells"
-              aria-label="Search spells"
+              placeholder={`Search ${lowercaseEntryPluralLabel}`}
+              aria-label={`Search ${lowercaseEntryPluralLabel}`}
             />
           </label>
 
@@ -310,7 +332,7 @@ export function SpellShopSidebar({
             onClick={() => setIsFilterOpen((isOpen) => !isOpen)}
             className="wfrp-action-btn h-10 shrink-0 gap-2 px-4"
             aria-expanded={isFilterOpen}
-            aria-label="Filter spells by type"
+            aria-label={`Filter ${lowercaseEntryPluralLabel} by type`}
           >
             <ListFilter size={14} />
             Filter
@@ -340,7 +362,7 @@ export function SpellShopSidebar({
                     className={`flex h-8 w-full items-center justify-between rounded px-2 text-left text-[10px] font-black uppercase tracking-widest transition-colors ${
                       selectedFilter === option.value
                         ? "bg-wfrp-gold/10 text-wfrp-gold"
-                        : "text-gray-500 hover:bg-white/5 hover:text-gray-200"
+                        : "text-wfrp-muted-text hover:bg-white/5 hover:text-gray-200"
                     }`}
                   >
                     <span>{option.label}</span>
@@ -360,8 +382,8 @@ export function SpellShopSidebar({
                 setExpandedSpellId(null);
               }}
               closeLabel={`Clear ${
-                categoryOptions.find((option) => option.value === selectedFilter)?.label ?? "spell"
-              } spell filter`}
+                categoryOptions.find((option) => option.value === selectedFilter)?.label ?? lowercaseEntryLabel
+              } ${lowercaseEntryLabel} filter`}
             >
               {categoryOptions.find((option) => option.value === selectedFilter)?.label}
             </Chip>
@@ -370,7 +392,7 @@ export function SpellShopSidebar({
 
         <div className="wfrp-subpanel-shell">
           <div className="grid grid-cols-[minmax(0,1fr)_42px_18px] gap-2 wfrp-list-header">
-            <SortHeaderButton activeSortKey={sortKey} label="Spell" sortDirection={sortDirection} sortKey="name" onSort={handleSort} />
+            <SortHeaderButton activeSortKey={sortKey} label={entryLabel} sortDirection={sortDirection} sortKey="name" onSort={handleSort} />
             <SortHeaderButton align="center" activeSortKey={sortKey} label="CN" sortDirection={sortDirection} sortKey="cn" onSort={handleSort} />
             <span aria-hidden="true" />
           </div>
@@ -405,7 +427,7 @@ export function SpellShopSidebar({
                             <span className="wfrp-list-cell-strong truncate text-gray-200">
                               {spell.name}
                             </span>
-                            {isKnown ? <OwnershipDot label="Known spell" /> : null}
+                            {isKnown ? <OwnershipDot label={`Known ${lowercaseEntryLabel}`} /> : null}
                           </div>
                           <span className="mt-1 block max-w-full truncate text-[9px] font-black uppercase tracking-widest text-gray-600">
                             {getSpellTypeLabel(spell)}
@@ -426,7 +448,7 @@ export function SpellShopSidebar({
 
                       {expandedSpellId === spell.id && (
                         <div className="mx-2 mb-2 rounded border border-white/5 bg-black/20 p-3">
-                          <p className="text-[11px] font-semibold leading-relaxed text-gray-400">
+                          <p className="text-[11px] font-semibold leading-relaxed text-wfrp-muted-text">
                             {spell.description}
                           </p>
                           <div className="mt-3 grid grid-cols-2 gap-2">
@@ -455,7 +477,7 @@ export function SpellShopSidebar({
                                 className="wfrp-action-btn gap-2 whitespace-nowrap px-4 py-1.5"
                                 aria-label={`Add ${spell.name}`}
                               >
-                                Add Spell
+                                Add {entryLabel}
                               </button>
                             </div>
                           ) : null}
@@ -469,7 +491,7 @@ export function SpellShopSidebar({
 
             {filteredStock.length === 0 && (
               <div className="px-2 py-6 text-center text-[10px] font-bold uppercase tracking-widest text-gray-700">
-                No matching spells
+                No matching {lowercaseEntryPluralLabel}
               </div>
             )}
           </div>

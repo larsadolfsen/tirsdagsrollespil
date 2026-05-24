@@ -11,7 +11,7 @@ type SheetDataHeaderCellProps = HTMLAttributes<HTMLSpanElement> & {
   align?: "left" | "center" | "right";
 };
 
-const rowClasses = "wfrp-table-row grid min-w-0 max-w-full items-center gap-2";
+const rowClasses = "wfrp-table-row grid min-w-0 max-w-full items-center gap-0";
 
 export function SheetDataPanel({ as: Component = "section", className, ...props }: SheetDataPanelProps) {
   return <Component className={cn("wfrp-subpanel-shell flex min-w-0 max-w-full flex-col overflow-hidden bg-card", className)} {...props} />;
@@ -27,6 +27,7 @@ export function SheetDataSection({
   gridClassName,
   headerClassName,
   leadingLabels = [],
+  sectionLabelClassName,
   sectionLabel,
   valueLabels,
   ...props
@@ -41,6 +42,7 @@ export function SheetDataSection({
     key?: string;
     label: ReactNode;
   }>;
+  sectionLabelClassName?: string;
   sectionLabel: ReactNode;
   valueLabels: Array<{
     align?: "left" | "center" | "right";
@@ -61,7 +63,7 @@ export function SheetDataSection({
             {label}
           </SheetDataHeaderCell>
         ))}
-        <SheetDataHeaderCell>{sectionLabel}</SheetDataHeaderCell>
+        <SheetDataHeaderCell className={sectionLabelClassName}>{sectionLabel}</SheetDataHeaderCell>
         {valueLabels.map(({ align, className: valueClassName, key, label }) => (
           <SheetDataHeaderCell
             key={key ?? String(label)}
@@ -82,7 +84,7 @@ export function SheetDataHeader({ className, ...props }: DivProps) {
   return (
     <div
       className={cn(
-        "wfrp-subpanel-header grid min-w-0 max-w-full items-center gap-2 border-t border-white/5 bg-wfrp-table",
+        "wfrp-subpanel-header grid min-w-0 max-w-full items-center gap-0 border-t border-white/5 bg-wfrp-table",
         className,
       )}
       {...props}
@@ -151,7 +153,7 @@ export function SheetDataAccordionRow({
       <details className={cn("group/details min-w-0 max-w-full", detailsClassName)} {...props}>
         <summary
           className={cn(
-            "wfrp-data-accordion-summary grid min-w-0 max-w-full cursor-pointer list-none items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
+            "wfrp-data-accordion-summary grid min-w-0 max-w-full cursor-pointer list-none items-center gap-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
             summaryClassName,
           )}
         >

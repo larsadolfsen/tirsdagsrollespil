@@ -1,6 +1,6 @@
 import { Minus } from "lucide-react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, RefObject } from "react";
-import { InlineSubtabs } from "../components/ui";
+import { InlineSubtabs, SubtabActionButton } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -161,23 +161,20 @@ export function InventoryTab({
         activeId={activeInventorySubtab}
         onChange={setActiveInventorySubtab}
         trailingContent={
-          <button
-            type="button"
+          <SubtabActionButton
             onClick={openShop}
-            className="group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 font-black tracking-[0.12em] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 max-md:hidden"
+            hideOnMobile
             aria-label="Add item"
           >
-            <span className="inline-flex h-6 items-center justify-center whitespace-nowrap rounded bg-wfrp-border px-3 text-[9px] font-bold uppercase tracking-widest text-gray-300 transition-all group-active:scale-95 group-hover:bg-wfrp-control-hover group-hover:text-white">
-              Add item
-            </span>
-          </button>
+            Add item
+          </SubtabActionButton>
         }
       />
 
       <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4">
         <SheetDataPanel className="bg-wfrp-table px-3 py-3 sm:px-4">
           <div className="flex items-end justify-between leading-none">
-            <span className="text-[9px] font-bold uppercase tracking-tight text-gray-400">
+            <span className="text-[9px] font-bold uppercase tracking-tight text-wfrp-muted-text">
               Encumbrance
             </span>
             <span className="font-mono text-[10px] font-bold text-gray-200">

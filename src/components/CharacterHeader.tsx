@@ -258,11 +258,11 @@ export function CharacterHeader({
             </button>
           )}
           {characterAka && (
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-gray-400 sm:text-[10px]">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-wfrp-muted-text sm:text-[10px]">
               {characterAka}
             </div>
           )}
-          <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-gray-500 sm:text-[10px]">
+          <div className="overflow-hidden text-ellipsis whitespace-nowrap font-serif text-[9px] italic text-wfrp-muted-text sm:text-[10px]">
             {characterData.race} {characterData.career} 1
           </div>
           {portraitError ? (
@@ -292,16 +292,16 @@ export function CharacterHeader({
                 aria-expanded={isCampaignMenuOpen}
               >
                 <div className="flex flex-col">
-                  <span className="text-[8px] font-bold text-gray-500 uppercase leading-none">
+                  <span className="text-[8px] font-bold text-wfrp-muted-text uppercase leading-none">
                     {UI_LABELS.CAMPAIGN_HEADER}
                   </span>
-                  <span className="text-[11px] font-semibold text-gray-400 whitespace-nowrap group-hover/campaign:text-wfrp-gold transition-colors">
+                  <span className="text-[11px] font-semibold text-wfrp-muted-text whitespace-nowrap group-hover/campaign:text-wfrp-gold transition-colors">
                     {UI_LABELS.CAMPAIGN_NAME}
                   </span>
                 </div>
                 <ChevronDown
                   size={12}
-                  className={`text-gray-500 transition-transform ${isCampaignMenuOpen ? "rotate-180 text-wfrp-gold" : "group-hover/campaign:text-wfrp-gold"}`}
+                  className={`text-wfrp-muted-text transition-transform ${isCampaignMenuOpen ? "rotate-180 text-wfrp-gold" : "group-hover/campaign:text-wfrp-gold"}`}
                 />
               </button>
               <div className="my-1 h-5 w-[1px] bg-wfrp-border opacity-60" />
@@ -313,7 +313,7 @@ export function CharacterHeader({
                 className="flex min-w-9 flex-col items-center px-2 py-0.5 transition-colors hover:bg-wfrp-surface-muted-hover cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                 aria-label="Open Advance tab"
               >
-                <span className="text-[8px] font-bold text-gray-500 uppercase leading-none">Exp</span>
+                <span className="text-[8px] font-bold text-wfrp-muted-text uppercase leading-none">Exp</span>
                 <span className="text-[11px] font-bold text-blue-400 whitespace-nowrap">
                   {xpCurrent}/{characterData.xpTotal}
                 </span>
@@ -326,7 +326,7 @@ export function CharacterHeader({
                 role="menu"
                 aria-label="Character selection"
               >
-                <div className="border-b border-wfrp-border-muted px-3 py-2 text-[9px] font-bold uppercase tracking-[0.24em] text-gray-500">
+                <div className="border-b border-wfrp-border-muted px-3 py-2 text-[9px] font-bold uppercase tracking-[0.24em] text-wfrp-muted-text">
                   Characters
                 </div>
                 <div className="p-1">
@@ -364,7 +364,7 @@ export function CharacterHeader({
                       onCreateCharacter();
                       setIsCampaignMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-[12px] font-semibold text-gray-400 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold"
+                    className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-[12px] font-semibold text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold"
                     role="menuitem"
                   >
                     <Plus size={12} />
