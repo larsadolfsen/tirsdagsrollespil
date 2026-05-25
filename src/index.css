@@ -358,7 +358,6 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
-    gap: 12px;
   }
 
   section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [class~="group/char"] {
@@ -368,10 +367,6 @@ body {
 }
 
 @media (min-width: 1024px) {
-  section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] {
-    gap: 12px;
-  }
-
   section > [class~="grid"][class~="grid-cols-5"][class~="md:grid-cols-10"] > [class~="group/char"] {
     flex-basis: 5rem;
     width: 5rem;
