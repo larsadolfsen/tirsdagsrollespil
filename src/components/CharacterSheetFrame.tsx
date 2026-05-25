@@ -71,7 +71,7 @@ export function CharacterSheetFrame({
 
       {mobileHeader}
 
-      <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4 px-4 py-4 md:gap-8">
+      <div className="mx-auto flex w-full max-w-[1199px] flex-col gap-4 px-4 py-4 md:gap-8">
         <MobileTitlePager
           onNext={onMobileNextView}
           onPrevious={onMobilePreviousView}

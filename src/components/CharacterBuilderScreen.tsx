@@ -299,7 +299,7 @@ export function CharacterBuilderScreen({
   return (
     <div className="min-h-screen bg-wfrp-dark font-sans selection:bg-wfrp-gold/40 flex flex-col">
       <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
-      <main className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col gap-4 p-4">
+      <main className="mx-auto flex w-full max-w-[1199px] flex-1 flex-col gap-4 p-4">
         <Card className="overflow-hidden p-0">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-wfrp-border px-4 py-3">
             <div>

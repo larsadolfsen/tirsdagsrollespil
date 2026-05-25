@@ -157,7 +157,6 @@ export function NotesTab({
       ) : (
         <SheetDataSection
           gridClassName={entryGridClass}
-          sectionLabelClassName="pl-4"
           leadingLabels={[{ align: "center", label: "#" }]}
           sectionLabel="Title"
           valueLabels={
