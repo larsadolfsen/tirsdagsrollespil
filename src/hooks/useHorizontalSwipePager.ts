@@ -43,10 +43,12 @@ export function useHorizontalSwipePager({
     }
 
     if (deltaX < 0) {
+      event.stopPropagation();
       onNext();
       return;
     }
 
+    event.stopPropagation();
     onPrevious();
   };
 
