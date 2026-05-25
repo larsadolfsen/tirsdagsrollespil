@@ -7,7 +7,6 @@ import {
   getCoinEncumbrance,
   getConsumableCount,
   getInventoryEncumbrance,
-  isPacksAndContainersItem,
 } from "./inventoryUtils";
 
 export type InventoryMobileDetail = {
@@ -27,9 +26,12 @@ export type InventoryItemRow = {
 
 export type InventoryWalletRow = {
   coinCount: number;
+  containerId: string | null;
   encumbrance: number;
   value: string;
   mobileDetails: InventoryMobileDetail[];
+  isDraggable: boolean;
+  isDragging: boolean;
 };
 
 export type InventorySection = {
@@ -48,6 +50,7 @@ export function useInventoryViewModel({
   activeInventorySubtab,
   carriedItems,
   characterCoins,
+  coinContainerId,
   containers,
   getContainerContents,
   getContainerUsedEncumbrance,
@@ -58,6 +61,7 @@ export function useInventoryViewModel({
   activeInventorySubtab: InventorySubtab;
   carriedItems: ResolvedCharacterEquipment[];
   characterCoins: ResolvedCharacterRecord["coins"];
+  coinContainerId: string | null;
   containers: ResolvedCharacterEquipment[];
   getContainerContents: (containerId: string) => ResolvedCharacterEquipment[];
   getContainerUsedEncumbrance: (containerId: string) => number;
@@ -70,6 +74,7 @@ export function useInventoryViewModel({
   const coinValue = formatCoinTotalValue(characterCoins);
   const wallet: InventoryWalletRow = {
     coinCount,
+    containerId: coinContainerId,
     encumbrance: coinEncumbrance,
     value: coinValue,
     mobileDetails: [
@@ -78,6 +83,8 @@ export function useInventoryViewModel({
       { label: "Enc", value: coinEncumbrance || "-" },
       { label: "Value", value: coinValue },
     ],
+    isDraggable: coinCount > 0,
+    isDragging: inventoryDrag?.type === "coins",
   };
 
   const buildItemRows = (items: ResolvedCharacterEquipment[]): InventoryItemRow[] =>
@@ -97,14 +104,14 @@ export function useInventoryViewModel({
           { label: "Enc", value: encumbrance },
           { label: "Value", value },
         ],
-        isDraggable: !isPacksAndContainersItem(item),
-        isDragging: inventoryDrag?.itemId === item.id,
+        isDraggable: true,
+        isDragging: inventoryDrag?.type === "item" && inventoryDrag.itemId === item.id,
       };
     });
 
   const inventorySubtabOptions: Array<TabOption<InventorySubtab>> = [
     { id: "all", label: "All" },
-    { id: "carried", label: "Ready" },
+    { id: "carried", label: "Carried" },
     { id: "worn", label: "Worn" },
     ...containers.map((container) => ({
       id: `container:${container.id}` as InventorySubtab,
@@ -115,14 +122,14 @@ export function useInventoryViewModel({
   const sections: InventorySection[] = [
     {
       id: "carried",
-      title: "Ready",
+      title: "Carried",
       itemRows: buildItemRows(carriedItems),
       dropContainerId: null,
       dropCarried: true,
       alwaysVisible:
         activeInventorySubtab === "carried" ||
         carriedItems.length > 0 ||
-        wallet.coinCount > 0 ||
+        (wallet.coinCount > 0 && wallet.containerId === null) ||
         Boolean(inventoryDrag),
     },
     {

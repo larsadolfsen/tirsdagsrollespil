@@ -14,6 +14,7 @@ export interface CharacterProgressData {
     s: number;
     d: number;
   };
+  coinContainerId?: string | null;
   careerCurrentRank?: number;
   characteristicInitials?: Record<string, number>;
   characteristicAdvances?: Record<string, number>;

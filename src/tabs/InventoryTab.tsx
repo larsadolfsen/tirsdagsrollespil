@@ -1,4 +1,4 @@
-import { Minus } from "lucide-react";
+import { GripVertical, Minus } from "lucide-react";
 import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, RefObject } from "react";
 import { useMobileMainViewSwipeHandlers } from "../components/MobileMainViewSwipeContext";
 import { InlineSubtabs, SubtabActionButton } from "../components/ui";
@@ -17,13 +17,14 @@ import type { InventorySubtab } from "./tabTypes";
 import type { InventoryDragState, InventoryDropTargetId, InventoryMenuState } from "../types/inventory";
 import { getConsumableBaseName } from "./inventory/inventoryUtils";
 
-const desktopInventoryGridClass = "md:grid-cols-[minmax(0,1fr)_140px_48px_60px_60px_48px]";
-const mobileInventoryGridClass = "grid-cols-[minmax(0,1fr)_44px_44px_48px]";
+const desktopInventoryGridClass = "md:grid-cols-[36px_minmax(0,1fr)_140px_48px_60px_60px_48px]";
+const mobileInventoryGridClass = "grid-cols-[32px_minmax(0,1fr)_44px_44px_48px]";
 
 export function InventoryTab({
   activeInventorySubtab,
   setActiveInventorySubtab,
   characterData,
+  coinContainerId,
   equipmentState,
   totalEncumbrance,
   carryCapacity,
@@ -38,11 +39,13 @@ export function InventoryTab({
   inventoryMenuRef,
   getContainerUsedEncumbrance,
   getContainerContents,
+  canDropInventoryDrag,
   canDropInventoryItem,
   canStoreInContainer,
   handleInventoryDragOver,
   handleInventoryDrop,
   handleInventoryDragStart,
+  handleCoinDragStart,
   handleInventoryDragEnd,
   handleConsumeItem,
   handleToggleInventoryMenu,
@@ -57,6 +60,7 @@ export function InventoryTab({
   activeInventorySubtab: InventorySubtab;
   setActiveInventorySubtab: (subtab: InventorySubtab) => void;
   characterData: ResolvedCharacterRecord;
+  coinContainerId: string | null;
   equipmentState: ResolvedCharacterEquipment[];
   totalEncumbrance: number;
   carryCapacity: number;
@@ -71,6 +75,12 @@ export function InventoryTab({
   inventoryMenuRef: RefObject<HTMLDivElement | null>;
   getContainerUsedEncumbrance: (containerId: string) => number;
   getContainerContents: (containerId: string) => ResolvedCharacterEquipment[];
+  canDropInventoryDrag: (
+    dragState: InventoryDragState,
+    targetContainerId: string | null,
+    targetWorn?: boolean,
+    targetCarried?: boolean,
+  ) => boolean;
   canDropInventoryItem: (
     itemId: string,
     targetContainerId: string | null,
@@ -92,6 +102,7 @@ export function InventoryTab({
     targetCarried?: boolean,
   ) => void;
   handleInventoryDragStart: (item: ResolvedCharacterEquipment, event: ReactDragEvent<HTMLDivElement>) => void;
+  handleCoinDragStart: (event: ReactDragEvent<HTMLDivElement>) => void;
   handleInventoryDragEnd: () => void;
   handleConsumeItem: (itemId: string) => void;
   handleToggleInventoryMenu: (
@@ -112,6 +123,7 @@ export function InventoryTab({
     activeInventorySubtab,
     carriedItems,
     characterCoins: characterData.coins,
+    coinContainerId,
     containers,
     getContainerContents,
     getContainerUsedEncumbrance,
@@ -119,6 +131,27 @@ export function InventoryTab({
     inventoryDrag,
     wornItems,
   });
+
+  const renderDragHandle = ({
+    draggable,
+    label,
+  }: {
+    draggable: boolean;
+    label: string;
+  }) => (
+    <div className="flex h-9 w-8 items-center justify-center">
+      <button
+        type="button"
+        className="flex h-7 w-7 cursor-grab items-center justify-center rounded bg-transparent text-wfrp-muted-text transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 active:cursor-grabbing disabled:cursor-default disabled:opacity-20"
+        aria-label={label}
+        disabled={!draggable}
+        tabIndex={draggable ? 0 : -1}
+        onClick={(event) => event.preventDefault()}
+      >
+        <GripVertical size={14} aria-hidden="true" />
+      </button>
+    </div>
+  );
 
   const renderItemActions = (item: ResolvedCharacterEquipment) => (
     <>
@@ -206,9 +239,14 @@ export function InventoryTab({
             const acceptsDrops = section.acceptsDrops !== false;
             const dropsToWorn = section.dropWorn === true;
             const dropsToCarried = section.dropCarried === true;
+            const showsWallet =
+              wallet.coinCount > 0 &&
+              (wallet.containerId === null
+                ? dropsToCarried
+                : wallet.containerId === section.dropContainerId);
             const canDropHere = acceptsDrops && inventoryDrag
-              ? canDropInventoryItem(
-                  inventoryDrag.itemId,
+              ? canDropInventoryDrag(
+                  inventoryDrag,
                   section.dropContainerId,
                   dropsToWorn,
                   dropsToCarried,
@@ -252,11 +290,12 @@ export function InventoryTab({
                       : ""
                 }`}
                 gridClassName={`${mobileInventoryGridClass} ${desktopInventoryGridClass}`}
+                leadingLabels={[{ align: "center", label: "" }]}
                 sectionLabel={(
                   <span className="flex min-w-0 items-center gap-2">
                     <span className="truncate">{section.title}</span>
                     {section.subtitle ? (
-                      <span className="truncate font-mono text-[9px] font-bold uppercase tracking-wider text-gray-600">
+                      <span className="truncate font-mono text-[9px] font-bold uppercase tracking-wider text-wfrp-muted-text">
                         {section.subtitle}
                       </span>
                     ) : null}
@@ -270,12 +309,22 @@ export function InventoryTab({
                   { align: "center", label: "" },
                 ]}
               >
-                  {section.id === "carried" && (
+                  {showsWallet && (
                     <SheetDataAccordionRow
+                      draggable={wallet.isDraggable}
+                      onDragStart={(event) => handleCoinDragStart(event as unknown as ReactDragEvent<HTMLDivElement>)}
+                      onDragEnd={handleInventoryDragEnd}
+                      className={`${wallet.isDragging ? "opacity-45" : ""} ${
+                        wallet.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
+                      }`}
                       summaryClassName={`${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
+                          {renderDragHandle({
+                            draggable: wallet.isDraggable,
+                            label: "Move coins",
+                          })}
                           <span className="wfrp-list-cell-strong flex min-w-0 items-center gap-1.5 text-left text-gray-200">
                             <span className="truncate">Coins</span>
                           </span>
@@ -309,6 +358,10 @@ export function InventoryTab({
                         contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                         summary={(
                           <>
+                            {renderDragHandle({
+                              draggable: row.isDraggable,
+                              label: `Move ${item.name}`,
+                            })}
                             <span className="wfrp-list-cell-strong flex min-w-0 items-center gap-1.5 text-left text-gray-200">
                               <span className="truncate">{item.name}</span>
                             </span>
@@ -337,8 +390,8 @@ export function InventoryTab({
                       </SheetDataAccordionRow>
                     );
                   })}
-                {section.itemRows.length === 0 && section.id !== "carried" && (
-                  <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-700">
+                {section.itemRows.length === 0 && !showsWallet && section.id !== "carried" && (
+                  <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-wfrp-muted-text">
                     {canDropHere ? "Drop here" : "Empty"}
                   </div>
                 )}

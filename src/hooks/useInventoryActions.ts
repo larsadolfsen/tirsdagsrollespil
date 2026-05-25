@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import type { DragEvent as ReactDragEvent, Dispatch, MouseEvent as ReactMouseEvent, SetStateAction } from "react";
 import type { ResolvedCharacterEquipment, ResolvedCharacterRecord } from "../data/characters/resolved";
 import {
-  formatConsumableName,
   getConsumableCount,
+  normalizeConsumableName,
+} from "../lib/consumables";
+import {
+  getCoinEncumbrance,
   isBackpackContainerItem,
   isPacksAndContainersItem,
   isWearableInventoryItem,
@@ -15,6 +18,8 @@ import type { ItemDefinition, SpellDefinition } from "../types";
 import type { InventoryDragState, InventoryDropTargetId, InventoryMenuState } from "../types/inventory";
 
 interface UseInventoryActionsOptions {
+  characterCoins: ResolvedCharacterRecord["coins"];
+  coinContainerId: string | null;
   equipmentState: ResolvedCharacterEquipment[];
   getArmourFitConflicts: (
     itemToFit: ResolvedCharacterEquipment,
@@ -23,16 +28,20 @@ interface UseInventoryActionsOptions {
   setActiveMainTab: Dispatch<SetStateAction<MainTab>>;
   setActiveMobileMainView: Dispatch<SetStateAction<MobileTabMenuTarget>>;
   setCharacterCoins: Dispatch<SetStateAction<ResolvedCharacterRecord["coins"]>>;
+  setCoinContainerId: Dispatch<SetStateAction<string | null>>;
   setCharacterSpells: Dispatch<SetStateAction<ResolvedCharacterRecord["spells"]>>;
   setEquipmentState: Dispatch<SetStateAction<ResolvedCharacterEquipment[]>>;
 }
 
 export function useInventoryActions({
+  characterCoins,
+  coinContainerId,
   equipmentState,
   getArmourFitConflicts,
   setActiveMainTab,
   setActiveMobileMainView,
   setCharacterCoins,
+  setCoinContainerId,
   setCharacterSpells,
   setEquipmentState,
 }: UseInventoryActionsOptions) {
@@ -66,12 +75,36 @@ export function useInventoryActions({
   }, [activeInventoryMenu]);
 
   const handleStoreItem = (itemId: string, containerId: string) => {
+    const storedItem = equipmentState.find((item) => item.id === itemId);
+    const disabledContainerIds = new Set<string>();
+
+    if (storedItem && isPacksAndContainersItem(storedItem)) {
+      const collectContainedContainers = (parentId: string) => {
+        disabledContainerIds.add(parentId);
+        equipmentState
+          .filter((item) => item.containerId === parentId && isPacksAndContainersItem(item))
+          .forEach((item) => collectContainedContainers(item.id));
+      };
+
+      collectContainedContainers(itemId);
+
+      if (coinContainerId && disabledContainerIds.has(coinContainerId)) {
+        setCoinContainerId(null);
+      }
+    }
+
     setEquipmentState((prev) =>
-      prev.map((item) =>
-        item.id === itemId
-          ? { ...item, equipped: false, containerId }
-          : item,
-      ),
+      prev.map((item) => {
+        if (item.id === itemId) {
+          return { ...item, equipped: false, containerId };
+        }
+
+        if (disabledContainerIds.has(item.containerId ?? "")) {
+          return { ...item, containerId: null };
+        }
+
+        return item;
+      }),
     );
     setActiveInventoryMenu(null);
   };
@@ -138,6 +171,10 @@ export function useInventoryActions({
   };
 
   const handleDropItem = (itemId: string) => {
+    if (coinContainerId === itemId) {
+      setCoinContainerId(null);
+    }
+
     setEquipmentState((prev) =>
       prev
         .filter((item) => item.id !== itemId)
@@ -159,10 +196,7 @@ export function useInventoryActions({
           const count = getConsumableCount(item);
           if (!count || count <= 1) return null;
 
-          return {
-            ...item,
-            name: formatConsumableName(item, count - 1),
-          };
+          return { ...item, quantity: count - 1 };
         })
         .filter((item): item is ResolvedCharacterEquipment => Boolean(item)),
     );
@@ -196,6 +230,11 @@ export function useInventoryActions({
   const handleAddShopItem = (item: ItemDefinition) => {
     const purchasedAt = Date.now();
 
+    const quantity = getConsumableCount({
+      type: item.type,
+      name: item.name,
+    });
+
     setEquipmentState((prev) => [
       ...prev,
       {
@@ -204,7 +243,7 @@ export function useInventoryActions({
         weaponId: item.weaponId,
         armourId: item.armourId,
         armourLocations: item.armourLocations,
-        name: item.name,
+        name: normalizeConsumableName(item),
         type: item.type,
         description: item.description,
         encumbrance: item.encumbrance,
@@ -213,6 +252,7 @@ export function useInventoryActions({
         currency: item.currency,
         priceLabel: item.priceLabel,
         availability: item.availability,
+        quantity: quantity ?? undefined,
         equipped: item.id === "backpack_item",
         containerId: null,
       },
@@ -281,15 +321,17 @@ export function useInventoryActions({
   const getContainerUsedEncumbrance = (containerId: string) =>
     equipmentState
       .filter((item) => item.containerId === containerId)
-      .reduce((sum, item) => sum + Number(item.encumbrance || 0), 0);
+      .reduce(
+        (sum, item) => sum + Number(item.encumbrance || 0),
+        coinContainerId === containerId ? getCoinEncumbrance(characterCoins) : 0,
+      );
 
   const canStoreInContainer = (itemId: string, containerId: string) => {
     const item = equipmentState.find((entry) => entry.id === itemId);
     const container = equipmentState.find((entry) => entry.id === containerId);
 
     if (!item || !container || item.id === container.id) return false;
-    if (isPacksAndContainersItem(item)) return false;
-    if (isBackpackContainerItem(container) && !isWornInventoryItem(container)) return false;
+    if (container.containerId) return false;
 
     const capacity = container.carries ?? 0;
     if (capacity <= 0) return false;
@@ -298,6 +340,21 @@ export function useInventoryActions({
     const currentContribution = item.containerId === containerId ? item.encumbrance : 0;
 
     return used - currentContribution + item.encumbrance <= capacity;
+  };
+
+  const canStoreCoinsInContainer = (containerId: string) => {
+    const container = equipmentState.find((entry) => entry.id === containerId);
+    if (!container) return false;
+    if (container.containerId) return false;
+
+    const coinEncumbrance = getCoinEncumbrance(characterCoins);
+    const capacity = container.carries ?? 0;
+    if (capacity <= 0 || coinEncumbrance <= 0) return false;
+
+    const used = getContainerUsedEncumbrance(containerId);
+    const currentContribution = coinContainerId === containerId ? coinEncumbrance : 0;
+
+    return used - currentContribution + coinEncumbrance <= capacity;
   };
 
   const canDropInventoryItem = (
@@ -321,7 +378,7 @@ export function useInventoryActions({
     }
 
     if (targetCarried && isWornInventoryItem(item)) {
-      return item.type === "Armor" || isBackpackContainerItem(item);
+      return item.type === "Armor" || isPacksAndContainersItem(item);
     }
 
     const currentContainerId = item.containerId ?? null;
@@ -331,6 +388,30 @@ export function useInventoryActions({
     return canStoreInContainer(itemId, targetContainerId);
   };
 
+  const canDropCoins = (
+    targetContainerId: string | null,
+    targetWorn = false,
+  ) => {
+    if (targetWorn) return false;
+    if (getCoinEncumbrance(characterCoins) <= 0) return false;
+
+    const currentContainerId = coinContainerId ?? null;
+    if (currentContainerId === targetContainerId) return false;
+    if (!targetContainerId) return true;
+
+    return canStoreCoinsInContainer(targetContainerId);
+  };
+
+  const canDropInventoryDrag = (
+    dragState: InventoryDragState,
+    targetContainerId: string | null,
+    targetWorn = false,
+    targetCarried = false,
+  ) =>
+    dragState.type === "coins"
+      ? canDropCoins(targetContainerId, targetWorn)
+      : canDropInventoryItem(dragState.itemId, targetContainerId, targetWorn, targetCarried);
+
   const handleInventoryDragStart = (
     item: ResolvedCharacterEquipment,
     event: ReactDragEvent<HTMLDivElement>,
@@ -339,8 +420,16 @@ export function useInventoryActions({
     event.dataTransfer.setData("text/plain", item.id);
     setActiveInventoryMenu(null);
     setInventoryDrag({
+      type: "item",
       itemId: item.id,
     });
+  };
+
+  const handleCoinDragStart = (event: ReactDragEvent<HTMLDivElement>) => {
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", "coins");
+    setActiveInventoryMenu(null);
+    setInventoryDrag({ type: "coins" });
   };
 
   const handleInventoryDragEnd = () => {
@@ -357,7 +446,7 @@ export function useInventoryActions({
   ) => {
     if (
       !inventoryDrag ||
-      !canDropInventoryItem(inventoryDrag.itemId, targetContainerId, targetWorn, targetCarried)
+      !canDropInventoryDrag(inventoryDrag, targetContainerId, targetWorn, targetCarried)
     ) {
       return;
     }
@@ -376,13 +465,15 @@ export function useInventoryActions({
     event.preventDefault();
     if (
       !inventoryDrag ||
-      !canDropInventoryItem(inventoryDrag.itemId, targetContainerId, targetWorn, targetCarried)
+      !canDropInventoryDrag(inventoryDrag, targetContainerId, targetWorn, targetCarried)
     ) {
       handleInventoryDragEnd();
       return;
     }
 
-    if (targetWorn) {
+    if (inventoryDrag.type === "coins") {
+      setCoinContainerId(targetContainerId);
+    } else if (targetWorn) {
       handleWearItem(inventoryDrag.itemId);
     } else if (targetCarried && isWornInventoryItem(equipmentState.find((item) => item.id === inventoryDrag.itemId)!)) {
       handleUnwearItem(inventoryDrag.itemId);
@@ -396,6 +487,7 @@ export function useInventoryActions({
 
   return {
     activeInventoryMenu,
+    canDropInventoryDrag,
     canDropInventoryItem,
     canStoreInContainer,
     handleAddShopItem,
@@ -404,6 +496,7 @@ export function useInventoryActions({
     handleCarryItem,
     handleConsumeItem,
     handleDropItem,
+    handleCoinDragStart,
     handleInventoryDragEnd,
     handleInventoryDragOver,
     handleInventoryDragStart,

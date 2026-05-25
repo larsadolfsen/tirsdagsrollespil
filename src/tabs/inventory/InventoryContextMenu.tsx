@@ -89,7 +89,7 @@ export function InventoryContextMenu({
               }}
               className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
             >
-              Ready
+              Carried
             </button>
           )}
           {stowableContainers.map((container) => (

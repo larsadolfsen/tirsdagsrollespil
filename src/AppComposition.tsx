@@ -113,7 +113,9 @@ export function AppComposition() {
     xpCurrent,
     setXpCurrent,
     setXpTotal,
+    coinContainerId,
     setCharacterCoins,
+    setCoinContainerId,
     currentCareerRank,
     setCurrentCareerRank,
     currentCharacteristicAdvances,
@@ -314,6 +316,7 @@ export function AppComposition() {
     wornItems,
   } = useCharacterDerivedStats({
     characterData,
+    coinContainerId,
     equipmentState,
     ruleset,
   });
@@ -462,12 +465,14 @@ export function AppComposition() {
 
   const {
     activeInventoryMenu,
+    canDropInventoryDrag,
     canDropInventoryItem,
     canStoreInContainer,
     handleAddShopItem,
     handleAddSpell,
     handleAdjustCoinType,
     handleCarryItem,
+    handleCoinDragStart,
     handleConsumeItem,
     handleDropItem,
     handleInventoryDragEnd,
@@ -485,11 +490,14 @@ export function AppComposition() {
     setActiveInventoryMenu,
     setInventoryDropTarget,
   } = useInventoryActions({
+    characterCoins: characterData.coins,
+    coinContainerId,
     equipmentState,
     getArmourFitConflicts,
     setActiveMainTab,
     setActiveMobileMainView,
     setCharacterCoins,
+    setCoinContainerId,
     setCharacterSpells,
     setEquipmentState,
   });
@@ -1334,6 +1342,7 @@ export function AppComposition() {
                         activeInventorySubtab={activeInventorySubtab}
                         setActiveInventorySubtab={setActiveInventorySubtab}
                         characterData={characterData}
+                        coinContainerId={coinContainerId}
                         equipmentState={equipmentState}
                         totalEncumbrance={totalEncumbrance}
                         carryCapacity={carryCapacity}
@@ -1348,11 +1357,13 @@ export function AppComposition() {
                         inventoryMenuRef={inventoryMenuRef}
                         getContainerUsedEncumbrance={getContainerUsedEncumbrance}
                         getContainerContents={getContainerContents}
+                        canDropInventoryDrag={canDropInventoryDrag}
                         canDropInventoryItem={canDropInventoryItem}
                         canStoreInContainer={canStoreInContainer}
                         handleInventoryDragOver={handleInventoryDragOver}
                         handleInventoryDrop={handleInventoryDrop}
                         handleInventoryDragStart={handleInventoryDragStart}
+                        handleCoinDragStart={handleCoinDragStart}
                         handleInventoryDragEnd={handleInventoryDragEnd}
                         handleConsumeItem={handleConsumeItem}
                         handleToggleInventoryMenu={handleToggleInventoryMenu}

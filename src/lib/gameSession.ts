@@ -15,6 +15,10 @@ import type {
 } from "../data/characters/resolved";
 import { calculateMaxCorruption } from "../data/characters/resolved";
 import {
+  getConsumableCount,
+  normalizeConsumableName,
+} from "./consumables";
+import {
   buildResolvedSkillOptions,
   getSkillDisplayName,
 } from "../data/rules/wfrp4e";
@@ -242,11 +246,6 @@ export function formatCharacterCoins(coins: { gc: number; s: number; d: number }
   return parts.length > 0 ? parts.join(" ") : "0bp";
 }
 
-const getConsumableBaseName = (name: string) => name.replace(/\s*\(\d+\)\s*$/, "");
-
-const formatConsumableName = (name: string, count: number) =>
-  `${getConsumableBaseName(name)} (${count})`;
-
 function applyCharacterProgress(
   character: ResolvedCharacterRecord,
   ruleset: Ruleset,
@@ -323,7 +322,7 @@ function applyCharacterProgress(
         ? ruleset.armours.find((entry) => entry.id === definition.armourId)
         : undefined;
 
-      return {
+      const resolvedItem = {
         id: item.id,
         itemId: item.itemId,
         weaponId: definition.weaponId,
@@ -346,6 +345,12 @@ function applyCharacterProgress(
         availability: definition.availability ?? armour?.availability,
         equipped: item.equipped,
         containerId: item.containerId ?? null,
+      };
+
+      return {
+        ...resolvedItem,
+        name: normalizeConsumableName(resolvedItem),
+        quantity: getConsumableCount(resolvedItem) ?? undefined,
       };
     })
     .filter((item): item is ResolvedCharacterEquipment => Boolean(item));
@@ -382,10 +387,11 @@ function applyCharacterProgress(
       .filter((item) => !progress.removedEquipmentIds?.includes(item.id))
       .map((item) => ({
         ...item,
-        name:
-          item.type === "Consumable" && progress.consumableCounts?.[item.id]
-            ? formatConsumableName(item.name, progress.consumableCounts[item.id])
-            : item.name,
+        name: normalizeConsumableName(item),
+        quantity: getConsumableCount({
+          ...item,
+          quantity: progress.consumableCounts?.[item.id] ?? item.quantity,
+        }) ?? undefined,
         equipped: progressEquipment[item.id] ?? item.equipped,
         containerId: progress.equipmentContainers?.[item.id] ?? item.containerId ?? null,
       })),

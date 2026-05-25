@@ -18,6 +18,10 @@ import {
   skillCharacteristicById,
 } from "../rules/wfrp4e";
 import { findRaceDefinition } from "../rules/wfrp4e/races";
+import {
+  getConsumableCount,
+  normalizeConsumableName,
+} from "../../lib/consumables";
 
 export interface ResolvedCharacterSkill extends CharacterSkillRecord {
   baseName: string;
@@ -46,6 +50,7 @@ export interface ResolvedCharacterEquipment {
   currency: string;
   priceLabel?: string;
   availability?: ItemDefinition["availability"];
+  quantity?: number;
   equipped: boolean;
   containerId?: string | null;
 }
@@ -211,7 +216,7 @@ export function resolveCharacterRecord(
       }
       const armour = definition.armourId ? armoursById[definition.armourId] : undefined;
 
-      return {
+      const resolvedItem = {
         id: item.id,
         itemId: item.itemId,
         weaponId: definition.weaponId,
@@ -234,6 +239,12 @@ export function resolveCharacterRecord(
         availability: definition.availability ?? armour?.availability,
         equipped: item.equipped,
         containerId: item.containerId ?? null,
+      };
+
+      return {
+        ...resolvedItem,
+        name: normalizeConsumableName(resolvedItem),
+        quantity: getConsumableCount(resolvedItem) ?? undefined,
       };
     }),
     talents: character.talents.map((talent) => {

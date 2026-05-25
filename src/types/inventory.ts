@@ -7,6 +7,11 @@ export interface InventoryMenuState {
 
 export type InventoryDropTargetId = "carried" | string;
 
-export interface InventoryDragState {
-  itemId: string;
-}
+export type InventoryDragState =
+  | {
+      type: "item";
+      itemId: string;
+    }
+  | {
+      type: "coins";
+    };

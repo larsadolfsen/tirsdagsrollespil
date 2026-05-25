@@ -26,12 +26,14 @@ type EquippedArmour = {
 
 interface UseCharacterDerivedStatsOptions {
   characterData: ResolvedCharacterRecord;
+  coinContainerId: string | null;
   equipmentState: ResolvedCharacterEquipment[];
   ruleset: Ruleset;
 }
 
 export function useCharacterDerivedStats({
   characterData,
+  coinContainerId,
   equipmentState,
   ruleset,
 }: UseCharacterDerivedStatsOptions) {
@@ -55,13 +57,16 @@ export function useCharacterDerivedStats({
     [characterData.spells],
   );
 
+  const coinEncumbrance = getCoinEncumbrance(characterData.coins);
   const totalEncumbrance = equipmentState.reduce((sum, item) => {
     if (item.containerId) return sum;
     return sum + getInventoryEncumbrance(item);
-  }, getCoinEncumbrance(characterData.coins));
+  }, coinContainerId ? 0 : coinEncumbrance);
   const carryCapacity = Math.max(sb + tb, 1);
   const encumbrancePercent = Math.min((totalEncumbrance / carryCapacity) * 100, 100);
-  const containers = equipmentState.filter(isPacksAndContainersItem);
+  const containers = equipmentState.filter(
+    (item) => isPacksAndContainersItem(item) && !item.containerId,
+  );
   const wornItems = sortEquipmentByName(equipmentState.filter(isWornInventoryItem));
   const carriedItems = sortEquipmentByName(
     equipmentState.filter(
@@ -169,7 +174,7 @@ export function useCharacterDerivedStats({
   const getContainerUsedEncumbrance = (containerId: string) =>
     getContainerContents(containerId).reduce(
       (sum, item) => sum + Number(item.encumbrance || 0),
-      0,
+      coinContainerId === containerId ? coinEncumbrance : 0,
     );
 
   const formatSpellRange = (range: string) => formatSpellRangeValue(range, wp, wpb);

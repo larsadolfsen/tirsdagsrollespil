@@ -8,6 +8,7 @@ import {
   loadGameSession,
   saveGameSessionProgress,
 } from "./gameSession";
+import { getConsumableCount } from "./consumables";
 import type {
   ResolvedCharacterEquipment,
   ResolvedCharacterSkill,
@@ -121,13 +122,6 @@ export const resolveSpendActions: Array<{
   },
 ];
 
-const getConsumableCount = (item: ResolvedCharacterEquipment) => {
-  if (item.type !== "Consumable") return null;
-
-  const match = item.name.match(/\((\d+)\)\s*$/);
-  return match ? Number(match[1]) : 1;
-};
-
 const clampResource = (value: number, max: number) =>
   Math.max(0, Math.min(value, max));
 
@@ -169,6 +163,7 @@ export function useGameSession() {
   const [characterName, setCharacterName] = useState(character.name);
   const [portraitDataUrl, setPortraitDataUrl] = useState(session.progress?.portraitDataUrl ?? "");
   const [characterCoins, setCharacterCoins] = useState(character.coins);
+  const [coinContainerId, setCoinContainerId] = useState<string | null>(session.progress?.coinContainerId ?? null);
   const [currentCareerRank, setCurrentCareerRank] = useState(character.level);
   const [currentCharacteristicInitials, setCurrentCharacteristicInitials] = useState(
     session.progress?.characteristicInitials ?? getCharacteristicInitials(character),
@@ -180,6 +175,10 @@ export function useGameSession() {
   const [equipmentState, setEquipmentState] = useState(character.equipment);
   const [backgroundText, setBackgroundText] = useState(session.progress?.backgroundText ?? "");
   const [notes, setNotes] = useState(session.progress?.notes ?? []);
+  const normalizedCoinContainerId =
+    coinContainerId && equipmentState.some((item) => item.id === coinContainerId)
+      ? coinContainerId
+      : null;
 
   const setFateCurrent = (action: SetStateAction<number>) => {
     setRawFateCurrent((previousFate) => {
@@ -315,6 +314,7 @@ export function useGameSession() {
     setCharacterName(character.name);
     setPortraitDataUrl(session.progress?.portraitDataUrl ?? "");
     setCharacterCoins(character.coins);
+    setCoinContainerId(session.progress?.coinContainerId ?? null);
     setCurrentCareerRank(character.level);
     setCurrentCharacteristicInitials(session.progress?.characteristicInitials ?? getCharacteristicInitials(character));
     setCurrentCharacteristicAdvances(character.characteristicAdvances);
@@ -360,6 +360,7 @@ export function useGameSession() {
       characterName,
       portraitDataUrl,
       coins: characterCoins,
+      coinContainerId: normalizedCoinContainerId,
       careerCurrentRank: currentCareerRank,
       characteristicInitials: currentCharacteristicInitials,
       characteristicAdvances: currentCharacteristicAdvances,
@@ -408,6 +409,7 @@ export function useGameSession() {
     characterName,
     portraitDataUrl,
     characterCoins,
+    normalizedCoinContainerId,
     currentCareerRank,
     currentCharacteristicInitials,
     currentCharacteristicAdvances,
@@ -506,6 +508,8 @@ export function useGameSession() {
     setPortraitDataUrl,
     characterCoins,
     setCharacterCoins,
+    coinContainerId: normalizedCoinContainerId,
+    setCoinContainerId,
     currentCareerRank,
     setCurrentCareerRank,
     currentCharacteristicInitials,

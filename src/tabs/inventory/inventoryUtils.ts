@@ -1,4 +1,9 @@
 import type { ResolvedCharacterEquipment } from "../../data/characters/resolved";
+import {
+  formatConsumableName as formatConsumableNameValue,
+  getConsumableBaseName as getConsumableBaseNameValue,
+  getConsumableCount as getConsumableCountValue,
+} from "../../lib/consumables";
 
 const PACKS_AND_CONTAINERS_TYPE = "Packs and containers";
 
@@ -35,17 +40,14 @@ export const sortEquipmentByName = (items: ResolvedCharacterEquipment[]) =>
   });
 
 export const getConsumableCount = (item: ResolvedCharacterEquipment) => {
-  if (item.type !== "Consumable") return null;
-
-  const match = item.name.match(/\((\d+)\)\s*$/);
-  return match ? Number(match[1]) : 1;
+  return getConsumableCountValue(item);
 };
 
 export const getConsumableBaseName = (item: ResolvedCharacterEquipment) =>
-  item.name.replace(/\s*\(\d+\)\s*$/, "");
+  getConsumableBaseNameValue(item);
 
 export const formatConsumableName = (item: ResolvedCharacterEquipment, count: number) =>
-  `${getConsumableBaseName(item)} (${count})`;
+  formatConsumableNameValue(item, count);
 
 export const isPacksAndContainersItem = (item: ResolvedCharacterEquipment) =>
   item.type === PACKS_AND_CONTAINERS_TYPE || item.type === "Container";
