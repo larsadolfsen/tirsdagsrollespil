@@ -7,7 +7,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
 const stateDataDirectory = path.resolve(
-  process.env.WFRP_DATA_DIR ?? path.join(__dirname, "data"),
+  process.env.WFRP_DATA_DIR ??
+    process.env.RAILWAY_VOLUME_MOUNT_PATH ??
+    path.join(__dirname, "data"),
 );
 const characterDataDirectory = path.resolve(
   process.env.WFRP_CHARACTERS_DIR ?? path.join(stateDataDirectory, "characters"),

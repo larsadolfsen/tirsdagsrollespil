@@ -11,6 +11,29 @@ npm install
 npm run dev
 ```
 
+## Railway
+
+The production server stores character progress in the data directory. On Railway,
+attach a Volume to the app service so saved character data survives deploys and
+restarts.
+
+Recommended volume mount path:
+
+```text
+/app/data
+```
+
+Railway injects `RAILWAY_VOLUME_MOUNT_PATH` at runtime when a Volume is attached,
+and `server.mjs` uses it automatically. You can also override the storage path
+with `WFRP_DATA_DIR`.
+
+Railway build/start commands are configured in `railway.json`:
+
+```sh
+npm run build
+npm run start
+```
+
 ## Testing
 
 The project uses TypeScript for static checks and Playwright for browser-based smoke and regression tests.
