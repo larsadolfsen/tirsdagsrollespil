@@ -27,7 +27,7 @@ Set `WFRP_DB_FILE` to use a different path:
 WFRP_DB_FILE=/path/to/tirsdagsrollespil.sqlite npm start
 ```
 
-Existing file-based progress under `data/characters` and the older legacy progress paths are migrated into SQLite on first use when the database is empty.
+Existing file-based progress under `data/characters` and the older legacy progress paths is copied into SQLite once. Existing SQLite rows are preserved during that migration.
 
 ## Testing
 
