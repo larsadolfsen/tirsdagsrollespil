@@ -142,7 +142,7 @@ export function SheetDataDisclosureChevron({ className }: { className?: string }
     >
       <ChevronDown
         size={14}
-        className="transition-transform group-open/details:rotate-180"
+        className="transition-transform group-open/details:rotate-180 group-data-[open=true]/details:rotate-180"
       />
     </span>
   );

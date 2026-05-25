@@ -468,6 +468,7 @@ export function AppComposition() {
     canDropInventoryDrag,
     canDropInventoryItem,
     canStoreInContainer,
+    handleAddConsumableItem,
     handleAddShopItem,
     handleAddSpell,
     handleAdjustCoinType,
@@ -1365,6 +1366,7 @@ export function AppComposition() {
                         handleInventoryDragStart={handleInventoryDragStart}
                         handleCoinDragStart={handleCoinDragStart}
                         handleInventoryDragEnd={handleInventoryDragEnd}
+                        handleAddConsumableItem={handleAddConsumableItem}
                         handleConsumeItem={handleConsumeItem}
                         handleToggleInventoryMenu={handleToggleInventoryMenu}
                         handleDropItem={handleDropItem}

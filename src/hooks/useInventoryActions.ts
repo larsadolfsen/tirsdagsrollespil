@@ -202,6 +202,16 @@ export function useInventoryActions({
     );
   };
 
+  const handleAddConsumableItem = (itemId: string) => {
+    setEquipmentState((prev) =>
+      prev.map((item) => {
+        if (item.id !== itemId || item.type !== "Consumable") return item;
+
+        return { ...item, quantity: (getConsumableCount(item) ?? 0) + 1 };
+      }),
+    );
+  };
+
   const handleResolveArmourFit = (
     newItemId: string,
     conflictItemIds: string[],
@@ -490,6 +500,7 @@ export function useInventoryActions({
     canDropInventoryDrag,
     canDropInventoryItem,
     canStoreInContainer,
+    handleAddConsumableItem,
     handleAddShopItem,
     handleAddSpell,
     handleAdjustCoinType,

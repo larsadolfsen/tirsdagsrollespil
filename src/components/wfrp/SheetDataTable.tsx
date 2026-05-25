@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { ButtonHTMLAttributes, DetailsHTMLAttributes, HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/src/lib/utils";
 
@@ -146,21 +147,45 @@ export function SheetDataAccordionRow({
   summary: ReactNode;
   summaryClassName?: string;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const content = <div className={cn("min-w-0 max-w-full", contentClassName)}>{children}</div>;
 
   return (
     <SheetDataRow className={cn("wfrp-data-accordion-row block group", className)}>
-      <details className={cn("group/details min-w-0 max-w-full", detailsClassName)} {...props}>
-        <summary
+      <div
+        data-open={isOpen ? "true" : "false"}
+        className={cn("group/details min-w-0 max-w-full", detailsClassName)}
+        {...props}
+      >
+        <div
+          role="button"
+          tabIndex={0}
+          aria-expanded={isOpen}
+          onClick={(event) => {
+            const target = event.target as HTMLElement;
+            if (target.closest("button, a, input, select, textarea")) {
+              return;
+            }
+            setIsOpen((current) => !current);
+          }}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            event.preventDefault();
+            setIsOpen((current) => !current);
+          }}
           className={cn(
             "wfrp-data-accordion-summary grid min-w-0 max-w-full cursor-pointer list-none items-center gap-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
             summaryClassName,
           )}
         >
           {summary}
-        </summary>
-        {contentGridClassName ? <div className={cn("grid min-w-0 max-w-full", contentGridClassName)}>{content}</div> : content}
-      </details>
+        </div>
+        {isOpen
+          ? contentGridClassName
+            ? <div className={cn("grid min-w-0 max-w-full", contentGridClassName)}>{content}</div>
+            : content
+          : null}
+      </div>
     </SheetDataRow>
   );
 }

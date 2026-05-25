@@ -1,5 +1,5 @@
-import { GripVertical, Minus } from "lucide-react";
-import type { DragEvent as ReactDragEvent, MouseEvent as ReactMouseEvent, RefObject } from "react";
+import { GripVertical, Minus, Plus } from "lucide-react";
+import { useEffect, useState, type DragEvent as ReactDragEvent, type MouseEvent as ReactMouseEvent, type RefObject } from "react";
 import { useMobileMainViewSwipeHandlers } from "../components/MobileMainViewSwipeContext";
 import { InlineSubtabs, SubtabActionButton } from "../components/ui";
 import {
@@ -17,8 +17,8 @@ import type { InventorySubtab } from "./tabTypes";
 import type { InventoryDragState, InventoryDropTargetId, InventoryMenuState } from "../types/inventory";
 import { getConsumableBaseName } from "./inventory/inventoryUtils";
 
-const desktopInventoryGridClass = "md:grid-cols-[36px_minmax(0,1fr)_140px_48px_60px_60px_48px]";
-const mobileInventoryGridClass = "grid-cols-[32px_minmax(0,1fr)_44px_44px_48px]";
+const desktopInventoryGridClass = "md:grid-cols-[36px_minmax(0,1fr)_140px_86px_60px_60px_48px]";
+const mobileInventoryGridClass = "grid-cols-[minmax(0,1fr)_74px_44px_48px]";
 
 export function InventoryTab({
   activeInventorySubtab,
@@ -47,6 +47,7 @@ export function InventoryTab({
   handleInventoryDragStart,
   handleCoinDragStart,
   handleInventoryDragEnd,
+  handleAddConsumableItem,
   handleConsumeItem,
   handleToggleInventoryMenu,
   handleDropItem,
@@ -104,6 +105,7 @@ export function InventoryTab({
   handleInventoryDragStart: (item: ResolvedCharacterEquipment, event: ReactDragEvent<HTMLDivElement>) => void;
   handleCoinDragStart: (event: ReactDragEvent<HTMLDivElement>) => void;
   handleInventoryDragEnd: () => void;
+  handleAddConsumableItem: (itemId: string) => void;
   handleConsumeItem: (itemId: string) => void;
   handleToggleInventoryMenu: (
     itemId: string,
@@ -119,6 +121,11 @@ export function InventoryTab({
   openShop: () => void;
 }) {
   const mobileMainViewSwipeHandlers = useMobileMainViewSwipeHandlers();
+  const [isDesktopDragEnabled, setIsDesktopDragEnabled] = useState(() =>
+    typeof window === "undefined"
+      ? true
+      : window.matchMedia("(min-width: 768px)").matches,
+  );
   const { inventorySubtabOptions, visibleSections, wallet } = useInventoryViewModel({
     activeInventorySubtab,
     carriedItems,
@@ -132,6 +139,18 @@ export function InventoryTab({
     wornItems,
   });
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    const handleChange = () => setIsDesktopDragEnabled(mediaQuery.matches);
+
+    handleChange();
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, []);
+
   const renderDragHandle = ({
     draggable,
     label,
@@ -139,7 +158,7 @@ export function InventoryTab({
     draggable: boolean;
     label: string;
   }) => (
-    <div className="flex h-9 w-8 items-center justify-center">
+    <div className="hidden h-9 w-8 items-center justify-center md:flex">
       <button
         type="button"
         className="flex h-7 w-7 cursor-grab items-center justify-center rounded bg-transparent text-wfrp-muted-text transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 active:cursor-grabbing disabled:cursor-default disabled:opacity-20"
@@ -155,19 +174,6 @@ export function InventoryTab({
 
   const renderItemActions = (item: ResolvedCharacterEquipment) => (
     <>
-      {item.type === "Consumable" && (
-        <button
-          type="button"
-          onClick={(event) => {
-            event.preventDefault();
-            handleConsumeItem(item.id);
-          }}
-          className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed disabled:opacity-20"
-          aria-label={`Use one ${getConsumableBaseName(item).toLowerCase()}`}
-        >
-          <Minus size={10} />
-        </button>
-      )}
       <SheetRowActionButton
         onClick={(event) => {
           event.preventDefault();
@@ -189,8 +195,50 @@ export function InventoryTab({
     </>
   );
 
+  const renderQuantity = (item: ResolvedCharacterEquipment, quantity: number) => {
+    if (item.type !== "Consumable") {
+      return <span>{quantity}</span>;
+    }
+
+    const consumableName = getConsumableBaseName(item);
+
+    return (
+      <span className="inline-flex items-center justify-center gap-1">
+        <button
+          type="button"
+          onKeyDown={(event) => event.stopPropagation()}
+          onKeyUp={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleConsumeItem(item.id);
+          }}
+          className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
+          aria-label={`Remove ${consumableName}`}
+        >
+          <Minus size={10} />
+        </button>
+        <span className="min-w-5 text-center">{quantity}</span>
+        <button
+          type="button"
+          onKeyDown={(event) => event.stopPropagation()}
+          onKeyUp={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleAddConsumableItem(item.id);
+          }}
+          className="wfrp-stepper-btn focus-visible:ring-wfrp-gold/50"
+          aria-label={`Add ${consumableName}`}
+        >
+          <Plus size={10} />
+        </button>
+      </span>
+    );
+  };
+
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-card">
+    <div className="flex h-full flex-col overflow-hidden bg-transparent">
       <InlineSubtabs<InventorySubtab>
         options={inventorySubtabOptions}
         activeId={activeInventorySubtab}
@@ -236,7 +284,7 @@ export function InventoryTab({
 
         {visibleSections.map((section) => {
             const isActiveDropTarget = inventoryDropTarget === section.id;
-            const acceptsDrops = section.acceptsDrops !== false;
+            const acceptsDrops = isDesktopDragEnabled && section.acceptsDrops !== false;
             const dropsToWorn = section.dropWorn === true;
             const dropsToCarried = section.dropCarried === true;
             const showsWallet =
@@ -290,7 +338,7 @@ export function InventoryTab({
                       : ""
                 }`}
                 gridClassName={`${mobileInventoryGridClass} ${desktopInventoryGridClass}`}
-                leadingLabels={[{ align: "center", label: "" }]}
+                leadingLabels={[{ align: "center", className: "hidden md:block", label: "" }]}
                 sectionLabel={(
                   <span className="flex min-w-0 items-center gap-2">
                     <span className="truncate">{section.title}</span>
@@ -303,7 +351,7 @@ export function InventoryTab({
                 )}
                 valueLabels={[
                   { className: "hidden md:block", label: "Type" },
-                  { align: "right", label: "Qty" },
+                  { align: "center", label: "Qty" },
                   { align: "right", label: "Enc" },
                   { align: "right", className: "hidden md:block", label: "Value" },
                   { align: "center", label: "" },
@@ -311,11 +359,18 @@ export function InventoryTab({
               >
                   {showsWallet && (
                     <SheetDataAccordionRow
-                      draggable={wallet.isDraggable}
-                      onDragStart={(event) => handleCoinDragStart(event as unknown as ReactDragEvent<HTMLDivElement>)}
+                      draggable={isDesktopDragEnabled && wallet.isDraggable}
+                      onDragStart={(event) => {
+                        if (!isDesktopDragEnabled) {
+                          event.preventDefault();
+                          return;
+                        }
+
+                        handleCoinDragStart(event as unknown as ReactDragEvent<HTMLDivElement>);
+                      }}
                       onDragEnd={handleInventoryDragEnd}
                       className={`${wallet.isDragging ? "opacity-45" : ""} ${
-                        wallet.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
+                        isDesktopDragEnabled && wallet.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                       }`}
                       summaryClassName={`${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
@@ -348,11 +403,18 @@ export function InventoryTab({
                     return (
                       <SheetDataAccordionRow
                         key={item.id}
-                        draggable={row.isDraggable}
-                        onDragStart={(event) => handleInventoryDragStart(item, event as unknown as ReactDragEvent<HTMLDivElement>)}
+                        draggable={isDesktopDragEnabled && row.isDraggable}
+                        onDragStart={(event) => {
+                          if (!isDesktopDragEnabled) {
+                            event.preventDefault();
+                            return;
+                          }
+
+                          handleInventoryDragStart(item, event as unknown as ReactDragEvent<HTMLDivElement>);
+                        }}
                         onDragEnd={handleInventoryDragEnd}
                         className={`${row.isDragging ? "opacity-45" : ""} ${
-                          row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
+                          isDesktopDragEnabled && row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                         }`}
                         summaryClassName={`${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
                         contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
@@ -367,7 +429,9 @@ export function InventoryTab({
                             </span>
 
                             <div className="hidden wfrp-list-cell-strong truncate md:block">{item.type}</div>
-                            <div className="wfrp-list-cell-strong text-right font-mono">{row.quantity}</div>
+                            <div className="wfrp-list-cell-strong text-center font-mono">
+                              {renderQuantity(item, row.quantity)}
+                            </div>
                             <div className="wfrp-list-cell-strong text-right font-mono">{row.encumbrance}</div>
                             <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{row.value}</div>
                             <SheetDataDisclosureCell />
