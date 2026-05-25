@@ -39,6 +39,12 @@ include character save files are blocked by default, so local saves are not
 published over production seed data by mistake. Intentional seed-data changes can
 be allowed with `ALLOW_DATA_COMMIT=1` and `ALLOW_DATA_PUSH=1`.
 
+Enable the hooks in a fresh clone with:
+
+```sh
+git config core.hooksPath .githooks
+```
+
 ## Testing
 
 The project uses TypeScript for static checks and Playwright for browser-based smoke and regression tests.
