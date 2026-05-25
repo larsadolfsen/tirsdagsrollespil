@@ -4,6 +4,8 @@ dist/
 coverage/
 test-results/
 data/character-progress.json
+data/**/*.sqlite
+data/**/*.sqlite-*
 .DS_Store
 *.log
 .env*
