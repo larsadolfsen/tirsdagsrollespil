@@ -2,8 +2,10 @@ import { expect, test } from "@playwright/test";
 
 test("skills rows expand with accessible detail controls", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Skills" }).click();
 
-  const firstSkillSummary = page.locator("summary").first();
+  const firstSkillRow = page.locator(".wfrp-data-accordion-row").first();
+  const firstSkillSummary = firstSkillRow.locator(".wfrp-data-accordion-summary");
   const rollHeader = page.locator(".wfrp-subpanel-header .wfrp-table-label").filter({ hasText: "Roll" });
   const firstSkillRollButton = firstSkillSummary.getByRole("button", { name: /Roll for/ });
   const rollHeaderBox = await rollHeader.boundingBox();
@@ -24,7 +26,7 @@ test("skills rows expand with accessible detail controls", async ({ page }) => {
 
   await disclosureTarget.click();
 
-  const firstSkillDetails = page.locator("summary + div").first();
+  const firstSkillDetails = firstSkillRow.locator(".wfrp-data-accordion-summary + div");
   await expect(firstSkillDetails).not.toContainText("Description");
   await expect(firstSkillDetails).toContainText(/The ability to|Used to|Your ability to/);
   await expect(firstSkillDetails).toContainText("Characteristic");

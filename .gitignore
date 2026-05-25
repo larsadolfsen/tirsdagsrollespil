@@ -9,6 +9,8 @@ data/character-status/*.json
 data/characters/*/sheet.json
 data/characters/*/notes.json
 data/characters/*/background.md
+data/**/*.sqlite
+data/**/*.sqlite-*
 .DS_Store
 *.log
 .env*

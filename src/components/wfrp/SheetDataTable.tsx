@@ -161,6 +161,7 @@ export function SheetDataAccordionRow({
           role="button"
           tabIndex={0}
           aria-expanded={isOpen}
+          aria-label="Toggle row details"
           onClick={(event) => {
             const target = event.target as HTMLElement;
             if (target.closest("button, a, input, select, textarea")) {
