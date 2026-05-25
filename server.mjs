@@ -1,6 +1,8 @@
 import express from "express";
+import { mkdirSync } from "node:fs";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -11,6 +13,9 @@ const stateDataDirectory = path.resolve(
 );
 const characterDataDirectory = path.resolve(
   process.env.WFRP_CHARACTERS_DIR ?? path.join(stateDataDirectory, "characters"),
+);
+const databaseFilePath = path.resolve(
+  process.env.WFRP_DB_FILE ?? path.join(stateDataDirectory, "tirsdagsrollespil.sqlite"),
 );
 const legacyProgressFilePath = path.resolve(
   process.env.WFRP_PROGRESS_FILE ?? path.join(stateDataDirectory, "character-progress.json"),
@@ -26,6 +31,57 @@ const legacyNotesDirectoryPath = path.resolve(
 );
 
 const NOTES_KEYS = ["backgroundText", "notes"];
+
+mkdirSync(path.dirname(databaseFilePath), { recursive: true });
+const database = new DatabaseSync(databaseFilePath);
+database.exec(`
+  CREATE TABLE IF NOT EXISTS character_progress (
+    character_id TEXT PRIMARY KEY,
+    sheet_json TEXT NOT NULL,
+    notes_json TEXT NOT NULL DEFAULT '[]',
+    background_text TEXT NOT NULL DEFAULT '',
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+const selectCharacterProgress = database.prepare(`
+  SELECT sheet_json, notes_json, background_text
+  FROM character_progress
+  WHERE character_id = ?
+`);
+const selectAllCharacterProgress = database.prepare(`
+  SELECT character_id, sheet_json, notes_json, background_text
+  FROM character_progress
+  ORDER BY character_id
+`);
+const upsertCharacterProgress = database.prepare(`
+  INSERT INTO character_progress (
+    character_id,
+    sheet_json,
+    notes_json,
+    background_text,
+    updated_at
+  ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+  ON CONFLICT(character_id) DO UPDATE SET
+    sheet_json = excluded.sheet_json,
+    notes_json = excluded.notes_json,
+    background_text = excluded.background_text,
+    updated_at = CURRENT_TIMESTAMP
+`);
+const deleteCharacterProgressStatement = database.prepare(`
+  DELETE FROM character_progress
+  WHERE character_id = ?
+`);
+const deleteMissingCharacterProgressStatement = database.prepare(`
+  DELETE FROM character_progress
+  WHERE character_id NOT IN (SELECT value FROM json_each(?))
+`);
+const countCharacterProgress = database.prepare(`
+  SELECT COUNT(*) AS count
+  FROM character_progress
+`);
+
+let legacyMigrationPromise = null;
 
 function isSafeCharacterId(characterId) {
   return /^[a-zA-Z0-9_-]+$/.test(characterId);
@@ -85,6 +141,30 @@ function joinCharacterState({ sheet, notes, backgroundText }) {
   };
 }
 
+function parseJsonValue(value, fallback) {
+  if (typeof value !== "string") {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function rowToCharacterState(row) {
+  if (!row) {
+    return null;
+  }
+
+  return joinCharacterState({
+    sheet: parseJsonValue(row.sheet_json, {}),
+    notes: parseJsonValue(row.notes_json, []),
+    backgroundText: row.background_text,
+  });
+}
+
 async function readJsonFile(filePath, fallback) {
   try {
     return JSON.parse(await fs.readFile(filePath, "utf8"));
@@ -109,29 +189,6 @@ async function readTextFile(filePath, fallback = "") {
   }
 }
 
-async function writeJsonFile(filePath, value) {
-  const nextContent = `${JSON.stringify(value, null, 2)}\n`;
-  await writeTextFile(filePath, nextContent);
-}
-
-async function writeTextFile(filePath, nextContent) {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-
-  try {
-    const currentContent = await fs.readFile(filePath, "utf8");
-
-    if (currentContent === nextContent) {
-      return;
-    }
-  } catch (error) {
-    if (error?.code !== "ENOENT") {
-      throw error;
-    }
-  }
-
-  await fs.writeFile(filePath, nextContent, "utf8");
-}
-
 async function readCharacterDirectoryState(characterId) {
   const [sheet, notes, backgroundText] = await Promise.all([
     readJsonFile(characterSheetPath(characterId), null),
@@ -144,16 +201,6 @@ async function readCharacterDirectoryState(characterId) {
   }
 
   return joinCharacterState({ sheet, notes, backgroundText });
-}
-
-async function writeCharacterDirectoryState(characterId, characterState) {
-  const { sheet, notes, backgroundText } = splitCharacterState(characterState ?? {});
-
-  await Promise.all([
-    writeJsonFile(characterSheetPath(characterId), sheet),
-    writeJsonFile(characterNotesPath(characterId), notes),
-    writeTextFile(characterBackgroundPath(characterId), backgroundText),
-  ]);
 }
 
 async function readCharacterDirectoryMap() {
@@ -238,7 +285,7 @@ async function readLegacyCharacterProgress(characterId) {
   return legacyProgressMap[characterId] ?? null;
 }
 
-async function readCharacterProgressMap() {
+async function readLegacyCharacterProgressMap() {
   const [legacyProgressMap, characterDirectoryMap] = await Promise.all([
     readLegacyProgressMap(),
     readCharacterDirectoryMap(),
@@ -250,33 +297,76 @@ async function readCharacterProgressMap() {
   };
 }
 
+function writeCharacterProgress(characterId, characterState) {
+  if (!isSafeCharacterId(characterId)) {
+    throw new Error(`Unsafe character id "${characterId}".`);
+  }
+
+  const { sheet, notes, backgroundText } = splitCharacterState(characterState ?? {});
+  upsertCharacterProgress.run(
+    characterId,
+    JSON.stringify(sheet ?? {}),
+    JSON.stringify(Array.isArray(notes) ? notes : []),
+    typeof backgroundText === "string" ? backgroundText : "",
+  );
+}
+
+async function ensureLegacyMigration() {
+  if (!legacyMigrationPromise) {
+    legacyMigrationPromise = (async () => {
+      const { count } = countCharacterProgress.get();
+
+      if (count > 0) {
+        return;
+      }
+
+      const legacyProgressMap = await readLegacyCharacterProgressMap();
+
+      for (const [characterId, characterState] of Object.entries(legacyProgressMap)) {
+        writeCharacterProgress(characterId, characterState);
+      }
+    })();
+  }
+
+  await legacyMigrationPromise;
+}
+
 async function readCharacterProgress(characterId) {
-  return (await readCharacterDirectoryState(characterId)) ?? (await readLegacyCharacterProgress(characterId));
+  if (!isSafeCharacterId(characterId)) {
+    throw new Error(`Unsafe character id "${characterId}".`);
+  }
+
+  await ensureLegacyMigration();
+
+  return rowToCharacterState(selectCharacterProgress.get(characterId));
+}
+
+async function readCharacterProgressMap() {
+  await ensureLegacyMigration();
+
+  return Object.fromEntries(
+    selectAllCharacterProgress.all().map((row) => [
+      row.character_id,
+      rowToCharacterState(row),
+    ]),
+  );
 }
 
 async function writeCharacterProgressMap(progressMap) {
-  await fs.mkdir(characterDataDirectory, { recursive: true });
+  await ensureLegacyMigration();
 
-  const existingEntries = await fs.readdir(characterDataDirectory, { withFileTypes: true });
-  await Promise.all(
-    existingEntries
-      .filter((entry) => entry.isDirectory())
-      .map(async (entry) => {
-        if (!Object.prototype.hasOwnProperty.call(progressMap ?? {}, entry.name)) {
-          await fs.rm(path.join(characterDataDirectory, entry.name), { recursive: true, force: true });
-        }
-      }),
-  );
+  const characterIds = Object.keys(progressMap ?? {});
 
-  await Promise.all(
-    Object.entries(progressMap ?? {}).map(async ([characterId, characterState]) => {
-      if (!isSafeCharacterId(characterId)) {
-        throw new Error(`Unsafe character id "${characterId}".`);
-      }
+  for (const characterId of characterIds) {
+    writeCharacterProgress(characterId, progressMap[characterId]);
+  }
 
-      await writeCharacterDirectoryState(characterId, characterState);
-    }),
-  );
+  if (characterIds.length === 0) {
+    database.exec("DELETE FROM character_progress");
+    return;
+  }
+
+  deleteMissingCharacterProgressStatement.run(JSON.stringify(characterIds));
 }
 
 app.use(express.json({ limit: "1mb" }));
@@ -286,6 +376,14 @@ app.get("/api/character-progress/:characterId", async (req, res, next) => {
     const characterProgress = await readCharacterProgress(req.params.characterId);
 
     if (!characterProgress) {
+      const legacyCharacterProgress = await readLegacyCharacterProgress(req.params.characterId);
+
+      if (legacyCharacterProgress) {
+        writeCharacterProgress(req.params.characterId, legacyCharacterProgress);
+        res.json(legacyCharacterProgress);
+        return;
+      }
+
       res.status(404).json(null);
       return;
     }
@@ -298,7 +396,8 @@ app.get("/api/character-progress/:characterId", async (req, res, next) => {
 
 app.put("/api/character-progress/:characterId", async (req, res, next) => {
   try {
-    await writeCharacterDirectoryState(req.params.characterId, req.body ?? {});
+    await ensureLegacyMigration();
+    writeCharacterProgress(req.params.characterId, req.body ?? {});
     res.status(204).end();
   } catch (error) {
     next(error);
@@ -307,7 +406,8 @@ app.put("/api/character-progress/:characterId", async (req, res, next) => {
 
 app.delete("/api/character-progress/:characterId", async (req, res, next) => {
   try {
-    await fs.rm(characterDirectoryPath(req.params.characterId), { recursive: true, force: true });
+    await ensureLegacyMigration();
+    deleteCharacterProgressStatement.run(req.params.characterId);
     res.status(204).end();
   } catch (error) {
     next(error);
