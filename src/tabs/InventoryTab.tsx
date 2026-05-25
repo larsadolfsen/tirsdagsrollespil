@@ -339,6 +339,7 @@ export function InventoryTab({
                 }`}
                 gridClassName={`${mobileInventoryGridClass} ${desktopInventoryGridClass}`}
                 leadingLabels={[{ align: "center", className: "hidden md:block", label: "" }]}
+                sectionLabelClassName="pl-4"
                 sectionLabel={(
                   <span className="flex min-w-0 items-center gap-2">
                     <span className="truncate">{section.title}</span>
@@ -380,11 +381,11 @@ export function InventoryTab({
                             draggable: wallet.isDraggable,
                             label: "Move coins",
                           })}
-                          <span className="wfrp-list-cell-strong flex min-w-0 items-center gap-1.5 text-left text-gray-200">
+                          <span className="wfrp-list-cell-strong flex min-w-0 items-center gap-1.5 pl-4 text-left text-gray-200">
                             <span className="truncate">Coins</span>
                           </span>
                           <div className="hidden wfrp-list-cell-strong truncate md:block">Currency</div>
-                          <div className="wfrp-list-cell-strong text-right font-mono">{wallet.coinCount}</div>
+                          <div className="wfrp-list-cell-strong text-center font-mono">{wallet.coinCount}</div>
                           <div className="wfrp-list-cell-strong text-right font-mono">{wallet.encumbrance || "-"}</div>
                           <div className="hidden wfrp-list-cell-strong text-right font-mono md:block">{wallet.value}</div>
                           <SheetDataDisclosureCell />
@@ -424,7 +425,7 @@ export function InventoryTab({
                               draggable: row.isDraggable,
                               label: `Move ${item.name}`,
                             })}
-                            <span className="wfrp-list-cell-strong flex min-w-0 items-center gap-1.5 text-left text-gray-200">
+                            <span className="wfrp-list-cell-strong flex min-w-0 items-center gap-1.5 pl-4 text-left text-gray-200">
                               <span className="truncate">{item.name}</span>
                             </span>
 

@@ -10,16 +10,8 @@ const PACKS_AND_CONTAINERS_TYPE = "Packs and containers";
 export const formatCoinTotalValue = (coins: { gc: number; s: number; d: number }) => {
   const totalBrass = coins.gc * 240 + coins.s * 12 + coins.d;
   const gc = Math.floor(totalBrass / 240);
-  const remainingAfterGold = totalBrass % 240;
-  const ss = Math.floor(remainingAfterGold / 12);
-  const b = remainingAfterGold % 12;
-  const parts = [
-    gc > 0 ? `${gc}gc` : null,
-    ss > 0 ? `${ss}ss` : null,
-    b > 0 ? `${b}bp` : null,
-  ].filter(Boolean);
 
-  return parts.length > 0 ? parts.join(" ") : "0bp";
+  return `${gc}gc`;
 };
 
 export const getCoinCount = (coins: { gc: number; s: number; d: number }) =>
