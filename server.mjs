@@ -31,6 +31,7 @@ const legacyNotesDirectoryPath = path.resolve(
 );
 
 const NOTES_KEYS = ["backgroundText", "notes"];
+const LEGACY_MIGRATION_KEY = "legacy-character-progress-migrated";
 
 mkdirSync(path.dirname(databaseFilePath), { recursive: true });
 const database = new DatabaseSync(databaseFilePath);
@@ -42,10 +43,16 @@ database.exec(`
     background_text TEXT NOT NULL DEFAULT '',
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS app_metadata (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 const selectCharacterProgress = database.prepare(`
-  SELECT sheet_json, notes_json, background_text
+  SELECT character_id, sheet_json, notes_json, background_text
   FROM character_progress
   WHERE character_id = ?
 `);
@@ -68,17 +75,31 @@ const upsertCharacterProgress = database.prepare(`
     background_text = excluded.background_text,
     updated_at = CURRENT_TIMESTAMP
 `);
+const insertCharacterProgressIfMissing = database.prepare(`
+  INSERT INTO character_progress (
+    character_id,
+    sheet_json,
+    notes_json,
+    background_text,
+    updated_at
+  ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+  ON CONFLICT(character_id) DO NOTHING
+`);
 const deleteCharacterProgressStatement = database.prepare(`
   DELETE FROM character_progress
   WHERE character_id = ?
 `);
-const deleteMissingCharacterProgressStatement = database.prepare(`
-  DELETE FROM character_progress
-  WHERE character_id NOT IN (SELECT value FROM json_each(?))
+const selectMetadataValue = database.prepare(`
+  SELECT value
+  FROM app_metadata
+  WHERE key = ?
 `);
-const countCharacterProgress = database.prepare(`
-  SELECT COUNT(*) AS count
-  FROM character_progress
+const upsertMetadataValue = database.prepare(`
+  INSERT INTO app_metadata (key, value, updated_at)
+  VALUES (?, ?, CURRENT_TIMESTAMP)
+  ON CONFLICT(key) DO UPDATE SET
+    value = excluded.value,
+    updated_at = CURRENT_TIMESTAMP
 `);
 
 let legacyMigrationPromise = null;
@@ -141,15 +162,18 @@ function joinCharacterState({ sheet, notes, backgroundText }) {
   };
 }
 
-function parseJsonValue(value, fallback) {
+function parseJsonValue(value, columnName, characterId) {
   if (typeof value !== "string") {
-    return fallback;
+    throw new Error(`Expected ${columnName} for character "${characterId}" to be stored as JSON text.`);
   }
 
   try {
     return JSON.parse(value);
-  } catch {
-    return fallback;
+  } catch (error) {
+    throw new Error(
+      `Could not parse ${columnName} for character "${characterId}". The SQLite data may be corrupted.`,
+      { cause: error },
+    );
   }
 }
 
@@ -159,8 +183,8 @@ function rowToCharacterState(row) {
   }
 
   return joinCharacterState({
-    sheet: parseJsonValue(row.sheet_json, {}),
-    notes: parseJsonValue(row.notes_json, []),
+    sheet: parseJsonValue(row.sheet_json, "sheet_json", row.character_id),
+    notes: parseJsonValue(row.notes_json, "notes_json", row.character_id),
     backgroundText: row.background_text,
   });
 }
@@ -280,11 +304,6 @@ async function readLegacyProgressMap() {
   );
 }
 
-async function readLegacyCharacterProgress(characterId) {
-  const legacyProgressMap = await readLegacyProgressMap();
-  return legacyProgressMap[characterId] ?? null;
-}
-
 async function readLegacyCharacterProgressMap() {
   const [legacyProgressMap, characterDirectoryMap] = await Promise.all([
     readLegacyProgressMap(),
@@ -297,13 +316,13 @@ async function readLegacyCharacterProgressMap() {
   };
 }
 
-function writeCharacterProgress(characterId, characterState) {
+function writeCharacterProgress(characterId, characterState, statement = upsertCharacterProgress) {
   if (!isSafeCharacterId(characterId)) {
     throw new Error(`Unsafe character id "${characterId}".`);
   }
 
   const { sheet, notes, backgroundText } = splitCharacterState(characterState ?? {});
-  upsertCharacterProgress.run(
+  statement.run(
     characterId,
     JSON.stringify(sheet ?? {}),
     JSON.stringify(Array.isArray(notes) ? notes : []),
@@ -311,19 +330,42 @@ function writeCharacterProgress(characterId, characterState) {
   );
 }
 
+function beginImmediateTransaction() {
+  database.exec("BEGIN IMMEDIATE");
+}
+
+function commitTransaction() {
+  database.exec("COMMIT");
+}
+
+function rollbackTransaction() {
+  database.exec("ROLLBACK");
+}
+
+function hasCompletedLegacyMigration() {
+  return selectMetadataValue.get(LEGACY_MIGRATION_KEY)?.value === "true";
+}
+
 async function ensureLegacyMigration() {
   if (!legacyMigrationPromise) {
     legacyMigrationPromise = (async () => {
-      const { count } = countCharacterProgress.get();
-
-      if (count > 0) {
+      if (hasCompletedLegacyMigration()) {
         return;
       }
 
       const legacyProgressMap = await readLegacyCharacterProgressMap();
 
-      for (const [characterId, characterState] of Object.entries(legacyProgressMap)) {
-        writeCharacterProgress(characterId, characterState);
+      beginImmediateTransaction();
+      try {
+        for (const [characterId, characterState] of Object.entries(legacyProgressMap)) {
+          writeCharacterProgress(characterId, characterState, insertCharacterProgressIfMissing);
+        }
+
+        upsertMetadataValue.run(LEGACY_MIGRATION_KEY, "true");
+        commitTransaction();
+      } catch (error) {
+        rollbackTransaction();
+        throw error;
       }
     })();
   }
@@ -355,18 +397,26 @@ async function readCharacterProgressMap() {
 async function writeCharacterProgressMap(progressMap) {
   await ensureLegacyMigration();
 
-  const characterIds = Object.keys(progressMap ?? {});
-
-  for (const characterId of characterIds) {
-    writeCharacterProgress(characterId, progressMap[characterId]);
+  const characterEntries = Object.entries(progressMap ?? {});
+  for (const [characterId] of characterEntries) {
+    if (!isSafeCharacterId(characterId)) {
+      throw new Error(`Unsafe character id "${characterId}".`);
+    }
   }
 
-  if (characterIds.length === 0) {
+  beginImmediateTransaction();
+  try {
     database.exec("DELETE FROM character_progress");
-    return;
-  }
 
-  deleteMissingCharacterProgressStatement.run(JSON.stringify(characterIds));
+    for (const [characterId, characterState] of characterEntries) {
+      writeCharacterProgress(characterId, characterState);
+    }
+
+    commitTransaction();
+  } catch (error) {
+    rollbackTransaction();
+    throw error;
+  }
 }
 
 app.use(express.json({ limit: "1mb" }));
@@ -376,14 +426,6 @@ app.get("/api/character-progress/:characterId", async (req, res, next) => {
     const characterProgress = await readCharacterProgress(req.params.characterId);
 
     if (!characterProgress) {
-      const legacyCharacterProgress = await readLegacyCharacterProgress(req.params.characterId);
-
-      if (legacyCharacterProgress) {
-        writeCharacterProgress(req.params.characterId, legacyCharacterProgress);
-        res.json(legacyCharacterProgress);
-        return;
-      }
-
       res.status(404).json(null);
       return;
     }
