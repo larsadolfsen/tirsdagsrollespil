@@ -11,6 +11,24 @@ npm install
 npm run dev
 ```
 
+## Persistent character progress
+
+The production Express server stores mutable character progress in SQLite.
+
+By default, the database file is created at:
+
+```txt
+data/tirsdagsrollespil.sqlite
+```
+
+Set `WFRP_DB_FILE` to use a different path:
+
+```sh
+WFRP_DB_FILE=/path/to/tirsdagsrollespil.sqlite npm start
+```
+
+Existing file-based progress under `data/characters` and the older legacy progress paths are migrated into SQLite on first use when the database is empty.
+
 ## Testing
 
 The project uses TypeScript for static checks and Playwright for browser-based smoke and regression tests.
