@@ -41,12 +41,14 @@ export function InventoryTab({
   getContainerContents,
   canDropInventoryDrag,
   canDropInventoryItem,
+  canStoreCoinsInContainer,
   canStoreInContainer,
   handleInventoryDragOver,
   handleInventoryDrop,
   handleInventoryDragStart,
   handleCoinDragStart,
   handleInventoryDragEnd,
+  handleMoveCoins,
   handleAddConsumableItem,
   handleConsumeItem,
   handleToggleInventoryMenu,
@@ -88,6 +90,7 @@ export function InventoryTab({
     targetWorn?: boolean,
     targetCarried?: boolean,
   ) => boolean;
+  canStoreCoinsInContainer: (containerId: string) => boolean;
   canStoreInContainer: (itemId: string, containerId: string) => boolean;
   handleInventoryDragOver: (
     targetId: InventoryDropTargetId,
@@ -105,6 +108,7 @@ export function InventoryTab({
   handleInventoryDragStart: (item: ResolvedCharacterEquipment, event: ReactDragEvent<HTMLDivElement>) => void;
   handleCoinDragStart: (event: ReactDragEvent<HTMLDivElement>) => void;
   handleInventoryDragEnd: () => void;
+  handleMoveCoins: (containerId: string | null) => void;
   handleAddConsumableItem: (itemId: string) => void;
   handleConsumeItem: (itemId: string) => void;
   handleToggleInventoryMenu: (
@@ -154,9 +158,11 @@ export function InventoryTab({
   const renderDragHandle = ({
     draggable,
     label,
+    onClick,
   }: {
     draggable: boolean;
     label: string;
+    onClick?: (event: ReactMouseEvent<HTMLButtonElement>) => void;
   }) => (
     <div className="hidden h-9 w-8 items-center justify-center md:flex">
       <button
@@ -165,7 +171,11 @@ export function InventoryTab({
         aria-label={label}
         disabled={!draggable}
         tabIndex={draggable ? 0 : -1}
-        onClick={(event) => event.preventDefault()}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          onClick?.(event);
+        }}
       >
         <GripVertical size={14} aria-hidden="true" />
       </button>
@@ -380,6 +390,7 @@ export function InventoryTab({
                           {renderDragHandle({
                             draggable: wallet.isDraggable,
                             label: "Move coins",
+                            onClick: (event) => handleToggleInventoryMenu("coins", event, "move"),
                           })}
                           <span className="wfrp-list-cell-strong flex min-w-0 items-center gap-1.5 pl-4 text-left text-gray-200">
                             <span className="truncate">Coins</span>
@@ -394,7 +405,19 @@ export function InventoryTab({
                     >
                       <SheetDataAccordionDetails
                         rows={wallet.mobileDetails.map((field) => ({ label: field.label, value: field.value }))}
-                      />
+                      >
+                        <div className="flex flex-wrap items-center justify-end gap-1 border-t border-white/10 pt-2">
+                          <SheetRowActionButton
+                            onClick={(event) => {
+                              event.preventDefault();
+                              handleToggleInventoryMenu("coins", event, "move");
+                            }}
+                            aria-label="Move coins"
+                          >
+                            <span className="font-mono text-[10px] font-bold leading-none">Move</span>
+                          </SheetRowActionButton>
+                        </div>
+                      </SheetDataAccordionDetails>
                     </SheetDataAccordionRow>
                   )}
 
@@ -423,7 +446,7 @@ export function InventoryTab({
                           <>
                             {renderDragHandle({
                               draggable: row.isDraggable,
-                              label: `Move ${item.name}`,
+                              label: `Drag ${item.name}`,
                             })}
                             <span className="wfrp-list-cell-strong flex min-w-0 items-center gap-1.5 pl-4 text-left text-gray-200">
                               <span className="truncate">{item.name}</span>
@@ -468,11 +491,14 @@ export function InventoryTab({
       <InventoryContextMenu
         activeInventoryMenu={activeInventoryMenu}
         canDropInventoryItem={canDropInventoryItem}
+        canStoreCoinsInContainer={canStoreCoinsInContainer}
         canStoreInContainer={canStoreInContainer}
+        coinContainerId={coinContainerId}
         containers={containers}
         equipmentState={equipmentState}
         handleCarryItem={handleCarryItem}
         handleDropItem={handleDropItem}
+        handleMoveCoins={handleMoveCoins}
         handleStoreItem={handleStoreItem}
         handleUnwearItem={handleUnwearItem}
         handleWearItem={handleWearItem}

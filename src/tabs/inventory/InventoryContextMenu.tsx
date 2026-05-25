@@ -14,11 +14,14 @@ interface InventoryContextMenuProps {
     targetWorn?: boolean,
     targetCarried?: boolean,
   ) => boolean;
+  canStoreCoinsInContainer: (containerId: string) => boolean;
   canStoreInContainer: (itemId: string, containerId: string) => boolean;
+  coinContainerId: string | null;
   containers: ResolvedCharacterEquipment[];
   equipmentState: ResolvedCharacterEquipment[];
   handleCarryItem: (itemId: string) => void;
   handleDropItem: (itemId: string) => void;
+  handleMoveCoins: (containerId: string | null) => void;
   handleStoreItem: (itemId: string, containerId: string) => void;
   handleUnwearItem: (itemId: string) => void;
   handleWearItem: (itemId: string) => void;
@@ -28,17 +31,61 @@ interface InventoryContextMenuProps {
 export function InventoryContextMenu({
   activeInventoryMenu,
   canDropInventoryItem,
+  canStoreCoinsInContainer,
   canStoreInContainer,
+  coinContainerId,
   containers,
   equipmentState,
   handleCarryItem,
   handleDropItem,
+  handleMoveCoins,
   handleStoreItem,
   handleUnwearItem,
   handleWearItem,
   inventoryMenuRef,
 }: InventoryContextMenuProps) {
   if (!activeInventoryMenu) return null;
+
+  if (activeInventoryMenu.id === "coins") {
+    const stowableCoinContainers = containers.filter(
+      (item) =>
+        isPacksAndContainersItem(item) &&
+        item.id !== coinContainerId &&
+        canStoreCoinsInContainer(item.id),
+    );
+    const canMoveCoinsToCarried = coinContainerId !== null;
+
+    return (
+      <div
+        ref={inventoryMenuRef}
+        className="fixed z-50 min-w-[152px] overflow-hidden rounded border border-white/10 bg-wfrp-menu py-1 shadow-xl"
+        style={{ top: activeInventoryMenu.top, left: activeInventoryMenu.left }}
+      >
+        {canMoveCoinsToCarried && (
+          <button
+            onClick={() => handleMoveCoins(null)}
+            className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+          >
+            Carried
+          </button>
+        )}
+        {stowableCoinContainers.map((container) => (
+          <button
+            key={container.id}
+            onClick={() => handleMoveCoins(container.id)}
+            className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+          >
+            {container.name}
+          </button>
+        ))}
+        {!canMoveCoinsToCarried && stowableCoinContainers.length === 0 && (
+          <div className="px-3 py-1.5 text-xs font-semibold leading-relaxed text-wfrp-muted-text">
+            No room
+          </div>
+        )}
+      </div>
+    );
+  }
 
   const activeItem = equipmentState.find((item) => item.id === activeInventoryMenu.id);
   if (!activeItem) return null;

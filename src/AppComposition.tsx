@@ -467,6 +467,7 @@ export function AppComposition() {
     activeInventoryMenu,
     canDropInventoryDrag,
     canDropInventoryItem,
+    canStoreCoinsInContainer,
     canStoreInContainer,
     handleAddConsumableItem,
     handleAddShopItem,
@@ -480,6 +481,7 @@ export function AppComposition() {
     handleInventoryDragOver,
     handleInventoryDragStart,
     handleInventoryDrop,
+    handleMoveCoins,
     handleResolveArmourFit,
     handleStoreItem,
     handleToggleInventoryMenu,
@@ -1360,12 +1362,14 @@ export function AppComposition() {
                         getContainerContents={getContainerContents}
                         canDropInventoryDrag={canDropInventoryDrag}
                         canDropInventoryItem={canDropInventoryItem}
+                        canStoreCoinsInContainer={canStoreCoinsInContainer}
                         canStoreInContainer={canStoreInContainer}
                         handleInventoryDragOver={handleInventoryDragOver}
                         handleInventoryDrop={handleInventoryDrop}
                         handleInventoryDragStart={handleInventoryDragStart}
                         handleCoinDragStart={handleCoinDragStart}
                         handleInventoryDragEnd={handleInventoryDragEnd}
+                        handleMoveCoins={handleMoveCoins}
                         handleAddConsumableItem={handleAddConsumableItem}
                         handleConsumeItem={handleConsumeItem}
                         handleToggleInventoryMenu={handleToggleInventoryMenu}

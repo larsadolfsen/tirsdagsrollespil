@@ -367,6 +367,13 @@ export function useInventoryActions({
     return used - currentContribution + coinEncumbrance <= capacity;
   };
 
+  const handleMoveCoins = (containerId: string | null) => {
+    if (containerId && !canStoreCoinsInContainer(containerId)) return;
+
+    setCoinContainerId(containerId);
+    setActiveInventoryMenu(null);
+  };
+
   const canDropInventoryItem = (
     itemId: string,
     targetContainerId: string | null,
@@ -499,6 +506,7 @@ export function useInventoryActions({
     activeInventoryMenu,
     canDropInventoryDrag,
     canDropInventoryItem,
+    canStoreCoinsInContainer,
     canStoreInContainer,
     handleAddConsumableItem,
     handleAddShopItem,
@@ -512,6 +520,7 @@ export function useInventoryActions({
     handleInventoryDragOver,
     handleInventoryDragStart,
     handleInventoryDrop,
+    handleMoveCoins,
     handleResolveArmourFit,
     handleStoreItem,
     handleToggleInventoryMenu,
