@@ -4,7 +4,7 @@ import { defaultCampaignId } from "../data/campaigns";
 export { defaultCampaignId } from "../data/campaigns";
 
 const campaignCharacterRoutePattern = /^\/([^/]+)\/([^/]+)(?:\/([^/?#]+))?\/?$/;
-const mainTabPathSegments: Record<MobileTabMenuTarget, string> = {
+const characterViewPathSegments: Record<MobileTabMenuTarget, string> = {
   characteristics: "characteristics",
   skills: "skills",
   actions: "actions",
@@ -14,15 +14,14 @@ const mainTabPathSegments: Record<MobileTabMenuTarget, string> = {
   journal: "journal",
   career: "advance",
 };
-const tabAliases: Record<string, MobileTabMenuTarget> = {
-  actions: "actions",
+const viewAliases: Record<string, MobileTabMenuTarget> = {
   action: "actions",
+  actions: "actions",
   advance: "career",
   career: "career",
   careers: "career",
   characteristics: "characteristics",
   karakteristika: "characteristics",
-  faner: "skills",
   features: "features",
   inventory: "inventory",
   journal: "journal",
@@ -30,13 +29,27 @@ const tabAliases: Record<string, MobileTabMenuTarget> = {
   skills: "skills",
   spells: "spells",
   talents: "features",
+
+  // Keep existing routes working while new URLs use page-title slugs.
+  faner: "skills",
+};
+const mainTabByCharacterView: Record<MobileTabMenuTarget, MainTab> = {
+  characteristics: "skills",
+  skills: "skills",
+  actions: "actions",
+  inventory: "inventory",
+  spells: "spells",
+  features: "features",
+  journal: "journal",
+  career: "career",
 };
 
 export type CampaignCharacterRoute = {
   campaignId: string;
   characterId: string;
-  tab: MobileTabMenuTarget;
-  hasExplicitTab: boolean;
+  view: MobileTabMenuTarget;
+  tab: MainTab;
+  hasExplicitView: boolean;
 };
 
 export const defaultCampaignCharacterTab: MobileTabMenuTarget = "characteristics";
@@ -54,38 +67,39 @@ export function parseCampaignCharacterPath(pathname: string): CampaignCharacterR
   const match = campaignCharacterRoutePattern.exec(pathname);
   if (!match) return null;
 
-  const [, campaignIdSegment, characterIdSegment, tabSegment] = match;
+  const [, campaignIdSegment, characterIdSegment, viewSegment] = match;
   const campaignId = decodePathSegment(campaignIdSegment);
   const characterId = decodePathSegment(characterIdSegment);
-  const hasExplicitTab = Boolean(tabSegment);
-  const tab = tabAliases[(tabSegment ?? mainTabPathSegments[defaultCampaignCharacterTab]).toLowerCase()];
+  const hasExplicitView = Boolean(viewSegment);
+  const view = viewAliases[(viewSegment ?? characterViewPathSegments.characteristics).toLowerCase()];
 
-  if (!campaignId || !characterId || !tab) return null;
+  if (!campaignId || !characterId || !view) return null;
 
   return {
     campaignId,
     characterId,
-    tab,
-    hasExplicitTab,
+    view,
+    tab: mainTabByCharacterView[view],
+    hasExplicitView,
   };
 }
 
 export function buildCampaignCharacterPath({
   campaignId = defaultCampaignId,
   characterId,
-  tab,
-  omitDefaultTab = false,
+  view,
+  omitDefaultView = false,
 }: {
   campaignId?: string;
   characterId: string;
-  tab: MobileTabMenuTarget;
-  omitDefaultTab?: boolean;
+  view: MobileTabMenuTarget;
+  omitDefaultView?: boolean;
 }) {
   const characterPath = `/${encodePathSegment(campaignId)}/${encodePathSegment(characterId)}`;
 
-  if (omitDefaultTab && tab === defaultCampaignCharacterTab) {
+  if (omitDefaultView && view === defaultCampaignCharacterTab) {
     return characterPath;
   }
 
-  return `${characterPath}/${mainTabPathSegments[tab]}`;
+  return `${characterPath}/${characterViewPathSegments[view]}`;
 }
