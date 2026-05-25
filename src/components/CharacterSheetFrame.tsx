@@ -58,6 +58,11 @@ export function CharacterSheetFrame({
   onMobilePreviousView,
   mobileTitle,
 }: CharacterSheetFrameProps) {
+  const mobileContentSwipeHandlers = useHorizontalSwipePager({
+    onNext: onMobileNextView,
+    onPrevious: onMobilePreviousView,
+  });
+
   return (
     <>
       <div className="hidden md:block">
@@ -73,7 +78,12 @@ export function CharacterSheetFrame({
           title={mobileTitle}
         />
 
-        {children}
+        <div
+          className="flex min-h-[calc(100dvh-9rem)] flex-col md:contents"
+          {...mobileContentSwipeHandlers}
+        >
+          {children}
+        </div>
       </div>
     </>
   );
