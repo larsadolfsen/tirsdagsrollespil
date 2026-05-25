@@ -1,0 +1,20 @@
+#!/bin/sh
+
+protected_paths="$(git diff --cached --name-only --diff-filter=ACMR -- data)"
+
+if [ -n "$protected_paths" ] && [ "$ALLOW_DATA_COMMIT" != "1" ]; then
+  cat <<EOF
+Commit blocked: staged runtime data files were found under data/.
+
+These files are protected so local character saves are not committed by mistake:
+
+$protected_paths
+
+Unstage them with:
+  git restore --staged data
+
+If this is an intentional seed-data change, rerun with:
+  ALLOW_DATA_COMMIT=1 git commit ...
+EOF
+  exit 1
+fi

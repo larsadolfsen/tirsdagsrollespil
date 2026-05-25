@@ -4,6 +4,11 @@ dist/
 coverage/
 test-results/
 data/character-progress.json
+data/character-notes/*.json
+data/character-status/*.json
+data/characters/*/sheet.json
+data/characters/*/notes.json
+data/characters/*/background.md
 .DS_Store
 *.log
 .env*
