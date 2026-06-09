@@ -1,4 +1,5 @@
 import { Menu, Settings } from "lucide-react";
+import { useGameSessionContext } from "../context/GameSessionContext";
 
 interface MobileCharacterHeaderProps {
   campaignName: string;
@@ -27,6 +28,8 @@ export function MobileCharacterHeader({
   xpCurrent,
   xpTotal,
 }: MobileCharacterHeaderProps) {
+  const { portraitDataUrl } = useGameSessionContext();
+
   return (
     <section className="md:hidden border-b border-wfrp-border bg-wfrp-surface shadow-lg shadow-black/20">
       <div className="flex h-[60px] items-center">
@@ -64,12 +67,22 @@ export function MobileCharacterHeader({
             aria-haspopup="menu"
             aria-expanded={isMobilePortraitMenuOpen}
           >
-            <img
-              src="https://picsum.photos/seed/knight/200/200"
-              alt=""
-              referrerPolicy="no-referrer"
-              className="h-full w-full rounded-full object-cover grayscale brightness-90"
-            />
+            {portraitDataUrl ? (
+              <img
+                src={portraitDataUrl}
+                alt=""
+                width={40}
+                height={40}
+                className="h-full w-full rounded-full object-cover grayscale brightness-90"
+              />
+            ) : (
+              <span
+                aria-hidden="true"
+                className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#5a4a2d,#191919_72%)] text-xs font-black text-wfrp-gold"
+              >
+                {characterName.charAt(0)}
+              </span>
+            )}
           </button>
           {isMobilePortraitMenuOpen && (
             <div

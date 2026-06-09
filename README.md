@@ -90,3 +90,20 @@ npm test                 # Run the Playwright test suite headlessly
 npm run test:headed      # Run tests in headed browsers
 npm run test:ui          # Open the Playwright UI runner
 ```
+
+## PageSpeed
+
+Run a PageSpeed Insights performance snapshot against a public deployment URL:
+
+```sh
+npm run pagespeed -- https://your-public-app-url.example
+```
+
+The command checks both mobile and desktop by default. You can pass one strategy
+to narrow the run:
+
+```sh
+npm run pagespeed -- https://your-public-app-url.example mobile
+```
+
+Set `PAGESPEED_API_KEY` in the environment if you need higher API quota.

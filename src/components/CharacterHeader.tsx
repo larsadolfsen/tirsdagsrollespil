@@ -6,7 +6,6 @@ import { UI_LABELS } from "../labels";
 import { useGameSessionContext } from "../context/GameSessionContext";
 
 const formatAka = (aka: string[]) => (aka.length > 0 ? `aka ${aka.join(", ")}` : null);
-const defaultPortraitUrl = "https://picsum.photos/seed/knight/200/200";
 const portraitSize = 256;
 
 const readFileAsDataUrl = (file: File) =>
@@ -96,7 +95,7 @@ export function CharacterHeader({
   const nameInputRef = useRef<HTMLInputElement>(null);
   const portraitInputRef = useRef<HTMLInputElement>(null);
   const characterAka = formatAka(characterData.aka);
-  const portraitSrc = portraitDataUrl || defaultPortraitUrl;
+  const portraitSrc = portraitDataUrl;
 
   useEffect(() => {
     if (!isCampaignMenuOpen) return;
@@ -192,20 +191,40 @@ export function CharacterHeader({
             aria-label="Upload character portrait"
             title={portraitError ?? "Upload character portrait"}
           >
-            <img
-              src={portraitSrc}
-              alt="Portrait"
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover grayscale brightness-90"
-            />
+            {portraitSrc ? (
+              <img
+                src={portraitSrc}
+                alt="Portrait"
+                width={48}
+                height={48}
+                className="h-full w-full object-cover grayscale brightness-90"
+              />
+            ) : (
+              <span
+                aria-hidden="true"
+                className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#5a4a2d,#191919_72%)] text-sm font-black text-wfrp-gold"
+              >
+                {characterData.name.charAt(0)}
+              </span>
+            )}
           </button>
           <div className="h-10 w-10 overflow-hidden rounded-full border border-wfrp-gold p-0.5 shadow-inner sm:hidden">
-            <img
-              src={portraitSrc}
-              alt="Portrait"
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover grayscale brightness-90"
-            />
+            {portraitSrc ? (
+              <img
+                src={portraitSrc}
+                alt="Portrait"
+                width={40}
+                height={40}
+                className="h-full w-full object-cover grayscale brightness-90"
+              />
+            ) : (
+              <span
+                aria-hidden="true"
+                className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#5a4a2d,#191919_72%)] text-xs font-black text-wfrp-gold"
+              >
+                {characterData.name.charAt(0)}
+              </span>
+            )}
           </div>
         </div>
 

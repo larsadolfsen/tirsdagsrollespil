@@ -8,18 +8,16 @@ import type { ReactNode } from "react";
 import {
   Dice5,
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
 import { AppShell } from "./components/AppShell";
 import { ArmourCard } from "./components/ArmourCard";
 import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
 import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
 import { CharacteristicsView } from "./components/CharacteristicsView";
 import { MobileMainViewSwipeProvider } from "./components/MobileMainViewSwipeContext";
-import { MobileTabMenu } from "./components/MobileTabMenu";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
 import { useCharacterDerivedStats } from "./hooks/useCharacterDerivedStats";
-import { DiceLogSidebar, useDiceRoller } from "./features/dice";
+import { useDiceRoller } from "./features/dice/useDiceRoller";
 import { useCareerAdvancement } from "./hooks/useCareerAdvancement";
 import { useInventoryActions } from "./hooks/useInventoryActions";
 import { useHorizontalSwipePager } from "./hooks/useHorizontalSwipePager";
@@ -47,7 +45,6 @@ import type {
   ResolvedCharacterSkill,
 } from "./data/characters/resolved";
 import { listCharacters } from "./data/repository";
-import { skillCharacteristicById } from "./data/rules/wfrp4e";
 import {
   formatItemValue,
   getCharacterSkillKey,
@@ -71,6 +68,12 @@ const ShopSidebar = lazy(() =>
 );
 const SpellShopSidebar = lazy(() =>
   import("./components/SpellShopSidebar").then((module) => ({ default: module.SpellShopSidebar })),
+);
+const DiceLogSidebar = lazy(() =>
+  import("./features/dice/DiceLogSidebar").then((module) => ({ default: module.DiceLogSidebar })),
+);
+const MobileTabMenu = lazy(() =>
+  import("./components/MobileTabMenu").then((module) => ({ default: module.MobileTabMenu })),
 );
 const CharacterBuilderScreen = lazy(() =>
   import("./components/CharacterBuilderScreen").then((module) => ({ default: module.CharacterBuilderScreen })),
@@ -697,7 +700,7 @@ export function AppComposition() {
           advances: nextAdvances,
           baseName: skillDefinition.name,
           displayName: skillOption.name,
-          characteristic: skillCharacteristicById[skillOption.skillId],
+          characteristic: rulesIndex.skillCharacteristicById[skillOption.skillId],
         },
       ];
     });
@@ -749,7 +752,7 @@ export function AppComposition() {
               advances: pendingCount,
               baseName: skillDefinition.name,
               displayName: skillOption.name,
-              characteristic: skillCharacteristicById[skillOption.skillId],
+              characteristic: rulesIndex.skillCharacteristicById[skillOption.skillId],
             },
           ];
         }
@@ -839,7 +842,7 @@ export function AppComposition() {
         key: option.id,
         displayName: option.name,
         characteristic:
-          characterSkill?.characteristic ?? skillCharacteristicById[option.skillId] ?? "",
+          characterSkill?.characteristic ?? rulesIndex.skillCharacteristicById[option.skillId] ?? "",
         advances: characterSkill?.advances ?? 0,
         description: skillDef?.description,
         isTrained: (characterSkill?.advances ?? 0) > 0,
@@ -906,7 +909,7 @@ export function AppComposition() {
       const baseAdvances = skill?.advances ?? 0;
       const characteristicKey =
         skill?.characteristic ??
-        (skillOption ? skillCharacteristicById[skillOption.skillId] ?? "" : "");
+        (skillOption ? rulesIndex.skillCharacteristicById[skillOption.skillId] ?? "" : "");
       const baseCharacteristicValue =
         characteristicKey
           ? (attributes[characteristicKey] ?? 0)
@@ -1064,60 +1067,66 @@ export function AppComposition() {
   return (
     <AppShell
       mobileAddAction={mobileAddAction}
-      mobileNavigation={(
-        <MobileTabMenu
-          activeMobileMainView={activeMobileMainView}
-          availableCharacters={availableCharacters}
-          campaignName={UI_LABELS.CAMPAIGN_NAME}
-          characterName={characterData.name}
-          closeMobileNavigation={closeMobileNavigation}
-          handleMobileMainViewSelect={selectMobileMainView}
-          isMobileCharacterListOpen={isMobileCharacterListOpen}
-          isMobileNavigationOpen={isMobileNavigationOpen}
-          mobileTabMenuOptions={displayedMobileTabMenuOptions}
-          onCreateCharacter={() => {
-            openCharacterBuilder();
-            closeMobileNavigation();
-          }}
-          onOpenDiceLog={() => {
-            openDiceLog();
-            closeMobileNavigation();
-          }}
-          selectedCharacterId={selectedCharacterId}
-          setIsMobileCharacterListOpen={setIsMobileCharacterListOpen}
-          setSelectedCharacterId={selectCharacter}
-        />
-      )}
+      mobileNavigation={isMobileNavigationOpen ? (
+        <Suspense fallback={null}>
+          <MobileTabMenu
+            activeMobileMainView={activeMobileMainView}
+            availableCharacters={availableCharacters}
+            campaignName={UI_LABELS.CAMPAIGN_NAME}
+            characterName={characterData.name}
+            closeMobileNavigation={closeMobileNavigation}
+            handleMobileMainViewSelect={selectMobileMainView}
+            isMobileCharacterListOpen={isMobileCharacterListOpen}
+            isMobileNavigationOpen={isMobileNavigationOpen}
+            mobileTabMenuOptions={displayedMobileTabMenuOptions}
+            onCreateCharacter={() => {
+              openCharacterBuilder();
+              closeMobileNavigation();
+            }}
+            onOpenDiceLog={() => {
+              openDiceLog();
+              closeMobileNavigation();
+            }}
+            selectedCharacterId={selectedCharacterId}
+            setIsMobileCharacterListOpen={setIsMobileCharacterListOpen}
+            setSelectedCharacterId={selectCharacter}
+          />
+        </Suspense>
+      ) : null}
       sidebars={(
         <>
-          <DiceLogSidebar
-            activeRollerRef={activeRollerRef}
-            archiveRoll={archiveRoll}
-            canRollCritical={canRollCritical}
-            canUseFortuneActions={canUseFortuneActions}
-            canUseResilienceAction={canUseResilienceAction}
-            displayRoll={displayRoll}
-            executeRoll={executeRoll}
-            formatSignedSl={formatSignedSl}
-            getDamageTotal={getDamageTotal}
-            getDifficultyLabel={getDifficultyLabel}
-            getHitLocation={getHitLocation}
-            getIsCritical={getIsCritical}
-            getOutcome={getOutcome}
-            getRollBaseValue={getRollBaseValue}
-            getRollTarget={getRollTarget}
-            getTargetBonusTotal={getTargetBonusTotal}
-            getTestTypeTitle={getTestTypeTitle}
-            handleAddSl={handleAddSl}
-            handleIWillNotFail={handleIWillNotFail}
-            handleReroll={handleReroll}
-            handleRollCritical={handleRollCritical}
-            isOpen={isDiceLogOpen || Boolean(rollState.characteristic)}
-            rollHistory={rollHistory}
-            rollState={rollState}
-            setIsDiceLogOpen={setIsDiceLogOpen}
-            setRollState={setRollState}
-          />
+          {(isDiceLogOpen || Boolean(rollState.characteristic)) && (
+            <Suspense fallback={null}>
+              <DiceLogSidebar
+                activeRollerRef={activeRollerRef}
+                archiveRoll={archiveRoll}
+                canRollCritical={canRollCritical}
+                canUseFortuneActions={canUseFortuneActions}
+                canUseResilienceAction={canUseResilienceAction}
+                displayRoll={displayRoll}
+                executeRoll={executeRoll}
+                formatSignedSl={formatSignedSl}
+                getDamageTotal={getDamageTotal}
+                getDifficultyLabel={getDifficultyLabel}
+                getHitLocation={getHitLocation}
+                getIsCritical={getIsCritical}
+                getOutcome={getOutcome}
+                getRollBaseValue={getRollBaseValue}
+                getRollTarget={getRollTarget}
+                getTargetBonusTotal={getTargetBonusTotal}
+                getTestTypeTitle={getTestTypeTitle}
+                handleAddSl={handleAddSl}
+                handleIWillNotFail={handleIWillNotFail}
+                handleReroll={handleReroll}
+                handleRollCritical={handleRollCritical}
+                isOpen={isDiceLogOpen || Boolean(rollState.characteristic)}
+                rollHistory={rollHistory}
+                rollState={rollState}
+                setIsDiceLogOpen={setIsDiceLogOpen}
+                setRollState={setRollState}
+              />
+            </Suspense>
+          )}
 
           <Suspense fallback={null}>
             {activeInfo ? (
@@ -1272,10 +1281,7 @@ export function AppComposition() {
                     >
                       {tab.label}
                       {activeMainTab === tab.id && (
-                        <motion.div 
-                          layoutId="activeTabUnderline"
-                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-muted-text"
-                        />
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-muted-text" />
                       )}
                     </button>
                   ))}
@@ -1283,14 +1289,7 @@ export function AppComposition() {
               </ScrollableTabStrip>
 
               <div className="flex-1 flex flex-col min-h-0 md:bg-card">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeMainTab}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    className="flex-1 flex flex-col min-h-0"
-                  >
+                  <div className="flex-1 flex flex-col min-h-0">
                     <MobileMainViewSwipeProvider handlers={mobileMainViewSwipeHandlers}>
                       <LazyTabPanel>
                         {activeMainTab === 'skills' && (
@@ -1467,8 +1466,7 @@ export function AppComposition() {
                       )}
                       </LazyTabPanel>
                     </MobileMainViewSwipeProvider>
-                  </motion.div>
-                </AnimatePresence>
+                  </div>
               </div>
             </section>
           </div>

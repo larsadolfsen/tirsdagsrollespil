@@ -2,6 +2,22 @@
 @source "./**/*.{ts,tsx}";
 @source "../index.html";
 
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("/fonts/SourceSans3-wght.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400 900;
+}
+
+@font-face {
+  font-family: "Libre Caslon Display";
+  src: url("/fonts/LibreCaslonDisplay-Regular.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
 :root {
   color-scheme: dark;
   --background: #121212;
@@ -36,8 +52,8 @@
 }
 
 @theme {
-  --font-body: "Source Sans 3", system-ui, sans-serif;
-  --font-display-face: "Libre Caslon Display", Georgia, serif;
+  --font-body: "Source Sans 3", system-ui, "Segoe UI", Arial, sans-serif;
+  --font-display-face: "Libre Caslon Display", Georgia, "Times New Roman", serif;
   --font-dice: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-sans: var(--font-body);
   --font-mono: var(--font-body);

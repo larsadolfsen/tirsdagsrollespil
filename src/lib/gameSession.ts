@@ -21,6 +21,7 @@ import {
 import {
   buildResolvedSkillOptions,
   getSkillDisplayName,
+  skillCharacteristicById,
 } from "../data/rules/wfrp4e";
 
 type WeaponStats = {
@@ -33,6 +34,7 @@ export type RulesIndex = {
   skillDescriptionByName: Record<string, string>;
   actionDescriptionByName: Record<string, string>;
   propertyDescriptionByName: Record<string, string>;
+  skillCharacteristicById: Record<string, string>;
   weaponStatsByName: Record<string, WeaponStats>;
   careerAdvancementByName: Record<string, { skills: string[]; talents: string[]; characteristics: Array<{ key: string; availableFromRank: number }> }>;
   resolvedSkillOptions: Array<{ id: string; skillId: string; specialisationId?: string; name: string }>;
@@ -122,6 +124,7 @@ function buildRulesIndex(ruleset: Ruleset): RulesIndex {
     skillDescriptionByName,
     actionDescriptionByName,
     propertyDescriptionByName,
+    skillCharacteristicById,
     weaponStatsByName,
     careerAdvancementByName,
     resolvedSkillOptions,

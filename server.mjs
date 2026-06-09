@@ -4,6 +4,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
+import zlib from "node:zlib";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -34,6 +35,11 @@ const legacyNotesDirectoryPath = path.resolve(
 
 const NOTES_KEYS = ["backgroundText", "notes"];
 const LEGACY_MIGRATION_KEY = "legacy-character-progress-migrated";
+const COMPRESSIBLE_CONTENT_TYPES = [
+  /^text\//i,
+  /^application\/(?:javascript|json|manifest\+json|xml)/i,
+  /^image\/svg\+xml/i,
+];
 
 mkdirSync(path.dirname(databaseFilePath), { recursive: true });
 const database = new DatabaseSync(databaseFilePath);
@@ -162,6 +168,114 @@ function joinCharacterState({ sheet, notes, backgroundText }) {
     backgroundText: typeof backgroundText === "string" ? backgroundText : "",
     notes: Array.isArray(notes) ? notes : [],
   };
+}
+
+function appendVaryHeader(res, value) {
+  const currentValue = res.getHeader("Vary");
+
+  if (!currentValue) {
+    res.setHeader("Vary", value);
+    return;
+  }
+
+  const values = String(currentValue)
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase());
+
+  if (!values.includes(value.toLowerCase())) {
+    res.setHeader("Vary", `${currentValue}, ${value}`);
+  }
+}
+
+function acceptsEncoding(req, encoding) {
+  const acceptEncoding = req.headers["accept-encoding"];
+  return typeof acceptEncoding === "string" && acceptEncoding.includes(encoding);
+}
+
+function isCompressibleResponse(res) {
+  const contentType = res.getHeader("Content-Type");
+
+  if (!contentType) {
+    return false;
+  }
+
+  return COMPRESSIBLE_CONTENT_TYPES.some((pattern) => pattern.test(String(contentType)));
+}
+
+function responseChunkToBuffer(chunk, encoding) {
+  return Buffer.isBuffer(chunk)
+    ? chunk
+    : Buffer.from(chunk, typeof encoding === "string" ? encoding : undefined);
+}
+
+function compressionMiddleware(req, res, next) {
+  if (req.method === "HEAD" || res.getHeader("Content-Encoding")) {
+    next();
+    return;
+  }
+
+  const encoding = acceptsEncoding(req, "br")
+    ? "br"
+    : acceptsEncoding(req, "gzip")
+      ? "gzip"
+      : null;
+
+  if (!encoding) {
+    next();
+    return;
+  }
+
+  const originalWrite = res.write.bind(res);
+  const originalEnd = res.end.bind(res);
+  const chunks = [];
+
+  res.write = (chunk, ...args) => {
+    if (chunk) {
+      chunks.push(responseChunkToBuffer(chunk, args[0]));
+    }
+
+    return true;
+  };
+
+  res.end = (chunk, ...args) => {
+    if (chunk) {
+      chunks.push(responseChunkToBuffer(chunk, args[0]));
+    }
+
+    if (
+      res.statusCode < 200 ||
+      res.statusCode === 204 ||
+      res.statusCode === 304 ||
+      res.getHeader("Content-Encoding") ||
+      !isCompressibleResponse(res)
+    ) {
+      for (const bufferedChunk of chunks) {
+        originalWrite(bufferedChunk);
+      }
+      return originalEnd();
+    }
+
+    const body = Buffer.concat(chunks);
+
+    if (body.length < 1024) {
+      for (const bufferedChunk of chunks) {
+        originalWrite(bufferedChunk);
+      }
+      return originalEnd();
+    }
+
+    const compressedBody = encoding === "br"
+      ? zlib.brotliCompressSync(body)
+      : zlib.gzipSync(body);
+
+    res.setHeader("Content-Encoding", encoding);
+    res.setHeader("Content-Length", compressedBody.length);
+    appendVaryHeader(res, "Accept-Encoding");
+
+    return originalEnd(compressedBody);
+  };
+
+  next();
 }
 
 function parseJsonValue(value, columnName, characterId) {
@@ -421,6 +535,7 @@ async function writeCharacterProgressMap(progressMap) {
   }
 }
 
+app.use(compressionMiddleware);
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/character-progress/:characterId", async (req, res, next) => {

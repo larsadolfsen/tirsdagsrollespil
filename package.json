@@ -10,6 +10,8 @@
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "build:analyze": "vite build --sourcemap",
+    "check:no-character-data": "node scripts/check-no-character-data.mjs",
+    "pagespeed": "node scripts/pagespeed.mjs",
     "start": "node server.mjs",
     "preview": "vite preview",
     "clean": "rm -rf dist",
@@ -28,6 +30,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@googleapis/pagespeedonline": "^5.0.1",
     "@playwright/test": "^1.59.1",
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
