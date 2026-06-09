@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import fs from 'node:fs';
 import path from 'path';
 import {defineConfig, loadEnv} from 'vite';
+import type {Plugin} from 'vite';
 
 const progressFilePath = path.resolve(__dirname, 'data', 'character-progress.json');
 
@@ -63,10 +64,32 @@ function characterProgressFilePlugin() {
   };
 }
 
+function nonBlockingStylesheetPlugin(): Plugin {
+  return {
+    name: 'wfrp-non-blocking-stylesheets',
+    apply: 'build',
+    enforce: 'post',
+    transformIndexHtml(html) {
+      return html.replace(
+        /<link\s+([^>]*\brel="stylesheet"[^>]*)>/g,
+        (linkTag, attributes) => {
+          const preloadAttributes = attributes.replace(
+            /\brel="stylesheet"/,
+            'rel="preload" as="style" onload="this.onload=null;this.rel=\'stylesheet\'"',
+          );
+
+          return `<link ${preloadAttributes}>` +
+            `<noscript>${linkTag}</noscript>`;
+        },
+      );
+    },
+  };
+}
+
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    plugins: [react(), tailwindcss(), characterProgressFilePlugin()],
+    plugins: [react(), tailwindcss(), characterProgressFilePlugin(), nonBlockingStylesheetPlugin()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },

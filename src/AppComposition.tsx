@@ -92,6 +92,28 @@ type RollActionButton = {
   onClick: () => void;
 };
 
+function useIsDesktopLayout() {
+  const [isDesktopLayout, setIsDesktopLayout] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.matchMedia("(min-width: 768px)").matches;
+  });
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    const handleChange = () => setIsDesktopLayout(mediaQuery.matches);
+
+    handleChange();
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  return isDesktopLayout;
+}
+
 export function AppComposition() {
   const {
     selectedCharacterId,
@@ -137,6 +159,7 @@ export function AppComposition() {
     setNotes,
   } = useGameSessionContext();
   const [pendingXpAdjustment, setPendingXpAdjustment] = useState(0);
+  const isDesktopLayout = useIsDesktopLayout();
   const availableCharacters = useMemo(() => listCharacters(), []);
   const {
     activeInfo,
@@ -1051,6 +1074,7 @@ export function AppComposition() {
     onNext: () => navigateMobileMainView(1),
     onPrevious: () => navigateMobileMainView(-1),
   });
+  const shouldRenderMainTabPanel = isDesktopLayout || activeMobileMainView !== "characteristics";
 
   if (isCharacterBuilderOpen) {
     return (
@@ -1289,6 +1313,7 @@ export function AppComposition() {
               </ScrollableTabStrip>
 
               <div className="flex-1 flex flex-col min-h-0 md:bg-card">
+                {shouldRenderMainTabPanel ? (
                   <div className="flex-1 flex flex-col min-h-0">
                     <MobileMainViewSwipeProvider handlers={mobileMainViewSwipeHandlers}>
                       <LazyTabPanel>
@@ -1467,6 +1492,7 @@ export function AppComposition() {
                       </LazyTabPanel>
                     </MobileMainViewSwipeProvider>
                   </div>
+                ) : null}
               </div>
             </section>
           </div>
