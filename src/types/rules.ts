@@ -46,6 +46,7 @@ export type SkillType = "basic" | "advanced";
 
 export interface SkillDefinition extends RulesTextDefinition {
   type: SkillType;
+  shortDescription: string;
   grouped?: boolean;
   specialisationLabel?: string;
 }

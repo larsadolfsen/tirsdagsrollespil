@@ -28,9 +28,10 @@ test("skills rows expand with accessible detail controls", async ({ page }) => {
 
   const firstSkillDetails = firstSkillRow.locator(".wfrp-data-accordion-summary + div");
   await expect(firstSkillDetails).not.toContainText("Description");
-  await expect(firstSkillDetails).toContainText(/The ability to|Used to|Your ability to/);
+  await expect(firstSkillDetails).not.toContainText("Short");
+  await expect(firstSkillSummary).toContainText(/Care for|Train and|Create|Run|Judge|Control|Influence|Befriend|Ascend|Resist|Evade|Withstand|Perform|Determine|Calculate|Gather|Negotiate|Diagnose|Coerce|Read|Speak|Command|Recall|Attack|Orient|Forage|Notice|Bypass|Invoke|Extract|Ride|Move|Operate|Deploy|Follow|Manufacture/);
   await expect(firstSkillDetails).toContainText("Characteristic");
   await expect(firstSkillDetails).toContainText("Score");
   await expect(firstSkillDetails).toContainText("Advances");
-  await expect(firstSkillDetails).toContainText("Total");
+  await expect(firstSkillDetails).not.toContainText("Total");
 });

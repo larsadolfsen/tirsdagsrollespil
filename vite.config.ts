@@ -7,6 +7,16 @@ import type {Plugin} from 'vite';
 
 const progressFilePath = path.resolve(__dirname, 'data', 'character-progress.json');
 
+function readProgressFile(): Record<string, unknown> {
+  fs.mkdirSync(path.dirname(progressFilePath), {recursive: true});
+
+  if (!fs.existsSync(progressFilePath)) {
+    fs.writeFileSync(progressFilePath, '{}\n', 'utf8');
+  }
+
+  return JSON.parse(fs.readFileSync(progressFilePath, 'utf8') || '{}');
+}
+
 function writeProgressFile(progress: unknown) {
   const nextContent = `${JSON.stringify(progress, null, 2)}\n`;
   fs.mkdirSync(path.dirname(progressFilePath), {recursive: true});
@@ -18,41 +28,85 @@ function writeProgressFile(progress: unknown) {
   fs.writeFileSync(progressFilePath, nextContent, 'utf8');
 }
 
-function characterProgressFilePlugin() {
+function readRequestJson(req: import('node:http').IncomingMessage) {
+  return new Promise<unknown>((resolve, reject) => {
+    let body = '';
+
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(body || '{}'));
+      } catch (error) {
+        reject(error);
+      }
+    });
+
+    req.on('error', reject);
+  });
+}
+
+function characterProgressFilePlugin(): Plugin {
   return {
     name: 'wfrp-character-progress-file',
     configureServer(server) {
-      server.middlewares.use('/api/character-progress', (req, res) => {
-        if (req.method === 'GET') {
-          fs.mkdirSync(path.dirname(progressFilePath), {recursive: true});
+      server.middlewares.use('/api/character-progress', async (req, res) => {
+        const characterId = req.url?.match(/^\/([^/?#]+)/)?.[1]
+          ? decodeURIComponent(req.url.match(/^\/([^/?#]+)/)![1])
+          : null;
 
-          if (!fs.existsSync(progressFilePath)) {
-            fs.writeFileSync(progressFilePath, '{}\n', 'utf8');
-          }
+        if (req.method === 'GET') {
+          const progress = readProgressFile();
 
           res.setHeader('Content-Type', 'application/json');
-          res.end(fs.readFileSync(progressFilePath, 'utf8'));
+          if (characterId) {
+            if (!Object.hasOwn(progress, characterId)) {
+              res.statusCode = 404;
+              res.end('null');
+              return;
+            }
+
+            res.end(JSON.stringify(progress[characterId]));
+            return;
+          }
+
+          res.end(JSON.stringify(progress));
           return;
         }
 
         if (req.method === 'PUT') {
-          let body = '';
+          try {
+            const requestBody = await readRequestJson(req);
 
-          req.on('data', (chunk) => {
-            body += chunk;
-          });
-
-          req.on('end', () => {
-            try {
-              const progress = JSON.parse(body || '{}');
+            if (characterId) {
+              const progress = readProgressFile();
+              writeProgressFile({
+                ...progress,
+                [characterId]: requestBody,
+              });
+            } else {
+              const progress = requestBody;
               writeProgressFile(progress);
-              res.statusCode = 204;
-              res.end();
-            } catch {
-              res.statusCode = 400;
-              res.end('Invalid character progress JSON');
             }
-          });
+
+            res.statusCode = 204;
+            res.end();
+          } catch {
+            res.statusCode = 400;
+            res.end('Invalid character progress JSON');
+          }
+
+          return;
+        }
+
+        if (req.method === 'DELETE' && characterId) {
+          const progress = readProgressFile();
+          delete progress[characterId];
+          writeProgressFile(progress);
+          res.statusCode = 204;
+          res.end();
 
           return;
         }

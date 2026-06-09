@@ -13,10 +13,11 @@ type SkillRow = {
   displayName: string;
   characteristic: string;
   advances: number;
+  shortDescription?: string;
   description?: string;
 };
 
-const desktopSkillGridClass = "md:grid-cols-[56px_minmax(0,1fr)_56px_56px_56px_56px_48px]";
+const desktopSkillGridClass = "md:grid-cols-[56px_minmax(10rem,0.8fr)_minmax(14rem,1.2fr)_56px_56px_56px_56px_48px]";
 const mobileSkillGridClass = "grid-cols-[40px_minmax(0,1fr)_40px_48px]";
 const skillContentGridClass = `${mobileSkillGridClass} ${desktopSkillGridClass}`;
 
@@ -67,6 +68,7 @@ export function SkillsTab({
         leadingLabels={[{ align: "center", label: "Roll" }]}
         sectionLabel="Skill"
         valueLabels={[
+          { align: "left", className: "hidden md:block", label: "Short" },
           { align: "center", label: "Char." },
           { align: "right", className: "hidden md:block", label: "Score" },
           { align: "right", className: "hidden md:block", label: "Adv." },
@@ -104,6 +106,10 @@ export function SkillsTab({
                       {skill.displayName}
                     </span>
 
+                    <span className="hidden min-w-0 truncate text-left text-[11px] font-bold leading-tight text-wfrp-muted-text md:block">
+                      {skill.shortDescription ?? "-"}
+                    </span>
+
                     <div className="wfrp-list-cell-strong text-center font-mono">
                       {skill.characteristic}
                     </div>
@@ -127,10 +133,9 @@ export function SkillsTab({
                 <SheetDataAccordionDetails
                   description={skill.description}
                   rows={[
-                    { label: "Characteristic", value: characteristicNames[skill.characteristic] ?? skill.characteristic },
-                    { label: "Score", value: charValue },
-                    { label: "Advances", value: formattedAdvances },
-                    { bordered: true, label: "Total", value: totalValue },
+                    { label: "Characteristic", value: characteristicNames[skill.characteristic] ?? skill.characteristic, valueClassName: "!text-left" },
+                    { label: "Score", value: charValue, valueClassName: "!text-left" },
+                    { label: "Advances", value: formattedAdvances, valueClassName: "!text-left" },
                   ]}
                 />
               </SheetDataAccordionRow>

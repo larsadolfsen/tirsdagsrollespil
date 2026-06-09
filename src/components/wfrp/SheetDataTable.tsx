@@ -14,6 +14,42 @@ type SheetDataHeaderCellProps = HTMLAttributes<HTMLSpanElement> & {
 
 const rowClasses = "wfrp-table-row grid min-w-0 max-w-full items-center gap-0";
 
+function renderMarkedDescription(description: ReactNode, fallback: ReactNode) {
+  if (typeof description !== "string") {
+    return description || <span className="italic text-wfrp-muted-text">{fallback}</span>;
+  }
+
+  const blocks = description
+    .trim()
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  if (blocks.length === 0) {
+    return <span className="italic text-wfrp-muted-text">{fallback}</span>;
+  }
+
+  return blocks.map((block, index) => {
+    const lines = block
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const isBulletList = lines.every((line) => line.startsWith("* "));
+
+    if (isBulletList) {
+      return (
+        <ul key={index} className="list-disc space-y-1 pl-4">
+          {lines.map((line) => (
+            <li key={line}>{line.slice(2)}</li>
+          ))}
+        </ul>
+      );
+    }
+
+    return <p key={index}>{lines.join(" ")}</p>;
+  });
+}
+
 export function SheetDataPanel({ as: Component = "section", className, ...props }: SheetDataPanelProps) {
   return <Component className={cn("wfrp-subpanel-shell flex min-w-0 max-w-full flex-col overflow-hidden bg-card", className)} {...props} />;
 }
@@ -206,14 +242,15 @@ export function SheetDataAccordionDetails({
     bordered?: boolean;
     label: string;
     value: ReactNode;
+    valueClassName?: string;
   }>;
 }) {
   return (
     <div className={cn("flex min-w-0 max-w-full flex-col gap-2", className)}>
       <div className="min-w-0 max-w-full">
-        <p className="max-w-full break-words text-[11px] font-bold leading-relaxed text-wfrp-muted-text md:max-w-3xl">
-          {description || <span className="italic text-wfrp-muted-text">{descriptionFallback}</span>}
-        </p>
+        <div className="flex max-w-full flex-col gap-2 break-words text-[11px] font-bold leading-relaxed text-wfrp-muted-text md:max-w-3xl">
+          {renderMarkedDescription(description, descriptionFallback)}
+        </div>
       </div>
 
       {rows.length > 0 ? (
@@ -227,7 +264,7 @@ export function SheetDataAccordionDetails({
               )}
             >
               <span className="wfrp-list-cell-strong text-wfrp-muted-text">{row.label}</span>
-              <span className="wfrp-sidebar-body min-w-0 text-right text-card-foreground">{row.value}</span>
+              <span className={cn("wfrp-sidebar-body min-w-0 text-right text-card-foreground", row.valueClassName)}>{row.value}</span>
             </div>
           ))}
         </div>

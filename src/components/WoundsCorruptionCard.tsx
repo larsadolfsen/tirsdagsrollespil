@@ -112,27 +112,49 @@ export function WoundsCorruptionCard({
               Corruption Check
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {corruptionCheckSkills.map((skill) => (
-                <div key={skill.skillName} className="grid min-w-0 grid-cols-[32px_minmax(0,1fr)] items-center gap-1.5 sm:grid-cols-[40px_minmax(0,1fr)] sm:gap-2">
-                  <div className="flex justify-center">
-                    <button
-                      type="button"
-                      onClick={() => openCorruptionCheck(skill)}
-                      className="wfrp-roll-btn"
-                      aria-label={`Open ${skill.skillName} corruption check`}
-                    >
-                      {skill.target}
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => openCorruptionCheck(skill)}
-                    className="wfrp-skill-link min-w-0 truncate"
+              {corruptionCheckSkills.map((skill, index) => {
+                const isLeftSkill = index === 0;
+
+                return (
+                  <div
+                    key={skill.skillName}
+                    className={`grid min-w-0 items-center gap-1.5 sm:gap-2 ${
+                      isLeftSkill
+                        ? "grid-cols-[minmax(0,1fr)_32px] justify-items-end sm:grid-cols-[minmax(0,1fr)_40px]"
+                        : "grid-cols-[32px_minmax(0,1fr)] justify-items-start sm:grid-cols-[40px_minmax(0,1fr)]"
+                    }`}
                   >
-                    {skill.skillName}
-                  </button>
-                </div>
-              ))}
+                    {isLeftSkill && (
+                      <button
+                        type="button"
+                        onClick={() => openCorruptionCheck(skill)}
+                        className="wfrp-skill-link min-w-0 truncate text-right!"
+                      >
+                        {skill.skillName}
+                      </button>
+                    )}
+                    <div className="flex justify-center">
+                      <button
+                        type="button"
+                        onClick={() => openCorruptionCheck(skill)}
+                        className="wfrp-roll-btn"
+                        aria-label={`Open ${skill.skillName} corruption check`}
+                      >
+                        {skill.target}
+                      </button>
+                    </div>
+                    {!isLeftSkill && (
+                      <button
+                        type="button"
+                        onClick={() => openCorruptionCheck(skill)}
+                        className="wfrp-skill-link min-w-0 truncate text-left!"
+                      >
+                        {skill.skillName}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

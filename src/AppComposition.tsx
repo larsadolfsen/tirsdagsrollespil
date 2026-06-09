@@ -867,6 +867,7 @@ export function AppComposition() {
         characteristic:
           characterSkill?.characteristic ?? rulesIndex.skillCharacteristicById[option.skillId] ?? "",
         advances: characterSkill?.advances ?? 0,
+        shortDescription: skillDef?.shortDescription,
         description: skillDef?.description,
         isTrained: (characterSkill?.advances ?? 0) > 0,
         skillId: option.skillId,
@@ -895,6 +896,7 @@ export function AppComposition() {
       displayName: skill.displayName,
       characteristic: skill.characteristic,
       advances: skill.advances,
+      shortDescription: skillDefinitionById.get(skill.skillId)?.shortDescription,
       description: skillDefinitionById.get(skill.skillId)?.description,
     }))
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
