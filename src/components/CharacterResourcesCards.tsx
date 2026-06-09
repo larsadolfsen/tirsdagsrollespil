@@ -1,4 +1,4 @@
-import { FateResolveCard } from "./FateResolveCard";
+import { FateResolveCard, ResilienceResolveCard } from "./FateResolveCard";
 import { WoundsCorruptionCard } from "./WoundsCorruptionCard";
 import type { CoinKey } from "../tabs/tabTypes";
 import type { Characteristic } from "../types";
@@ -77,6 +77,9 @@ export function CharacterResourcesCards({
         fortuneCurrent={fortuneCurrent}
         onAdjustFate={onAdjustFate}
         onAdjustFortune={onAdjustFortune}
+      />
+
+      <ResilienceResolveCard
         onAdjustResilience={onAdjustResilience}
         onAdjustResolve={onAdjustResolve}
         resilienceCurrent={resilienceCurrent}

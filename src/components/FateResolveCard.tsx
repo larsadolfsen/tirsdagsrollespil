@@ -8,6 +8,9 @@ type FateResolveCardProps = {
   fortuneCurrent: number;
   onAdjustFate: ResourceAdjuster;
   onAdjustFortune: ResourceAdjuster;
+};
+
+type ResilienceResolveCardProps = {
   onAdjustResilience: ResourceAdjuster;
   onAdjustResolve: ResourceAdjuster;
   resilienceCurrent: number;
@@ -24,19 +27,13 @@ export function FateResolveCard({
   fortuneCurrent,
   onAdjustFate,
   onAdjustFortune,
-  onAdjustResilience,
-  onAdjustResolve,
-  resilienceCurrent,
-  resilienceMax,
-  resolveCurrent,
-  resolveMax,
 }: FateResolveCardProps) {
   return (
     <section className="wfrp-card overflow-hidden p-0!">
       <div className="wfrp-card-tab-header">
-        <h3 className="wfrp-panel-title">FATE & RESILIENCE</h3>
+        <h3 className="wfrp-panel-title">FATE & FORTUNE</h3>
       </div>
-      <div className="wfrp-card-tab-body space-y-5 px-4 py-4">
+      <div className="wfrp-card-tab-body px-4 py-4">
         <div className="grid grid-cols-1 gap-3">
           <HeaderResourceSlider
             label="Fate"
@@ -55,7 +52,25 @@ export function FateResolveCard({
             contentClassName={sliderContentClassName}
           />
         </div>
+      </div>
+    </section>
+  );
+}
 
+export function ResilienceResolveCard({
+  onAdjustResilience,
+  onAdjustResolve,
+  resilienceCurrent,
+  resilienceMax,
+  resolveCurrent,
+  resolveMax,
+}: ResilienceResolveCardProps) {
+  return (
+    <section className="wfrp-card overflow-hidden p-0!">
+      <div className="wfrp-card-tab-header">
+        <h3 className="wfrp-panel-title">RESILIENCE & RESOLVE</h3>
+      </div>
+      <div className="wfrp-card-tab-body px-4 py-4">
         <div className="grid grid-cols-1 gap-3">
           <HeaderResourceSlider
             label="Resilience"
