@@ -14,7 +14,7 @@ export function CharacteristicsView({
   onRoll,
 }: CharacteristicsViewProps) {
   return (
-    <section className={activeMobileMainView === "characteristics" ? "block" : "hidden md:block"}>
+    <section className={activeMobileMainView === "characteristics" ? "block pb-5 md:pb-0" : "hidden md:block"}>
       <div className="grid grid-cols-5 gap-6 md:grid-cols-10">
         {(UI_LABELS.CHARACTERISTICS as Characteristic[]).map((characteristic) => {
           const value = attributes[characteristic.key] || 0;
