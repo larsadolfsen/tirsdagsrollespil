@@ -166,9 +166,9 @@ function CoinStepper({
     <button
       type="button"
       onClick={() => onAdjustCoin(coinKey, amount)}
-      className={`wfrp-stepper-btn h-6 min-w-8 px-1.5 py-0 leading-none ${
+      className={`wfrp-stepper-btn min-w-8 px-1.5 py-0 leading-none ${
         isDecrease
-          ? "focus-visible:ring-wfrp-red/50 disabled:cursor-not-allowed"
+          ? "focus-visible:ring-wfrp-red/50"
           : "focus-visible:ring-green-600/50"
       }`}
       aria-label={`${isDecrease ? "Decrease" : "Increase"} ${coinName.toLowerCase()} by ${Math.abs(amount)}`}

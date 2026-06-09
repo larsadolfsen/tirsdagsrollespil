@@ -47,11 +47,11 @@ export function ResourceCounterBar({
     <div className={className ?? "flex items-center gap-1.5 sm:gap-2"}>
       <button
         onClick={() => onAdjust(-1)}
-        className={`wfrp-stepper-btn shrink-0 ${minusRingClassName}`}
+        className={`wfrp-resource-stepper-btn ${minusRingClassName}`}
         aria-label={`Decrease current ${label.toLowerCase()}`}
         disabled={safeCurrent <= 0}
       >
-        <Minus size={10} />
+        <Minus size={14} />
       </button>
 
       <div className={contentClassName ?? "flex w-20 min-w-0 flex-col gap-1 sm:w-24 lg:w-36"}>
@@ -78,11 +78,11 @@ export function ResourceCounterBar({
 
       <button
         onClick={() => onAdjust(1)}
-        className={`wfrp-stepper-btn shrink-0 ${plusRingClassName}`}
+        className={`wfrp-resource-stepper-btn ${plusRingClassName}`}
         aria-label={`Increase current ${label.toLowerCase()}`}
         disabled={!canIncreaseBeyondMax && safeMax > 0 && safeCurrent >= safeMax}
       >
-        <Plus size={10} />
+        <Plus size={14} />
       </button>
     </div>
   );
