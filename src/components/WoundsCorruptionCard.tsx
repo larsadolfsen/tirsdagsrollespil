@@ -111,7 +111,7 @@ export function WoundsCorruptionCard({
             <div className="mb-2 text-center text-[8px] font-bold uppercase tracking-[0.18em] text-wfrp-muted-text">
               Corruption Check
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-8">
               {corruptionCheckSkills.map((skill, index) => {
                 const isLeftSkill = index === 0;
 

@@ -9,6 +9,7 @@ type ResourceCounterBarProps = {
   counterToneClassName: string;
   minusRingClassName: string;
   plusRingClassName: string;
+  canIncreaseBeyondMax?: boolean;
   contentClassName?: string;
   className?: string;
 };
@@ -19,6 +20,7 @@ type HeaderResourceSliderProps = {
   max: number;
   onAdjust: (delta: number) => void;
   barClassName: string;
+  canIncreaseBeyondMax?: boolean;
   contentClassName?: string;
   className?: string;
 };
@@ -32,6 +34,7 @@ export function ResourceCounterBar({
   counterToneClassName,
   minusRingClassName,
   plusRingClassName,
+  canIncreaseBeyondMax = false,
   contentClassName,
   className,
 }: ResourceCounterBarProps) {
@@ -77,7 +80,7 @@ export function ResourceCounterBar({
         onClick={() => onAdjust(1)}
         className={`wfrp-stepper-btn shrink-0 ${plusRingClassName}`}
         aria-label={`Increase current ${label.toLowerCase()}`}
-        disabled={safeMax > 0 && safeCurrent >= safeMax}
+        disabled={!canIncreaseBeyondMax && safeMax > 0 && safeCurrent >= safeMax}
       >
         <Plus size={10} />
       </button>
@@ -91,6 +94,7 @@ export function HeaderResourceSlider({
   max,
   onAdjust,
   barClassName,
+  canIncreaseBeyondMax,
   contentClassName,
   className,
 }: HeaderResourceSliderProps) {
@@ -104,6 +108,7 @@ export function HeaderResourceSlider({
       counterToneClassName="text-gray-200"
       minusRingClassName="focus-visible:ring-wfrp-red/50"
       plusRingClassName="focus-visible:ring-green-600/50"
+      canIncreaseBeyondMax={canIncreaseBeyondMax}
       contentClassName={contentClassName}
       className={className}
     />

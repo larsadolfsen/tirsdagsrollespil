@@ -9,6 +9,8 @@ import zlib from "node:zlib";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
+const isProductionDeployment = process.env.NODE_ENV === "production" ||
+  Boolean(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_SERVICE_ID);
 const stateDataDirectory = path.resolve(
   process.env.WFRP_DATA_DIR ??
     process.env.RAILWAY_VOLUME_MOUNT_PATH ??
@@ -594,10 +596,15 @@ app.put("/api/character-progress", async (req, res, next) => {
 app.use(
   express.static(path.join(__dirname, "dist"), {
     index: false,
-    maxAge: "1d",
+    maxAge: isProductionDeployment ? "1d" : 0,
     setHeaders(res, filePath) {
       if (filePath.endsWith(".html")) {
         res.setHeader("Cache-Control", "no-cache");
+        return;
+      }
+
+      if (!isProductionDeployment) {
+        res.setHeader("Cache-Control", "no-store");
         return;
       }
 

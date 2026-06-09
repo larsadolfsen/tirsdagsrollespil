@@ -41,6 +41,7 @@ export function FateResolveCard({
             max={fateMax}
             onAdjust={onAdjustFate}
             barClassName="bg-wfrp-amber"
+            canIncreaseBeyondMax
             contentClassName={sliderContentClassName}
           />
           <HeaderResourceSlider
@@ -78,6 +79,7 @@ export function ResilienceResolveCard({
             max={resilienceMax}
             onAdjust={onAdjustResilience}
             barClassName="bg-wfrp-aqua"
+            canIncreaseBeyondMax
             contentClassName={sliderContentClassName}
           />
           <HeaderResourceSlider

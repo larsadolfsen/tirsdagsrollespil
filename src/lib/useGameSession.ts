@@ -183,10 +183,7 @@ export function useGameSession() {
 
   const setFateCurrent = (action: SetStateAction<number>) => {
     setRawFateCurrent((previousFate) => {
-      const nextFate = clampResource(
-        resolveNumberStateAction(action, previousFate),
-        baseResourceCaps.fate,
-      );
+      const nextFate = Math.max(0, resolveNumberStateAction(action, previousFate));
 
       setRawFortuneCurrent((previousFortune) =>
         clampResource(previousFortune, nextFate),
@@ -229,10 +226,7 @@ export function useGameSession() {
 
   const setResilienceCurrent = (action: SetStateAction<number>) => {
     setRawResilienceCurrent((previousResilience) => {
-      const nextResilience = clampResource(
-        resolveNumberStateAction(action, previousResilience),
-        baseResourceCaps.resilience,
-      );
+      const nextResilience = Math.max(0, resolveNumberStateAction(action, previousResilience));
 
       setRawResolveCurrent((previousResolve) =>
         clampResource(previousResolve, nextResilience),

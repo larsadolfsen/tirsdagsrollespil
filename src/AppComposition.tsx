@@ -540,7 +540,7 @@ export function AppComposition() {
   };
 
   const adjustFate = (delta: number) => {
-    setFateCurrent(prev => Math.min(Math.max(0, prev + delta), resourceCaps.fate));
+    setFateCurrent(prev => Math.max(0, prev + delta));
   };
 
   const adjustFortune = (delta: number) => {
@@ -548,7 +548,7 @@ export function AppComposition() {
   };
 
   const adjustResilience = (delta: number) => {
-    setResilienceCurrent(prev => Math.min(Math.max(0, prev + delta), resourceCaps.resilience));
+    setResilienceCurrent(prev => Math.max(0, prev + delta));
   };
 
   const adjustResolve = (delta: number) => {
@@ -1263,12 +1263,12 @@ export function AppComposition() {
               corruptionMax={maxCorruption}
               onAdjustCorruption={adjustCorruption}
               fateCurrent={fateCurrent}
-              fateMax={resourceCaps.fate}
+              fateMax={Math.max(resourceCaps.fate, fateCurrent)}
               onAdjustFate={adjustFate}
               fortuneCurrent={fortuneCurrent}
               onAdjustFortune={adjustFortune}
               resilienceCurrent={resilienceCurrent}
-              resilienceMax={resourceCaps.resilience}
+              resilienceMax={Math.max(resourceCaps.resilience, resilienceCurrent)}
               onAdjustResilience={adjustResilience}
               resolveCurrent={resolveCurrent}
               resolveMax={Math.min(resourceCaps.resolve, resilienceCurrent)}
