@@ -455,6 +455,8 @@ export function useGameSession() {
 
   const resourceCaps = {
     ...baseResourceCaps,
+    fate: fateCurrent,
+    resilience: resilienceCurrent,
     fortune: fateCurrent,
     resolve: resilienceCurrent,
   };

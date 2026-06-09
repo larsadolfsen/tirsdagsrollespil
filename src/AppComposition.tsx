@@ -1263,12 +1263,12 @@ export function AppComposition() {
               corruptionMax={maxCorruption}
               onAdjustCorruption={adjustCorruption}
               fateCurrent={fateCurrent}
-              fateMax={Math.max(resourceCaps.fate, fateCurrent)}
+              fateMax={resourceCaps.fate}
               onAdjustFate={adjustFate}
               fortuneCurrent={fortuneCurrent}
               onAdjustFortune={adjustFortune}
               resilienceCurrent={resilienceCurrent}
-              resilienceMax={Math.max(resourceCaps.resilience, resilienceCurrent)}
+              resilienceMax={resourceCaps.resilience}
               onAdjustResilience={adjustResilience}
               resolveCurrent={resolveCurrent}
               resolveMax={Math.min(resourceCaps.resolve, resilienceCurrent)}

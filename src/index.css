@@ -194,7 +194,7 @@
 }
 
 @utility wfrp-stepper-btn {
-  @apply inline-flex items-center justify-center rounded border border-wfrp-border bg-wfrp-dark p-1 text-gray-300 shadow-sm transition-all cursor-pointer active:scale-90 hover:border-wfrp-gold/50 hover:text-wfrp-gold disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-1;
+  @apply inline-flex items-center justify-center rounded border border-wfrp-border bg-wfrp-dark p-1 text-gray-300 shadow-sm transition-all cursor-pointer active:scale-90 hover:border-wfrp-gold/50 hover:text-wfrp-gold disabled:cursor-not-allowed disabled:opacity-55 disabled:active:scale-100 disabled:hover:border-wfrp-border disabled:hover:text-gray-300 focus-visible:outline-none focus-visible:ring-1;
 }
 
 @utility wfrp-icon-btn {
