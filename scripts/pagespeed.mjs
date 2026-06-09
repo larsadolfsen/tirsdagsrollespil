@@ -1,15 +1,45 @@
 import { pagespeedonline } from "@googleapis/pagespeedonline";
+import { existsSync, readFileSync } from "node:fs";
 
-const url = process.argv[2];
-const strategies = process.argv.slice(3).filter((value) => value === "mobile" || value === "desktop");
+const defaultUrl = "https://tirsdagsrollespil-production.up.railway.app/enemy_within/thano_voss";
+const envFilePath = new URL("../.env", import.meta.url);
+const args = process.argv.slice(2);
+const urlArg = args.find((value) => value.startsWith("http://") || value.startsWith("https://"));
+const url = urlArg ?? defaultUrl;
+const strategies = args.filter((value) => value === "mobile" || value === "desktop");
 const selectedStrategies = strategies.length > 0 ? strategies : ["mobile", "desktop"];
 
 if (!url) {
-  console.error("Usage: npm run pagespeed -- <url> [mobile] [desktop]");
+  console.error("Usage: npm run pagespeed -- [url] [mobile] [desktop]");
   process.exit(1);
 }
 
 const client = pagespeedonline("v5");
+
+function getEnvValue(key) {
+  if (process.env[key]) {
+    return process.env[key];
+  }
+
+  if (!existsSync(envFilePath)) {
+    return undefined;
+  }
+
+  const entry = readFileSync(envFilePath, "utf8")
+    .split(/\r?\n/)
+    .find((line) => line.trim().startsWith(`${key}=`));
+
+  if (!entry) {
+    return undefined;
+  }
+
+  return entry
+    .slice(entry.indexOf("=") + 1)
+    .trim()
+    .replace(/^["']|["']$/g, "");
+}
+
+const pagespeedApiKey = getEnvValue("PAGESPEED_API_KEY");
 
 const formatScore = (score) => {
   if (typeof score !== "number") {
@@ -26,7 +56,7 @@ async function runStrategy(strategy) {
     url,
     strategy,
     category: ["performance"],
-    key: process.env.PAGESPEED_API_KEY,
+    key: pagespeedApiKey,
   });
 
   const lighthouse = response.data.lighthouseResult;

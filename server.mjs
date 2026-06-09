@@ -38,6 +38,7 @@ const LEGACY_MIGRATION_KEY = "legacy-character-progress-migrated";
 const COMPRESSIBLE_CONTENT_TYPES = [
   /^text\//i,
   /^application\/(?:javascript|json|manifest\+json|xml)/i,
+  /^font\/(?:ttf|otf)/i,
   /^image\/svg\+xml/i,
 ];
 
@@ -601,6 +602,10 @@ app.use(
       }
 
       if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      }
+
+      if (filePath.includes(`${path.sep}fonts${path.sep}`)) {
         res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
       }
     },
