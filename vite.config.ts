@@ -6,18 +6,41 @@ import {defineConfig, loadEnv} from 'vite';
 import type {Plugin} from 'vite';
 
 const progressFilePath = path.resolve(__dirname, 'data', 'character-progress.json');
+const characterDataDirectory = path.resolve(__dirname, 'data', 'characters');
 
-function readProgressFile(): Record<string, unknown> {
-  fs.mkdirSync(path.dirname(progressFilePath), {recursive: true});
+type CharacterProgressMap = Record<string, Record<string, unknown>>;
 
-  if (!fs.existsSync(progressFilePath)) {
-    fs.writeFileSync(progressFilePath, '{}\n', 'utf8');
-  }
-
-  return JSON.parse(fs.readFileSync(progressFilePath, 'utf8') || '{}');
+function isSafeCharacterId(characterId: string) {
+  return /^[a-zA-Z0-9_-]+$/.test(characterId);
 }
 
-function writeProgressFile(progress: unknown) {
+function readJsonFile(filePath: string, fallback: unknown) {
+  if (!fs.existsSync(filePath)) {
+    return fallback;
+  }
+
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function readTextFile(filePath: string, fallback = '') {
+  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : fallback;
+}
+
+function isCharacterProgressMap(value: unknown): value is CharacterProgressMap {
+  return Boolean(value) &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    Object.values(value).every((entry) =>
+      Boolean(entry) && typeof entry === 'object' && !Array.isArray(entry),
+    );
+}
+
+function readProgressMap(): CharacterProgressMap {
+  const progress = readJsonFile(progressFilePath, {});
+  return isCharacterProgressMap(progress) ? progress : {};
+}
+
+function writeProgressFile(progress: CharacterProgressMap) {
   const nextContent = `${JSON.stringify(progress, null, 2)}\n`;
   fs.mkdirSync(path.dirname(progressFilePath), {recursive: true});
 
@@ -48,31 +71,83 @@ function readRequestJson(req: import('node:http').IncomingMessage) {
   });
 }
 
+function readCharacterDirectoryState(characterId: string) {
+  const characterDirectory = path.join(characterDataDirectory, characterId);
+  const sheetPath = path.join(characterDirectory, 'sheet.json');
+
+  if (!fs.existsSync(sheetPath)) {
+    return null;
+  }
+
+  return {
+    ...(readJsonFile(sheetPath, {}) as Record<string, unknown>),
+    notes: readJsonFile(path.join(characterDirectory, 'notes.json'), []),
+    backgroundText: readTextFile(path.join(characterDirectory, 'background.md')),
+  };
+}
+
+function readCharacterDirectoryMap(): CharacterProgressMap {
+  if (!fs.existsSync(characterDataDirectory)) {
+    return {};
+  }
+
+  const progressMap: CharacterProgressMap = {};
+
+  for (const entry of fs.readdirSync(characterDataDirectory, {withFileTypes: true})) {
+    if (!entry.isDirectory() || !isSafeCharacterId(entry.name)) {
+      continue;
+    }
+
+    const characterState = readCharacterDirectoryState(entry.name);
+    if (characterState) {
+      progressMap[entry.name] = characterState;
+    }
+  }
+
+  return progressMap;
+}
+
+function getRequestCharacterId(url: string | undefined) {
+  const characterId = url?.match(/^\/([^/?#]+)/)?.[1]
+    ? decodeURIComponent(url.match(/^\/([^/?#]+)/)![1])
+    : null;
+
+  return characterId || null;
+}
+
+function readAvailableProgressMap(): CharacterProgressMap {
+  return {
+    ...readCharacterDirectoryMap(),
+    ...readProgressMap(),
+  };
+}
+
 function characterProgressFilePlugin(): Plugin {
   return {
     name: 'wfrp-character-progress-file',
     configureServer(server) {
       server.middlewares.use('/api/character-progress', async (req, res) => {
-        const characterId = req.url?.match(/^\/([^/?#]+)/)?.[1]
-          ? decodeURIComponent(req.url.match(/^\/([^/?#]+)/)![1])
-          : null;
+        const characterId = getRequestCharacterId(req.url);
 
         if (req.method === 'GET') {
-          const progress = readProgressFile();
+          const progressMap = readAvailableProgressMap();
 
           res.setHeader('Content-Type', 'application/json');
+
           if (characterId) {
-            if (!Object.hasOwn(progress, characterId)) {
-              res.statusCode = 404;
-              res.end('null');
+            if (!isSafeCharacterId(characterId)) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({error: 'Invalid character id'}));
               return;
             }
 
-            res.end(JSON.stringify(progress[characterId]));
+            const characterProgress = progressMap[characterId] ?? null;
+            res.statusCode = characterProgress ? 200 : 404;
+            res.end(JSON.stringify(characterProgress));
             return;
           }
 
-          res.end(JSON.stringify(progress));
+          res.end(JSON.stringify(progressMap));
           return;
         }
 
@@ -81,14 +156,19 @@ function characterProgressFilePlugin(): Plugin {
             const requestBody = await readRequestJson(req);
 
             if (characterId) {
-              const progress = readProgressFile();
+              if (!isSafeCharacterId(characterId)) {
+                res.statusCode = 400;
+                res.end('Invalid character id');
+                return;
+              }
+
+              const progress = readProgressMap();
               writeProgressFile({
                 ...progress,
-                [characterId]: requestBody,
+                [characterId]: requestBody as Record<string, unknown>,
               });
             } else {
-              const progress = requestBody;
-              writeProgressFile(progress);
+              writeProgressFile(isCharacterProgressMap(requestBody) ? requestBody : {});
             }
 
             res.statusCode = 204;
@@ -102,7 +182,7 @@ function characterProgressFilePlugin(): Plugin {
         }
 
         if (req.method === 'DELETE' && characterId) {
-          const progress = readProgressFile();
+          const progress = readProgressMap();
           delete progress[characterId];
           writeProgressFile(progress);
           res.statusCode = 204;

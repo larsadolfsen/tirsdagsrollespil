@@ -396,13 +396,23 @@ async function readLegacyCharacterStateDirectory(directoryPath) {
   }
 }
 
+function isCharacterProgressMap(value) {
+  return Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.values(value).every((entry) =>
+      Boolean(entry) && typeof entry === "object" && !Array.isArray(entry),
+    );
+}
+
 async function readLegacyProgressMap() {
-  const [singleFileMap, statusMap, progressMap, notesMap] = await Promise.all([
+  const [singleFileState, statusMap, progressMap, notesMap] = await Promise.all([
     readJsonFile(legacyProgressFilePath, {}),
     readLegacyCharacterStateDirectory(legacyStatusDirectoryPath),
     readLegacyCharacterStateDirectory(legacyProgressDirectoryPath),
     readLegacyCharacterStateDirectory(legacyNotesDirectoryPath),
   ]);
+  const singleFileMap = isCharacterProgressMap(singleFileState) ? singleFileState : {};
   const characterIds = new Set([
     ...Object.keys(singleFileMap),
     ...Object.keys(statusMap),

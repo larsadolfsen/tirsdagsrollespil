@@ -134,6 +134,7 @@ export function useGameSession() {
   const [selectedCharacterId, setSelectedCharacterId] = useState(defaultCharacterId);
   const [isProgressHydrated, setIsProgressHydrated] = useState(false);
   const [isSessionStateReadyToSave, setIsSessionStateReadyToSave] = useState(false);
+  const [hydratedCharacterId, setHydratedCharacterId] = useState<string | null>(null);
   const [progressHydrationVersion, setProgressHydrationVersion] = useState(0);
 
   const session = useMemo(
@@ -285,12 +286,14 @@ export function useGameSession() {
 
       if (!isCancelled) {
         setIsProgressHydrated(true);
+        setHydratedCharacterId(selectedCharacterId);
         setProgressHydrationVersion((version) => version + 1);
       }
     }
 
     setIsProgressHydrated(false);
     setIsSessionStateReadyToSave(false);
+    setHydratedCharacterId(null);
     void hydrateProgress();
 
     return () => {
@@ -342,7 +345,11 @@ export function useGameSession() {
   }, [resilienceCurrent]);
 
   useEffect(() => {
-    if (!isProgressHydrated || !isSessionStateReadyToSave) {
+    if (
+      !isProgressHydrated ||
+      !isSessionStateReadyToSave ||
+      hydratedCharacterId !== selectedCharacterId
+    ) {
       return;
     }
 
@@ -395,6 +402,7 @@ export function useGameSession() {
   }, [
     isProgressHydrated,
     isSessionStateReadyToSave,
+    hydratedCharacterId,
     selectedCharacterId,
     character.equipment,
     woundsCurrent,
