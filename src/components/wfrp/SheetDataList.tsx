@@ -161,6 +161,7 @@ export function SheetDataRollCell({ children, className }: { children: ReactNode
 }
 
 export function SheetRowActionButton({
+  children,
   className,
   type = "button",
   ...props
@@ -169,10 +170,12 @@ export function SheetRowActionButton({
     <button
       type={type}
       className={cn(
-        "wfrp-stepper-btn inline-flex h-5 min-w-12 items-center justify-center px-1.5 py-0 focus-visible:ring-wfrp-gold/50",
+        "wfrp-stepper-btn wfrp-stepper-btn--value focus-visible:ring-wfrp-gold/50",
         className,
       )}
       {...props}
-    />
+    >
+      <span className="wfrp-stepper-btn__inner">{children}</span>
+    </button>
   );
 }

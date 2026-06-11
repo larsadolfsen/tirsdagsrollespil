@@ -192,18 +192,22 @@ export function DiceRoller({
                           onClick={() =>
                             setRollState((prev) => ({ ...prev, modifier: prev.modifier - 10 }))
                           }
-                          className="wfrp-dice-adjust-btn"
+                          className="wfrp-stepper-btn"
                         >
-                          <Minus size={10} />
+                          <span className="wfrp-stepper-btn__inner">
+                            <Minus size={10} />
+                          </span>
                         </button>
                         <button
                           disabled={rollState.isRolling}
                           onClick={() =>
                             setRollState((prev) => ({ ...prev, modifier: prev.modifier + 10 }))
                           }
-                          className="wfrp-dice-adjust-btn"
+                          className="wfrp-stepper-btn"
                         >
-                          <Plus size={10} />
+                          <span className="wfrp-stepper-btn__inner">
+                            <Plus size={10} />
+                          </span>
                         </button>
                       </div>
                     )}

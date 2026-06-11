@@ -194,11 +194,24 @@
 }
 
 @utility wfrp-stepper-btn {
-  @apply flex h-5 w-5 items-center justify-center rounded border border-wfrp-border bg-wfrp-dice-bg p-1 text-wfrp-dice-text shadow-sm transition-all cursor-pointer active:scale-90 hover:bg-wfrp-dice-hover-bg hover:text-wfrp-dice-text disabled:cursor-default disabled:opacity-35 disabled:active:scale-100 disabled:hover:bg-wfrp-dice-bg disabled:hover:text-wfrp-dice-text focus-visible:outline-none focus-visible:ring-1;
+  @apply flex h-10 w-10 min-w-10 shrink-0 items-center justify-center rounded bg-transparent p-0 text-sm font-bold leading-none text-wfrp-dice-text transition-all cursor-pointer active:scale-95 hover:text-wfrp-dice-text disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100 disabled:hover:text-wfrp-dice-text focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  font-family: var(--font-dice);
 }
 
-@utility wfrp-resource-stepper-btn {
-  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded bg-wfrp-dice-bg p-0 text-sm font-bold text-wfrp-dice-text shadow-sm transition-all cursor-pointer active:scale-95 hover:bg-wfrp-dice-hover-bg hover:text-wfrp-dice-text disabled:cursor-default disabled:opacity-35 disabled:active:scale-100 disabled:hover:bg-wfrp-dice-bg disabled:hover:text-wfrp-dice-text focus-visible:outline-none focus-visible:ring-1;
+@utility wfrp-stepper-btn__inner {
+  @apply flex h-5 min-w-5 items-center justify-center rounded bg-wfrp-dice-bg px-0 text-wfrp-dice-text shadow-sm transition-colors;
+}
+
+@utility wfrp-stepper-btn--value {
+  @apply w-auto px-0 text-[10px] font-black;
+}
+
+.wfrp-stepper-btn:hover:not(:disabled) .wfrp-stepper-btn__inner {
+  background-color: var(--color-wfrp-dice-hover-bg);
+}
+
+.wfrp-stepper-btn--value .wfrp-stepper-btn__inner {
+  padding-inline: 0.25rem;
 }
 
 @utility wfrp-icon-btn {
@@ -207,10 +220,6 @@
 
 @utility wfrp-mini-action-btn {
   @apply px-2.5 py-1 bg-wfrp-surface-raised border border-wfrp-border rounded text-[9px] font-black text-wfrp-muted-text hover:text-white hover:border-wfrp-gold/50 transition-all active:scale-95 cursor-pointer shadow-sm;
-}
-
-@utility wfrp-dice-adjust-btn {
-  @apply h-5 w-5 flex items-center justify-center rounded border border-wfrp-border bg-wfrp-dice-bg text-wfrp-dice-text transition-all hover:bg-wfrp-dice-hover-bg hover:text-wfrp-dice-text disabled:opacity-20 cursor-pointer;
 }
 
 @utility wfrp-roll-cta {

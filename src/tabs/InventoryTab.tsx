@@ -226,7 +226,9 @@ export function InventoryTab({
           className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
           aria-label={`Remove ${consumableName}`}
         >
-          <Minus size={10} />
+          <span className="wfrp-stepper-btn__inner">
+            <Minus size={10} />
+          </span>
         </button>
         <span className="min-w-5 text-center">{quantity}</span>
         <button
@@ -241,7 +243,9 @@ export function InventoryTab({
           className="wfrp-stepper-btn focus-visible:ring-wfrp-gold/50"
           aria-label={`Add ${consumableName}`}
         >
-          <Plus size={10} />
+          <span className="wfrp-stepper-btn__inner">
+            <Plus size={10} />
+          </span>
         </button>
       </span>
     );

@@ -161,17 +161,17 @@ export function CareerTab({
   };
 
   const xpAdjustActions = (
-    <div className="flex flex-wrap justify-end gap-1 [&_.wfrp-stepper-btn]:h-6 [&_.wfrp-stepper-btn]:min-w-10 [&_.wfrp-stepper-btn]:px-1.5">
+    <div className="flex flex-wrap justify-end gap-1">
       <button
         onClick={(event) => {
           event.preventDefault();
           adjustXp(-100);
         }}
         disabled={!canRemove100Xp}
-        className="wfrp-stepper-btn w-auto text-[10px] font-black"
+        className="wfrp-stepper-btn wfrp-stepper-btn--value"
         aria-label="Remove 100 pending XP"
       >
-        -100
+        <span className="wfrp-stepper-btn__inner">-100</span>
       </button>
       <button
         onClick={(event) => {
@@ -179,30 +179,30 @@ export function CareerTab({
           adjustXp(-10);
         }}
         disabled={!canRemove10Xp}
-        className="wfrp-stepper-btn w-auto text-[10px] font-black"
+        className="wfrp-stepper-btn wfrp-stepper-btn--value"
         aria-label="Remove 10 pending XP"
       >
-        -10
+        <span className="wfrp-stepper-btn__inner">-10</span>
       </button>
       <button
         onClick={(event) => {
           event.preventDefault();
           adjustXp(10);
         }}
-        className="wfrp-stepper-btn w-auto text-[10px] font-black"
+        className="wfrp-stepper-btn wfrp-stepper-btn--value"
         aria-label="Add 10 current and total XP"
       >
-        +10
+        <span className="wfrp-stepper-btn__inner">+10</span>
       </button>
       <button
         onClick={(event) => {
           event.preventDefault();
           adjustXp(100);
         }}
-        className="wfrp-stepper-btn w-auto text-[10px] font-black"
+        className="wfrp-stepper-btn wfrp-stepper-btn--value"
         aria-label="Add 100 current and total XP"
       >
-        +100
+        <span className="wfrp-stepper-btn__inner">+100</span>
       </button>
     </div>
   );
@@ -353,11 +353,13 @@ export function CareerTab({
                         nextCareerAdvanceCost === null ||
                         pendingAvailableXp < nextCareerAdvanceCost
                       }
-                      className="wfrp-stepper-btn disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="wfrp-stepper-btn"
                       aria-label={`Advance ${characterData.career} from rank ${rankRecord.rank}`}
                       title="Advance career"
                     >
-                      <Plus size={12} />
+                      <span className="wfrp-stepper-btn__inner">
+                        <Plus size={12} />
+                      </span>
                     </button>
                   ) : (
                     <span className="wfrp-list-cell text-right" aria-label="Read-only career rank">
@@ -567,10 +569,12 @@ export function CareerTab({
                                 removePendingCharacteristicAdvance(item.key);
                               }}
                               disabled={item.pendingAdvances === 0 || !isAvailable}
-                              className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-wfrp-red/50"
+                              className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
                               aria-label={`Decrease ${item.label}`}
                             >
-                              <Minus size={10} />
+                              <span className="wfrp-stepper-btn__inner">
+                                <Minus size={10} />
+                              </span>
                             </button>
                             <button
                               type="button"
@@ -579,10 +583,12 @@ export function CareerTab({
                                 purchaseCharacteristicAdvance(item.key);
                               }}
                               disabled={!isAvailable || pendingAvailableXp < nextCharacteristicCost}
-                              className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-green-600/50"
+                              className="wfrp-stepper-btn focus-visible:ring-green-600/50"
                               aria-label={`Increase ${item.label}`}
                             >
-                              <Plus size={12} />
+                              <span className="wfrp-stepper-btn__inner">
+                                <Plus size={12} />
+                              </span>
                             </button>
                           </div>
                           <SheetDataDisclosureCell />
@@ -695,10 +701,12 @@ export function CareerTab({
                                     removePendingSkillAdvance(skillRow.skillName);
                                   }}
                                   disabled={skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
-                                  className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-wfrp-red/50"
+                                  className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
                                   aria-label={`Decrease skill advances for ${skillRow.skillName}`}
                                 >
-                                  <Minus size={10} />
+                                  <span className="wfrp-stepper-btn__inner">
+                                    <Minus size={10} />
+                                  </span>
                                 </button>
                                 <button
                                   type="button"
@@ -707,10 +715,12 @@ export function CareerTab({
                                     purchaseSkillAdvance(skillRow.skillName);
                                   }}
                                   disabled={!canPurchase}
-                                  className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-green-600/50"
+                                  className="wfrp-stepper-btn focus-visible:ring-green-600/50"
                                   aria-label={`Advance skill ${skillRow.skillName}`}
                                 >
-                                  <Plus size={12} />
+                                  <span className="wfrp-stepper-btn__inner">
+                                    <Plus size={12} />
+                                  </span>
                                 </button>
                               </div>
                               <SheetDataDisclosureCell />
@@ -797,10 +807,12 @@ export function CareerTab({
                               removePendingTalentPurchase(talentName);
                             }}
                             disabled={pendingTakenCount === 0}
-                            className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-wfrp-red/50"
+                            className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
                             aria-label={`Decrease talent purchases for ${talentName}`}
                           >
-                            <Minus size={10} />
+                            <span className="wfrp-stepper-btn__inner">
+                              <Minus size={10} />
+                            </span>
                           </button>
                           <button
                             type="button"
@@ -809,10 +821,12 @@ export function CareerTab({
                               purchaseTalent(talentName);
                             }}
                             disabled={!canPurchase}
-                            className="wfrp-stepper-btn disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-green-600/50"
+                            className="wfrp-stepper-btn focus-visible:ring-green-600/50"
                             aria-label={`Purchase talent ${talentName}`}
                           >
-                            <Plus size={12} />
+                            <span className="wfrp-stepper-btn__inner">
+                              <Plus size={12} />
+                            </span>
                           </button>
                         </div>
                         <SheetDataDisclosureCell />
