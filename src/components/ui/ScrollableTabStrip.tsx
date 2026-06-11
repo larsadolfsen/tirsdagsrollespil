@@ -52,7 +52,7 @@ export function ScrollableTabStrip({
   };
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0">
       <div
         ref={stripRef}
         className={`${className} !pl-0 md:!pl-3 lg:!pl-4 md:pr-12`}

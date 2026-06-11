@@ -96,7 +96,7 @@ export function CharacterResourcesCards({
           {coinRows.map(([coinKey, coinName, coinClassName]) => (
             <div
               key={coinKey}
-              className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto_auto] items-center gap-1.5"
+              className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto_auto] items-center gap-1"
             >
               {coinAdjustments.slice(0, 2).map((amount) => (
                 <CoinStepper
@@ -166,7 +166,7 @@ function CoinStepper({
     <button
       type="button"
       onClick={() => onAdjustCoin(coinKey, amount)}
-      className={`wfrp-stepper-btn wfrp-stepper-btn--value ${
+      className={`wfrp-stepper-btn wfrp-stepper-btn--value wfrp-stepper-btn--coin ${
         isDecrease
           ? "focus-visible:ring-wfrp-red/50"
           : "focus-visible:ring-green-600/50"

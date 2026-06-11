@@ -206,12 +206,21 @@
   @apply w-auto px-0 text-[10px] font-black;
 }
 
+@utility wfrp-stepper-btn--coin {
+  @apply w-10 min-w-10;
+}
+
 .wfrp-stepper-btn:hover:not(:disabled) .wfrp-stepper-btn__inner {
   background-color: var(--color-wfrp-dice-hover-bg);
 }
 
 .wfrp-stepper-btn--value .wfrp-stepper-btn__inner {
   padding-inline: 0.25rem;
+}
+
+.wfrp-stepper-btn--coin .wfrp-stepper-btn__inner {
+  width: 1.75rem;
+  min-width: 1.75rem;
 }
 
 @utility wfrp-icon-btn {

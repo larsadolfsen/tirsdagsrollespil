@@ -15,7 +15,11 @@ import { useInventoryViewModel } from "./inventory/useInventoryViewModel";
 import type { ResolvedCharacterEquipment, ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { InventorySubtab } from "./tabTypes";
 import type { InventoryDragState, InventoryDropTargetId, InventoryMenuState } from "../types/inventory";
-import { getConsumableBaseName } from "./inventory/inventoryUtils";
+import {
+  getConsumableBaseName,
+  isPacksAndContainersItem,
+  isWornInventoryItem,
+} from "./inventory/inventoryUtils";
 
 const desktopInventoryGridClass = "md:grid-cols-[36px_minmax(0,1fr)_140px_86px_60px_60px_48px]";
 const mobileInventoryGridClass = "grid-cols-[minmax(0,1fr)_74px_44px_48px]";
@@ -182,8 +186,12 @@ export function InventoryTab({
     </div>
   );
 
-  const renderItemActions = (item: ResolvedCharacterEquipment) => (
-    <>
+  const renderActionLabel = (label: string) => (
+    <span className="block max-w-40 truncate font-mono text-[10px] font-bold leading-none">{label}</span>
+  );
+
+  const renderItemDropAction = (item: ResolvedCharacterEquipment) => (
+    <div className="flex flex-wrap items-center justify-end gap-1">
       <SheetRowActionButton
         onClick={(event) => {
           event.preventDefault();
@@ -191,19 +199,123 @@ export function InventoryTab({
         }}
         aria-label={`Drop ${item.name}`}
       >
-        <span className="font-mono text-[10px] font-bold leading-none">Drop</span>
+        {renderActionLabel("Drop")}
       </SheetRowActionButton>
-      <SheetRowActionButton
-        onClick={(event) => {
-          event.preventDefault();
-          handleToggleInventoryMenu(item.id, event, "move");
-        }}
-        aria-label={`Move ${item.name}`}
-      >
-        <span className="font-mono text-[10px] font-bold leading-none">Move</span>
-      </SheetRowActionButton>
-    </>
+    </div>
   );
+
+  const renderItemMoveActions = (item: ResolvedCharacterEquipment) => {
+    const stowableContainers = containers.filter(
+      (container) =>
+        isPacksAndContainersItem(container) &&
+        container.id !== item.id &&
+        container.id !== item.containerId &&
+        canStoreInContainer(item.id, container.id),
+    );
+    const canMoveToWorn = canDropInventoryItem(item.id, null, true);
+    const canMoveToCarried = isWornInventoryItem(item)
+      ? canDropInventoryItem(item.id, null, false, true)
+      : canDropInventoryItem(item.id, null);
+    const hasMoveActions = canMoveToWorn || canMoveToCarried || stowableContainers.length > 0;
+
+    if (!hasMoveActions) {
+      return (
+        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-wfrp-muted-text">
+          No moves
+        </span>
+      );
+    }
+
+    return (
+      <div className="flex min-w-0 flex-wrap items-center gap-1">
+        {canMoveToWorn && (
+          <SheetRowActionButton
+            onClick={(event) => {
+              event.preventDefault();
+              handleWearItem(item.id);
+            }}
+            aria-label={`Move ${item.name} to worn`}
+          >
+            {renderActionLabel("Wear")}
+          </SheetRowActionButton>
+        )}
+        {canMoveToCarried && (
+          <SheetRowActionButton
+            onClick={(event) => {
+              event.preventDefault();
+              if (isWornInventoryItem(item)) {
+                handleUnwearItem(item.id);
+              } else {
+                handleCarryItem(item.id);
+              }
+            }}
+            aria-label={`Move ${item.name} to carried`}
+          >
+            {renderActionLabel("Carried")}
+          </SheetRowActionButton>
+        )}
+        {stowableContainers.map((container) => (
+          <SheetRowActionButton
+            key={container.id}
+            onClick={(event) => {
+              event.preventDefault();
+              handleStoreItem(item.id, container.id);
+            }}
+            aria-label={`Move ${item.name} to ${container.name}`}
+          >
+            {renderActionLabel(container.name)}
+          </SheetRowActionButton>
+        ))}
+      </div>
+    );
+  };
+
+  const renderCoinMoveActions = () => {
+    const stowableCoinContainers = containers.filter(
+      (item) =>
+        isPacksAndContainersItem(item) &&
+        item.id !== coinContainerId &&
+        canStoreCoinsInContainer(item.id),
+    );
+    const canMoveCoinsToCarried = coinContainerId !== null;
+    const hasMoveActions = canMoveCoinsToCarried || stowableCoinContainers.length > 0;
+
+    if (!hasMoveActions) {
+      return (
+        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-wfrp-muted-text">
+          No moves
+        </span>
+      );
+    }
+
+    return (
+      <div className="flex min-w-0 flex-wrap items-center gap-1">
+        {canMoveCoinsToCarried && (
+          <SheetRowActionButton
+            onClick={(event) => {
+              event.preventDefault();
+              handleMoveCoins(null);
+            }}
+            aria-label="Move coins to carried"
+          >
+            {renderActionLabel("Carried")}
+          </SheetRowActionButton>
+        )}
+        {stowableCoinContainers.map((container) => (
+          <SheetRowActionButton
+            key={container.id}
+            onClick={(event) => {
+              event.preventDefault();
+              handleMoveCoins(container.id);
+            }}
+            aria-label={`Move coins to ${container.name}`}
+          >
+            {renderActionLabel(container.name)}
+          </SheetRowActionButton>
+        ))}
+      </div>
+    );
+  };
 
   const renderQuantity = (item: ResolvedCharacterEquipment, quantity: number) => {
     if (item.type !== "Consumable") {
@@ -410,16 +522,8 @@ export function InventoryTab({
                       <SheetDataAccordionDetails
                         rows={wallet.mobileDetails.map((field) => ({ label: field.label, value: field.value }))}
                       >
-                        <div className="flex flex-wrap items-center justify-end gap-1 border-t border-white/10 pt-2">
-                          <SheetRowActionButton
-                            onClick={(event) => {
-                              event.preventDefault();
-                              handleToggleInventoryMenu("coins", event, "move");
-                            }}
-                            aria-label="Move coins"
-                          >
-                            <span className="font-mono text-[10px] font-bold leading-none">Move</span>
-                          </SheetRowActionButton>
+                        <div className="flex flex-wrap items-center justify-start gap-1 border-t border-white/10 pt-2">
+                          {renderCoinMoveActions()}
                         </div>
                       </SheetDataAccordionDetails>
                     </SheetDataAccordionRow>
@@ -475,8 +579,11 @@ export function InventoryTab({
                             { label: "Value", value: row.value },
                           ]}
                         >
-                          <div className="flex flex-wrap items-center justify-end gap-1 border-t border-white/10 pt-2">
-                            {renderItemActions(item)}
+                          <div className="flex min-w-0 flex-col gap-2 border-t border-white/10 pt-2 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex min-w-0 flex-wrap items-center justify-start gap-1">
+                              {renderItemMoveActions(item)}
+                            </div>
+                            {renderItemDropAction(item)}
                           </div>
                         </SheetDataAccordionDetails>
                       </SheetDataAccordionRow>

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import { Minus, Plus } from "lucide-react";
 import { AdvancementSection, InlineSubtabs, SubtabActionButton, SubtabContentFrame } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import {
@@ -102,6 +101,8 @@ const careerPathGridClass = "grid-cols-[minmax(0,1fr)_52px_40px_36px] md:grid-co
 const characteristicAdvanceGridClass = "grid-cols-[minmax(0,1fr)_56px_52px_64px_36px] md:grid-cols-[minmax(0,1fr)_64px_72px_62px_74px_48px]";
 const skillAdvanceGridClass = "grid-cols-[minmax(0,1fr)_56px_52px_64px_36px] md:grid-cols-[minmax(0,1fr)_56px_62px_62px_74px_48px]";
 const talentAdvanceGridClass = "grid-cols-[minmax(0,1fr)_52px_52px_64px_36px] md:grid-cols-[minmax(0,1fr)_72px_62px_74px_48px]";
+const advanceActionFooterClass = "mt-2 flex flex-wrap items-center justify-start gap-2 border-t border-white/10 pt-3";
+const advanceTextButtonClass = "wfrp-action-btn min-h-8 px-3 py-1";
 
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
 
@@ -161,7 +162,7 @@ export function CareerTab({
   };
 
   const xpAdjustActions = (
-    <div className="flex flex-wrap justify-end gap-1">
+    <div className="flex flex-wrap justify-start gap-1">
       <button
         onClick={(event) => {
           event.preventDefault();
@@ -257,35 +258,41 @@ export function CareerTab({
 
   const shouldHighlightSave = hasPendingCareerChanges || isAdvancementEditMode;
   const parseDraftNumber = (value: string) => Math.max(0, Math.floor(Number(value) || 0));
+  const renderAdvancementEditActions = () => (
+    <div className="flex items-center gap-2">
+      <SubtabActionButton
+        onClick={isAdvancementEditMode ? cancelAdvancementEdit : beginAdvancementEdit}
+        aria-label={isAdvancementEditMode ? "Cancel advancement edits" : "Edit initial and advances"}
+      >
+        {isAdvancementEditMode ? "Cancel" : "Edit"}
+      </SubtabActionButton>
+      <SubtabActionButton
+        onClick={handleSaveCareerClick}
+        disabled={!hasPendingCareerChanges && !isAdvancementEditMode}
+        isActive={shouldHighlightSave}
+        aria-label="Save career changes"
+      >
+        Save
+      </SubtabActionButton>
+    </div>
+  );
 
   return (
     <SubtabContentFrame
       className="bg-card"
       subtabBar={(
-        <InlineSubtabs<CareerSubtab>
-          options={careerSubtabOptions}
-          activeId={activeCareerSubtab}
-          onChange={setActiveCareerSubtab}
-          ariaLabel="Career section tabs"
-          trailingContent={(
-            <div className="flex items-center gap-2">
-              <SubtabActionButton
-                onClick={isAdvancementEditMode ? cancelAdvancementEdit : beginAdvancementEdit}
-                aria-label={isAdvancementEditMode ? "Cancel advancement edits" : "Edit initial and advances"}
-              >
-                {isAdvancementEditMode ? "Cancel" : "Edit"}
-              </SubtabActionButton>
-              <SubtabActionButton
-                onClick={handleSaveCareerClick}
-                disabled={!hasPendingCareerChanges && !isAdvancementEditMode}
-                isActive={shouldHighlightSave}
-                aria-label="Save career changes"
-              >
-                Save
-              </SubtabActionButton>
-            </div>
-          )}
-        />
+        <>
+          <InlineSubtabs<CareerSubtab>
+            options={careerSubtabOptions}
+            activeId={activeCareerSubtab}
+            onChange={setActiveCareerSubtab}
+            ariaLabel="Career section tabs"
+            trailingContent={<div className="max-md:hidden">{renderAdvancementEditActions()}</div>}
+          />
+          <div className="flex justify-end border-t border-white/5 px-2 py-1 md:hidden">
+            {renderAdvancementEditActions()}
+          </div>
+        </>
       )}
     >
         <SheetDataSection
@@ -310,7 +317,9 @@ export function CareerTab({
                   <div className="wfrp-list-cell-strong text-center font-mono">
                     {pendingTotalXp}
                   </div>
-                  {xpAdjustActions}
+                  <div className="wfrp-list-cell-strong text-right font-mono">
+                    {pendingXpAdjustment > 0 ? `+${pendingXpAdjustment}` : "-"}
+                  </div>
                   <SheetDataDisclosureCell />
                 </>
               )}
@@ -321,7 +330,9 @@ export function CareerTab({
                   { label: "Current XP", value: currentXpDisplay },
                   { label: "Total XP", value: pendingTotalXp },
                 ]}
-              />
+              >
+                <div className={advanceActionFooterClass}>{xpAdjustActions}</div>
+              </SheetDataAccordionDetails>
             </SheetDataAccordionRow>
         </SheetDataSection>
 
@@ -353,13 +364,11 @@ export function CareerTab({
                         nextCareerAdvanceCost === null ||
                         pendingAvailableXp < nextCareerAdvanceCost
                       }
-                      className="wfrp-stepper-btn"
+                      className={advanceTextButtonClass}
                       aria-label={`Advance ${characterData.career} from rank ${rankRecord.rank}`}
                       title="Advance career"
                     >
-                      <span className="wfrp-stepper-btn__inner">
-                        <Plus size={12} />
-                      </span>
+                      Advance Career
                     </button>
                   ) : (
                     <span className="wfrp-list-cell text-right" aria-label="Read-only career rank">
@@ -416,7 +425,7 @@ export function CareerTab({
                           <div className="wfrp-list-cell-strong text-center font-mono">
                             {costDisplay}
                           </div>
-                          <div className="flex justify-end">{advanceAction}</div>
+                          <div className="wfrp-list-cell-strong text-right font-mono">-</div>
                           <SheetDataDisclosureCell />
                         </>
                       )}
@@ -450,6 +459,7 @@ export function CareerTab({
                             />
                           </div>
                         </div>
+                        <div className={advanceActionFooterClass}>{advanceAction}</div>
                       </SheetDataAccordionDetails>
                     </SheetDataAccordionRow>
                   );
@@ -561,36 +571,7 @@ export function CareerTab({
                           <div className="wfrp-list-cell-strong text-center font-mono">
                             {isAvailable ? nextCharacteristicCost : "-"}
                           </div>
-                          <div className="flex justify-end gap-1">
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                removePendingCharacteristicAdvance(item.key);
-                              }}
-                              disabled={item.pendingAdvances === 0 || !isAvailable}
-                              className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
-                              aria-label={`Decrease ${item.label}`}
-                            >
-                              <span className="wfrp-stepper-btn__inner">
-                                <Minus size={10} />
-                              </span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                purchaseCharacteristicAdvance(item.key);
-                              }}
-                              disabled={!isAvailable || pendingAvailableXp < nextCharacteristicCost}
-                              className="wfrp-stepper-btn focus-visible:ring-green-600/50"
-                              aria-label={`Increase ${item.label}`}
-                            >
-                              <span className="wfrp-stepper-btn__inner">
-                                <Plus size={12} />
-                              </span>
-                            </button>
-                          </div>
+                          <div className="wfrp-list-cell-strong text-right font-mono">-</div>
                           <SheetDataDisclosureCell />
                         </>
                       )}
@@ -603,7 +584,34 @@ export function CareerTab({
                           { label: "Advances", value: advancesDisplay },
                           { bordered: true, label: "Next cost", value: isAvailable ? nextCharacteristicCost : "-" },
                         ]}
-                      />
+                      >
+                        <div className={advanceActionFooterClass}>
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              removePendingCharacteristicAdvance(item.key);
+                            }}
+                            disabled={item.pendingAdvances === 0 || !isAvailable}
+                            className={`${advanceTextButtonClass} focus-visible:ring-wfrp-red/50`}
+                            aria-label={`Decrease ${item.label}`}
+                          >
+                            Remove Advance
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              purchaseCharacteristicAdvance(item.key);
+                            }}
+                            disabled={!isAvailable || pendingAvailableXp < nextCharacteristicCost}
+                            className={`${advanceTextButtonClass} focus-visible:ring-green-600/50`}
+                            aria-label={`Increase ${item.label}`}
+                          >
+                            Add Advance
+                          </button>
+                        </div>
+                      </SheetDataAccordionDetails>
                     </SheetDataAccordionRow>
                   );
                 })}
@@ -693,36 +701,7 @@ export function CareerTab({
                               <div className="wfrp-list-cell-strong text-center font-mono">
                                 {skillRow.isCareerSkill ? skillRow.nextSkillCost : "-"}
                               </div>
-                              <div className="flex justify-end gap-1">
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    removePendingSkillAdvance(skillRow.skillName);
-                                  }}
-                                  disabled={skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
-                                  className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
-                                  aria-label={`Decrease skill advances for ${skillRow.skillName}`}
-                                >
-                                  <span className="wfrp-stepper-btn__inner">
-                                    <Minus size={10} />
-                                  </span>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    purchaseSkillAdvance(skillRow.skillName);
-                                  }}
-                                  disabled={!canPurchase}
-                                  className="wfrp-stepper-btn focus-visible:ring-green-600/50"
-                                  aria-label={`Advance skill ${skillRow.skillName}`}
-                                >
-                                  <span className="wfrp-stepper-btn__inner">
-                                    <Plus size={12} />
-                                  </span>
-                                </button>
-                              </div>
+                              <div className="wfrp-list-cell-strong text-right font-mono">-</div>
                               <SheetDataDisclosureCell />
                               </>
                             )}
@@ -735,7 +714,34 @@ export function CareerTab({
                                 { label: "Advances", value: advancesDisplay },
                                 { bordered: true, label: "Next cost", value: skillRow.isCareerSkill ? skillRow.nextSkillCost : "-" },
                               ]}
-                            />
+                            >
+                              <div className={advanceActionFooterClass}>
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    removePendingSkillAdvance(skillRow.skillName);
+                                  }}
+                                  disabled={skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
+                                  className={`${advanceTextButtonClass} focus-visible:ring-wfrp-red/50`}
+                                  aria-label={`Decrease skill advances for ${skillRow.skillName}`}
+                                >
+                                  Remove Advance
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.preventDefault();
+                                    purchaseSkillAdvance(skillRow.skillName);
+                                  }}
+                                  disabled={!canPurchase}
+                                  className={`${advanceTextButtonClass} focus-visible:ring-green-600/50`}
+                                  aria-label={`Advance skill ${skillRow.skillName}`}
+                                >
+                                  Add Advance
+                                </button>
+                              </div>
+                            </SheetDataAccordionDetails>
                           </SheetDataAccordionRow>
                         );
                       })
@@ -799,36 +805,7 @@ export function CareerTab({
                         <div className="wfrp-list-cell-strong text-center font-mono">
                           {isCareerTalent ? nextTalentCost : "-"}
                         </div>
-                        <div className="flex justify-end gap-1">
-                          <button
-                            type="button"
-                            onClick={(event) => {
-                              event.preventDefault();
-                              removePendingTalentPurchase(talentName);
-                            }}
-                            disabled={pendingTakenCount === 0}
-                            className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
-                            aria-label={`Decrease talent purchases for ${talentName}`}
-                          >
-                            <span className="wfrp-stepper-btn__inner">
-                              <Minus size={10} />
-                            </span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(event) => {
-                              event.preventDefault();
-                              purchaseTalent(talentName);
-                            }}
-                            disabled={!canPurchase}
-                            className="wfrp-stepper-btn focus-visible:ring-green-600/50"
-                            aria-label={`Purchase talent ${talentName}`}
-                          >
-                            <span className="wfrp-stepper-btn__inner">
-                              <Plus size={12} />
-                            </span>
-                          </button>
-                        </div>
+                        <div className="wfrp-list-cell-strong text-right font-mono">-</div>
                         <SheetDataDisclosureCell />
                         </>
                       )}
@@ -841,7 +818,34 @@ export function CareerTab({
                           { label: "Pending", value: pendingTakenCount },
                           { bordered: true, label: "Next cost", value: isCareerTalent ? nextTalentCost : "-" },
                         ]}
-                      />
+                      >
+                        <div className={advanceActionFooterClass}>
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              removePendingTalentPurchase(talentName);
+                            }}
+                            disabled={pendingTakenCount === 0}
+                            className={`${advanceTextButtonClass} focus-visible:ring-wfrp-red/50`}
+                            aria-label={`Decrease talent purchases for ${talentName}`}
+                          >
+                            Remove Advance
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              purchaseTalent(talentName);
+                            }}
+                            disabled={!canPurchase}
+                            className={`${advanceTextButtonClass} focus-visible:ring-green-600/50`}
+                            aria-label={`Purchase talent ${talentName}`}
+                          >
+                            Add Advance
+                          </button>
+                        </div>
+                      </SheetDataAccordionDetails>
                     </SheetDataAccordionRow>
                   );
                 })}
