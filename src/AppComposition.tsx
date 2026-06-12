@@ -636,6 +636,41 @@ export function AppComposition() {
     }));
   };
 
+  const addTalentForFree = (talentName: string) => {
+    const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
+    if (!talentDefinition) {
+      return;
+    }
+
+    setCharacterTalents((prev) => [
+      ...prev,
+      {
+        id: talentDefinition.id,
+        name: talentDefinition.name,
+        description: talentDefinition.description,
+        max: talentDefinition.max,
+        tests: talentDefinition.tests,
+        effects: talentDefinition.effects,
+      },
+    ]);
+  };
+
+  const removeTalent = (talentName: string) => {
+    if ((pendingTalentPurchases[talentName] ?? 0) > 0) {
+      removePendingTalentPurchase(talentName);
+      return;
+    }
+
+    setCharacterTalents((prev) => {
+      const removeIndex = prev.findLastIndex((talent) => talent.name === talentName);
+      if (removeIndex < 0) {
+        return prev;
+      }
+
+      return prev.filter((_, index) => index !== removeIndex);
+    });
+  };
+
   const increasePendingCareerRank = () => {
     if (!nextCareerRankRecord) return;
     if (nextCareerAdvanceCost === null || pendingAvailableXp < nextCareerAdvanceCost) return;
@@ -1232,12 +1267,19 @@ export function AppComposition() {
                 onClose={() => setIsSpellShopOpen(false)}
               />
             ) : null}
-            {isTalentSidebarOpen ? (
-              <TalentSidebar
-                isOpen={isTalentSidebarOpen}
-                onClose={() => setIsTalentSidebarOpen(false)}
-              />
-            ) : null}
+            <TalentSidebar
+              addTalentForFree={addTalentForFree}
+              characterTalents={characterTalents}
+              getTalentMaxDisplay={getTalentMaxDisplay}
+              getTalentPurchaseCost={getTalentPurchaseCost}
+              isOpen={isTalentSidebarOpen}
+              pendingAvailableXp={pendingAvailableXp}
+              pendingTalentPurchases={pendingTalentPurchases}
+              purchaseTalent={purchaseTalent}
+              removeTalent={removeTalent}
+              talents={ruleset.talents}
+              onClose={() => setIsTalentSidebarOpen(false)}
+            />
           </Suspense>
         </>
       )}

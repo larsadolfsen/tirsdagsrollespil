@@ -1,5 +1,5 @@
 import type { ReactNode, RefObject } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/src/lib/utils";
@@ -18,6 +18,7 @@ type AppSidebarProps = {
   isOpen: boolean;
   motionKey: string;
   onClose: () => void;
+  side?: "left" | "right";
   sidebarRef?: RefObject<HTMLElement | null>;
   title: ReactNode;
   titleId?: string;
@@ -43,6 +44,7 @@ export function AppSidebar({
   isOpen,
   motionKey,
   onClose,
+  side = "right",
   sidebarRef,
   title,
   titleId,
@@ -50,8 +52,14 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const internalSidebarRef = useRef<HTMLElement | null>(null);
   const resolvedSidebarRef = sidebarRef ?? internalSidebarRef;
+  const [usesModalBehavior, setUsesModalBehavior] = useState(false);
+  const sideClassName =
+    side === "left"
+      ? "left-0 border-r md:order-first"
+      : "right-0 border-l";
+  const closedOffset = side === "left" ? "-100%" : "100%";
 
-  useFocusTrap(resolvedSidebarRef, isOpen && trapFocus, onClose);
+  useFocusTrap(resolvedSidebarRef, isOpen && trapFocus && usesModalBehavior, onClose);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -59,7 +67,9 @@ export function AppSidebar({
     const mediaQuery = window.matchMedia("(max-width: 767px)");
     const previousOverflow = document.body.style.overflow;
     const updateBodyOverflow = () => {
-      document.body.style.overflow = mediaQuery.matches ? "hidden" : previousOverflow;
+      const isMobileViewport = mediaQuery.matches;
+      setUsesModalBehavior(isMobileViewport);
+      document.body.style.overflow = isMobileViewport ? "hidden" : previousOverflow;
     };
 
     updateBodyOverflow();
@@ -68,19 +78,20 @@ export function AppSidebar({
     const handlePointerDown = (event: PointerEvent) => {
       if (
         closeOnOutsidePointerDown &&
-        !mediaQuery.matches &&
+        mediaQuery.matches &&
         !resolvedSidebarRef.current?.contains(event.target as Node)
       ) {
         onClose();
       }
     };
 
-    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("pointerdown", handlePointerDown, { capture: true });
 
     return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("pointerdown", handlePointerDown, { capture: true });
       mediaQuery.removeEventListener("change", updateBodyOverflow);
       document.body.style.overflow = previousOverflow;
+      setUsesModalBehavior(false);
     };
   }, [closeOnOutsidePointerDown, isOpen, onClose, resolvedSidebarRef]);
 
@@ -103,16 +114,17 @@ export function AppSidebar({
           <motion.aside
             ref={resolvedSidebarRef}
             key={motionKey}
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: "min(400px, calc(100vw - 48px))" }}
-            exit={{ opacity: 0, width: 0 }}
+            initial={{ opacity: 0, x: closedOffset }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: closedOffset }}
             transition={{ type: "spring", damping: 28, stiffness: 240 }}
             className={cn(
-              "fixed right-0 top-0 z-50 flex h-full min-h-screen max-w-[400px] flex-col overflow-hidden border-l border-wfrp-border bg-[#202020] shadow-2xl shadow-black/60 md:relative md:right-auto md:top-auto md:z-auto md:shrink-0",
+              "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[#202020] shadow-2xl shadow-black/60 md:relative md:left-auto md:right-auto md:top-auto md:z-auto md:h-auto md:min-h-[calc(100vh-0.25rem)] md:shrink-0 md:self-stretch",
+              sideClassName,
               className,
             )}
             role="dialog"
-            aria-modal="true"
+            aria-modal={usesModalBehavior}
             aria-labelledby={ariaLabelledBy ?? titleId}
           >
             <header className="flex min-h-16 shrink-0 items-center justify-between gap-4 border-b border-wfrp-border bg-[#242424] px-4 py-3">
