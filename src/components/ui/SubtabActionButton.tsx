@@ -32,7 +32,9 @@ export function SubtabActionButton({
       <span
         className={cn(
           "inline-flex h-6 items-center justify-center whitespace-nowrap rounded px-3 text-[9px] font-bold uppercase tracking-widest transition-all group-active:scale-95",
-          isActive ? inlineSubtabButtonActiveClassName : inlineSubtabButtonInactiveClassName,
+          isActive
+            ? `${inlineSubtabButtonActiveClassName} group-hover:bg-[#d1ad65]`
+            : inlineSubtabButtonInactiveClassName,
         )}
       >
         {children}
