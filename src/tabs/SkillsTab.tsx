@@ -1,4 +1,4 @@
-import { InlineSubtabs, SubtabContentFrame } from "../components/ui";
+import { InlineSubtabs, SubtabActionButton, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -40,27 +40,42 @@ export function SkillsTab({
   visibleSkillRows,
   attributes,
   handleRoll,
+  onOpenAdvance,
 }: {
   activeSkillSubtab: SkillSubtab;
   setActiveSkillSubtab: (subtab: SkillSubtab) => void;
   visibleSkillRows: SkillRow[];
   attributes: Record<string, number>;
   handleRoll: (characteristic: { key: string; label: string }) => void;
+  onOpenAdvance: () => void;
   openSkillInfo?: (skillName: string) => void;
 }) {
   return (
     <SubtabContentFrame
+      contentClassName="max-md:pb-24"
       subtabBar={(
-        <InlineSubtabs<SkillSubtab>
-          options={[
-            { id: "all", label: "All" },
-            { id: "trained", label: "Trained" },
-            { id: "advanced", label: "Advanced" },
-            { id: "basic", label: "Basic" },
-          ]}
-          activeId={activeSkillSubtab}
-          onChange={setActiveSkillSubtab}
-        />
+        <div className="flex w-full items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <InlineSubtabs<SkillSubtab>
+              options={[
+                { id: "all", label: "All" },
+                { id: "trained", label: "Trained" },
+                { id: "advanced", label: "Advanced" },
+                { id: "basic", label: "Basic" },
+              ]}
+              activeId={activeSkillSubtab}
+              onChange={setActiveSkillSubtab}
+            />
+          </div>
+          <SubtabActionButton
+            onClick={onOpenAdvance}
+            hideOnMobile
+            aria-label="Open Advance tab"
+            className="mr-2 sm:mr-3 lg:mr-4"
+          >
+            Advance
+          </SubtabActionButton>
+        </div>
       )}
     >
       <SheetDataSection

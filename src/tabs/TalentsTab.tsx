@@ -1,4 +1,6 @@
-import { SubtabContentFrame } from "../components/ui";
+import { useState } from "react";
+import { SubtabActionButton, SubtabContentFrame } from "../components/ui";
+import { InlineSubtabs } from "../components/ui/InlineSubtabs";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -11,20 +13,67 @@ import type { ResolvedCharacterTalent } from "../data/characters/resolved";
 type TalentEffect = NonNullable<ResolvedCharacterTalent["effects"]>[number];
 
 const talentGridClass = "grid-cols-[minmax(0,1fr)_72px_48px] md:grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)_48px]";
+type TalentSourceSubtab = "all" | "career" | "origin" | "other";
+type CharacterTalentRow = { talent: ResolvedCharacterTalent; count: number };
+
+const talentSourceSubtabOptions: Array<{ id: TalentSourceSubtab; label: string }> = [
+  { id: "all", label: "All" },
+  { id: "career", label: "Career" },
+  { id: "origin", label: "Background" },
+  { id: "other", label: "Other" },
+];
+
+const emptyTalentTitleBySource: Record<TalentSourceSubtab, string> = {
+  all: "No Talents",
+  career: "No Career Talents",
+  origin: "No Background Talents",
+  other: "No Other Talents",
+};
+
+const emptyTalentMessageBySource: Record<TalentSourceSubtab, string> = {
+  all: "Talents bought during play will appear here.",
+  career: "Talents from your career path will appear here.",
+  origin: "Talents from your character background will appear here.",
+  other: "Talents outside your career and background will appear here.",
+};
 
 export function TalentsTab({
-  characterTalentRows,
+  talentRowsBySource,
   openTalentInfo,
   getTalentMaxDisplay,
   formatTalentEffect,
+  onOpenAdvance,
 }: {
-  characterTalentRows: Array<{ talent: ResolvedCharacterTalent; count: number }>;
+  talentRowsBySource: Record<TalentSourceSubtab, CharacterTalentRow[]>;
   openTalentInfo: (talentName: string) => void;
   getTalentMaxDisplay: (max: string) => string | number;
   formatTalentEffect: (effect: TalentEffect) => string;
+  onOpenAdvance: () => void;
 }) {
+  const [activeTalentSourceSubtab, setActiveTalentSourceSubtab] = useState<TalentSourceSubtab>("all");
+  const characterTalentRows = talentRowsBySource[activeTalentSourceSubtab];
+
   return (
-    <SubtabContentFrame>
+    <SubtabContentFrame
+      contentClassName="max-md:pb-24"
+      subtabBar={(
+        <InlineSubtabs
+          options={talentSourceSubtabOptions}
+          activeId={activeTalentSourceSubtab}
+          onChange={setActiveTalentSourceSubtab}
+          ariaLabel="Talent source tabs"
+          trailingContent={(
+            <SubtabActionButton
+              onClick={onOpenAdvance}
+              hideOnMobile
+              aria-label="Open Add tab"
+            >
+              Add
+            </SubtabActionButton>
+          )}
+        />
+      )}
+    >
       {characterTalentRows.length > 0 ? (
         <SheetDataSection
           gridClassName={talentGridClass}
@@ -82,7 +131,9 @@ export function TalentsTab({
             })}
         </SheetDataSection>
       ) : (
-        <SheetEmptyState title="No Talents">Talents bought during play will appear here.</SheetEmptyState>
+        <SheetEmptyState title={emptyTalentTitleBySource[activeTalentSourceSubtab]}>
+          {emptyTalentMessageBySource[activeTalentSourceSubtab]}
+        </SheetEmptyState>
       )}
     </SubtabContentFrame>
   );

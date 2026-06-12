@@ -96,7 +96,7 @@ export function CharacterResourcesCards({
           {coinRows.map(([coinKey, coinName, coinClassName]) => (
             <div
               key={coinKey}
-              className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto_auto] items-center gap-1.5"
+              className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto_auto] items-center gap-0"
             >
               {coinAdjustments.slice(0, 2).map((amount) => (
                 <CoinStepper

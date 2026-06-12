@@ -44,7 +44,7 @@ export function ResourceCounterBar({
   const counterClassName = `text-[10px] font-bold ${counterToneClassName}`;
 
   return (
-    <div className={className ?? "flex items-center gap-1.5 sm:gap-2"}>
+    <div className={className ?? "flex items-center gap-0"}>
       <button
         onClick={() => onAdjust(-1)}
         className={`wfrp-stepper-btn ${minusRingClassName}`}

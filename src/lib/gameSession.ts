@@ -45,6 +45,7 @@ export interface GameSession {
   ruleset: Ruleset;
   rulesIndex: RulesIndex;
   progress: CharacterProgressData | null;
+  initialTalentIds: string[];
   resourceCaps: {
     corruption: number;
     fate: number;
@@ -420,6 +421,7 @@ export function loadGameSession(characterId?: string): GameSession {
     ruleset,
     rulesIndex,
     progress,
+    initialTalentIds: baseCharacter.talents.map((talent) => talent.id),
     resourceCaps: {
       corruption: character.maxCorruption,
       fate: baseCharacter.fate,

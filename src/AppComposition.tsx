@@ -43,6 +43,7 @@ import {
 } from "./tabs/talents/talentUtils";
 import type {
   ResolvedCharacterSkill,
+  ResolvedCharacterTalent,
 } from "./data/characters/resolved";
 import { listCharacters } from "./data/repository";
 import {
@@ -123,6 +124,7 @@ export function AppComposition() {
     rulesIndex,
     resourceCaps,
     careerAdvancementData,
+    initialTalentIds,
     woundsCurrent,
     setWoundsCurrent,
     corruptionCurrent,
@@ -321,6 +323,26 @@ export function AppComposition() {
     ...characterTalents.map((talent) => talent.name),
   ])];
   const characterTalentRows = getCharacterTalentRows(characterTalents);
+  const talentRowsBySource = useMemo(() => {
+    const careerTalentNames = new Set(careerAdvancementData.talents);
+    const originTalentIds = new Set(initialTalentIds);
+    const getFilteredRows = (predicate: (talent: ResolvedCharacterTalent) => boolean) =>
+      getCharacterTalentRows(characterTalents.filter(predicate));
+
+    return {
+      all: characterTalentRows,
+      career: getFilteredRows((talent) => careerTalentNames.has(talent.name)),
+      origin: getFilteredRows((talent) => originTalentIds.has(talent.id) && !careerTalentNames.has(talent.name)),
+      other: getFilteredRows(
+        (talent) => !careerTalentNames.has(talent.name) && !originTalentIds.has(talent.id),
+      ),
+    };
+  }, [
+    careerAdvancementData.talents,
+    characterTalentRows,
+    characterTalents,
+    initialTalentIds,
+  ]);
   const {
     attributes,
     armourTotals,
@@ -1035,7 +1057,17 @@ export function AppComposition() {
   };
 
   const mobileAddAction =
-    activeMobileMainView === "inventory"
+    activeMobileMainView === "skills"
+      ? {
+          label: "Open Advance tab",
+          onClick: openMobileAdvanceView,
+        }
+      : activeMobileMainView === "features"
+        ? {
+            label: "Open Advance tab",
+            onClick: openMobileAdvanceView,
+          }
+      : activeMobileMainView === "inventory"
       ? {
           label: "Add item",
           onClick: () => {
@@ -1326,6 +1358,7 @@ export function AppComposition() {
                             visibleSkillRows={visibleSkillRows}
                             attributes={attributes}
                             handleRoll={handleRoll}
+                            onOpenAdvance={openAdvanceView}
                             openSkillInfo={(skillName) => {
                               setActiveInfo({ type: 'skill', name: skillName });
                               setRollState(prev => ({ ...prev, characteristic: null }));
@@ -1415,10 +1448,11 @@ export function AppComposition() {
                     
                       {activeMainTab === 'features' && (
                         <TalentsTab
-                        characterTalentRows={characterTalentRows}
+                        talentRowsBySource={talentRowsBySource}
                         openTalentInfo={openTalentInfo}
                         getTalentMaxDisplay={getTalentMaxDisplay}
                         formatTalentEffect={formatTalentEffect}
+                        onOpenAdvance={openAdvanceView}
                       />
                       )}
 
