@@ -41,12 +41,12 @@ export function TalentsTab({
   talentRowsBySource,
   getTalentMaxDisplay,
   formatTalentEffect,
-  onOpenAdvance,
+  onOpenTalentSidebar,
 }: {
   talentRowsBySource: Record<TalentSourceSubtab, CharacterTalentRow[]>;
   getTalentMaxDisplay: (max: string) => string | number;
   formatTalentEffect: (effect: TalentEffect) => string;
-  onOpenAdvance: () => void;
+  onOpenTalentSidebar: () => void;
 }) {
   const [activeTalentSourceSubtab, setActiveTalentSourceSubtab] = useState<TalentSourceSubtab>("all");
   const characterTalentRows = talentRowsBySource[activeTalentSourceSubtab];
@@ -62,9 +62,9 @@ export function TalentsTab({
           ariaLabel="Talent source tabs"
           trailingContent={(
             <SubtabActionButton
-              onClick={onOpenAdvance}
+              onClick={onOpenTalentSidebar}
               hideOnMobile
-              aria-label="Open Add tab"
+              aria-label="Open talent sidebar"
             >
               Add
             </SubtabActionButton>

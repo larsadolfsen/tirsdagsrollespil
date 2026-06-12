@@ -70,6 +70,9 @@ const ShopSidebar = lazy(() =>
 const SpellShopSidebar = lazy(() =>
   import("./components/SpellShopSidebar").then((module) => ({ default: module.SpellShopSidebar })),
 );
+const TalentSidebar = lazy(() =>
+  import("./components/sidebar").then((module) => ({ default: module.TalentSidebar })),
+);
 const DiceLogSidebar = lazy(() =>
   import("./features/dice/DiceLogSidebar").then((module) => ({ default: module.DiceLogSidebar })),
 );
@@ -161,6 +164,7 @@ export function AppComposition() {
     setNotes,
   } = useGameSessionContext();
   const [pendingXpAdjustment, setPendingXpAdjustment] = useState(0);
+  const [isTalentSidebarOpen, setIsTalentSidebarOpen] = useState(false);
   const isDesktopLayout = useIsDesktopLayout();
   const availableCharacters = useMemo(() => listCharacters(), []);
   const {
@@ -1035,6 +1039,20 @@ export function AppComposition() {
     setIsMobilePortraitMenuOpen(false);
   };
 
+  const openTalentSidebar = () => {
+    setActiveInfo(null);
+    setIsShopOpen(false);
+    setIsSpellShopOpen(false);
+    setIsDiceLogOpen(false);
+    setRollState((prev) => ({ ...prev, characteristic: null }));
+    setIsTalentSidebarOpen(true);
+  };
+
+  const openMobileTalentSidebar = () => {
+    openTalentSidebar();
+    setIsMobilePortraitMenuOpen(false);
+  };
+
   const openMobileCharacterActions = () => {
     setIsMobileNavigationOpen(false);
     setIsMobileCharacterListOpen(false);
@@ -1064,8 +1082,8 @@ export function AppComposition() {
         }
       : activeMobileMainView === "features"
         ? {
-            label: "Open Advance tab",
-            onClick: openMobileAdvanceView,
+            label: "Open talent sidebar",
+            onClick: openMobileTalentSidebar,
           }
       : activeMobileMainView === "inventory"
       ? {
@@ -1212,6 +1230,12 @@ export function AppComposition() {
                 isPrayerMode={isPrayerCaster}
                 onAddSpell={handleAddSpell}
                 onClose={() => setIsSpellShopOpen(false)}
+              />
+            ) : null}
+            {isTalentSidebarOpen ? (
+              <TalentSidebar
+                isOpen={isTalentSidebarOpen}
+                onClose={() => setIsTalentSidebarOpen(false)}
               />
             ) : null}
           </Suspense>
@@ -1442,7 +1466,7 @@ export function AppComposition() {
                         talentRowsBySource={talentRowsBySource}
                         getTalentMaxDisplay={getTalentMaxDisplay}
                         formatTalentEffect={formatTalentEffect}
-                        onOpenAdvance={openAdvanceView}
+                        onOpenTalentSidebar={openTalentSidebar}
                       />
                       )}
 
