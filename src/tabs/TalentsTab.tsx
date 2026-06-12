@@ -39,13 +39,11 @@ const emptyTalentMessageBySource: Record<TalentSourceSubtab, string> = {
 
 export function TalentsTab({
   talentRowsBySource,
-  openTalentInfo,
   getTalentMaxDisplay,
   formatTalentEffect,
   onOpenAdvance,
 }: {
   talentRowsBySource: Record<TalentSourceSubtab, CharacterTalentRow[]>;
-  openTalentInfo: (talentName: string) => void;
   getTalentMaxDisplay: (max: string) => string | number;
   formatTalentEffect: (effect: TalentEffect) => string;
   onOpenAdvance: () => void;
@@ -87,7 +85,7 @@ export function TalentsTab({
         >
             {characterTalentRows.map(({ talent, count }) => {
               const takenDisplay = `${count}/${getTalentMaxDisplay(talent.max)}`;
-              const ruleText = talent.effects?.length
+              const summaryRuleText = talent.effects?.length
                 ? talent.effects.map(formatTalentEffect).join("; ")
                 : talent.description;
 
@@ -98,32 +96,25 @@ export function TalentsTab({
                   contentClassName="px-3 pb-4 pt-1 md:col-start-1 md:col-end-5 md:px-4 md:pb-4"
                   summary={(
                     <>
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          openTalentInfo(talent.name);
-                        }}
-                        className="wfrp-skill-link wfrp-no-roll-cell min-w-0 truncate text-left text-gray-200"
-                        aria-label={`Open ${talent.name} talent rule`}
-                      >
+                      <span className="wfrp-no-roll-cell min-w-0 truncate text-left font-semibold text-gray-200">
                         {talent.name}
-                      </button>
+                      </span>
                       <div className="wfrp-list-cell-strong text-center font-mono">
                         {takenDisplay}
                       </div>
                       <div className="hidden min-w-0 truncate text-xs font-semibold leading-relaxed text-wfrp-muted-text md:block">
-                        {ruleText}
+                        {summaryRuleText}
                       </div>
                       <SheetDataDisclosureCell />
                     </>
                   )}
                 >
                   <SheetDataAccordionDetails
-                    description={ruleText}
+                    description={talent.description}
                     rows={[
                       { label: "Taken", value: count },
                       { label: "Maximum", value: getTalentMaxDisplay(talent.max) },
+                      ...(talent.tests ? [{ label: "Tests", value: talent.tests }] : []),
                     ]}
                   />
                 </SheetDataAccordionRow>

@@ -1191,16 +1191,7 @@ export function AppComposition() {
               <InfoSidebar
                 activeInfo={activeInfo}
                 setActiveInfo={setActiveInfo}
-                characterData={characterData}
-                characterSkills={characterSkills}
-                advancementTalentNames={advancementTalentNames}
-                ruleset={ruleset}
-                rulesIndex={rulesIndex}
                 getCharacteristicDescription={getCharacteristicDescription}
-                formatSpellDuration={formatSpellDuration}
-                skillListRefs={skillListRefs}
-                propertyListRefs={propertyListRefs}
-                talentListRefs={talentListRefs}
               />
             ) : null}
             {isShopOpen ? (
@@ -1449,7 +1440,6 @@ export function AppComposition() {
                       {activeMainTab === 'features' && (
                         <TalentsTab
                         talentRowsBySource={talentRowsBySource}
-                        openTalentInfo={openTalentInfo}
                         getTalentMaxDisplay={getTalentMaxDisplay}
                         formatTalentEffect={formatTalentEffect}
                         onOpenAdvance={openAdvanceView}
