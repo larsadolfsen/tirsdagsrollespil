@@ -113,7 +113,7 @@ export function SidebarItemList({
                   </div>
                 ) : null}
                 {item.actions?.length ? (
-                  <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="mt-0 flex flex-wrap gap-2">
                     {item.actions.map((action) => (
                       <SubtabActionButton
                         key={String(action.label)}
