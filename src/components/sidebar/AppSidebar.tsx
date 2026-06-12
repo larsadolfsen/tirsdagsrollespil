@@ -1,9 +1,9 @@
 import type { ReactNode, RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/src/lib/utils";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { SubtabActionButton } from "../ui/SubtabActionButton";
 
 type AppSidebarProps = {
   ariaLabelledBy?: string;
@@ -138,14 +138,9 @@ export function AppSidebar({
                   {title}
                 </h2>
               </div>
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded border border-wfrp-border bg-black/15 text-wfrp-muted-text transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                aria-label={closeLabel}
-              >
-                <X size={18} aria-hidden="true" />
-              </button>
+              <SubtabActionButton onClick={onClose} aria-label={closeLabel}>
+                Close
+              </SubtabActionButton>
             </header>
 
             <div

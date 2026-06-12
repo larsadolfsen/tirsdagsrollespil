@@ -625,15 +625,22 @@ export function AppComposition() {
     }
 
     const baseTakenCount = characterTalents.filter((talent) => talent.name === talentName).length;
-    const pendingTakenCount = pendingTalentPurchases[talentName] ?? 0;
-    const nextCost = getTalentPurchaseCost(baseTakenCount + pendingTakenCount);
+    const nextCost = getTalentPurchaseCost(baseTakenCount);
 
     if (pendingAvailableXp < nextCost) return;
 
-    setPendingTalentPurchases((prev) => ({
+    setCharacterTalents((prev) => [
       ...prev,
-      [talentName]: (prev[talentName] ?? 0) + 1,
-    }));
+      {
+        id: talentDefinition.id,
+        name: talentDefinition.name,
+        description: talentDefinition.description,
+        max: talentDefinition.max,
+        tests: talentDefinition.tests,
+        effects: talentDefinition.effects,
+      },
+    ]);
+    setXpCurrent((prev) => Math.max(0, prev - nextCost));
   };
 
   const addTalentForFree = (talentName: string) => {

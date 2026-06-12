@@ -90,7 +90,12 @@ export function SidebarItemList({
               />
             </button>
             {isOpen ? (
-              <div className="px-4 pb-4 pt-0 text-xs font-semibold leading-relaxed text-wfrp-muted-text">
+              <div
+                className={cn(
+                  "px-4 pt-0 text-xs font-semibold leading-relaxed text-wfrp-muted-text",
+                  item.actions?.length ? "pb-0" : "pb-4",
+                )}
+              >
                 <div>
                   {item.description || <span className="italic">No description available.</span>}
                 </div>
