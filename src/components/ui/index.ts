@@ -5,6 +5,9 @@ export { PanelSectionHeader } from "./PanelSectionHeader";
 export { ScrollableTabStrip } from "./ScrollableTabStrip";
 export { SubtabActionButton } from "./SubtabActionButton";
 export { SubtabContentFrame } from "./SubtabContentFrame";
+export { WfrpSearchField } from "./WfrpSearchField";
+export { WfrpSuggestionChips } from "./WfrpSuggestionChips";
+export type { WfrpSuggestionChipOption } from "./WfrpSuggestionChips";
 
 export { Badge } from "./badge";
 export type { BadgeProps } from "./badge";

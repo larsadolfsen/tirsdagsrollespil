@@ -9,7 +9,7 @@ export const mainTabButtonInactiveClassName = "text-[var(--color-wfrp-muted-text
 export const mainTabUnderlineClassName = "absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-gold/70";
 
 export const inlineSubtabButtonBaseClassName =
-  "group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 text-[9px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50";
+  "group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 text-[11px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50";
 
 export const inlineSubtabButtonActiveClassName = "bg-wfrp-gold text-primary-foreground";
 export const inlineSubtabButtonInactiveClassName = "bg-[#242424] text-[var(--color-wfrp-muted-text)]";

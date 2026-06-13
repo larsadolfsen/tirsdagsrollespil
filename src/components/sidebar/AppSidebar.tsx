@@ -150,7 +150,11 @@ export function AppSidebar({
                   {title}
                 </h2>
               </div>
-              <SubtabActionButton onClick={onClose} aria-label={closeLabel}>
+              <SubtabActionButton
+                className="[&_span]:bg-[#303030] [&_span]:text-gray-200 hover:[&_span]:bg-[#3a3a3a] hover:[&_span]:text-white"
+                onClick={onClose}
+                aria-label={closeLabel}
+              >
                 Close
               </SubtabActionButton>
             </header>
