@@ -4,8 +4,8 @@ import type { ResolvedCharacterTalent } from "../../data/characters/resolved";
 import type { TalentDefinition } from "../../types";
 
 export function TalentSidebar({
-  addTalentForFree,
   characterTalents,
+  careerTalentNames,
   getTalentMaxDisplay,
   getTalentPurchaseCost,
   isOpen,
@@ -13,11 +13,10 @@ export function TalentSidebar({
   pendingAvailableXp,
   pendingTalentPurchases,
   purchaseTalent,
-  removeTalent,
   talents,
 }: {
-  addTalentForFree: (talentName: string) => void;
   characterTalents: ResolvedCharacterTalent[];
+  careerTalentNames: string[];
   getTalentMaxDisplay: (max: string) => string | number;
   getTalentPurchaseCost: (currentTimesTaken: number) => number;
   isOpen: boolean;
@@ -25,35 +24,29 @@ export function TalentSidebar({
   pendingAvailableXp: number;
   pendingTalentPurchases: Record<string, number>;
   purchaseTalent: (talentName: string) => void;
-  removeTalent: (talentName: string) => void;
   talents: TalentDefinition[];
 }) {
   const ownedTalentNames = new Set(characterTalents.map((talent) => talent.name));
+  const careerTalentNameSet = new Set(careerTalentNames);
   const talentItems = talents
     .map((talent) => {
       const baseTakenCount = characterTalents.filter((entry) => entry.name === talent.name).length;
       const pendingTakenCount = pendingTalentPurchases[talent.name] ?? 0;
       const totalTakenCount = baseTakenCount + pendingTakenCount;
       const nextCost = getTalentPurchaseCost(baseTakenCount + pendingTakenCount);
+      const isCareerTalent = careerTalentNameSet.has(talent.name);
       const maxDisplay = getTalentMaxDisplay(talent.max);
       const numericMax = typeof maxDisplay === "number" ? maxDisplay : Number.parseInt(String(maxDisplay), 10);
       const canGainTalent = Number.isFinite(numericMax) ? totalTakenCount < numericMax : true;
+      const canPurchase = canGainTalent && isCareerTalent && pendingAvailableXp >= nextCost;
 
       return {
         actions: [
-          ...(canGainTalent && pendingAvailableXp >= nextCost ? [{
-            disabled: pendingAvailableXp < nextCost,
-            isActive: true,
+          ...(canGainTalent ? [{
+            disabled: !canPurchase,
+            isActive: canPurchase,
             label: `Buy for ${nextCost} XP`,
             onClick: () => purchaseTalent(talent.name),
-          }] : []),
-          ...(canGainTalent ? [{
-            label: "Add for free",
-            onClick: () => addTalentForFree(talent.name),
-          }] : []),
-          ...(totalTakenCount > 0 ? [{
-            label: "Remove",
-            onClick: () => removeTalent(talent.name),
           }] : []),
         ],
         description: talent.description,
@@ -73,6 +66,7 @@ export function TalentSidebar({
       isOpen={isOpen}
       motionKey="talent-sidebar"
       onClose={onClose}
+      overlayUntil="desktop"
       side="right"
       title="Add Talent"
       titleId="talent-sidebar-title"

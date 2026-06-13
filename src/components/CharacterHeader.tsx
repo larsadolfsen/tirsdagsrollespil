@@ -187,7 +187,7 @@ export function CharacterHeader({
           <button
             type="button"
             onClick={() => portraitInputRef.current?.click()}
-            className="hidden h-10 w-10 cursor-pointer overflow-hidden rounded-full border border-wfrp-gold p-0.5 shadow-inner transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:block sm:h-12 sm:w-12"
+            className="wfrp-character-portrait-button hidden h-10 w-10 sm:block sm:h-12 sm:w-12"
             aria-label="Upload character portrait"
             title={portraitError ?? "Upload character portrait"}
           >
@@ -197,30 +197,30 @@ export function CharacterHeader({
                 alt="Portrait"
                 width={48}
                 height={48}
-                className="h-full w-full object-cover grayscale brightness-90"
+                className="wfrp-character-portrait-image"
               />
             ) : (
               <span
                 aria-hidden="true"
-                className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#5a4a2d,#191919_72%)] text-sm font-black text-wfrp-gold"
+                className="wfrp-character-portrait-fallback text-sm"
               >
                 {characterData.name.charAt(0)}
               </span>
             )}
           </button>
-          <div className="h-10 w-10 overflow-hidden rounded-full border border-wfrp-gold p-0.5 shadow-inner sm:hidden">
+          <div className="wfrp-character-portrait-control h-10 w-10 sm:hidden">
             {portraitSrc ? (
               <img
                 src={portraitSrc}
                 alt="Portrait"
                 width={40}
                 height={40}
-                className="h-full w-full object-cover grayscale brightness-90"
+                className="wfrp-character-portrait-image"
               />
             ) : (
               <span
                 aria-hidden="true"
-                className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#5a4a2d,#191919_72%)] text-xs font-black text-wfrp-gold"
+                className="wfrp-character-portrait-fallback text-xs"
               >
                 {characterData.name.charAt(0)}
               </span>

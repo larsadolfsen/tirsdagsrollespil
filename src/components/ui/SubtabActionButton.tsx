@@ -23,7 +23,7 @@ export function SubtabActionButton({
     <button
       type={type}
       className={cn(
-        "group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 font-black tracking-[0.12em] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed disabled:opacity-40",
+        "group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 font-black tracking-[0.12em] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed",
         hideOnMobile && "max-md:hidden",
         className,
       )}

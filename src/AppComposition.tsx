@@ -4,6 +4,7 @@
  */
 
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback } from "react";
 import type { ReactNode } from "react";
 import {
   Dice5,
@@ -13,6 +14,7 @@ import { ArmourCard } from "./components/ArmourCard";
 import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
 import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
 import { CharacteristicsView } from "./components/CharacteristicsView";
+import { LandingPage } from "./components/LandingPage";
 import { MobileMainViewSwipeProvider } from "./components/MobileMainViewSwipeContext";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
@@ -51,6 +53,7 @@ import {
   getCharacterSkillKey,
 } from "./lib/gameSession";
 import { useCampaignRouteSync } from "./lib/useCampaignRouteSync";
+import { buildCampaignCharacterPath, parseCampaignCharacterPath } from "./lib/campaignRoutes";
 import { mainTabButtonActiveClassName, mainTabButtonBaseClassName, mainTabButtonInactiveClassName } from "./lib/tabStyles";
 import { cn } from "./lib/utils";
 import { formatTalentEffect } from "./lib/talentEffects";
@@ -165,6 +168,13 @@ export function AppComposition() {
   } = useGameSessionContext();
   const [pendingXpAdjustment, setPendingXpAdjustment] = useState(0);
   const [isTalentSidebarOpen, setIsTalentSidebarOpen] = useState(false);
+  const [isLandingPageOpen, setIsLandingPageOpen] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return parseCampaignCharacterPath(window.location.pathname) === null;
+  });
   const isDesktopLayout = useIsDesktopLayout();
   const availableCharacters = useMemo(() => listCharacters(), []);
   const {
@@ -454,11 +464,39 @@ export function AppComposition() {
     activeMobileMainView,
     availableCharacters,
     handleMobileMainViewSelect,
+    routeSyncEnabled: !isLandingPageOpen,
     selectedCharacterId,
     setActiveMainTab,
     setActiveMobileMainView,
     setSelectedCharacterId,
   });
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setIsLandingPageOpen(parseCampaignCharacterPath(window.location.pathname) === null);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  const openCharacterFromLanding = useCallback((characterId: string) => {
+    const character = availableCharacters.find((availableCharacter) => availableCharacter.id === characterId);
+    const nextPath = buildCampaignCharacterPath({
+      campaignId: character?.campaignId,
+      characterId,
+      view: "characteristics",
+      omitDefaultView: true,
+    });
+    const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
+
+    window.history.pushState(null, "", nextUrl);
+    setIsLandingPageOpen(false);
+    setSelectedCharacterId(characterId);
+  }, [availableCharacters, setSelectedCharacterId]);
 
   useEffect(() => {
     resetAppShellState();
@@ -1170,6 +1208,15 @@ export function AppComposition() {
   });
   const shouldRenderMainTabPanel = isDesktopLayout || activeMobileMainView !== "characteristics";
 
+  if (isLandingPageOpen) {
+    return (
+      <LandingPage
+        characters={availableCharacters}
+        onSelectCharacter={openCharacterFromLanding}
+      />
+    );
+  }
+
   if (isCharacterBuilderOpen) {
     return (
       <Suspense fallback={<div className="min-h-screen bg-wfrp-dark" />}>
@@ -1275,15 +1322,14 @@ export function AppComposition() {
               />
             ) : null}
             <TalentSidebar
-              addTalentForFree={addTalentForFree}
               characterTalents={characterTalents}
+              careerTalentNames={careerAdvancementData.talents}
               getTalentMaxDisplay={getTalentMaxDisplay}
               getTalentPurchaseCost={getTalentPurchaseCost}
               isOpen={isTalentSidebarOpen}
               pendingAvailableXp={pendingAvailableXp}
               pendingTalentPurchases={pendingTalentPurchases}
               purchaseTalent={purchaseTalent}
-              removeTalent={removeTalent}
               talents={ruleset.talents}
               onClose={() => setIsTalentSidebarOpen(false)}
             />

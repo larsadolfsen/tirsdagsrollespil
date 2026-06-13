@@ -18,6 +18,7 @@ type AppSidebarProps = {
   isOpen: boolean;
   motionKey: string;
   onClose: () => void;
+  overlayUntil?: "mobile" | "desktop";
   side?: "left" | "right";
   sidebarRef?: RefObject<HTMLElement | null>;
   title: ReactNode;
@@ -44,6 +45,7 @@ export function AppSidebar({
   isOpen,
   motionKey,
   onClose,
+  overlayUntil = "mobile",
   side = "right",
   sidebarRef,
   title,
@@ -53,32 +55,42 @@ export function AppSidebar({
   const internalSidebarRef = useRef<HTMLElement | null>(null);
   const resolvedSidebarRef = sidebarRef ?? internalSidebarRef;
   const [usesModalBehavior, setUsesModalBehavior] = useState(false);
+  const usesDesktopOverlay = overlayUntil === "desktop";
+  const overlayMaxWidth = usesDesktopOverlay ? 1279 : 767;
   const sideClassName =
     side === "left"
-      ? "left-0 border-r md:order-first"
+      ? usesDesktopOverlay
+        ? "left-0 border-r xl:order-first"
+        : "left-0 border-r md:order-first"
       : "right-0 border-l";
   const closedOffset = side === "left" ? "-100%" : "100%";
+  const shellClassName = usesDesktopOverlay
+    ? "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[#202020] shadow-2xl shadow-black/60 xl:relative xl:left-auto xl:right-auto xl:top-auto xl:z-auto xl:h-auto xl:min-h-[calc(100vh-0.25rem)] xl:shrink-0 xl:self-stretch"
+    : "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[#202020] shadow-2xl shadow-black/60 md:relative md:left-auto md:right-auto md:top-auto md:z-auto md:h-auto md:min-h-[calc(100vh-0.25rem)] md:shrink-0 md:self-stretch";
+  const overlayClassName = usesDesktopOverlay
+    ? "fixed inset-0 z-40 cursor-default bg-black/50 xl:hidden"
+    : "fixed inset-0 z-40 cursor-default bg-black/50 md:hidden";
 
   useFocusTrap(resolvedSidebarRef, isOpen && trapFocus && usesModalBehavior, onClose);
 
   useEffect(() => {
     if (!isOpen) return;
 
-    const mediaQuery = window.matchMedia("(max-width: 767px)");
     const previousOverflow = document.body.style.overflow;
+    const isOverlayViewport = () => window.innerWidth <= overlayMaxWidth;
     const updateBodyOverflow = () => {
-      const isMobileViewport = mediaQuery.matches;
-      setUsesModalBehavior(isMobileViewport);
-      document.body.style.overflow = isMobileViewport ? "hidden" : previousOverflow;
+      const shouldUseModalBehavior = isOverlayViewport();
+      setUsesModalBehavior(shouldUseModalBehavior);
+      document.body.style.overflow = shouldUseModalBehavior ? "hidden" : previousOverflow;
     };
 
     updateBodyOverflow();
-    mediaQuery.addEventListener("change", updateBodyOverflow);
+    window.addEventListener("resize", updateBodyOverflow);
 
     const handlePointerDown = (event: PointerEvent) => {
       if (
         closeOnOutsidePointerDown &&
-        mediaQuery.matches &&
+        isOverlayViewport() &&
         !resolvedSidebarRef.current?.contains(event.target as Node)
       ) {
         onClose();
@@ -89,11 +101,11 @@ export function AppSidebar({
 
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown, { capture: true });
-      mediaQuery.removeEventListener("change", updateBodyOverflow);
+      window.removeEventListener("resize", updateBodyOverflow);
       document.body.style.overflow = previousOverflow;
       setUsesModalBehavior(false);
     };
-  }, [closeOnOutsidePointerDown, isOpen, onClose, resolvedSidebarRef]);
+  }, [closeOnOutsidePointerDown, isOpen, onClose, overlayMaxWidth, resolvedSidebarRef]);
 
   return (
     <AnimatePresence mode="wait">
@@ -106,7 +118,7 @@ export function AppSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-40 cursor-default bg-black/50 md:hidden"
+            className={overlayClassName}
             onClick={closeOnOutsidePointerDown ? onClose : undefined}
             aria-label={closeLabel}
             tabIndex={-1}
@@ -119,7 +131,7 @@ export function AppSidebar({
             exit={{ opacity: 0, x: closedOffset }}
             transition={{ type: "spring", damping: 28, stiffness: 240 }}
             className={cn(
-              "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[#202020] shadow-2xl shadow-black/60 md:relative md:left-auto md:right-auto md:top-auto md:z-auto md:h-auto md:min-h-[calc(100vh-0.25rem)] md:shrink-0 md:self-stretch",
+              shellClassName,
               sideClassName,
               className,
             )}

@@ -62,7 +62,7 @@ export function MobileCharacterHeader({
           <button
             type="button"
             onClick={onOpenCharacterActions}
-            className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-wfrp-gold/70 bg-black/30 p-0.5 shadow-inner transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+            className="wfrp-character-portrait-button flex h-10 w-10 items-center justify-center"
             aria-label="Open character actions"
             aria-haspopup="menu"
             aria-expanded={isMobilePortraitMenuOpen}
@@ -73,12 +73,12 @@ export function MobileCharacterHeader({
                 alt=""
                 width={40}
                 height={40}
-                className="h-full w-full rounded-full object-cover grayscale brightness-90"
+                className="wfrp-character-portrait-image"
               />
             ) : (
               <span
                 aria-hidden="true"
-                className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#5a4a2d,#191919_72%)] text-xs font-black text-wfrp-gold"
+                className="wfrp-character-portrait-fallback text-xs"
               >
                 {characterName.charAt(0)}
               </span>
