@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { AppSidebar, SidebarItemList } from "./sidebar";
-import { SubtabActionButton, WfrpSearchField, WfrpSuggestionChips } from "./ui";
+import { WfrpSearchField } from "./ui";
 import {
   formatPrayerSchoolLabel,
   formatSpellSchoolLabel,
@@ -11,8 +11,6 @@ import type { SpellDefinition } from "../types";
 
 const spellCategoryOrder: SpellDefinition["category"][] = ["petty", "arcane", "school"];
 type SpellFilter = "All" | SpellDefinition["category"] | `school:${string}`;
-type SpellSortKey = "name" | "cn" | "type";
-type SortDirection = "asc" | "desc";
 
 function formatSpellCategoryLabel(category: SpellDefinition["category"]) {
   if (category === "petty") {
@@ -58,36 +56,13 @@ function getSpellGroupLabel(spell: SpellDefinition) {
   return formatSpellCategoryLabel(spell.category);
 }
 
-function getSpellSortValue(spell: SpellDefinition, sortKey: SpellSortKey) {
-  if (sortKey === "cn") {
-    return spell.cn;
-  }
-
-  if (sortKey === "type") {
-    return getSpellTypeLabel(spell);
-  }
-
-  return spell.name;
-}
-
-function compareSpells(firstSpell: SpellDefinition, secondSpell: SpellDefinition, sortKey: SpellSortKey) {
-  const firstValue = getSpellSortValue(firstSpell, sortKey);
-  const secondValue = getSpellSortValue(secondSpell, sortKey);
-
-  if (typeof firstValue === "number" && typeof secondValue === "number") {
-    return firstValue - secondValue || firstSpell.name.localeCompare(secondSpell.name, undefined, { sensitivity: "base" });
-  }
-
-  return String(firstValue).localeCompare(String(secondValue), undefined, { sensitivity: "base" }) ||
-    firstSpell.name.localeCompare(secondSpell.name, undefined, { sensitivity: "base" });
-}
-
 export function SpellShopSidebar({
   isOpen,
   spells,
   knownSpellIds,
   onAddSpell,
   onClose,
+  onRemoveSpell,
   isPrayerMode = false,
 }: {
   isOpen: boolean;
@@ -95,12 +70,11 @@ export function SpellShopSidebar({
   knownSpellIds: Set<string>;
   onAddSpell: (spell: SpellDefinition) => void;
   onClose: () => void;
+  onRemoveSpell: (spellId: string) => void;
   isPrayerMode?: boolean;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<SpellFilter>("All");
-  const [sortKey, setSortKey] = useState<SpellSortKey>("name");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const shopStock = useMemo(
     () =>
@@ -118,25 +92,6 @@ export function SpellShopSidebar({
       }),
     [spells],
   );
-
-  const spellCategoryCounts = useMemo(() => {
-    return shopStock.reduce((counts, spell) => {
-      counts.set(spell.category, (counts.get(spell.category) ?? 0) + 1);
-      return counts;
-    }, new Map<SpellDefinition["category"], number>());
-  }, [shopStock]);
-
-  const spellSchoolCounts = useMemo(() => {
-    return shopStock.reduce((counts, spell) => {
-      if (spell.category !== "school") return counts;
-
-      getSpellSchools(spell).forEach((school) => {
-        counts.set(school, (counts.get(school) ?? 0) + 1);
-      });
-
-      return counts;
-    }, new Map<string, number>());
-  }, [shopStock]);
 
   const filteredStock = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
@@ -164,16 +119,9 @@ export function SpellShopSidebar({
 
   const entryLabel = isPrayerMode ? "Prayer" : "Spell";
   const entryPluralLabel = isPrayerMode ? "Prayers" : "Spells";
-  const shopTitle = isPrayerMode ? "Prayer Shop" : "Spell Shop";
+  const shopTitle = isPrayerMode ? "Add Prayer" : "Add Spell";
   const lowercaseEntryLabel = entryLabel.toLowerCase();
   const lowercaseEntryPluralLabel = entryPluralLabel.toLowerCase();
-
-  const handleSort = (nextSortKey: SpellSortKey) => {
-    setSortDirection((currentDirection) =>
-      sortKey === nextSortKey && currentDirection === "asc" ? "desc" : "asc",
-    );
-    setSortKey(nextSortKey);
-  };
 
   const categoryOptions = useMemo<Array<{ id: SpellFilter; label: string }>>(() => {
     const schoolOptions = Array.from(new Set<string>(shopStock.flatMap(getSpellSchools)))
@@ -198,39 +146,18 @@ export function SpellShopSidebar({
         ];
   }, [isPrayerMode, shopStock]);
 
-  const filterOptions = useMemo(
-    () =>
-      categoryOptions.map((option) => {
-        const spellCount =
-          option.id === "All"
-            ? shopStock.length
-            : option.id.startsWith("school:")
-              ? spellSchoolCounts.get(option.id.replace(/^school:/, "")) ?? 0
-              : spellCategoryCounts.get(option.id) ?? 0;
-
-        return {
-          id: option.id,
-          label: `${option.label} (${spellCount})`,
-        };
-      }),
-    [categoryOptions, shopStock.length, spellCategoryCounts, spellSchoolCounts],
-  );
-
-  const sortedStock = useMemo(
-    () =>
-      [...filteredStock].sort((firstSpell, secondSpell) => {
-        const comparison = compareSpells(firstSpell, secondSpell, sortKey);
-        return sortDirection === "asc" ? comparison : -comparison;
-      }),
-    [filteredStock, sortDirection, sortKey],
-  );
-
-  const spellItems = sortedStock.map((spell) => {
+  const spellItems = filteredStock.map((spell) => {
     const isKnown = knownSpellIds.has(spell.id);
 
     return {
       actions: isKnown
-        ? []
+        ? [
+            {
+              className: "[&_span]:bg-[#4a4a4a] [&_span]:text-gray-100 hover:[&_span]:bg-[#555555]",
+              label: "Remove",
+              onClick: () => onRemoveSpell(spell.id),
+            },
+          ]
         : [
             {
               isActive: true,
@@ -280,22 +207,39 @@ export function SpellShopSidebar({
         onSearch={setSearchTerm}
         onValueChange={setSearchTerm}
       />
-      <WfrpSuggestionChips
-        label="Filter"
-        options={filterOptions}
-        selectedIds={[selectedFilter]}
-        onToggle={setSelectedFilter}
-      />
-      <div className="flex flex-wrap gap-2 border-b border-wfrp-border bg-[#242424] px-4 py-3">
-        <SubtabActionButton isActive={sortKey === "name"} onClick={() => handleSort("name")}>
-          {entryLabel} {sortKey === "name" ? sortDirection : ""}
-        </SubtabActionButton>
-        <SubtabActionButton isActive={sortKey === "cn"} onClick={() => handleSort("cn")}>
-          CN {sortKey === "cn" ? sortDirection : ""}
-        </SubtabActionButton>
-        <SubtabActionButton isActive={sortKey === "type"} onClick={() => handleSort("type")}>
-          Type {sortKey === "type" ? sortDirection : ""}
-        </SubtabActionButton>
+      <div className="overflow-x-auto border-b border-wfrp-border bg-[#242424] px-4 py-3 no-scrollbar">
+        <div className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+          Type
+        </div>
+        <div className="inline-flex min-w-max items-center justify-start" role="tablist" aria-label={`${entryPluralLabel} filters`}>
+          {categoryOptions.map((option, index) => {
+            const isActive = selectedFilter === option.id;
+
+            return (
+              <button
+                key={option.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => setSelectedFilter(option.id)}
+                className="group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 text-[11px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
+              >
+                <span
+                  className={[
+                    "inline-flex h-6 items-center justify-center px-3 transition-all group-active:scale-95 sm:px-4",
+                    index === 0 ? "rounded-l" : "",
+                    index === categoryOptions.length - 1 ? "rounded-r" : "",
+                    index < categoryOptions.length - 1 ? "border-r border-card" : "",
+                    isActive ? "bg-wfrp-gold text-primary-foreground" : "bg-[#303030] text-wfrp-muted-text",
+                  ].filter(Boolean).join(" ")}
+                >
+                  {option.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
       <SidebarItemList
         className="!rounded-none !border-0"

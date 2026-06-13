@@ -42,11 +42,13 @@ export function TalentsTab({
   getTalentMaxDisplay,
   formatTalentEffect,
   onOpenTalentSidebar,
+  onRemoveTalent,
 }: {
   talentRowsBySource: Record<TalentSourceSubtab, CharacterTalentRow[]>;
   getTalentMaxDisplay: (max: string) => string | number;
   formatTalentEffect: (effect: TalentEffect) => string;
   onOpenTalentSidebar: () => void;
+  onRemoveTalent: (talentName: string) => void;
 }) {
   const [activeTalentSourceSubtab, setActiveTalentSourceSubtab] = useState<TalentSourceSubtab>("all");
   const characterTalentRows = talentRowsBySource[activeTalentSourceSubtab];
@@ -116,7 +118,16 @@ export function TalentsTab({
                       { label: "Maximum", value: getTalentMaxDisplay(talent.max) },
                       ...(talent.tests ? [{ label: "Tests", value: talent.tests }] : []),
                     ]}
-                  />
+                  >
+                    <div className="pt-2">
+                      <SubtabActionButton
+                        onClick={() => onRemoveTalent(talent.name)}
+                        aria-label={`Remove ${talent.name}`}
+                      >
+                        Remove
+                      </SubtabActionButton>
+                    </div>
+                  </SheetDataAccordionDetails>
                 </SheetDataAccordionRow>
               );
             })}

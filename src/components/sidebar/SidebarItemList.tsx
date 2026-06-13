@@ -6,6 +6,7 @@ import { SubtabActionButton } from "../ui/SubtabActionButton";
 
 export type SidebarListItem = {
   actions?: Array<{
+    className?: string;
     disabled?: boolean;
     isActive?: boolean;
     label: ReactNode;
@@ -117,6 +118,7 @@ export function SidebarItemList({
                     {item.actions.map((action) => (
                       <SubtabActionButton
                         key={String(action.label)}
+                        className={action.className}
                         disabled={action.disabled}
                         isActive={action.isActive}
                         onClick={action.onClick}

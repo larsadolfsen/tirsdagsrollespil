@@ -261,9 +261,9 @@ export function InventoryTab({
           <SubtabActionButton
             onClick={openShop}
             hideOnMobile
-            aria-label="Add item"
+            aria-label="Add Inventory"
           >
-            Add item
+            Add Inventory
           </SubtabActionButton>
         }
       />

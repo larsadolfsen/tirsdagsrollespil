@@ -716,6 +716,10 @@ export function AppComposition() {
     });
   };
 
+  const removeSpell = (spellId: string) => {
+    setCharacterSpells((prev) => prev.filter((spell) => spell.id !== spellId));
+  };
+
   const increasePendingCareerRank = () => {
     if (!nextCareerRankRecord) return;
     if (nextCareerAdvanceCost === null || pendingAvailableXp < nextCareerAdvanceCost) return;
@@ -1167,7 +1171,7 @@ export function AppComposition() {
           }
       : activeMobileMainView === "inventory"
       ? {
-          label: "Add item",
+          label: "Add Inventory",
           onClick: () => {
             setActiveInfo(null);
             setIsDiceLogOpen(false);
@@ -1304,7 +1308,7 @@ export function AppComposition() {
             {isShopOpen ? (
               <ShopSidebar
                 isOpen={isShopOpen}
-                coins={formattedCoins}
+                coins={characterData.coins}
                 ownedItemIds={ownedShopItemIds}
                 onAddToInventory={handleAddShopItem}
                 onBuy={handleAddShopItem}
@@ -1319,6 +1323,7 @@ export function AppComposition() {
                 isPrayerMode={isPrayerCaster}
                 onAddSpell={handleAddSpell}
                 onClose={() => setIsSpellShopOpen(false)}
+                onRemoveSpell={removeSpell}
               />
             ) : null}
             <TalentSidebar
@@ -1329,6 +1334,7 @@ export function AppComposition() {
               isOpen={isTalentSidebarOpen}
               pendingAvailableXp={pendingAvailableXp}
               pendingTalentPurchases={pendingTalentPurchases}
+              onRemoveTalent={removeTalent}
               purchaseTalent={purchaseTalent}
               talents={ruleset.talents}
               onClose={() => setIsTalentSidebarOpen(false)}
@@ -1506,6 +1512,7 @@ export function AppComposition() {
                         spellRows={spellRows}
                         handleRoll={handleRoll}
                         isPrayerMode={isPrayerCaster}
+                        onRemoveSpell={removeSpell}
                         openSpellShop={openSpellShop}
                       />
                       )}
@@ -1562,6 +1569,7 @@ export function AppComposition() {
                         getTalentMaxDisplay={getTalentMaxDisplay}
                         formatTalentEffect={formatTalentEffect}
                         onOpenTalentSidebar={openTalentSidebar}
+                        onRemoveTalent={removeTalent}
                       />
                       )}
 
