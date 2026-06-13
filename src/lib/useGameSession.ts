@@ -138,9 +138,13 @@ const getInitialSelectedCharacterId = () => {
   }
 
   const route = parseCampaignCharacterPath(window.location.pathname);
+  if (!route) {
+    return defaultCharacterId;
+  }
+
   const routedCharacter = route ? characterRecordById[route.characterId] : null;
 
-  return routedCharacter?.campaignId === route?.campaignId
+  return routedCharacter?.campaignId === route.campaignId
     ? routedCharacter.id
     : defaultCharacterId;
 };
