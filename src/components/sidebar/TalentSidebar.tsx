@@ -1,13 +1,15 @@
 import { useMemo, useState } from "react";
 import { AppSidebar } from "./AppSidebar";
+import { SidebarFilterList } from "./SidebarFilterList";
 import { SidebarItemList } from "./SidebarItemList";
 import { WfrpSearchField } from "../ui";
 import type { ResolvedCharacterTalent } from "../../data/characters/resolved";
 import type { TalentDefinition } from "../../types";
 
-type TalentFilterType = "career";
+type TalentFilterType = "All" | "career";
 
 const TALENT_FILTERS: Array<{ id: TalentFilterType; label: string }> = [
+  { id: "All", label: "All" },
   { id: "career", label: "Career" },
 ];
 
@@ -36,7 +38,7 @@ export function TalentSidebar({
   purchaseTalent: (talentName: string) => void;
   talents: TalentDefinition[];
 }) {
-  const [activeFilters, setActiveFilters] = useState<TalentFilterType[]>(["career"]);
+  const [selectedFilter, setSelectedFilter] = useState<TalentFilterType>("career");
   const [searchQuery, setSearchQuery] = useState("");
   const ownedTalentNames = useMemo(() => new Set(characterTalents.map((talent) => talent.name)), [characterTalents]);
   const careerTalentNameSet = useMemo(() => new Set(careerTalentNames), [careerTalentNames]);
@@ -61,21 +63,11 @@ export function TalentSidebar({
       totalTakenCount,
     };
   };
-  const toggleFilter = (filter: TalentFilterType) => {
-    setActiveFilters((current) =>
-      current.includes(filter)
-        ? current.filter((activeFilter) => activeFilter !== filter)
-        : [...current, filter],
-    );
-  };
   const talentItems = talents
     .filter((talent) => {
-      if (activeFilters.length === 0) return true;
-
-      return activeFilters.some((filter) => {
-        if (filter === "career") return careerTalentNameSet.has(talent.name);
-        return false;
-      });
+      if (selectedFilter === "All") return true;
+      if (selectedFilter === "career") return careerTalentNameSet.has(talent.name);
+      return false;
     })
     .filter((talent) => {
       if (!normalizedSearchQuery) return true;
@@ -144,39 +136,14 @@ export function TalentSidebar({
         onSearch={setSearchQuery}
         onValueChange={setSearchQuery}
       />
-      <div className="overflow-x-auto border-b border-wfrp-border bg-[#242424] px-4 py-3 no-scrollbar">
-        <div className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
-          Type
-        </div>
-        <div className="inline-flex min-w-max items-center justify-start" role="tablist" aria-label="Talent filters">
-          {TALENT_FILTERS.map((filter, index) => {
-            const isActive = activeFilters.includes(filter.id);
-
-            return (
-              <button
-                key={filter.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                tabIndex={isActive ? 0 : -1}
-                onClick={() => toggleFilter(filter.id)}
-                className="group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 text-[11px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
-              >
-                <span
-                  className={[
-                    "inline-flex h-6 items-center justify-center px-3 transition-all group-active:scale-95 sm:px-4",
-                    index === 0 ? "rounded-l" : "",
-                    index === TALENT_FILTERS.length - 1 ? "rounded-r" : "",
-                    index < TALENT_FILTERS.length - 1 ? "border-r border-card" : "",
-                    isActive ? "bg-wfrp-gold text-primary-foreground" : "bg-[#303030] text-wfrp-muted-text",
-                  ].filter(Boolean).join(" ")}
-                >
-                  {filter.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
+        <SidebarFilterList
+          ariaLabel="Talent filters"
+          label="Type"
+          options={TALENT_FILTERS}
+          value={selectedFilter}
+          onChange={setSelectedFilter}
+        />
       </div>
       <SidebarItemList
         className="!rounded-none !border-0"

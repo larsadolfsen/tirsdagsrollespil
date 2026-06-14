@@ -65,8 +65,8 @@ export function AppSidebar({
       : "right-0 border-l";
   const closedOffset = side === "left" ? "-100%" : "100%";
   const shellClassName = usesDesktopOverlay
-    ? "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[#202020] shadow-2xl shadow-black/60 xl:relative xl:left-auto xl:right-auto xl:top-auto xl:z-auto xl:h-auto xl:min-h-[calc(100vh-0.25rem)] xl:shrink-0 xl:self-stretch"
-    : "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[#202020] shadow-2xl shadow-black/60 md:relative md:left-auto md:right-auto md:top-auto md:z-auto md:h-auto md:min-h-[calc(100vh-0.25rem)] md:shrink-0 md:self-stretch";
+    ? "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[var(--color-sidebar)] shadow-2xl shadow-black/60 xl:relative xl:left-auto xl:right-auto xl:top-auto xl:z-auto xl:h-auto xl:min-h-[calc(100vh-0.25rem)] xl:shrink-0 xl:self-stretch"
+    : "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[var(--color-sidebar)] shadow-2xl shadow-black/60 md:relative md:left-auto md:right-auto md:top-auto md:z-auto md:h-auto md:min-h-[calc(100vh-0.25rem)] md:shrink-0 md:self-stretch";
   const overlayClassName = usesDesktopOverlay
     ? "fixed inset-0 z-40 cursor-default bg-black/50 xl:hidden"
     : "fixed inset-0 z-40 cursor-default bg-black/50 md:hidden";

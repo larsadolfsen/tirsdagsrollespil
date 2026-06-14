@@ -1,6 +1,5 @@
-import { ChevronDown } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { AppSidebar, SidebarItemList } from "./sidebar";
+import { useMemo, useState } from "react";
+import { AppSidebar, SidebarFilterList, SidebarItemList } from "./sidebar";
 import { WfrpSearchField } from "./ui";
 import { allItemDefinitions, wfrp4eRuleset } from "../data/rules/wfrp4e";
 import { formatItemValue } from "../lib/gameSession";
@@ -20,10 +19,6 @@ const inventoryStock = [...allItemDefinitions].sort((firstItem, secondItem) => {
 });
 
 const availabilityOrder = ["common", "average", "scarce", "rare", "exotic", "n/a"];
-const FILTER_BUTTON_BASE_WIDTH = 32;
-const FILTER_BUTTON_CHARACTER_WIDTH = 8;
-const FILTER_MORE_BUTTON_WIDTH = 92;
-const FILTER_ROW_PADDING = 8;
 const coinRows = [
   ["gc", "Gold Crowns", "bg-wfrp-gold"],
   ["s", "Silver Shillings", "bg-wfrp-silver"],
@@ -35,6 +30,16 @@ function formatFilterLabel(value: string) {
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+function formatItemTypeLabel(type: string) {
+  return type.toLowerCase() === "packs and containers" ? "Containers" : formatFilterLabel(type);
+}
+
+function formatItemTypeShortLabel(type: string) {
+  if (type === "Melee Weapon") return "Melee";
+  if (type === "Ranged Weapon") return "Ranged";
+  return formatItemTypeLabel(type);
 }
 
 function getItemRarity(item: ItemDefinition) {
@@ -51,30 +56,6 @@ function getItemRarity(item: ItemDefinition) {
   }
 
   return "n/a";
-}
-
-function getFilterOptionWidth(label: string) {
-  return FILTER_BUTTON_BASE_WIDTH + label.length * FILTER_BUTTON_CHARACTER_WIDTH;
-}
-
-function getVisibleFilterCount(options: string[], rowWidth: number) {
-  if (!rowWidth || options.length <= 1) return options.length;
-
-  let usedWidth = FILTER_ROW_PADDING;
-
-  for (let index = 0; index < options.length; index += 1) {
-    const hasOverflow = index < options.length - 1;
-    const nextWidth = getFilterOptionWidth(formatFilterLabel(options[index]));
-    const reservedOverflowWidth = hasOverflow ? FILTER_MORE_BUTTON_WIDTH : 0;
-
-    if (usedWidth + nextWidth + reservedOverflowWidth > rowWidth) {
-      return Math.max(1, index);
-    }
-
-    usedWidth += nextWidth;
-  }
-
-  return options.length;
 }
 
 export function ShopSidebar({
@@ -95,42 +76,19 @@ export function ShopSidebar({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItemType, setSelectedItemType] = useState("All");
   const [selectedRarity, setSelectedRarity] = useState("All");
-  const [typeFilterRowWidth, setTypeFilterRowWidth] = useState(0);
-  const [isTypeOverflowOpen, setIsTypeOverflowOpen] = useState(false);
-  const typeFilterRowRef = useRef<HTMLDivElement | null>(null);
-  const typeOverflowRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const row = typeFilterRowRef.current;
-    if (!row) return;
-
-    const updateRowWidth = () => setTypeFilterRowWidth(row.clientWidth);
-    updateRowWidth();
-
-    const observer = new ResizeObserver(updateRowWidth);
-    observer.observe(row);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!isTypeOverflowOpen) return;
-
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!typeOverflowRef.current?.contains(event.target as Node)) {
-        setIsTypeOverflowOpen(false);
-      }
-    };
-
-    document.addEventListener("pointerdown", handlePointerDown);
-
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-    };
-  }, [isTypeOverflowOpen]);
 
   const itemTypes = useMemo(() => Array.from(new Set(inventoryStock.map((item) => item.type))), []);
-  const itemTypeOptions = useMemo(() => ["All", ...itemTypes], [itemTypes]);
+  const itemTypeOptions = useMemo(
+    () => [
+      { id: "All", label: "All" },
+      ...itemTypes.map((itemType) => ({
+        id: itemType,
+        label: formatItemTypeLabel(itemType),
+        shortLabel: formatItemTypeShortLabel(itemType),
+      })),
+    ],
+    [itemTypes],
+  );
   const itemRarities = useMemo(() => {
     return Array.from(new Set(inventoryStock.map((item) => getItemRarity(item)))).sort(
       (firstRarity, secondRarity) => {
@@ -146,10 +104,13 @@ export function ShopSidebar({
       },
     );
   }, []);
-  const rarityOptions = useMemo(() => ["All", ...itemRarities], [itemRarities]);
-  const visibleTypeCount = getVisibleFilterCount(itemTypeOptions, typeFilterRowWidth);
-  const visibleTypeOptions = itemTypeOptions.slice(0, visibleTypeCount);
-  const overflowTypeOptions = itemTypeOptions.slice(visibleTypeCount);
+  const rarityOptions = useMemo(
+    () => [
+      { id: "All", label: "All" },
+      ...itemRarities.map((rarity) => ({ id: rarity, label: formatFilterLabel(rarity) })),
+    ],
+    [itemRarities],
+  );
 
   const filteredStock = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
@@ -160,7 +121,7 @@ export function ShopSidebar({
 
       if (!normalizedSearchTerm) return true;
 
-      return [item.name, item.type, item.description, getItemRarity(item)]
+      return [item.name, item.type, formatItemTypeLabel(item.type), item.description, getItemRarity(item)]
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearchTerm));
     });
@@ -184,7 +145,7 @@ export function ShopSidebar({
       ],
       description: item.description,
       details: [
-        { label: "Type", value: item.type },
+        { label: "Type", value: formatItemTypeLabel(item.type) },
         { label: "Rarity", value: formatFilterLabel(rarity) },
         { label: "Encumbrance", value: item.encumbrance || "-" },
         { label: "Price", value: formatItemValue(item) },
@@ -196,41 +157,7 @@ export function ShopSidebar({
     };
   });
 
-  const listTitle = selectedItemType === "All" ? "All Items" : selectedItemType;
-
-  const renderFilterButton = (
-    option: string,
-    selectedOption: string,
-    setSelectedOption: (option: string) => void,
-    index: number,
-    optionCount: number,
-  ) => {
-    const isActive = selectedOption === option;
-
-    return (
-      <button
-        key={option}
-        type="button"
-        role="tab"
-        aria-selected={isActive}
-        onClick={() => setSelectedOption(option)}
-        tabIndex={isActive ? 0 : -1}
-        className="group inline-flex h-12 shrink-0 cursor-pointer items-center justify-center bg-transparent p-0 text-[11px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
-      >
-        <span
-          className={cn(
-            "inline-flex h-6 items-center justify-center px-3 transition-all group-active:scale-95 sm:px-4",
-            index === 0 && "rounded-l",
-            index === optionCount - 1 && "rounded-r",
-            index < optionCount - 1 && "border-r border-card",
-            isActive ? "bg-wfrp-gold text-primary-foreground" : "bg-[#303030] text-wfrp-muted-text",
-          )}
-        >
-          {formatFilterLabel(option)}
-        </span>
-      </button>
-    );
-  };
+  const listTitle = selectedItemType === "All" ? "All Items" : formatItemTypeLabel(selectedItemType);
 
   return (
     <AppSidebar
@@ -253,12 +180,12 @@ export function ShopSidebar({
           </span>
           <div className="space-y-1">
             {coinRows.map(([coinKey, label, colorClass]) => (
-              <div key={coinKey} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-xs font-bold text-gray-100">
+              <div key={coinKey} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-xs font-bold text-wfrp-muted-text">
                 <span className="flex min-w-0 items-center gap-2">
                   <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full shadow-sm", colorClass)} aria-hidden="true" />
                   <span className="min-w-0 truncate">{label}</span>
                 </span>
-                <span className="font-mono text-[11px] font-black text-gray-100">{coins[coinKey]}</span>
+                <span className="font-mono text-[11px] font-black text-wfrp-muted-text">{coins[coinKey]}</span>
               </div>
             ))}
           </div>
@@ -276,81 +203,20 @@ export function ShopSidebar({
 
       <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
         <div className="space-y-2">
-          <div>
-            <div className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
-              Type
-            </div>
-            <div ref={typeFilterRowRef} className="relative z-30 inline-flex min-w-0 max-w-full items-center justify-start" role="tablist" aria-label="Inventory type filters">
-              {visibleTypeOptions.map((option, index) =>
-                renderFilterButton(
-                  option,
-                  selectedItemType,
-                  setSelectedItemType,
-                  index,
-                  visibleTypeOptions.length + (overflowTypeOptions.length ? 1 : 0),
-                ))}
-              {overflowTypeOptions.length ? (
-                <div ref={typeOverflowRef} className="relative z-30 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setIsTypeOverflowOpen((isOpen) => !isOpen)}
-                    className={cn(
-                      "group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 text-[11px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
-                      overflowTypeOptions.includes(selectedItemType) && "text-wfrp-gold",
-                    )}
-                    aria-expanded={isTypeOverflowOpen}
-                    aria-label="Show more inventory type filters"
-                  >
-                    <span
-                      className={cn(
-                        "inline-flex h-6 items-center justify-center gap-1 rounded-r px-3 text-wfrp-muted-text transition-all group-active:scale-95 sm:px-4",
-                        overflowTypeOptions.includes(selectedItemType)
-                          ? "bg-wfrp-gold text-primary-foreground"
-                          : "bg-[#303030] text-wfrp-muted-text",
-                      )}
-                    >
-                      {overflowTypeOptions.includes(selectedItemType) ? formatFilterLabel(selectedItemType) : "More"}
-                      <ChevronDown size={13} aria-hidden="true" />
-                    </span>
-                  </button>
-                  {isTypeOverflowOpen ? (
-                    <div className="absolute left-0 top-10 z-50 max-h-72 min-w-56 overflow-y-auto rounded border border-wfrp-border bg-wfrp-popover p-1 shadow-xl shadow-black/40 no-scrollbar">
-                      {overflowTypeOptions.map((option) => {
-                        const isActive = selectedItemType === option;
-
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            onClick={() => {
-                              setSelectedItemType(option);
-                              setIsTypeOverflowOpen(false);
-                            }}
-                            className={cn(
-                              "flex h-8 w-full items-center whitespace-nowrap rounded px-2 text-left text-[10px] font-black uppercase tracking-widest transition-colors",
-                              isActive ? "bg-wfrp-gold/10 text-wfrp-gold" : "text-wfrp-muted-text hover:bg-white/5 hover:text-gray-200",
-                            )}
-                          >
-                            {formatFilterLabel(option)}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div>
-            <div className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
-              Rarity
-            </div>
-            <div className="inline-flex min-w-max items-center justify-start" role="tablist" aria-label="Inventory rarity filters">
-              {rarityOptions.map((option, index) =>
-                renderFilterButton(option, selectedRarity, setSelectedRarity, index, rarityOptions.length))}
-            </div>
-          </div>
+          <SidebarFilterList
+            ariaLabel="Inventory type filters"
+            label="Type"
+            options={itemTypeOptions}
+            value={selectedItemType}
+            onChange={setSelectedItemType}
+          />
+          <SidebarFilterList
+            ariaLabel="Inventory rarity filters"
+            label="Rarity"
+            options={rarityOptions}
+            value={selectedRarity}
+            onChange={setSelectedRarity}
+          />
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AppSidebar, SidebarItemList } from "./sidebar";
+import { AppSidebar, SidebarFilterList, SidebarItemList } from "./sidebar";
 import { WfrpSearchField } from "./ui";
 import {
   formatPrayerSchoolLabel,
@@ -207,39 +207,14 @@ export function SpellShopSidebar({
         onSearch={setSearchTerm}
         onValueChange={setSearchTerm}
       />
-      <div className="overflow-x-auto border-b border-wfrp-border bg-[#242424] px-4 py-3 no-scrollbar">
-        <div className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
-          Type
-        </div>
-        <div className="inline-flex min-w-max items-center justify-start" role="tablist" aria-label={`${entryPluralLabel} filters`}>
-          {categoryOptions.map((option, index) => {
-            const isActive = selectedFilter === option.id;
-
-            return (
-              <button
-                key={option.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                tabIndex={isActive ? 0 : -1}
-                onClick={() => setSelectedFilter(option.id)}
-                className="group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 text-[11px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
-              >
-                <span
-                  className={[
-                    "inline-flex h-6 items-center justify-center px-3 transition-all group-active:scale-95 sm:px-4",
-                    index === 0 ? "rounded-l" : "",
-                    index === categoryOptions.length - 1 ? "rounded-r" : "",
-                    index < categoryOptions.length - 1 ? "border-r border-card" : "",
-                    isActive ? "bg-wfrp-gold text-primary-foreground" : "bg-[#303030] text-wfrp-muted-text",
-                  ].filter(Boolean).join(" ")}
-                >
-                  {option.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
+        <SidebarFilterList
+          ariaLabel={`${entryPluralLabel} filters`}
+          label="Type"
+          options={categoryOptions}
+          value={selectedFilter}
+          onChange={setSelectedFilter}
+        />
       </div>
       <SidebarItemList
         className="!rounded-none !border-0"
