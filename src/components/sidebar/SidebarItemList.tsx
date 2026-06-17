@@ -19,12 +19,15 @@ export type SidebarListItem = {
   }>;
   id: string;
   isMarked?: boolean;
+  markerVariant?: "gold" | "gray";
+  meta?: ReactNode;
   name: ReactNode;
 };
 
 type SidebarItemListProps = {
   className?: string;
   emptyMessage?: ReactNode;
+  headerMeta?: ReactNode;
   items: SidebarListItem[];
   title?: ReactNode;
 };
@@ -32,6 +35,7 @@ type SidebarItemListProps = {
 export function SidebarItemList({
   className,
   emptyMessage = "No items available.",
+  headerMeta,
   items,
   title,
 }: SidebarItemListProps) {
@@ -48,12 +52,18 @@ export function SidebarItemList({
   return (
     <div className={cn("flex flex-col overflow-hidden rounded border border-wfrp-border bg-transparent pb-4", className)}>
       {title ? (
-        <div className="border-b border-wfrp-border bg-wfrp-table px-4 py-2 text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
-          {title}
+        <div className="flex items-center gap-3 border-b border-wfrp-border bg-wfrp-table px-4 py-2 text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+          <span className="min-w-0 flex-1">{title}</span>
+          {headerMeta ? (
+            <span className="mr-[28px] shrink-0 text-right">
+              {headerMeta}
+            </span>
+          ) : null}
         </div>
       ) : null}
       {items.map((item, index) => {
         const isOpen = openItemId === item.id;
+        const markerVariant = item.markerVariant ?? (item.isMarked ? "gold" : null);
 
         return (
           <div
@@ -74,11 +84,19 @@ export function SidebarItemList({
             >
               <span className="flex min-w-0 flex-1 items-center gap-2">
                 <span className="min-w-0 truncate">{item.name}</span>
-                {item.isMarked ? (
+                {markerVariant ? (
                   <span
-                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-wfrp-gold"
-                    aria-label="Already bought"
+                    className={cn(
+                      "h-1.5 w-1.5 shrink-0 rounded-full",
+                      markerVariant === "gold" ? "bg-wfrp-gold" : "bg-wfrp-muted-text",
+                    )}
+                    aria-label={markerVariant === "gold" ? "Has advances" : "Career skill"}
                   />
+                ) : null}
+                {item.meta ? (
+                  <span className="ml-auto shrink-0 text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+                    {item.meta}
+                  </span>
                 ) : null}
               </span>
               <ChevronDown

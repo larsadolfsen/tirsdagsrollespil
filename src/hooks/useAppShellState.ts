@@ -15,7 +15,7 @@ export function useAppShellState() {
   const [activeInfo, setActiveInfo] = useState<ActiveInfoState | null>(null);
   const [activeMainTab, setActiveMainTab] = useState<MainTab>("skills");
   const [activeActionCategory, setActiveActionCategory] = useState<ActionCategory>("all");
-  const [activeSkillSubtab, setActiveSkillSubtab] = useState<SkillSubtab>("trained");
+  const [activeSkillSubtab, setActiveSkillSubtab] = useState<SkillSubtab>("all");
   const [activeSpellSubtab, setActiveSpellSubtab] = useState<SpellSubtab>("all");
   const [activeInventorySubtab, setActiveInventorySubtab] = useState<InventorySubtab>("all");
   const [activeCareerSubtab, setActiveCareerSubtab] = useState<CareerSubtab>("all");
@@ -31,7 +31,7 @@ export function useAppShellState() {
     setActiveMainTab("skills");
     mobileNavigation.setActiveMobileMainView("characteristics");
     setActiveActionCategory("all");
-    setActiveSkillSubtab("trained");
+    setActiveSkillSubtab("all");
     setActiveInventorySubtab("all");
     setActiveCareerSubtab("all");
     setActiveJournalSubtab("sessions");

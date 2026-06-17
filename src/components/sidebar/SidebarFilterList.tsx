@@ -52,6 +52,19 @@ export function SidebarFilterList<TId extends string = string>({
     };
   }, [isMoreOpen]);
 
+  useEffect(() => {
+    if (!secondaryOptions.some((option) => option.id === value)) return;
+
+    setPromotedOptionIds((currentOptionIds) => {
+      if (currentOptionIds[0] === value) return currentOptionIds;
+
+      return [
+        value,
+        ...currentOptionIds.filter((currentOptionId) => currentOptionId !== value),
+      ].slice(0, 2);
+    });
+  }, [secondaryOptions, value]);
+
   useLayoutEffect(() => {
     const rowShell = rowShellRef.current;
     if (!rowShell) return;

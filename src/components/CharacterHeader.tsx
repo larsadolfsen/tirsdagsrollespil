@@ -88,27 +88,34 @@ export function CharacterHeader({
 }) {
   const { portraitDataUrl, setCharacterName, setPortraitDataUrl } = useGameSessionContext();
   const [isCampaignMenuOpen, setIsCampaignMenuOpen] = useState(false);
+  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [draftName, setDraftName] = useState(characterData.name);
   const [portraitError, setPortraitError] = useState<string | null>(null);
   const campaignMenuRef = useRef<HTMLDivElement>(null);
+  const settingsMenuRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const portraitInputRef = useRef<HTMLInputElement>(null);
   const characterAka = formatAka(characterData.aka);
   const portraitSrc = portraitDataUrl;
 
   useEffect(() => {
-    if (!isCampaignMenuOpen) return;
+    if (!isCampaignMenuOpen && !isSettingsMenuOpen) return;
 
     const handlePointerDown = (event: MouseEvent) => {
       if (isCampaignMenuOpen && !campaignMenuRef.current?.contains(event.target as Node)) {
         setIsCampaignMenuOpen(false);
+      }
+
+      if (isSettingsMenuOpen && !settingsMenuRef.current?.contains(event.target as Node)) {
+        setIsSettingsMenuOpen(false);
       }
     };
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsCampaignMenuOpen(false);
+        setIsSettingsMenuOpen(false);
       }
     };
 
@@ -119,7 +126,7 @@ export function CharacterHeader({
       window.removeEventListener("mousedown", handlePointerDown);
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [isCampaignMenuOpen]);
+  }, [isCampaignMenuOpen, isSettingsMenuOpen]);
 
   useEffect(() => {
     if (!isEditingName) {
@@ -323,20 +330,6 @@ export function CharacterHeader({
                   className={`text-wfrp-muted-text transition-transform ${isCampaignMenuOpen ? "rotate-180 text-wfrp-gold" : "group-hover/campaign:text-wfrp-gold"}`}
                 />
               </button>
-              <div className="my-1 h-5 w-[1px] bg-wfrp-border opacity-60" />
-              <button
-                onClick={() => {
-                  onOpenAdvance();
-                  setIsCampaignMenuOpen(false);
-                }}
-                className="flex min-w-9 flex-col items-center px-2 py-0.5 transition-colors hover:bg-wfrp-surface-muted-hover cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                aria-label="Open Advance tab"
-              >
-                <span className="text-[8px] font-bold text-wfrp-muted-text uppercase leading-none">Exp</span>
-                <span className="text-[11px] font-bold text-blue-400 whitespace-nowrap">
-                  {xpCurrent}/{characterData.xpTotal}
-                </span>
-              </button>
             </div>
 
             {isCampaignMenuOpen && (
@@ -403,12 +396,40 @@ export function CharacterHeader({
               <Dice5 size={14} />
             </button>
             <div className="h-4 w-[1px] bg-wfrp-border opacity-50" />
-            <button
-              className="wfrp-icon-btn p-1.5 hover:bg-wfrp-surface-muted-hover"
-              aria-label="Settings"
-            >
-              <Settings size={14} />
-            </button>
+            <div className="relative" ref={settingsMenuRef}>
+              <button
+                type="button"
+                onClick={() => setIsSettingsMenuOpen((isOpen) => !isOpen)}
+                className="wfrp-icon-btn p-1.5 hover:bg-wfrp-surface-muted-hover"
+                aria-label="Settings"
+                aria-haspopup="menu"
+                aria-expanded={isSettingsMenuOpen}
+              >
+                <Settings size={14} />
+              </button>
+              {isSettingsMenuOpen && (
+                <div
+                  className="absolute right-0 top-[calc(100%+0.5rem)] z-30 min-w-44 overflow-hidden rounded-md border border-wfrp-brass-border bg-wfrp-popover shadow-wfrp-popover"
+                  role="menu"
+                  aria-label="Settings"
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onOpenAdvance();
+                      setIsSettingsMenuOpen(false);
+                    }}
+                    className="flex w-full items-center justify-between gap-4 px-3 py-2 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                    role="menuitem"
+                  >
+                    <span>Edit Character</span>
+                    <span className="text-xs font-bold text-blue-400">
+                      {xpCurrent}/{characterData.xpTotal}
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               className="wfrp-icon-btn p-1.5 hover:bg-wfrp-surface-muted-hover"
               aria-label="More options"

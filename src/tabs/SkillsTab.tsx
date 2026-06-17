@@ -15,6 +15,7 @@ type SkillRow = {
   advances: number;
   shortDescription?: string;
   description?: string;
+  specialization?: string;
 };
 
 const desktopSkillGridClass = "md:grid-cols-[56px_minmax(10rem,0.8fr)_minmax(14rem,1.2fr)_56px_56px_56px_56px_48px]";
@@ -59,7 +60,6 @@ export function SkillsTab({
             <InlineSubtabs<SkillSubtab>
               options={[
                 { id: "all", label: "All" },
-                { id: "trained", label: "Trained" },
                 { id: "advanced", label: "Advanced" },
                 { id: "basic", label: "Basic" },
               ]}
@@ -70,10 +70,10 @@ export function SkillsTab({
           <SubtabActionButton
             onClick={onOpenAdvance}
             hideOnMobile
-            aria-label="Open Advance tab"
+            aria-label="Open skill sidebar"
             className="mr-2 sm:mr-3 lg:mr-4"
           >
-            Advance
+            Add Skill
           </SubtabActionButton>
         </div>
       )}
@@ -149,6 +149,7 @@ export function SkillsTab({
                   description={skill.description}
                   rows={[
                     { label: "Characteristic", value: characteristicNames[skill.characteristic] ?? skill.characteristic, valueClassName: "!text-left" },
+                    ...(skill.specialization ? [{ label: "Specialization", value: skill.specialization, valueClassName: "!text-left" }] : []),
                     { label: "Score", value: charValue, valueClassName: "!text-left" },
                     { label: "Advances", value: formattedAdvances, valueClassName: "!text-left" },
                   ]}

@@ -180,12 +180,12 @@ export function ShopSidebar({
           </span>
           <div className="space-y-1">
             {coinRows.map(([coinKey, label, colorClass]) => (
-              <div key={coinKey} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-xs font-bold text-wfrp-muted-text">
+              <div key={coinKey} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-[14px] font-bold text-wfrp-muted-text">
                 <span className="flex min-w-0 items-center gap-2">
                   <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full shadow-sm", colorClass)} aria-hidden="true" />
                   <span className="min-w-0 truncate">{label}</span>
                 </span>
-                <span className="font-mono text-[11px] font-black text-wfrp-muted-text">{coins[coinKey]}</span>
+                <span className="font-mono text-[14px] font-black text-wfrp-muted-text">{coins[coinKey]}</span>
               </div>
             ))}
           </div>
