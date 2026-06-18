@@ -31,7 +31,6 @@ import {
   PanelSectionHeader,
   ResourceCounterBar,
   ScrollableTabStrip,
-  SubtabActionButton,
 } from "./components/ui";
 import { useGameSessionContext } from "./context/GameSessionContext";
 import { LazyTabPanel } from "./tabs/LazyTabPanel";
@@ -1527,23 +1526,25 @@ export function AppComposition() {
                 <h1 className="min-w-0 truncate font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
                   Edit Character
                 </h1>
-                <div className="flex shrink-0 items-center gap-1">
-                  <SubtabActionButton
+                <div className="flex shrink-0 items-center gap-2">
+                  <button
+                    type="button"
                     onClick={handleEditCharacterSave}
                     disabled={!hasUnsavedCareerEdits}
-                    isActive={hasUnsavedCareerEdits}
+                    className={cn(
+                      "flex h-10 items-center justify-center rounded border px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed",
+                      hasUnsavedCareerEdits
+                        ? "border-wfrp-gold/70 bg-wfrp-gold text-primary-foreground hover:bg-[#d1ad65]"
+                        : "border-wfrp-border bg-wfrp-surface text-gray-500",
+                    )}
                     aria-label="Save edit character changes"
                   >
                     Save
-                  </SubtabActionButton>
+                  </button>
                   <button
                     type="button"
                     onClick={closeEditCharacterPage}
-                    className={cn(
-                      mainTabButtonBaseClassName,
-                      mainTabButtonInactiveClassName,
-                      "inline-flex items-center gap-2",
-                    )}
+                    className="flex h-10 items-center justify-center gap-2 rounded border border-wfrp-border bg-wfrp-surface px-3 text-[10px] font-bold uppercase tracking-widest text-gray-300 shadow-sm transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                     aria-label="Close Edit Character page"
                   >
                     <X size={14} />
