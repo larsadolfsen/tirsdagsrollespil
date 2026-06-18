@@ -185,6 +185,7 @@ export function AppComposition() {
     setNotes,
   } = useGameSessionContext();
   const [pendingXpAdjustment, setPendingXpAdjustment] = useState(0);
+  const [pendingTotalXpAdjustment, setPendingTotalXpAdjustment] = useState(0);
   const [hasCareerTabDraftChanges, setHasCareerTabDraftChanges] = useState(false);
   const [isTalentSidebarOpen, setIsTalentSidebarOpen] = useState(false);
   const [isSkillSidebarOpen, setIsSkillSidebarOpen] = useState(false);
@@ -327,7 +328,8 @@ export function AppComposition() {
     ruleset,
     xpCurrent: Math.max(0, xpCurrent + pendingXpAdjustment),
   });
-  const hasPendingAdvanceChanges = hasPendingCareerChanges || pendingXpAdjustment !== 0;
+  const hasPendingAdvanceChanges =
+    hasPendingCareerChanges || pendingXpAdjustment !== 0 || pendingTotalXpAdjustment !== 0;
   const hasUnsavedCareerEdits = hasPendingAdvanceChanges || hasCareerTabDraftChanges;
   const handleCareerTabDraftChangesChange = useCallback((hasDraftChanges: boolean) => {
     setHasCareerTabDraftChanges(hasDraftChanges);
@@ -538,6 +540,7 @@ export function AppComposition() {
     setActiveInventoryMenu(null);
     resetPendingAdvancements();
     setPendingXpAdjustment(0);
+    setPendingTotalXpAdjustment(0);
     resetDiceRoller();
 
     restoreRouteForCharacter(characterData.id);
@@ -957,11 +960,10 @@ export function AppComposition() {
       setCurrentCareerRank(pendingCareerRank);
     }
 
-    if (pendingXpAdjustment > 0) {
-      setXpTotal((prev) => prev + pendingXpAdjustment);
-    }
     setXpCurrent((prev) => Math.max(0, prev + pendingXpAdjustment));
+    setXpTotal((prev) => Math.max(0, prev + pendingTotalXpAdjustment));
     setPendingXpAdjustment(0);
+    setPendingTotalXpAdjustment(0);
     resetPendingAdvancements();
   };
 
@@ -1280,7 +1282,9 @@ export function AppComposition() {
         onDraftChangesChange={handleCareerTabDraftChangesChange}
         characterData={characterData}
         pendingXpAdjustment={pendingXpAdjustment}
+        pendingTotalXpAdjustment={pendingTotalXpAdjustment}
         setPendingXpAdjustment={setPendingXpAdjustment}
+        setPendingTotalXpAdjustment={setPendingTotalXpAdjustment}
         displayedCareerRank={displayedCareerRank}
         displayedCareerRankRecord={displayedCareerRankRecord}
         careerAdvancementData={careerAdvancementData}
@@ -1488,93 +1492,69 @@ export function AppComposition() {
               />
             )}
             mobileTitle={mobilePageTitle}
-            mobileTitleAction={
-              activeMainTab === "career" ? (
-                <div className="flex items-center justify-end gap-1">
-                  <button
-                    type="button"
-                    onClick={handleEditCharacterSave}
-                    disabled={!hasUnsavedCareerEdits}
-                    className={cn(
-                      "flex h-10 items-center justify-center rounded border px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed",
-                      hasUnsavedCareerEdits
-                        ? "border-wfrp-gold/70 bg-wfrp-gold text-primary-foreground hover:bg-[#d1ad65]"
-                        : "border-wfrp-border bg-wfrp-surface text-gray-500",
-                    )}
-                    aria-label="Save edit character changes"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={closeEditCharacterPage}
-                    className="flex h-10 w-10 items-center justify-center rounded border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                    aria-label="Close Edit Character page"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-              ) : undefined
-            }
             onMobileNextView={() => navigateMobileMainView(1)}
             onMobilePreviousView={() => navigateMobileMainView(-1)}
           >
 
           {activeMainTab === "career" ? (
-            <section className="min-h-[500px] overflow-hidden rounded-lg border border-wfrp-border bg-card shadow-lg">
-              <div className="hidden items-center justify-between gap-3 rounded-t-lg border-b border-wfrp-border bg-wfrp-surface-subtle px-4 py-3 md:flex">
+            <>
+              <div className="hidden items-center justify-between gap-3 md:flex">
                 <h1 className="min-w-0 truncate font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
                   Edit Character
                 </h1>
-                <div className="flex shrink-0 items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleEditCharacterSave}
-                    disabled={!hasUnsavedCareerEdits}
-                    className={cn(
-                      "flex h-10 items-center justify-center rounded border px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed",
-                      hasUnsavedCareerEdits
-                        ? "border-wfrp-gold/70 bg-wfrp-gold text-primary-foreground hover:bg-[#d1ad65]"
-                        : "border-wfrp-border bg-wfrp-surface text-gray-500",
-                    )}
-                    aria-label="Save edit character changes"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={closeEditCharacterPage}
-                    className="flex h-10 items-center justify-center gap-2 rounded border border-wfrp-border bg-wfrp-surface px-3 text-[10px] font-bold uppercase tracking-widest text-gray-300 shadow-sm transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                    aria-label="Close Edit Character page"
-                  >
-                    <X size={14} />
-                    Close
-                  </button>
-                </div>
               </div>
-              <ScrollableTabStrip className="flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar md:rounded-none">
-                <div className="flex w-full min-w-max items-center justify-start gap-4 lg:gap-6">
-                  {editCharacterTabOptions.map((tab) => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveCareerSubtab(tab.id)}
-                      className={cn(
-                        mainTabButtonBaseClassName,
-                        activeCareerSubtab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
-                      )}
-                      aria-current={activeCareerSubtab === tab.id ? "page" : undefined}
-                    >
-                      {tab.label}
-                      {activeCareerSubtab === tab.id ? (
-                        <div className={mainTabUnderlineClassName} />
-                      ) : null}
-                    </button>
-                  ))}
-                </div>
-              </ScrollableTabStrip>
-              {advancePageContent}
-            </section>
+              <section className="min-h-[500px] overflow-hidden rounded-lg border border-wfrp-border bg-card shadow-lg">
+                <ScrollableTabStrip className="flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
+                  <div className="flex w-full min-w-max items-center justify-between gap-4">
+                    <div className="flex min-w-max items-center gap-4 lg:gap-6">
+                      {editCharacterTabOptions.map((tab) => (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setActiveCareerSubtab(tab.id)}
+                          className={cn(
+                            mainTabButtonBaseClassName,
+                            activeCareerSubtab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
+                          )}
+                          aria-current={activeCareerSubtab === tab.id ? "page" : undefined}
+                        >
+                          {tab.label}
+                          {activeCareerSubtab === tab.id ? (
+                            <div className={mainTabUnderlineClassName} />
+                          ) : null}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleEditCharacterSave}
+                        disabled={!hasUnsavedCareerEdits}
+                        className={cn(
+                          "inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-[10px] font-bold uppercase tracking-widest shadow-sm transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed",
+                          hasUnsavedCareerEdits
+                            ? "border-wfrp-gold/70 bg-wfrp-gold text-primary-foreground hover:bg-[#d1ad65]"
+                            : "border-wfrp-border bg-wfrp-surface text-gray-500",
+                        )}
+                        aria-label="Save edit character changes"
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={closeEditCharacterPage}
+                        className="inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-wfrp-border bg-wfrp-surface px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-300 shadow-sm transition-all hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                        aria-label="Close Edit Character page"
+                      >
+                        <X size={14} />
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </ScrollableTabStrip>
+                {advancePageContent}
+              </section>
+            </>
           ) : (
             <>
           <div {...mobileMainViewSwipeHandlers}>

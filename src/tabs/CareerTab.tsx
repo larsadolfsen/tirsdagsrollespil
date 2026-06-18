@@ -63,7 +63,9 @@ interface CareerTabProps {
   careerAdvancementData: CareerAdvancementData;
   pendingAvailableXp: number;
   pendingXpAdjustment: number;
+  pendingTotalXpAdjustment: number;
   setPendingXpAdjustment: Dispatch<SetStateAction<number>>;
+  setPendingTotalXpAdjustment: Dispatch<SetStateAction<number>>;
   nextCareerRankRecord: ResolvedCharacterRecord["careerRecord"]["ranks"][number] | null;
   increasePendingCareerRank: () => void;
   advancementCharacteristics: AdvancementCharacteristic[];
@@ -118,6 +120,7 @@ const characteristicAdvanceGridClass = "grid-cols-[minmax(0,1fr)_minmax(132px,au
 const skillAdvanceGridClass = "grid-cols-[minmax(0,1fr)_minmax(132px,auto)_36px] md:grid-cols-[minmax(0,1fr)_56px_minmax(132px,auto)_48px]";
 const talentAdvanceGridClass = "grid-cols-[minmax(0,1fr)_52px_minmax(132px,auto)_36px] md:grid-cols-[minmax(0,1fr)_72px_minmax(132px,auto)_48px]";
 const advanceRowInsetClass = "pl-5 md:pl-6";
+const advanceRowTitleClass = "ml-0! pl-4! md:pl-5!";
 
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
 
@@ -136,7 +139,9 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
   careerAdvancementData,
   pendingAvailableXp,
   pendingXpAdjustment,
+  pendingTotalXpAdjustment,
   setPendingXpAdjustment,
+  setPendingTotalXpAdjustment,
   nextCareerRankRecord,
   increasePendingCareerRank,
   advancementCharacteristics,
@@ -161,12 +166,18 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
   const careerRows = currentCareerRow ? [currentCareerRow] : [];
   const currentXpValue = Math.max(0, pendingAvailableXp + pendingXpAdjustment);
   const currentXpDisplay = currentXpValue;
-  const pendingTotalXp = characterData.xpTotal + Math.max(0, pendingXpAdjustment);
+  const pendingTotalXp = Math.max(0, characterData.xpTotal + pendingTotalXpAdjustment);
   const adjustXp = (amount: number) => {
     setPendingXpAdjustment((current) => Math.max(-pendingAvailableXp, current + amount));
   };
   const setCurrentXpValue = (value: number) => {
     setPendingXpAdjustment(Math.max(0, value) - pendingAvailableXp);
+  };
+  const adjustTotalXp = (amount: number) => {
+    setPendingTotalXpAdjustment((current) => Math.max(-characterData.xpTotal, current + amount));
+  };
+  const setTotalXpValue = (value: number) => {
+    setPendingTotalXpAdjustment(Math.max(0, value) - characterData.xpTotal);
   };
 
   const xpAdjustActions = (
@@ -176,7 +187,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           event.preventDefault();
           adjustXp(-100);
         }}
-        disabled={currentXpValue <= 0}
         className="wfrp-stepper-btn wfrp-stepper-btn--value"
         aria-label="Remove 100 pending XP"
       >
@@ -187,7 +197,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           event.preventDefault();
           adjustXp(-10);
         }}
-        disabled={currentXpValue <= 0}
         className="wfrp-stepper-btn wfrp-stepper-btn--value"
         aria-label="Remove 10 pending XP"
       >
@@ -207,7 +216,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           adjustXp(10);
         }}
         className="wfrp-stepper-btn wfrp-stepper-btn--value"
-        aria-label="Add 10 current and total XP"
+        aria-label="Add 10 current XP"
       >
         <span className="wfrp-stepper-btn__inner">+10</span>
       </button>
@@ -217,7 +226,61 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           adjustXp(100);
         }}
         className="wfrp-stepper-btn wfrp-stepper-btn--value"
-        aria-label="Add 100 current and total XP"
+        aria-label="Add 100 current XP"
+      >
+        <span className="wfrp-stepper-btn__inner">+100</span>
+      </button>
+    </div>
+  );
+  const totalXpAdjustActions = (
+    <div className="flex flex-wrap items-center justify-center gap-1">
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          adjustTotalXp(-100);
+        }}
+        disabled={pendingTotalXp <= 0}
+        className="wfrp-stepper-btn wfrp-stepper-btn--value"
+        aria-label="Remove 100 total XP"
+      >
+        <span className="wfrp-stepper-btn__inner">-100</span>
+      </button>
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          adjustTotalXp(-10);
+        }}
+        disabled={pendingTotalXp <= 0}
+        className="wfrp-stepper-btn wfrp-stepper-btn--value"
+        aria-label="Remove 10 total XP"
+      >
+        <span className="wfrp-stepper-btn__inner">-10</span>
+      </button>
+      <input
+        type="number"
+        min={0}
+        value={pendingTotalXp}
+        onChange={(event) => setTotalXpValue(Math.floor(Number(event.target.value) || 0))}
+        className="h-6 w-16 rounded border border-white/10 bg-black/40 px-1 text-center font-mono text-[11px] text-white"
+        aria-label="Total XP"
+      />
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          adjustTotalXp(10);
+        }}
+        className="wfrp-stepper-btn wfrp-stepper-btn--value"
+        aria-label="Add 10 total XP"
+      >
+        <span className="wfrp-stepper-btn__inner">+10</span>
+      </button>
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          adjustTotalXp(100);
+        }}
+        className="wfrp-stepper-btn wfrp-stepper-btn--value"
+        aria-label="Add 100 total XP"
       >
         <span className="wfrp-stepper-btn__inner">+100</span>
       </button>
@@ -346,12 +409,12 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                 value={listSearch}
                 onChange={(event) => setListSearch(event.target.value)}
                 placeholder="Search"
-                className="h-9 min-w-0 flex-1 rounded border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
+                className="h-9 min-w-0 flex-1 appearance-none rounded-lg border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
                 aria-label="Search edit character list"
               />
               <button
                 type="submit"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-wfrp-border bg-wfrp-surface text-gray-300 transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-wfrp-border bg-wfrp-surface text-gray-300 transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                 aria-label="Search"
               >
                 <Search size={15} />
@@ -376,7 +439,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                 contentClassName="px-3 pb-4 pt-1 md:px-4"
                 summary={(
                   <>
-                    <div className="wfrp-list-cell-strong min-w-0 truncate text-left">
+                    <div className={`wfrp-list-cell-strong min-w-0 truncate text-left ${advanceRowTitleClass}`}>
                       Current Experience
                     </div>
                     <div className="wfrp-list-cell-strong text-center font-mono">
@@ -400,19 +463,19 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                 contentClassName="px-3 pb-4 pt-1 md:px-4"
                 summary={(
                   <>
-                    <div className="wfrp-list-cell-strong min-w-0 truncate text-left">
+                    <div className={`wfrp-list-cell-strong min-w-0 truncate text-left ${advanceRowTitleClass}`}>
                       Total Experience
                     </div>
                     <div className="wfrp-list-cell-strong text-center font-mono">
                       {pendingTotalXp}
                     </div>
-                    <span className="wfrp-list-cell text-center text-wfrp-muted-text">-</span>
+                    {totalXpAdjustActions}
                     <SheetDataDisclosureCell />
                   </>
                 )}
               >
                 <SheetDataAccordionDetails
-                  description="Total XP increases when positive current XP adjustments are saved."
+                  description="Total XP can be edited directly."
                   rows={[
                     { label: "Current XP", value: currentXpDisplay },
                     { label: "Total XP", value: pendingTotalXp },
@@ -442,7 +505,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                         event.preventDefault();
                         increasePendingCareerRank();
                       }}
-                      disabled={!nextCareerRankRecord}
                       className="wfrp-stepper-btn"
                       aria-label={`Advance ${characterData.career} from rank ${rankRecord.rank}`}
                       title="Advance career"
@@ -464,7 +526,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       contentClassName="px-3 pb-4 pt-1 md:px-4"
                       summary={(
                         <>
-                          <div className="min-w-0">
+                          <div className={`min-w-0 ${advanceRowTitleClass}`}>
                             <button
                               onClick={(event) => {
                                 event.preventDefault();
@@ -539,7 +601,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                             [item.key]: Math.max(0, (prev[item.key] ?? item.initial) - 1),
                           }));
                         }}
-                        disabled={initialDraftValue <= 0}
                         className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
                         aria-label={`Decrease initial ${item.label}`}
                       >
@@ -623,7 +684,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                               });
                               clearRollCharacteristic();
                             }}
-                            className="wfrp-skill-link min-w-0 truncate text-left"
+                            className={`wfrp-skill-link min-w-0 truncate text-left ${advanceRowTitleClass}`}
                           >
                             {item.label} ({item.key})
                           </button>
@@ -640,7 +701,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                                   [item.key]: Math.max(0, (prev[item.key] ?? item.advances) - 1),
                                 }));
                               }}
-                              disabled={advanceDraftValue <= 0}
                               className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
                               aria-label={`Decrease ${item.label}`}
                             >
@@ -742,7 +802,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                                   setActiveInfo({ type: "skill", name: skillRow.skillName });
                                   clearRollCharacteristic();
                                 }}
-                                className="wfrp-skill-link min-w-0 truncate text-left"
+                                className={`wfrp-skill-link min-w-0 truncate text-left ${advanceRowTitleClass}`}
                               >
                                 {skillRow.skillName} ({skillRow.characteristicKey || "-"})
                               </button>
@@ -762,7 +822,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                                       ),
                                     }));
                                   }}
-                                  disabled={advanceDraftValue <= 0}
                                   className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
                                   aria-label={`Decrease skill advances for ${skillRow.skillName}`}
                                 >
@@ -853,7 +912,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                             event.preventDefault();
                             openTalentInfo(talentName);
                           }}
-                          className="wfrp-skill-link min-w-0 truncate text-left"
+                          className={`wfrp-skill-link min-w-0 truncate text-left ${advanceRowTitleClass}`}
                         >
                           {talentName}
                         </button>
@@ -867,7 +926,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                               event.preventDefault();
                               updateTalentTaken(talentName, takenCount - 1);
                             }}
-                            disabled={takenCount === 0}
                             className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
                             aria-label={`Decrease talent purchases for ${talentName}`}
                           >
