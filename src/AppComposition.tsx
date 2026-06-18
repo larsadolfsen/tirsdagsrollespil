@@ -284,7 +284,6 @@ export function AppComposition() {
   } = useNotesViewModel({ notes, setNotes });
   const {
     advancementCharacteristics,
-    availableCareerCharacteristicKeys,
     displayedCareerRank,
     displayedCareerRankRecord,
     getCareerSkillOptions,
@@ -645,13 +644,6 @@ export function AppComposition() {
     }));
   };
 
-  const purchaseCharacteristicAdvance = (characteristicKey: string) => {
-    setPendingCharacteristicAdvances((prev) => ({
-      ...prev,
-      [characteristicKey]: (prev[characteristicKey] ?? 0) + 1,
-    }));
-  };
-
   const purchaseTalent = (talentName: string) => {
     const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
     if (!talentDefinition) {
@@ -761,21 +753,6 @@ export function AppComposition() {
       return {
         ...prev,
         [skillName]: current - 1,
-      };
-    });
-  };
-
-  const removePendingCharacteristicAdvance = (characteristicKey: string) => {
-    setPendingCharacteristicAdvances((prev) => {
-      const current = prev[characteristicKey] ?? 0;
-      if (current <= 1) {
-        const { [characteristicKey]: _removed, ...rest } = prev;
-        return rest;
-      }
-
-      return {
-        ...prev,
-        [characteristicKey]: current - 1,
       };
     });
   };
@@ -1271,15 +1248,10 @@ export function AppComposition() {
         nextCareerRankRecord={nextCareerRankRecord}
         increasePendingCareerRank={increasePendingCareerRank}
         advancementCharacteristics={advancementCharacteristics}
-        availableCareerCharacteristicKeys={availableCareerCharacteristicKeys}
         getCharacteristicLabel={getCharacteristicLabel}
-        removePendingCharacteristicAdvance={removePendingCharacteristicAdvance}
-        purchaseCharacteristicAdvance={purchaseCharacteristicAdvance}
         updateCharacteristicInitial={updateCharacteristicInitial}
         updateCharacteristicAdvances={updateCharacteristicAdvances}
         advancementSkillSections={advancementSkillSections}
-        removePendingSkillAdvance={removePendingSkillAdvance}
-        purchaseSkillAdvance={purchaseSkillAdvance}
         updateSkillAdvances={updateSkillAdvances}
         advancementTalentNames={advancementTalentNames}
         characterTalents={characterTalents}

@@ -65,15 +65,10 @@ interface CareerTabProps {
   nextCareerRankRecord: ResolvedCharacterRecord["careerRecord"]["ranks"][number] | null;
   increasePendingCareerRank: () => void;
   advancementCharacteristics: AdvancementCharacteristic[];
-  availableCareerCharacteristicKeys: string[];
   getCharacteristicLabel: (key: string) => string;
-  removePendingCharacteristicAdvance: (characteristicKey: string) => void;
-  purchaseCharacteristicAdvance: (characteristicKey: string) => void;
   updateCharacteristicInitial: (characteristicKey: string, initialValue: number) => void;
   updateCharacteristicAdvances: (characteristicKey: string, advances: number) => void;
   advancementSkillSections: AdvancementSkillSection[];
-  removePendingSkillAdvance: (skillName: string) => void;
-  purchaseSkillAdvance: (skillName: string) => void;
   updateSkillAdvances: (skillName: string, advances: number) => void;
   advancementTalentNames: string[];
   characterTalents: ResolvedCharacterTalent[];
@@ -86,9 +81,8 @@ interface CareerTabProps {
 }
 
 const careerSubtabOptions: Array<{ id: CareerSubtab; label: string }> = [
-  { id: "all", label: "All" },
-  { id: "careers", label: "Careers" },
   { id: "characteristics", label: "Characteristics" },
+  { id: "careers", label: "Careers" },
   { id: "skills", label: "Skills" },
   { id: "talents", label: "Talents" },
 ];
@@ -117,15 +111,10 @@ export function CareerTab({
   nextCareerRankRecord,
   increasePendingCareerRank,
   advancementCharacteristics,
-  availableCareerCharacteristicKeys,
   getCharacteristicLabel,
-  removePendingCharacteristicAdvance,
-  purchaseCharacteristicAdvance,
   updateCharacteristicInitial,
   updateCharacteristicAdvances,
   advancementSkillSections,
-  removePendingSkillAdvance,
-  purchaseSkillAdvance,
   updateSkillAdvances,
   advancementTalentNames,
   characterTalents,
@@ -203,6 +192,26 @@ export function CareerTab({
   const [characteristicInitialDrafts, setCharacteristicInitialDrafts] = useState<Record<string, number>>({});
   const [characteristicAdvanceDrafts, setCharacteristicAdvanceDrafts] = useState<Record<string, number>>({});
   const [skillAdvanceDrafts, setSkillAdvanceDrafts] = useState<Record<string, number>>({});
+  const [listSearch, setListSearch] = useState("");
+  const normalizedSearch = listSearch.trim().toLowerCase();
+  const matchesSearch = (...values: Array<string | null | undefined>) =>
+    normalizedSearch.length === 0 ||
+    values.some((value) => value?.toLowerCase().includes(normalizedSearch));
+  const filteredCareerRows = careerRows.filter((rankRecord) =>
+    matchesSearch(characterData.career, rankRecord.name, rankRecord.status, toRoman(rankRecord.rank)),
+  );
+  const filteredAdvancementCharacteristics = advancementCharacteristics.filter((item) =>
+    matchesSearch(item.label, item.key, getCharacteristicLabel(item.key)),
+  );
+  const filteredAdvancementSkillSections = advancementSkillSections.map((section) => ({
+    ...section,
+    skills: section.skills.filter((skillRow) =>
+      matchesSearch(skillRow.skillName, skillRow.characteristicKey, section.title),
+    ),
+  }));
+  const filteredAdvancementTalentNames = advancementTalentNames.filter((talentName) =>
+    matchesSearch(talentName),
+  );
   const hasAdvancementDraftChanges =
     Object.keys(characteristicInitialDrafts).length > 0 ||
     Object.keys(characteristicAdvanceDrafts).length > 0 ||
@@ -259,6 +268,16 @@ export function CareerTab({
         />
       )}
     >
+        <div className="px-3 pb-3 pt-0 md:px-4">
+          <input
+            type="search"
+            value={listSearch}
+            onChange={(event) => setListSearch(event.target.value)}
+            placeholder="Search"
+            className="h-9 w-full rounded border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
+            aria-label="Search edit character list"
+          />
+        </div>
         <SheetDataSection
           gridClassName={careerXpGridClass}
           sectionLabel="XP"
@@ -296,7 +315,7 @@ export function CareerTab({
             </SheetDataAccordionRow>
         </SheetDataSection>
 
-        {(activeCareerSubtab === "all" || activeCareerSubtab === "careers") && (
+        {activeCareerSubtab === "careers" && (
           <AdvancementSection title="Careers" meta="Current Path" hideHeader>
             <SheetDataSection
               gridClassName={careerPathGridClass}
@@ -306,7 +325,7 @@ export function CareerTab({
                 { align: "center", label: "More" },
               ]}
             >
-                {careerRows.map((rankRecord) => {
+                {filteredCareerRows.map((rankRecord) => {
                   const isActiveCareerRow = rankRecord.rank === displayedCareerRank;
                   const advanceAction = isActiveCareerRow ? (
                     <button
@@ -379,7 +398,7 @@ export function CareerTab({
           </AdvancementSection>
         )}
 
-        {(activeCareerSubtab === "all" || activeCareerSubtab === "characteristics") && (
+        {activeCareerSubtab === "characteristics" && (
           <AdvancementSection title="Characteristics" hideHeader>
             <SheetDataSection
               gridClassName={characteristicAdvanceGridClass}
@@ -390,10 +409,9 @@ export function CareerTab({
                 { align: "center", label: "More" },
               ]}
             >
-                {advancementCharacteristics.map((item) => {
+                {filteredAdvancementCharacteristics.map((item) => {
                   const initialDraftValue = characteristicInitialDrafts[item.key] ?? item.initial;
                   const advanceDraftValue = characteristicAdvanceDrafts[item.key] ?? item.advances;
-                  const isAvailable = availableCareerCharacteristicKeys.includes(item.key);
                   const initialControl = (
                     <div className="flex items-center justify-center gap-1">
                       <button
@@ -463,9 +481,7 @@ export function CareerTab({
                   return (
                     <SheetDataAccordionRow
                       key={item.key}
-                      className={`group ${
-                        !isAvailable ? "opacity-70" : ""
-                      }`}
+                      className="group"
                       summaryClassName={`${characteristicAdvanceGridClass} gap-0 ${advanceRowInsetClass}`}
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
@@ -503,9 +519,12 @@ export function CareerTab({
                               type="button"
                               onClick={(event) => {
                                 event.preventDefault();
-                                removePendingCharacteristicAdvance(item.key);
+                                setCharacteristicAdvanceDrafts((prev) => ({
+                                  ...prev,
+                                  [item.key]: Math.max(0, (prev[item.key] ?? item.advances) - 1),
+                                }));
                               }}
-                              disabled={item.pendingAdvances === 0 || !isAvailable}
+                              disabled={advanceDraftValue <= 0}
                               className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
                               aria-label={`Decrease ${item.label}`}
                             >
@@ -518,9 +537,11 @@ export function CareerTab({
                               type="button"
                               onClick={(event) => {
                                 event.preventDefault();
-                                purchaseCharacteristicAdvance(item.key);
+                                setCharacteristicAdvanceDrafts((prev) => ({
+                                  ...prev,
+                                  [item.key]: (prev[item.key] ?? item.advances) + 1,
+                                }));
                               }}
-                              disabled={!isAvailable}
                               className="wfrp-stepper-btn focus-visible:ring-green-600/50"
                               aria-label={`Increase ${item.label}`}
                             >
@@ -534,7 +555,7 @@ export function CareerTab({
                       )}
                     >
                       <SheetDataAccordionDetails
-                        description={`${getCharacteristicLabel(item.key)} is ${isAvailable ? "available" : "not available"} at the current career rank.`}
+                        description={`${getCharacteristicLabel(item.key)} can be edited directly.`}
                         rows={[
                           { label: "Initial", value: initialControl },
                           { label: "Current", value: item.value },
@@ -548,10 +569,10 @@ export function CareerTab({
           </AdvancementSection>
         )}
 
-        {(activeCareerSubtab === "all" || activeCareerSubtab === "skills") && (
+        {activeCareerSubtab === "skills" && (
           <AdvancementSection title="Skills" hideHeader>
             <div className="flex flex-col gap-3">
-              {advancementSkillSections.map((section) => (
+              {filteredAdvancementSkillSections.map((section) => (
                 <SheetDataSection
                   key={section.id}
                   gridClassName={skillAdvanceGridClass}
@@ -568,7 +589,6 @@ export function CareerTab({
                       </SheetEmptyState>
                     ) : (
                       section.skills.map((skillRow) => {
-                        const canPurchase = skillRow.isCareerSkill;
                         const advanceDraftValue =
                           skillAdvanceDrafts[skillRow.skillName] ?? skillRow.baseAdvances;
                         const initialDisplay =
@@ -594,9 +614,7 @@ export function CareerTab({
                         return (
                           <SheetDataAccordionRow
                             key={skillRow.skillName}
-                            className={`group ${
-                              !skillRow.isCareerSkill ? "opacity-70" : ""
-                            }`}
+                            className="group"
                             summaryClassName={`${skillAdvanceGridClass} gap-0 ${advanceRowInsetClass}`}
                             contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                             summary={(
@@ -620,9 +638,15 @@ export function CareerTab({
                                   type="button"
                                   onClick={(event) => {
                                     event.preventDefault();
-                                    removePendingSkillAdvance(skillRow.skillName);
+                                    setSkillAdvanceDrafts((prev) => ({
+                                      ...prev,
+                                      [skillRow.skillName]: Math.max(
+                                        0,
+                                        (prev[skillRow.skillName] ?? skillRow.baseAdvances) - 1,
+                                      ),
+                                    }));
                                   }}
-                                  disabled={skillRow.pendingAdvances === 0 || !skillRow.isCareerSkill}
+                                  disabled={advanceDraftValue <= 0}
                                   className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
                                   aria-label={`Decrease skill advances for ${skillRow.skillName}`}
                                 >
@@ -635,9 +659,11 @@ export function CareerTab({
                                   type="button"
                                   onClick={(event) => {
                                     event.preventDefault();
-                                    purchaseSkillAdvance(skillRow.skillName);
+                                    setSkillAdvanceDrafts((prev) => ({
+                                      ...prev,
+                                      [skillRow.skillName]: (prev[skillRow.skillName] ?? skillRow.baseAdvances) + 1,
+                                    }));
                                   }}
-                                  disabled={!canPurchase}
                                   className="wfrp-stepper-btn focus-visible:ring-green-600/50"
                                   aria-label={`Advance skill ${skillRow.skillName}`}
                                 >
@@ -651,7 +677,7 @@ export function CareerTab({
                             )}
                           >
                             <SheetDataAccordionDetails
-                              description={`${skillRow.skillName} is ${skillRow.isCareerSkill ? "available" : "not available"} in the current career path.`}
+                              description={`${skillRow.skillName} can be edited directly.`}
                               rows={[
                                 { label: "Initial", value: initialDisplay },
                                 { label: "Characteristic", value: skillRow.characteristicKey || "-" },
@@ -668,7 +694,7 @@ export function CareerTab({
           </AdvancementSection>
         )}
 
-        {(activeCareerSubtab === "all" || activeCareerSubtab === "talents") && (
+        {activeCareerSubtab === "talents" && (
           <AdvancementSection title="Talents" hideHeader>
             <SheetDataSection
               gridClassName={talentAdvanceGridClass}
@@ -679,13 +705,11 @@ export function CareerTab({
                 { align: "center", label: "More" },
               ]}
             >
-                {advancementTalentNames.map((talentName) => {
+                {filteredAdvancementTalentNames.map((talentName) => {
                   const takenCount = characterTalents.filter(
                     (talent) => talent.name === talentName,
                   ).length;
                   const maxDisplay = getTalentMaxDisplayByName(talentName);
-                  const isCareerTalent = careerAdvancementData.talents.includes(talentName);
-                  const canPurchase = isCareerTalent;
                   const takenControl = (
                     <input
                       type="number"
@@ -702,9 +726,7 @@ export function CareerTab({
                   return (
                     <SheetDataAccordionRow
                       key={talentName}
-                      className={`group ${
-                        !isCareerTalent && takenCount === 0 ? "opacity-70" : ""
-                      }`}
+                      className="group"
                       summaryClassName={`${talentAdvanceGridClass} gap-0 ${advanceRowInsetClass}`}
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
@@ -744,7 +766,6 @@ export function CareerTab({
                               event.preventDefault();
                               purchaseTalent(talentName);
                             }}
-                            disabled={!canPurchase}
                             className="wfrp-stepper-btn focus-visible:ring-green-600/50"
                             aria-label={`Purchase talent ${talentName}`}
                           >
@@ -758,7 +779,7 @@ export function CareerTab({
                       )}
                     >
                       <SheetDataAccordionDetails
-                        description={`${talentName} is ${isCareerTalent ? "available" : "not available"} in the current career path.`}
+                        description={`${talentName} can be edited directly.`}
                         rows={[
                           { label: "Max", value: maxDisplay },
                           { label: "Taken", value: takenControl },

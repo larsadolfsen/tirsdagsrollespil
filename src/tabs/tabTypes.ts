@@ -5,7 +5,7 @@ export type JournalSubtab = "sessions" | "npcs" | "background";
 export type SkillSubtab = "all" | "advanced" | "basic";
 export type SpellSubtab = "all" | "petty" | "arcane" | `school:${string}`;
 export type InventorySubtab = "all" | "worn" | "carried" | `container:${string}`;
-export type CareerSubtab = "all" | "careers" | "characteristics" | "skills" | "talents";
+export type CareerSubtab = "characteristics" | "careers" | "skills" | "talents";
 export type CoinKey = "gc" | "s" | "d";
 
 export type TabOption<T extends string> = {

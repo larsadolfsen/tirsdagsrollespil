@@ -18,7 +18,7 @@ export function useAppShellState() {
   const [activeSkillSubtab, setActiveSkillSubtab] = useState<SkillSubtab>("all");
   const [activeSpellSubtab, setActiveSpellSubtab] = useState<SpellSubtab>("all");
   const [activeInventorySubtab, setActiveInventorySubtab] = useState<InventorySubtab>("all");
-  const [activeCareerSubtab, setActiveCareerSubtab] = useState<CareerSubtab>("all");
+  const [activeCareerSubtab, setActiveCareerSubtab] = useState<CareerSubtab>("characteristics");
   const [activeJournalSubtab, setActiveJournalSubtab] = useState<JournalSubtab>("sessions");
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isSpellShopOpen, setIsSpellShopOpen] = useState(false);
@@ -33,7 +33,7 @@ export function useAppShellState() {
     setActiveActionCategory("all");
     setActiveSkillSubtab("all");
     setActiveInventorySubtab("all");
-    setActiveCareerSubtab("all");
+    setActiveCareerSubtab("characteristics");
     setActiveJournalSubtab("sessions");
     setIsShopOpen(false);
   };
