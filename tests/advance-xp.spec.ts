@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("advance XP controls use table layout and hide unavailable removals", async ({ page }) => {
+test("advance XP controls use table layout and keep removal buttons active", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Open Advance tab" }).click();
 
@@ -13,18 +13,31 @@ test("advance XP controls use table layout and hide unavailable removals", async
   await expect(page.getByRole("button", { name: "Add 10 current and total XP" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Add 100 current and total XP" })).toBeVisible();
 
-  const remove100 = page.getByRole("button", { name: "Remove 100 current and total XP" });
-  for (let index = 0; index < 50 && (await remove100.count()) > 0; index += 1) {
+  const remove100 = page.getByRole("button", { name: "Remove 100 pending XP" });
+  await expect(remove100).toBeEnabled();
+  for (let index = 0; index < 50; index += 1) {
     await remove100.click();
   }
-  await expect(remove100).toHaveCount(0);
+  await expect(remove100).toBeVisible();
+  await expect(remove100).toBeEnabled();
 
-  const remove10 = page.getByRole("button", { name: "Remove 10 current and total XP" });
-  for (let index = 0; index < 10 && (await remove10.count()) > 0; index += 1) {
+  const remove10 = page.getByRole("button", { name: "Remove 10 pending XP" });
+  await expect(remove10).toBeEnabled();
+  for (let index = 0; index < 10; index += 1) {
     await remove10.click();
   }
-  await expect(remove10).toHaveCount(0);
+  await expect(remove10).toBeVisible();
+  await expect(remove10).toBeEnabled();
 
   await expect(page.getByRole("button", { name: "Add 10 current and total XP" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Add 100 current and total XP" })).toBeVisible();
+});
+
+test("advance careers tab lists the full career catalog", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open Advance tab" }).click();
+  await page.getByRole("button", { name: "Careers" }).click();
+
+  await expect(page.getByRole("button", { name: "Apothecary I" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Warrior Priest I" })).toBeVisible();
 });

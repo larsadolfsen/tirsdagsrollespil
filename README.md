@@ -34,6 +34,22 @@ npm run build
 npm run start
 ```
 
+To deploy from this machine with npm, install and link the Railway CLI first:
+
+```sh
+npm install -g @railway/cli
+railway login
+railway link
+```
+
+Then deploy with:
+
+```sh
+npm run deploy
+```
+
+The deploy script runs a production build and then calls `railway up`.
+
 Runtime data under `data/` is protected by Git hooks. Commits and pushes that
 include character save files are blocked by default, so local saves are not
 published over production seed data by mistake. Intentional seed-data changes can

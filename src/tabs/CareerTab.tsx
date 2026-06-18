@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus, Search } from "lucide-react";
 import { AdvancementSection, InlineSubtabs, SubtabContentFrame } from "../components/ui";
@@ -14,6 +14,8 @@ import type {
   ResolvedCharacterRecord,
   ResolvedCharacterTalent,
 } from "../data/characters/resolved";
+import { careerPaths } from "../data/rules/wfrp4e/careers/careerPaths";
+import { careerSteps } from "../data/rules/wfrp4e/careers/careerSteps";
 import type { CareerSubtab } from "./tabTypes";
 
 type AdvancementCharacteristic = {
@@ -50,6 +52,15 @@ type CareerAdvancementData = {
   }>;
   skills: string[];
   talents: string[];
+};
+
+type CareerCatalogRow = {
+  id: string;
+  careerName: string;
+  classId: string;
+  rank: number;
+  tierName: string;
+  status: string;
 };
 
 interface CareerTabProps {
@@ -123,6 +134,11 @@ const advanceRowInsetClass = "pl-5 md:pl-6";
 const advanceRowTitleClass = "ml-0! pl-4! md:pl-5!";
 
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
+const formatCareerClass = (classId: string) =>
+  classId
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 
 export type CareerTabHandle = {
   saveChanges: () => void;
@@ -159,11 +175,30 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
   setActiveInfo,
   clearRollCharacteristic,
 }, ref) {
-  const currentCareerRow =
-    displayedCareerRankRecord ??
-    characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank) ??
-    null;
-  const careerRows = currentCareerRow ? [currentCareerRow] : [];
+  const careerRows = useMemo<CareerCatalogRow[]>(() => {
+    const stepsById = new Map(careerSteps.map((step) => [step.id, step]));
+
+    return careerPaths
+      .flatMap((careerPath) =>
+        careerPath.stepIds.map((stepId, index) => {
+          const careerStep = stepsById.get(stepId);
+
+          return {
+            id: stepId,
+            careerName: careerPath.name,
+            classId: careerPath.classId,
+            rank: careerStep?.rank ?? index + 1,
+            tierName: careerStep?.name ?? `${careerPath.name} ${toRoman(index + 1)}`,
+            status: careerStep?.status ?? "-",
+          };
+        }),
+      )
+      .sort((first, second) =>
+        first.classId.localeCompare(second.classId) ||
+        first.careerName.localeCompare(second.careerName) ||
+        first.rank - second.rank,
+      );
+  }, []);
   const currentXpValue = Math.max(0, pendingAvailableXp + pendingXpAdjustment);
   const currentXpDisplay = currentXpValue;
   const pendingTotalXp = Math.max(0, characterData.xpTotal + pendingTotalXpAdjustment);
@@ -239,7 +274,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           event.preventDefault();
           adjustTotalXp(-100);
         }}
-        disabled={pendingTotalXp <= 0}
         className="wfrp-stepper-btn wfrp-stepper-btn--value"
         aria-label="Remove 100 total XP"
       >
@@ -250,7 +284,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           event.preventDefault();
           adjustTotalXp(-10);
         }}
-        disabled={pendingTotalXp <= 0}
         className="wfrp-stepper-btn wfrp-stepper-btn--value"
         aria-label="Remove 10 total XP"
       >
@@ -322,8 +355,14 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
     if (effectiveListFilter === "other") return !isCareerTalent;
     return true;
   };
-  const filteredCareerRows = careerRows.filter((rankRecord) =>
-    matchesSearch(characterData.career, rankRecord.name, rankRecord.status, toRoman(rankRecord.rank)),
+  const filteredCareerRows = careerRows.filter((careerRow) =>
+    matchesSearch(
+      careerRow.careerName,
+      careerRow.tierName,
+      careerRow.status,
+      formatCareerClass(careerRow.classId),
+      toRoman(careerRow.rank),
+    ),
   );
   const filteredAdvancementCharacteristics = advancementCharacteristics.filter((item) =>
     matchesCharacteristicFilter(item) && matchesSearch(item.label, item.key, getCharacteristicLabel(item.key)),
@@ -487,7 +526,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
         )}
 
         {activeCareerSubtab === "careers" && (
-          <AdvancementSection title="Careers" meta="Current Path" hideHeader>
+          <AdvancementSection title="Careers" meta="All Paths" hideHeader>
             <SheetDataSection
               gridClassName={careerPathGridClass}
               sectionLabel="Career"
@@ -497,8 +536,10 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                 { align: "center", label: "More" },
               ]}
             >
-                {filteredCareerRows.map((rankRecord) => {
-                  const isActiveCareerRow = rankRecord.rank === displayedCareerRank;
+                {filteredCareerRows.map((careerRow) => {
+                  const isActiveCareerRow =
+                    careerRow.careerName === characterData.career &&
+                    careerRow.rank === displayedCareerRank;
                   const advanceAction = isActiveCareerRow ? (
                     <button
                       onClick={(event) => {
@@ -506,7 +547,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                         increasePendingCareerRank();
                       }}
                       className="wfrp-stepper-btn"
-                      aria-label={`Advance ${characterData.career} from rank ${rankRecord.rank}`}
+                      aria-label={`Advance ${careerRow.careerName} from rank ${careerRow.rank}`}
                       title="Advance career"
                     >
                       <span className="wfrp-stepper-btn__inner">
@@ -521,7 +562,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
 
                   return (
                     <SheetDataAccordionRow
-                      key={rankRecord.rank}
+                      key={careerRow.id}
                       summaryClassName={`${careerPathGridClass} ${advanceRowInsetClass}`}
                       contentClassName="px-3 pb-4 pt-1 md:px-4"
                       summary={(
@@ -532,25 +573,26 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                                 event.preventDefault();
                                 setActiveInfo({
                                   type: "career",
-                                  name: `${characterData.career} ${toRoman(rankRecord.rank)}`,
+                                  name: `${careerRow.careerName} ${toRoman(careerRow.rank)}`,
                                   extra: {
-                                    careerName: characterData.career,
-                                    tierName: rankRecord.name,
-                                    tierStatus: rankRecord.status,
-                                    rank: rankRecord.rank,
-                                    careerSkills: careerAdvancementData.skills,
-                                    careerTalents: careerAdvancementData.talents,
+                                    careerName: careerRow.careerName,
+                                    className: formatCareerClass(careerRow.classId),
+                                    tierName: careerRow.tierName,
+                                    tierStatus: careerRow.status,
+                                    rank: careerRow.rank,
+                                    careerSkills: isActiveCareerRow ? careerAdvancementData.skills : [],
+                                    careerTalents: isActiveCareerRow ? careerAdvancementData.talents : [],
                                   },
                                 });
                                 clearRollCharacteristic();
                               }}
                               className="wfrp-skill-link truncate text-left"
                             >
-                              {characterData.career} {toRoman(rankRecord.rank)}
+                              {careerRow.careerName} {toRoman(careerRow.rank)}
                             </button>
                           </div>
                           <div className="hidden wfrp-list-cell-strong min-w-0 truncate text-left md:block">
-                            {rankRecord.name}
+                            {careerRow.tierName}
                           </div>
                           <div className="flex justify-end">{advanceAction}</div>
                           <SheetDataDisclosureCell />
@@ -560,12 +602,20 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       <SheetDataAccordionDetails
                         rows={[
                           {
+                            label: "Class",
+                            value: formatCareerClass(careerRow.classId),
+                          },
+                          {
                             label: "Tier",
-                            value: rankRecord.name,
+                            value: careerRow.tierName,
                           },
                           {
                             label: "Status",
-                            value: rankRecord.status,
+                            value: careerRow.status,
+                          },
+                          {
+                            label: "Rank",
+                            value: toRoman(careerRow.rank),
                           },
                         ]}
                       />
