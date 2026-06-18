@@ -11,6 +11,7 @@ interface MobileCharacterHeaderProps {
   onOpenCharacterActions: () => void;
   onOpenCharacterList: () => void;
   onOpenNavigation: () => void;
+  onOpenXpDialog: () => void;
   xpCurrent: number;
   xpTotal: number;
 }
@@ -25,6 +26,7 @@ export function MobileCharacterHeader({
   onOpenCharacterActions,
   onOpenCharacterList,
   onOpenNavigation,
+  onOpenXpDialog,
   xpCurrent,
   xpTotal,
 }: MobileCharacterHeaderProps) {
@@ -97,6 +99,15 @@ export function MobileCharacterHeader({
                 role="menuitem"
               >
                 <span>Edit Character</span>
+                <span className="text-xs font-bold text-blue-400">{xpCurrent}/{xpTotal}</span>
+              </button>
+              <button
+                type="button"
+                onClick={onOpenXpDialog}
+                className="flex w-full items-center justify-between gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                role="menuitem"
+              >
+                <span>Add XP</span>
                 <span className="text-xs font-bold text-blue-400">{xpCurrent}/{xpTotal}</span>
               </button>
               <button

@@ -55,14 +55,19 @@ import {
 } from "./lib/gameSession";
 import { useCampaignRouteSync } from "./lib/useCampaignRouteSync";
 import { buildCampaignCharacterPath, parseCampaignCharacterPath } from "./lib/campaignRoutes";
-import { mainTabButtonActiveClassName, mainTabButtonBaseClassName, mainTabButtonInactiveClassName } from "./lib/tabStyles";
+import {
+  mainTabButtonActiveClassName,
+  mainTabButtonBaseClassName,
+  mainTabButtonInactiveClassName,
+  mainTabUnderlineClassName,
+} from "./lib/tabStyles";
 import { cn } from "./lib/utils";
 import { formatTalentEffect } from "./lib/talentEffects";
 import { UI_LABELS } from "./labels";
 import {
   mainTabOptions,
 } from "./tabs/tabOptions";
-import type { MobileTabMenuTarget } from "./tabs/tabTypes";
+import type { CareerSubtab, MobileTabMenuTarget } from "./tabs/tabTypes";
 import type { Characteristic, Ruleset, SkillDefinition, SkillSpecialisationDefinition } from "./types";
 
 const InfoSidebar = lazy(() =>
@@ -96,6 +101,13 @@ const SpellsTab = lazy(() => import("./tabs/SpellsTab").then((module) => ({ defa
 const TalentsTab = lazy(() => import("./tabs/TalentsTab").then((module) => ({ default: module.TalentsTab })));
 const JournalTab = lazy(() => import("./tabs/JournalTab").then((module) => ({ default: module.JournalTab })));
 const CareerTab = lazy(() => import("./tabs/CareerTab").then((module) => ({ default: module.CareerTab })));
+
+const editCharacterTabOptions: Array<{ id: CareerSubtab; label: string }> = [
+  { id: "characteristics", label: "Characteristics" },
+  { id: "careers", label: "Careers" },
+  { id: "skills", label: "Skills" },
+  { id: "talents", label: "Talents" },
+];
 
 type RollActionButton = {
   id: string;
@@ -309,12 +321,14 @@ export function AppComposition() {
     currentCharacteristicAdvances,
     rulesIndex,
     ruleset,
-    xpCurrent: xpCurrent + pendingXpAdjustment,
+    xpCurrent: Math.max(0, xpCurrent + pendingXpAdjustment),
   });
-  const hasPendingAdvanceChanges = hasPendingCareerChanges || pendingXpAdjustment > 0;
+  const hasPendingAdvanceChanges = hasPendingCareerChanges || pendingXpAdjustment !== 0;
   useEffect(() => {
-    document.title = `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
-  }, [characterData.name]);
+    document.title = isLandingPageOpen
+      ? `${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`
+      : `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
+  }, [characterData.name, isLandingPageOpen]);
 
   type ResolvedSkillOption = (typeof rulesIndex.resolvedSkillOptions)[number];
   const skillDefinitionById = new Map<string, SkillDefinition>(
@@ -625,6 +639,17 @@ export function AppComposition() {
 
   const adjustResolve = (delta: number) => {
     setResolveCurrent(prev => Math.min(Math.max(0, prev + delta), Math.min(resourceCaps.resolve, resilienceCurrent)));
+  };
+
+  const awardXp = (amount: number) => {
+    const gainedXp = Math.max(0, Math.floor(amount));
+
+    if (gainedXp <= 0) {
+      return;
+    }
+
+    setXpCurrent(prev => prev + gainedXp);
+    setXpTotal(prev => prev + gainedXp);
   };
 
   const openTalentInfo = (talentName: string) => {
@@ -1231,11 +1256,11 @@ export function AppComposition() {
   const mobilePageTitle = activeMainTab === "career"
     ? "Edit Character"
     : displayedMobilePageTitleByView[activeMobileMainView];
+  const closeEditCharacterPage = () => selectMainTab("skills");
   const advancePageContent = (
     <LazyTabPanel>
       <CareerTab
         activeCareerSubtab={activeCareerSubtab}
-        setActiveCareerSubtab={setActiveCareerSubtab}
         saveCareerChanges={saveCareerChanges}
         hasPendingCareerChanges={hasPendingAdvanceChanges}
         characterData={characterData}
@@ -1421,6 +1446,7 @@ export function AppComposition() {
                 onOpenMobileCharacterList={() => openMobileNavigation(true)}
                 onOpenMobileNavigation={() => openMobileNavigation(false)}
                 onSelectCharacter={selectCharacter}
+                onAwardXp={awardXp}
                 selectedCharacterId={selectedCharacterId}
                 variant="desktop"
                 xpCurrent={xpCurrent}
@@ -1440,29 +1466,67 @@ export function AppComposition() {
                 onOpenMobileCharacterList={() => openMobileNavigation(true)}
                 onOpenMobileNavigation={() => openMobileNavigation(false)}
                 onSelectCharacter={selectCharacter}
+                onAwardXp={awardXp}
                 selectedCharacterId={selectedCharacterId}
                 variant="mobile"
                 xpCurrent={xpCurrent}
               />
             )}
             mobileTitle={mobilePageTitle}
+            mobileTitleAction={
+              activeMainTab === "career" ? (
+                <button
+                  type="button"
+                  onClick={closeEditCharacterPage}
+                  className="flex h-10 w-10 items-center justify-center rounded border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                  aria-label="Close Edit Character page"
+                >
+                  <X size={18} />
+                </button>
+              ) : undefined
+            }
             onMobileNextView={() => navigateMobileMainView(1)}
             onMobilePreviousView={() => navigateMobileMainView(-1)}
           >
 
           {activeMainTab === "career" ? (
             <section className="min-h-[500px] overflow-hidden rounded-lg border border-wfrp-border bg-card shadow-lg">
-              <div className="flex justify-end border-b border-wfrp-border bg-wfrp-surface-subtle px-4 py-3">
-                <button
-                  type="button"
-                  onClick={() => selectMainTab("skills")}
-                  className="inline-flex items-center gap-2 rounded border border-wfrp-border bg-wfrp-surface px-3 py-1.5 text-xs font-black uppercase tracking-widest text-gray-300 transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                  aria-label="Close Edit Character page"
-                >
-                  <X size={14} />
-                  Close
-                </button>
-              </div>
+              <ScrollableTabStrip className="flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
+                <div className="flex w-full min-w-max items-center justify-between gap-4">
+                  <div className="flex min-w-max items-center gap-4 lg:gap-6">
+                    {editCharacterTabOptions.map((tab) => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setActiveCareerSubtab(tab.id)}
+                        className={cn(
+                          mainTabButtonBaseClassName,
+                          activeCareerSubtab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
+                        )}
+                        aria-current={activeCareerSubtab === tab.id ? "page" : undefined}
+                      >
+                        {tab.label}
+                        {activeCareerSubtab === tab.id ? (
+                          <div className={mainTabUnderlineClassName} />
+                        ) : null}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={closeEditCharacterPage}
+                    className={cn(
+                      mainTabButtonBaseClassName,
+                      mainTabButtonInactiveClassName,
+                      "inline-flex items-center gap-2",
+                    )}
+                    aria-label="Close Edit Character page"
+                  >
+                    <X size={14} />
+                    Close
+                  </button>
+                </div>
+              </ScrollableTabStrip>
               {advancePageContent}
             </section>
           ) : (

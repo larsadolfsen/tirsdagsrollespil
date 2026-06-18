@@ -1,5 +1,6 @@
 import type { MainTab, MobileTabMenuTarget } from "../tabs/tabTypes";
-import { defaultCampaignId } from "../data/campaigns";
+import { campaignById, defaultCampaignId } from "../data/campaigns";
+import { characterRecords } from "../data/characters";
 
 export { defaultCampaignId } from "../data/campaigns";
 
@@ -62,6 +63,42 @@ const decodePathSegment = (value: string) => {
   }
 };
 const encodePathSegment = (value: string) => encodeURIComponent(value);
+const slugifyPathSegment = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+function resolveRouteCharacterId(campaignId: string, characterId: string) {
+  const normalizedCharacterId = characterId.trim();
+  const directCharacter = characterRecords.find(
+    (character) => character.id === normalizedCharacterId,
+  );
+
+  if (directCharacter) {
+    return directCharacter.campaignId === campaignId ? directCharacter.id : null;
+  }
+
+  const normalizedRouteSlug = slugifyPathSegment(normalizedCharacterId.replace(/_/g, "-"));
+  const matchingCharacters = characterRecords.filter((character) => {
+    if (character.campaignId !== campaignId) return false;
+
+    const aliases = [
+      character.id,
+      character.id.replace(/_/g, "-"),
+      character.name,
+      ...(character.aka ?? []),
+    ].map(slugifyPathSegment);
+
+    return aliases.includes(normalizedRouteSlug);
+  });
+
+  return matchingCharacters.length === 1 ? matchingCharacters[0].id : null;
+}
 
 export function parseCampaignCharacterPath(pathname: string): CampaignCharacterRoute | null {
   const match = campaignCharacterRoutePattern.exec(pathname);
@@ -69,11 +106,17 @@ export function parseCampaignCharacterPath(pathname: string): CampaignCharacterR
 
   const [, campaignIdSegment, characterIdSegment, viewSegment] = match;
   const campaignId = decodePathSegment(campaignIdSegment);
-  const characterId = decodePathSegment(characterIdSegment);
+  const routeCharacterId = decodePathSegment(characterIdSegment);
+  const decodedViewSegment = viewSegment ? decodePathSegment(viewSegment) : null;
   const hasExplicitView = Boolean(viewSegment);
-  const view = viewAliases[(viewSegment ?? characterViewPathSegments.characteristics).toLowerCase()];
+  const view = viewAliases[
+    (decodedViewSegment ?? characterViewPathSegments.characteristics).toLowerCase()
+  ];
 
-  if (!campaignId || !characterId || !view) return null;
+  if (!campaignId || !campaignById[campaignId] || !routeCharacterId || !view) return null;
+
+  const characterId = resolveRouteCharacterId(campaignId, routeCharacterId);
+  if (!characterId) return null;
 
   return {
     campaignId,

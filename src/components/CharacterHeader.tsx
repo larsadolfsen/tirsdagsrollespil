@@ -75,6 +75,7 @@ export function CharacterHeader({
   onCreateCharacter,
   onOpenDice,
   onOpenAdvance,
+  onOpenXpDialog,
 }: {
   characterData: ResolvedCharacterRecord;
   availableCharacters: CharacterSummary[];
@@ -85,6 +86,7 @@ export function CharacterHeader({
   onCreateCharacter: () => void;
   onOpenDice: () => void;
   onOpenAdvance: () => void;
+  onOpenXpDialog: () => void;
 }) {
   const { portraitDataUrl, setCharacterName, setPortraitDataUrl } = useGameSessionContext();
   const [isCampaignMenuOpen, setIsCampaignMenuOpen] = useState(false);
@@ -389,6 +391,14 @@ export function CharacterHeader({
           <div className="hidden h-4 w-[1px] bg-wfrp-border mx-1 opacity-50 sm:block" />
           <div className="hidden items-center gap-1 sm:flex">
             <button
+              type="button"
+              onClick={onOpenXpDialog}
+              className="rounded border border-white/5 bg-black/20 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-blue-400 transition-colors hover:border-wfrp-gold/50 hover:bg-wfrp-surface-muted-hover hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+              aria-label="Add gained XP"
+            >
+              XP {xpCurrent}/{characterData.xpTotal}
+            </button>
+            <button
               onClick={onOpenDice}
               className="wfrp-icon-btn p-1.5 hover:bg-wfrp-surface-muted-hover"
               aria-label="Toggle tactical navigation dice"
@@ -419,13 +429,10 @@ export function CharacterHeader({
                       onOpenAdvance();
                       setIsSettingsMenuOpen(false);
                     }}
-                    className="flex w-full items-center justify-between gap-4 px-3 py-2 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                    className="flex w-full items-center px-3 py-2 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                     role="menuitem"
                   >
                     <span>Edit Character</span>
-                    <span className="text-xs font-bold text-blue-400">
-                      {xpCurrent}/{characterData.xpTotal}
-                    </span>
                   </button>
                 </div>
               )}
