@@ -27,7 +27,7 @@ function MobileTitlePager({
 
   return (
     <div
-      className="grid grid-cols-[40px_minmax(0,1fr)_40px] items-center gap-2 md:hidden"
+      className="grid grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-2 md:hidden"
       {...swipeHandlers}
     >
       <button

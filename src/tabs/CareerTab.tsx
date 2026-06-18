@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus, Search } from "lucide-react";
-import { AdvancementSection, InlineSubtabs, SubtabActionButton, SubtabContentFrame } from "../components/ui";
+import { AdvancementSection, InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import {
   SheetDataAccordionDetails,
@@ -56,6 +56,7 @@ interface CareerTabProps {
   activeCareerSubtab: CareerSubtab;
   saveCareerChanges: () => void;
   hasPendingCareerChanges: boolean;
+  onDraftChangesChange: (hasDraftChanges: boolean) => void;
   characterData: ResolvedCharacterRecord;
   displayedCareerRank: number;
   displayedCareerRankRecord: ResolvedCharacterRecord["careerRecord"]["ranks"][number] | null;
@@ -82,6 +83,7 @@ interface CareerTabProps {
 }
 
 export const careerSubtabOptions: Array<{ id: CareerSubtab; label: string }> = [
+  { id: "experience", label: "Experience" },
   { id: "characteristics", label: "Characteristics" },
   { id: "careers", label: "Careers" },
   { id: "skills", label: "Skills" },
@@ -91,6 +93,7 @@ export const careerSubtabOptions: Array<{ id: CareerSubtab; label: string }> = [
 type CareerListFilter = "all" | "career" | "other" | "basic" | "advanced" | "trained" | "untrained" | "taken";
 
 const filterOptionsBySubtab: Record<CareerSubtab, Array<{ id: CareerListFilter; label: string }>> = {
+  experience: [{ id: "all", label: "All" }],
   characteristics: [{ id: "all", label: "All" }],
   careers: [{ id: "all", label: "All" }],
   skills: [
@@ -109,7 +112,7 @@ const filterOptionsBySubtab: Record<CareerSubtab, Array<{ id: CareerListFilter; 
   ],
 };
 
-const careerXpGridClass = "grid-cols-[minmax(0,1fr)_42px_minmax(132px,auto)_36px] md:grid-cols-[minmax(0,1fr)_72px_minmax(180px,auto)_48px]";
+const experienceGridClass = "grid-cols-[minmax(0,1fr)_minmax(96px,auto)_minmax(132px,auto)_36px] md:grid-cols-[minmax(0,1fr)_minmax(120px,auto)_minmax(180px,auto)_48px]";
 const careerPathGridClass = "grid-cols-[minmax(0,1fr)_64px_36px] md:grid-cols-[minmax(0,1fr)_minmax(120px,0.65fr)_74px_48px]";
 const characteristicAdvanceGridClass = "grid-cols-[minmax(0,1fr)_minmax(132px,auto)_36px] md:grid-cols-[minmax(0,1fr)_minmax(132px,auto)_minmax(132px,auto)_48px]";
 const skillAdvanceGridClass = "grid-cols-[minmax(0,1fr)_minmax(132px,auto)_36px] md:grid-cols-[minmax(0,1fr)_56px_minmax(132px,auto)_48px]";
@@ -118,10 +121,15 @@ const advanceRowInsetClass = "pl-5 md:pl-6";
 
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
 
-export function CareerTab({
+export type CareerTabHandle = {
+  saveChanges: () => void;
+};
+
+export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function CareerTab({
   activeCareerSubtab,
   saveCareerChanges,
   hasPendingCareerChanges,
+  onDraftChangesChange,
   characterData,
   displayedCareerRank,
   displayedCareerRankRecord,
@@ -145,7 +153,7 @@ export function CareerTab({
   openTalentInfo,
   setActiveInfo,
   clearRollCharacteristic,
-}: CareerTabProps) {
+}, ref) {
   const currentCareerRow =
     displayedCareerRankRecord ??
     characterData.careerRecord.ranks.find((rank) => rank.rank === displayedCareerRank) ??
@@ -299,29 +307,22 @@ export function CareerTab({
     }
   };
 
-  const shouldHighlightSave = hasPendingCareerChanges || hasAdvancementDraftChanges;
+  useImperativeHandle(ref, () => ({
+    saveChanges: handleSaveCareerClick,
+  }));
+
+  useEffect(() => {
+    onDraftChangesChange(hasAdvancementDraftChanges);
+  }, [hasAdvancementDraftChanges, onDraftChangesChange]);
+
   const parseDraftNumber = (value: string) => Math.max(0, Math.floor(Number(value) || 0));
 
   return (
     <SubtabContentFrame
       className="bg-card"
-      subtabBar={(
-        <div className="space-y-3 px-3 py-3 md:px-4">
-          <div className="flex w-full items-center justify-between gap-3">
-            <h1 className="min-w-0 truncate font-display text-xl font-semibold uppercase tracking-[0.12em] text-white md:text-2xl">
-              Edit Character
-            </h1>
-            <SubtabActionButton
-              onClick={handleSaveCareerClick}
-              disabled={!hasPendingCareerChanges && !hasAdvancementDraftChanges}
-              isActive={shouldHighlightSave}
-              aria-label="Save career changes"
-              className="shrink-0"
-            >
-              Save
-            </SubtabActionButton>
-          </div>
-          {activeFilterOptions.length > 1 ? (
+      subtabBar={
+        activeFilterOptions.length > 1 ? (
+          <div className="px-3 py-3 md:px-4">
             <div className="min-w-0">
               <InlineSubtabs<CareerListFilter>
                 options={activeFilterOptions}
@@ -330,64 +331,97 @@ export function CareerTab({
                 ariaLabel={`${careerSubtabOptions.find((option) => option.id === activeCareerSubtab)?.label ?? "Edit character"} filters`}
               />
             </div>
-          ) : null}
-        </div>
-      )}
+          </div>
+        ) : undefined
+      }
     >
-        <div className="px-3 pb-3 pt-0 md:px-4">
-          <form
-            className="flex min-w-0 items-center gap-2"
-            onSubmit={(event) => event.preventDefault()}
-          >
-            <input
-              type="search"
-              value={listSearch}
-              onChange={(event) => setListSearch(event.target.value)}
-              placeholder="Search"
-              className="h-9 min-w-0 flex-1 rounded border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
-              aria-label="Search edit character list"
-            />
-            <button
-              type="submit"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-wfrp-border bg-wfrp-surface text-gray-300 transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-              aria-label="Search"
+        {activeCareerSubtab !== "experience" ? (
+          <div className="px-3 pb-3 pt-0 md:px-4">
+            <form
+              className="flex min-w-0 items-center gap-2"
+              onSubmit={(event) => event.preventDefault()}
             >
-              <Search size={15} />
-            </button>
-          </form>
-        </div>
-        <SheetDataSection
-          gridClassName={careerXpGridClass}
-          sectionLabel="XP"
-          valueLabels={[
-            { align: "center", className: "text-[9px] md:text-[10px]", label: "Total" },
-            { align: "center", className: "text-[9px] md:text-[10px]", label: "Current" },
-            { align: "center", className: "text-[9px] md:text-[10px]", label: "More" },
-          ]}
-        >
-            <SheetDataAccordionRow
-              summaryClassName={`${careerXpGridClass} ${advanceRowInsetClass}`}
-              contentClassName="px-3 pb-4 pt-1 md:px-4"
-              summary={(
-                <>
-                  <div className="wfrp-list-cell-strong min-w-0 truncate text-left">Experience</div>
-                  <div className="wfrp-list-cell-strong text-center font-mono">
-                    {pendingTotalXp}
-                  </div>
-                  {xpAdjustActions}
-                  <SheetDataDisclosureCell />
-                </>
-              )}
-            >
-              <SheetDataAccordionDetails
-                description="Current and total XP are adjusted together."
-                rows={[
-                  { label: "Current XP", value: currentXpDisplay },
-                  { label: "Total XP", value: pendingTotalXp },
-                ]}
+              <input
+                type="search"
+                value={listSearch}
+                onChange={(event) => setListSearch(event.target.value)}
+                placeholder="Search"
+                className="h-9 min-w-0 flex-1 rounded border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
+                aria-label="Search edit character list"
               />
-            </SheetDataAccordionRow>
-        </SheetDataSection>
+              <button
+                type="submit"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded border border-wfrp-border bg-wfrp-surface text-gray-300 transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                aria-label="Search"
+              >
+                <Search size={15} />
+              </button>
+            </form>
+          </div>
+        ) : null}
+
+        {activeCareerSubtab === "experience" && (
+          <AdvancementSection title="Experience" hideHeader>
+            <SheetDataSection
+              gridClassName={experienceGridClass}
+              sectionLabel="Experience"
+              valueLabels={[
+                { align: "center", label: "Value" },
+                { align: "center", label: "Adjust" },
+                { align: "center", label: "More" },
+              ]}
+            >
+              <SheetDataAccordionRow
+                summaryClassName={`${experienceGridClass} ${advanceRowInsetClass}`}
+                contentClassName="px-3 pb-4 pt-1 md:px-4"
+                summary={(
+                  <>
+                    <div className="wfrp-list-cell-strong min-w-0 truncate text-left">
+                      Current Experience
+                    </div>
+                    <div className="wfrp-list-cell-strong text-center font-mono">
+                      {currentXpDisplay}
+                    </div>
+                    {xpAdjustActions}
+                    <SheetDataDisclosureCell />
+                  </>
+                )}
+              >
+                <SheetDataAccordionDetails
+                  description="Current XP can be edited directly."
+                  rows={[
+                    { label: "Current XP", value: currentXpDisplay },
+                    { label: "Total XP", value: pendingTotalXp },
+                  ]}
+                />
+              </SheetDataAccordionRow>
+              <SheetDataAccordionRow
+                summaryClassName={`${experienceGridClass} ${advanceRowInsetClass}`}
+                contentClassName="px-3 pb-4 pt-1 md:px-4"
+                summary={(
+                  <>
+                    <div className="wfrp-list-cell-strong min-w-0 truncate text-left">
+                      Total Experience
+                    </div>
+                    <div className="wfrp-list-cell-strong text-center font-mono">
+                      {pendingTotalXp}
+                    </div>
+                    <span className="wfrp-list-cell text-center text-wfrp-muted-text">-</span>
+                    <SheetDataDisclosureCell />
+                  </>
+                )}
+              >
+                <SheetDataAccordionDetails
+                  description="Total XP increases when positive current XP adjustments are saved."
+                  rows={[
+                    { label: "Current XP", value: currentXpDisplay },
+                    { label: "Total XP", value: pendingTotalXp },
+                  ]}
+                />
+              </SheetDataAccordionRow>
+            </SheetDataSection>
+          </AdvancementSection>
+        )}
 
         {activeCareerSubtab === "careers" && (
           <AdvancementSection title="Careers" meta="Current Path" hideHeader>
@@ -875,4 +909,4 @@ export function CareerTab({
         )}
     </SubtabContentFrame>
   );
-}
+});

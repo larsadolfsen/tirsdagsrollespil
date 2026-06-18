@@ -31,6 +31,7 @@ import {
   PanelSectionHeader,
   ResourceCounterBar,
   ScrollableTabStrip,
+  SubtabActionButton,
 } from "./components/ui";
 import { useGameSessionContext } from "./context/GameSessionContext";
 import { LazyTabPanel } from "./tabs/LazyTabPanel";
@@ -67,6 +68,7 @@ import { UI_LABELS } from "./labels";
 import {
   mainTabOptions,
 } from "./tabs/tabOptions";
+import type { CareerTabHandle } from "./tabs/CareerTab";
 import type { CareerSubtab, MobileTabMenuTarget } from "./tabs/tabTypes";
 import type { Characteristic, Ruleset, SkillDefinition, SkillSpecialisationDefinition } from "./types";
 
@@ -103,6 +105,7 @@ const JournalTab = lazy(() => import("./tabs/JournalTab").then((module) => ({ de
 const CareerTab = lazy(() => import("./tabs/CareerTab").then((module) => ({ default: module.CareerTab })));
 
 const editCharacterTabOptions: Array<{ id: CareerSubtab; label: string }> = [
+  { id: "experience", label: "Experience" },
   { id: "characteristics", label: "Characteristics" },
   { id: "careers", label: "Careers" },
   { id: "skills", label: "Skills" },
@@ -183,8 +186,10 @@ export function AppComposition() {
     setNotes,
   } = useGameSessionContext();
   const [pendingXpAdjustment, setPendingXpAdjustment] = useState(0);
+  const [hasCareerTabDraftChanges, setHasCareerTabDraftChanges] = useState(false);
   const [isTalentSidebarOpen, setIsTalentSidebarOpen] = useState(false);
   const [isSkillSidebarOpen, setIsSkillSidebarOpen] = useState(false);
+  const careerTabRef = useRef<CareerTabHandle>(null);
   const [isLandingPageOpen, setIsLandingPageOpen] = useState(() => {
     if (typeof window === "undefined") {
       return false;
@@ -324,6 +329,15 @@ export function AppComposition() {
     xpCurrent: Math.max(0, xpCurrent + pendingXpAdjustment),
   });
   const hasPendingAdvanceChanges = hasPendingCareerChanges || pendingXpAdjustment !== 0;
+  const hasUnsavedCareerEdits = hasPendingAdvanceChanges || hasCareerTabDraftChanges;
+  const handleCareerTabDraftChangesChange = useCallback((hasDraftChanges: boolean) => {
+    setHasCareerTabDraftChanges(hasDraftChanges);
+  }, []);
+  const handleEditCharacterSave = useCallback(() => {
+    if (!hasUnsavedCareerEdits) return;
+
+    careerTabRef.current?.saveChanges();
+  }, [hasUnsavedCareerEdits]);
   useEffect(() => {
     document.title = isLandingPageOpen
       ? `${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`
@@ -1260,9 +1274,11 @@ export function AppComposition() {
   const advancePageContent = (
     <LazyTabPanel>
       <CareerTab
+        ref={careerTabRef}
         activeCareerSubtab={activeCareerSubtab}
         saveCareerChanges={saveCareerChanges}
         hasPendingCareerChanges={hasPendingAdvanceChanges}
+        onDraftChangesChange={handleCareerTabDraftChangesChange}
         characterData={characterData}
         pendingXpAdjustment={pendingXpAdjustment}
         setPendingXpAdjustment={setPendingXpAdjustment}
@@ -1475,14 +1491,30 @@ export function AppComposition() {
             mobileTitle={mobilePageTitle}
             mobileTitleAction={
               activeMainTab === "career" ? (
-                <button
-                  type="button"
-                  onClick={closeEditCharacterPage}
-                  className="flex h-10 w-10 items-center justify-center rounded border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                  aria-label="Close Edit Character page"
-                >
-                  <X size={18} />
-                </button>
+                <div className="flex items-center justify-end gap-1">
+                  <button
+                    type="button"
+                    onClick={handleEditCharacterSave}
+                    disabled={!hasUnsavedCareerEdits}
+                    className={cn(
+                      "flex h-10 items-center justify-center rounded border px-3 text-[10px] font-bold uppercase tracking-widest shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed",
+                      hasUnsavedCareerEdits
+                        ? "border-wfrp-gold/70 bg-wfrp-gold text-primary-foreground hover:bg-[#d1ad65]"
+                        : "border-wfrp-border bg-wfrp-surface text-gray-500",
+                    )}
+                    aria-label="Save edit character changes"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={closeEditCharacterPage}
+                    className="flex h-10 w-10 items-center justify-center rounded border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                    aria-label="Close Edit Character page"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               ) : undefined
             }
             onMobileNextView={() => navigateMobileMainView(1)}
@@ -1491,27 +1523,19 @@ export function AppComposition() {
 
           {activeMainTab === "career" ? (
             <section className="min-h-[500px] overflow-hidden rounded-lg border border-wfrp-border bg-card shadow-lg">
-              <ScrollableTabStrip className="flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
-                <div className="flex w-full min-w-max items-center justify-between gap-4">
-                  <div className="flex min-w-max items-center gap-4 lg:gap-6">
-                    {editCharacterTabOptions.map((tab) => (
-                      <button
-                        key={tab.id}
-                        type="button"
-                        onClick={() => setActiveCareerSubtab(tab.id)}
-                        className={cn(
-                          mainTabButtonBaseClassName,
-                          activeCareerSubtab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
-                        )}
-                        aria-current={activeCareerSubtab === tab.id ? "page" : undefined}
-                      >
-                        {tab.label}
-                        {activeCareerSubtab === tab.id ? (
-                          <div className={mainTabUnderlineClassName} />
-                        ) : null}
-                      </button>
-                    ))}
-                  </div>
+              <div className="hidden items-center justify-between gap-3 rounded-t-lg border-b border-wfrp-border bg-wfrp-surface-subtle px-4 py-3 md:flex">
+                <h1 className="min-w-0 truncate font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
+                  Edit Character
+                </h1>
+                <div className="flex shrink-0 items-center gap-1">
+                  <SubtabActionButton
+                    onClick={handleEditCharacterSave}
+                    disabled={!hasUnsavedCareerEdits}
+                    isActive={hasUnsavedCareerEdits}
+                    aria-label="Save edit character changes"
+                  >
+                    Save
+                  </SubtabActionButton>
                   <button
                     type="button"
                     onClick={closeEditCharacterPage}
@@ -1525,6 +1549,27 @@ export function AppComposition() {
                     <X size={14} />
                     Close
                   </button>
+                </div>
+              </div>
+              <ScrollableTabStrip className="flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar md:rounded-none">
+                <div className="flex w-full min-w-max items-center justify-start gap-4 lg:gap-6">
+                  {editCharacterTabOptions.map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveCareerSubtab(tab.id)}
+                      className={cn(
+                        mainTabButtonBaseClassName,
+                        activeCareerSubtab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
+                      )}
+                      aria-current={activeCareerSubtab === tab.id ? "page" : undefined}
+                    >
+                      {tab.label}
+                      {activeCareerSubtab === tab.id ? (
+                        <div className={mainTabUnderlineClassName} />
+                      ) : null}
+                    </button>
+                  ))}
                 </div>
               </ScrollableTabStrip>
               {advancePageContent}
