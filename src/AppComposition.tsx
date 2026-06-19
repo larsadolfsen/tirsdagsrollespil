@@ -28,7 +28,7 @@ import { useNotesViewModel } from "./hooks/useNotesViewModel";
 import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
   InlineSubtabs,
-  NamedButton,
+  StandardButton,
   PanelSectionHeader,
   ResourceCounterBar,
   ScrollableTabStrip,
@@ -1509,7 +1509,7 @@ export function AppComposition() {
                   <div className="flex w-full min-w-max items-center justify-between gap-4">
                     <div className="flex min-w-max items-center gap-4 lg:gap-6">
                       {editCharacterTabOptions.map((tab) => (
-                        <NamedButton
+                        <StandardButton
                           key={tab.id}
                           type="button"
                           name={tab.label}
@@ -1523,11 +1523,11 @@ export function AppComposition() {
                           {activeCareerSubtab === tab.id ? (
                             <div className={mainTabUnderlineClassName} />
                           ) : null}
-                        </NamedButton>
+                        </StandardButton>
                       ))}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
-                      <NamedButton
+                      <StandardButton
                         type="button"
                         name="Save"
                         onClick={handleEditCharacterSave}
@@ -1536,7 +1536,7 @@ export function AppComposition() {
                         className="inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-[10px] font-bold uppercase tracking-widest shadow-sm transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed"
                         aria-label="Save edit character changes"
                       />
-                      <NamedButton
+                      <StandardButton
                         type="button"
                         name="Close"
                         onClick={closeEditCharacterPage}
@@ -1608,7 +1608,7 @@ export function AppComposition() {
               <ScrollableTabStrip className="hidden sm:flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
                 <div className="mx-auto flex w-full min-w-max justify-center gap-4 lg:mx-0 lg:w-max lg:min-w-0 lg:justify-start lg:gap-6">
                   {displayedMainTabOptions.map((tab) => (
-                    <NamedButton
+                    <StandardButton
                       key={tab.id}
                       name={tab.label}
                       onClick={() => selectMainTab(tab.id)}
@@ -1621,7 +1621,7 @@ export function AppComposition() {
                       {activeMainTab === tab.id && (
                         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-muted-text" />
                       )}
-                    </NamedButton>
+                    </StandardButton>
                   ))}
                 </div>
               </ScrollableTabStrip>

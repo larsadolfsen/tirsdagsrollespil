@@ -1,7 +1,7 @@
 export { AdvancementSection } from "./AdvancementSection";
 export { HeaderResourceSlider, ResourceCounterBar } from "./ResourceCounterBar";
 export { InlineSubtabs } from "./InlineSubtabs";
-export { NamedButton } from "./NamedButton";
+export { StandardButton } from "./StandardButton";
 export { PanelSectionHeader } from "./PanelSectionHeader";
 export { ScrollableTabStrip } from "./ScrollableTabStrip";
 export { SubtabActionButton } from "./SubtabActionButton";

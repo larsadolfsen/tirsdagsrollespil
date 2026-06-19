@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus, Search } from "lucide-react";
-import { AdvancementSection, InlineSubtabs, NamedButton, SubtabContentFrame } from "../components/ui";
+import { AdvancementSection, InlineSubtabs, StandardButton, SubtabContentFrame } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import {
   SheetDataAccordionDetails,
@@ -458,7 +458,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                 className="h-9 min-w-0 flex-1 appearance-none rounded-lg border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
                 aria-label="Search edit character list"
               />
-              <NamedButton
+              <StandardButton
                 type="submit"
                 name={<Search size={15} />}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-wfrp-border bg-wfrp-surface text-gray-300 transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
@@ -575,7 +575,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       summary={(
                         <>
                           <div className={`min-w-0 ${advanceRowTitleClass}`}>
-                            <NamedButton
+                            <StandardButton
                               onClick={(event) => {
                                 event.preventDefault();
                                 setActiveInfo({
@@ -713,7 +713,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
-                          <NamedButton
+                          <StandardButton
                             type="button"
                             onClick={(event) => {
                               event.preventDefault();
@@ -845,7 +845,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                             contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                             summary={(
                               <>
-                              <NamedButton
+                              <StandardButton
                                 type="button"
                                 onClick={(event) => {
                                   event.preventDefault();
@@ -956,7 +956,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
-                        <NamedButton
+                        <StandardButton
                           type="button"
                           onClick={(event) => {
                             event.preventDefault();

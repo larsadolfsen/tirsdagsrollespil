@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/src/lib/utils";
 
-type NamedButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children" | "name"> & {
+type StandardButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children" | "name"> & {
   children?: ReactNode;
   isDeactivated?: boolean;
   isGolden?: boolean;
@@ -12,7 +12,7 @@ type NamedButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"
   trailingIcon?: ReactNode;
 };
 
-export function NamedButton({
+export function StandardButton({
   children,
   className,
   disabled,
@@ -25,7 +25,7 @@ export function NamedButton({
   trailingIcon,
   type = "button",
   ...props
-}: NamedButtonProps) {
+}: StandardButtonProps) {
   const isDisabled = disabled || isDeactivated;
 
   return (
