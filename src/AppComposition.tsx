@@ -28,6 +28,7 @@ import { useNotesViewModel } from "./hooks/useNotesViewModel";
 import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
   InlineSubtabs,
+  NamedButton,
   PanelSectionHeader,
   ResourceCounterBar,
   ScrollableTabStrip,
@@ -1508,9 +1509,10 @@ export function AppComposition() {
                   <div className="flex w-full min-w-max items-center justify-between gap-4">
                     <div className="flex min-w-max items-center gap-4 lg:gap-6">
                       {editCharacterTabOptions.map((tab) => (
-                        <button
+                        <NamedButton
                           key={tab.id}
                           type="button"
+                          name={tab.label}
                           onClick={() => setActiveCareerSubtab(tab.id)}
                           className={cn(
                             mainTabButtonBaseClassName,
@@ -1518,37 +1520,30 @@ export function AppComposition() {
                           )}
                           aria-current={activeCareerSubtab === tab.id ? "page" : undefined}
                         >
-                          {tab.label}
                           {activeCareerSubtab === tab.id ? (
                             <div className={mainTabUnderlineClassName} />
                           ) : null}
-                        </button>
+                        </NamedButton>
                       ))}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
-                      <button
+                      <NamedButton
                         type="button"
+                        name="Save"
                         onClick={handleEditCharacterSave}
-                        disabled={!hasUnsavedCareerEdits}
-                        className={cn(
-                          "inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-[10px] font-bold uppercase tracking-widest shadow-sm transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed",
-                          hasUnsavedCareerEdits
-                            ? "border-wfrp-gold/70 bg-wfrp-gold text-primary-foreground hover:bg-[#d1ad65]"
-                            : "border-wfrp-border bg-wfrp-surface text-gray-500",
-                        )}
+                        isDeactivated={!hasUnsavedCareerEdits}
+                        isGolden={hasUnsavedCareerEdits}
+                        className="inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-[10px] font-bold uppercase tracking-widest shadow-sm transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed"
                         aria-label="Save edit character changes"
-                      >
-                        Save
-                      </button>
-                      <button
+                      />
+                      <NamedButton
                         type="button"
+                        name="Close"
                         onClick={closeEditCharacterPage}
                         className="inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-wfrp-border bg-wfrp-surface px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-300 shadow-sm transition-all hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                         aria-label="Close Edit Character page"
-                      >
-                        <X size={14} />
-                        Close
-                      </button>
+                        leadingIcon={<X size={14} />}
+                      />
                     </div>
                   </div>
                 </ScrollableTabStrip>
@@ -1613,8 +1608,9 @@ export function AppComposition() {
               <ScrollableTabStrip className="hidden sm:flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
                 <div className="mx-auto flex w-full min-w-max justify-center gap-4 lg:mx-0 lg:w-max lg:min-w-0 lg:justify-start lg:gap-6">
                   {displayedMainTabOptions.map((tab) => (
-                    <button
+                    <NamedButton
                       key={tab.id}
+                      name={tab.label}
                       onClick={() => selectMainTab(tab.id)}
                       className={cn(
                         mainTabButtonBaseClassName,
@@ -1622,11 +1618,10 @@ export function AppComposition() {
                       )}
                       aria-current={activeMainTab === tab.id ? 'page' : undefined}
                     >
-                      {tab.label}
                       {activeMainTab === tab.id && (
                         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-muted-text" />
                       )}
-                    </button>
+                    </NamedButton>
                   ))}
                 </div>
               </ScrollableTabStrip>

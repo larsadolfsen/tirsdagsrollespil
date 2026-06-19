@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus, Search } from "lucide-react";
-import { AdvancementSection, InlineSubtabs, SubtabContentFrame } from "../components/ui";
+import { AdvancementSection, InlineSubtabs, NamedButton, SubtabContentFrame } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import {
   SheetDataAccordionDetails,
@@ -54,13 +54,18 @@ type CareerAdvancementData = {
   talents: string[];
 };
 
+type CareerCatalogTier = {
+  id: string;
+  rank: number;
+  tierName: string;
+  status: string;
+};
+
 type CareerCatalogRow = {
   id: string;
   careerName: string;
   classId: string;
-  rank: number;
-  tierName: string;
-  status: string;
+  tiers: CareerCatalogTier[];
 };
 
 interface CareerTabProps {
@@ -179,24 +184,24 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
     const stepsById = new Map(careerSteps.map((step) => [step.id, step]));
 
     return careerPaths
-      .flatMap((careerPath) =>
-        careerPath.stepIds.map((stepId, index) => {
+      .map((careerPath) => ({
+        id: careerPath.id,
+        careerName: careerPath.name,
+        classId: careerPath.classId,
+        tiers: careerPath.stepIds.map((stepId, index) => {
           const careerStep = stepsById.get(stepId);
 
           return {
             id: stepId,
-            careerName: careerPath.name,
-            classId: careerPath.classId,
             rank: careerStep?.rank ?? index + 1,
             tierName: careerStep?.name ?? `${careerPath.name} ${toRoman(index + 1)}`,
             status: careerStep?.status ?? "-",
           };
         }),
-      )
+      }))
       .sort((first, second) =>
         first.classId.localeCompare(second.classId) ||
-        first.careerName.localeCompare(second.careerName) ||
-        first.rank - second.rank,
+        first.careerName.localeCompare(second.careerName),
       );
   }, []);
   const currentXpValue = Math.max(0, pendingAvailableXp + pendingXpAdjustment);
@@ -358,10 +363,12 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
   const filteredCareerRows = careerRows.filter((careerRow) =>
     matchesSearch(
       careerRow.careerName,
-      careerRow.tierName,
-      careerRow.status,
       formatCareerClass(careerRow.classId),
-      toRoman(careerRow.rank),
+      ...careerRow.tiers.flatMap((tier) => [
+        tier.tierName,
+        tier.status,
+        toRoman(tier.rank),
+      ]),
     ),
   );
   const filteredAdvancementCharacteristics = advancementCharacteristics.filter((item) =>
@@ -451,13 +458,13 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                 className="h-9 min-w-0 flex-1 appearance-none rounded-lg border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
                 aria-label="Search edit character list"
               />
-              <button
+              <NamedButton
                 type="submit"
+                name={<Search size={15} />}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-wfrp-border bg-wfrp-surface text-gray-300 transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                 aria-label="Search"
-              >
-                <Search size={15} />
-              </button>
+                labelClassName="inline-flex items-center justify-center"
+              />
             </form>
           </div>
         ) : null}
@@ -531,23 +538,23 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
               gridClassName={careerPathGridClass}
               sectionLabel="Career"
               valueLabels={[
-                { className: "hidden md:block", label: "Tier" },
+                { className: "hidden md:block", label: "Class" },
                 { align: "right", label: "Advance" },
                 { align: "center", label: "More" },
               ]}
             >
                 {filteredCareerRows.map((careerRow) => {
-                  const isActiveCareerRow =
-                    careerRow.careerName === characterData.career &&
-                    careerRow.rank === displayedCareerRank;
+                  const isActiveCareerRow = careerRow.careerName === characterData.career;
+                  const currentTier = careerRow.tiers.find((tier) => tier.rank === displayedCareerRank) ?? null;
                   const advanceAction = isActiveCareerRow ? (
                     <button
                       onClick={(event) => {
                         event.preventDefault();
                         increasePendingCareerRank();
                       }}
+                      disabled={!nextCareerRankRecord}
                       className="wfrp-stepper-btn"
-                      aria-label={`Advance ${careerRow.careerName} from rank ${careerRow.rank}`}
+                      aria-label={`Advance ${careerRow.careerName} from rank ${displayedCareerRank}`}
                       title="Advance career"
                     >
                       <span className="wfrp-stepper-btn__inner">
@@ -568,18 +575,19 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       summary={(
                         <>
                           <div className={`min-w-0 ${advanceRowTitleClass}`}>
-                            <button
+                            <NamedButton
                               onClick={(event) => {
                                 event.preventDefault();
                                 setActiveInfo({
                                   type: "career",
-                                  name: `${careerRow.careerName} ${toRoman(careerRow.rank)}`,
+                                  name: careerRow.careerName,
                                   extra: {
                                     careerName: careerRow.careerName,
                                     className: formatCareerClass(careerRow.classId),
-                                    tierName: careerRow.tierName,
-                                    tierStatus: careerRow.status,
-                                    rank: careerRow.rank,
+                                    tierName: currentTier?.tierName ?? careerRow.tiers[0]?.tierName,
+                                    tierStatus: currentTier?.status ?? careerRow.tiers[0]?.status,
+                                    rank: currentTier?.rank ?? careerRow.tiers[0]?.rank,
+                                    tiers: careerRow.tiers,
                                     careerSkills: isActiveCareerRow ? careerAdvancementData.skills : [],
                                     careerTalents: isActiveCareerRow ? careerAdvancementData.talents : [],
                                   },
@@ -587,12 +595,12 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                                 clearRollCharacteristic();
                               }}
                               className="wfrp-skill-link truncate text-left"
-                            >
-                              {careerRow.careerName} {toRoman(careerRow.rank)}
-                            </button>
+                              name={careerRow.careerName}
+                              labelClassName="block truncate"
+                            />
                           </div>
                           <div className="hidden wfrp-list-cell-strong min-w-0 truncate text-left md:block">
-                            {careerRow.tierName}
+                            {formatCareerClass(careerRow.classId)}
                           </div>
                           <div className="flex justify-end">{advanceAction}</div>
                           <SheetDataDisclosureCell />
@@ -605,18 +613,10 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                             label: "Class",
                             value: formatCareerClass(careerRow.classId),
                           },
-                          {
-                            label: "Tier",
-                            value: careerRow.tierName,
-                          },
-                          {
-                            label: "Status",
-                            value: careerRow.status,
-                          },
-                          {
-                            label: "Rank",
-                            value: toRoman(careerRow.rank),
-                          },
+                          ...careerRow.tiers.map((tier) => ({
+                            label: `Rank ${toRoman(tier.rank)}`,
+                            value: `${tier.tierName} (${tier.status})`,
+                          })),
                         ]}
                       />
                     </SheetDataAccordionRow>
@@ -713,7 +713,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
-                          <button
+                          <NamedButton
                             type="button"
                             onClick={(event) => {
                               event.preventDefault();
@@ -735,9 +735,9 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                               clearRollCharacteristic();
                             }}
                             className={`wfrp-skill-link min-w-0 truncate text-left ${advanceRowTitleClass}`}
-                          >
-                            {item.label} ({item.key})
-                          </button>
+                            name={`${item.label} (${item.key})`}
+                            labelClassName="block truncate"
+                          />
                           <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">
                             {initialControl}
                           </div>
@@ -845,7 +845,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                             contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                             summary={(
                               <>
-                              <button
+                              <NamedButton
                                 type="button"
                                 onClick={(event) => {
                                   event.preventDefault();
@@ -853,9 +853,9 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                                   clearRollCharacteristic();
                                 }}
                                 className={`wfrp-skill-link min-w-0 truncate text-left ${advanceRowTitleClass}`}
-                              >
-                                {skillRow.skillName} ({skillRow.characteristicKey || "-"})
-                              </button>
+                                name={`${skillRow.skillName} (${skillRow.characteristicKey || "-"})`}
+                                labelClassName="block truncate"
+                              />
                               <div className="hidden wfrp-list-cell-strong text-center font-mono md:block">
                                 {initialDisplay}
                               </div>
@@ -956,16 +956,16 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
-                        <button
+                        <NamedButton
                           type="button"
                           onClick={(event) => {
                             event.preventDefault();
                             openTalentInfo(talentName);
                           }}
                           className={`wfrp-skill-link min-w-0 truncate text-left ${advanceRowTitleClass}`}
-                        >
-                          {talentName}
-                        </button>
+                          name={talentName}
+                          labelClassName="block truncate"
+                        />
                         <div className="wfrp-list-cell-strong text-center font-mono">
                           {maxDisplay}
                         </div>
