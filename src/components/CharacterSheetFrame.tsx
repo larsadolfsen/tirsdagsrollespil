@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useHorizontalSwipePager } from "../hooks/useHorizontalSwipePager";
+import { WfrpStandardIcon } from "./ui";
 
 interface CharacterSheetFrameProps {
   children: ReactNode;
@@ -27,29 +28,25 @@ function MobileTitlePager({
 
   return (
     <div
-      className="grid grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-2 md:hidden"
+      className="grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-2 md:hidden"
       {...swipeHandlers}
     >
-      <button
-        type="button"
+      <WfrpStandardIcon
         onClick={onPrevious}
-        className="flex h-10 w-10 items-center justify-center rounded border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-        aria-label="Show previous character sheet tab"
-      >
-        <ChevronLeft size={18} />
-      </button>
+        className="border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm hover:border-wfrp-gold/50"
+        label="Show previous character sheet tab"
+        icon={<ChevronLeft />}
+      />
       <h1 className="min-w-0 text-center font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
         {title}
       </h1>
       {action ?? (
-        <button
-          type="button"
+        <WfrpStandardIcon
           onClick={onNext}
-          className="flex h-10 w-10 items-center justify-center rounded border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-          aria-label="Show next character sheet tab"
-        >
-          <ChevronRight size={18} />
-        </button>
+          className="border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm hover:border-wfrp-gold/50"
+          label="Show next character sheet tab"
+          icon={<ChevronRight />}
+        />
       )}
     </div>
   );

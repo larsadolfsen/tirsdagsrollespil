@@ -1,7 +1,7 @@
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
 import { motion } from "motion/react";
-import { StandardButton } from "../../components/ui";
+import { WfrpStandardBtn } from "../../components/ui";
 import { WfrpSidebar } from "../../components/wfrp";
 import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/dice";
 
@@ -402,7 +402,7 @@ export function DiceLogSidebar({
             )}
 
             {!rollState.isRolling && rollState.result === null && (
-              <StandardButton onClick={executeRoll} className="wfrp-roll-cta" name="Roll" />
+              <WfrpStandardBtn onClick={executeRoll} className="wfrp-roll-cta" name="Roll" />
             )}
 
             {!rollState.isRolling && rollState.result !== null && (
@@ -410,7 +410,7 @@ export function DiceLogSidebar({
                 {canRollCritical && (
                   <div className="flex flex-col gap-1">
                     <span className="wfrp-table-label text-wfrp-muted-text">Critical</span>
-                    <StandardButton
+                    <WfrpStandardBtn
                       onClick={handleRollCritical}
                       title="Critical action"
                       aria-label="Critical action: roll critical"
@@ -423,14 +423,14 @@ export function DiceLogSidebar({
                   <div className="flex flex-col gap-1">
                     <span className="wfrp-table-label text-wfrp-muted-text">Spend Fortune</span>
                     <div className="flex flex-row flex-wrap items-center gap-2">
-                      <StandardButton
+                      <WfrpStandardBtn
                         onClick={handleReroll}
                         title="Fortune action"
                         aria-label="Fortune action: reroll"
                         className="wfrp-action-btn px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-gray-300"
                         name="Reroll"
                       />
-                      <StandardButton
+                      <WfrpStandardBtn
                         onClick={handleAddSl}
                         title="Fortune action"
                         aria-label="Fortune action: add one success level"
@@ -444,7 +444,7 @@ export function DiceLogSidebar({
                   <div className="flex flex-col gap-1">
                     <span className="wfrp-table-label text-wfrp-muted-text">Spend Resilience</span>
                     <div className="flex flex-row flex-wrap items-center gap-2">
-                      <StandardButton
+                      <WfrpStandardBtn
                         onClick={handleIWillNotFail}
                         title="Resilience action"
                         aria-label="Resilience action: I Will Not Fail!"

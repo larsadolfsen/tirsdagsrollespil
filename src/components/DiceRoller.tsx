@@ -9,7 +9,7 @@ import {
   getWeaponTraitNotes,
 } from "../lib/rollMechanics";
 import { DigitReel } from "./DigitReel";
-import { StandardButton } from "./ui";
+import { WfrpStandardBtn, WfrpStandardIcon } from "./ui";
 import type { RollHistoryItem, RollState } from "./appTypes";
 
 export function DiceRoller({
@@ -63,7 +63,7 @@ export function DiceRoller({
                   </p>
                 </div>
               </div>
-              <button
+              <WfrpStandardIcon
                 onClick={() => {
                   if (rollState.characteristic && rollState.result !== null) {
                     const target =
@@ -90,11 +90,9 @@ export function DiceRoller({
                   }
                   setRollState((prev) => ({ ...prev, characteristic: null }));
                 }}
-                className="wfrp-icon-btn p-1 rounded-full hover:bg-wfrp-border cursor-pointer"
-                aria-label="Close dice log"
-              >
-                <X size={18} />
-              </button>
+                label="Close dice log"
+                icon={<X />}
+              />
             </div>
 
             <div className="p-4 flex flex-col pt-8">
@@ -322,7 +320,7 @@ export function DiceRoller({
                   )}
 
                   {!rollState.isRolling && rollState.result === null && (
-                    <StandardButton
+                    <WfrpStandardBtn
                       onClick={executeRoll}
                       className="wfrp-roll-cta mt-4"
                       name="Roll"
@@ -330,7 +328,7 @@ export function DiceRoller({
                   )}
 
                   {!rollState.isRolling && rollState.result !== null && fortuneCurrent > 0 && (
-                    <StandardButton
+                    <WfrpStandardBtn
                       onClick={handleReroll}
                       className="wfrp-roll-cta mt-4"
                       name="Reroll"

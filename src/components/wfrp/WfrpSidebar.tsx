@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/src/lib/utils";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { WfrpStandardIcon } from "../ui";
 
 type WfrpSidebarProps = {
   ariaLabelledBy?: string;
@@ -107,14 +108,11 @@ export function WfrpSidebar({
                 {kicker ? <span className="wfrp-sidebar-kicker">{kicker}</span> : null}
               </div>
             </div>
-            <button
-              type="button"
+            <WfrpStandardIcon
               onClick={onClose}
-              className="wfrp-icon-btn rounded-full p-1 hover:bg-wfrp-border"
-              aria-label={closeLabel}
-            >
-              <X size={20} className="cursor-pointer" />
-            </button>
+              label={closeLabel}
+              icon={<X />}
+            />
           </div>
 
           <div

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { WfrpStandardIcon } from "./WfrpStandardIcon";
 
 export function ScrollableTabStrip({
   children,
@@ -64,25 +65,23 @@ export function ScrollableTabStrip({
       {canScrollLeft && (
         <>
           <div className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-transparent via-transparent to-transparent md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
-          <button
+          <WfrpStandardIcon
             onClick={scrollTabsLeft}
-            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded border border-white/10 bg-wfrp-tab-control/95 p-1.5 text-gray-300 shadow-lg transition-colors hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
-            aria-label="Show previous tabs"
-          >
-            <ChevronLeft size={14} />
-          </button>
+            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 border border-white/10 bg-wfrp-tab-control/95 text-gray-300 shadow-lg hover:border-white/20 focus-visible:ring-white/30"
+            label="Show previous tabs"
+            icon={<ChevronLeft />}
+          />
         </>
       )}
       {canScrollRight && (
         <>
           <div className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-transparent via-transparent to-transparent md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
-          <button
+          <WfrpStandardIcon
             onClick={scrollTabsRight}
-            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded border border-white/10 bg-wfrp-tab-control/95 p-1.5 text-gray-300 shadow-lg transition-colors hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
-            aria-label="Show more tabs"
-          >
-            <ChevronRight size={14} />
-          </button>
+            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 border border-white/10 bg-wfrp-tab-control/95 text-gray-300 shadow-lg hover:border-white/20 focus-visible:ring-white/30"
+            label="Show more tabs"
+            icon={<ChevronRight />}
+          />
         </>
       )}
     </div>

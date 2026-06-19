@@ -1,4 +1,4 @@
-import { InlineSubtabs, SubtabActionButton, SubtabContentFrame } from "../components/ui";
+import { InlineSubtabs, SubtabActionButton, SubtabContentFrame, WfrpStandardBtn } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -55,13 +55,14 @@ export function SpellsTab({
           activeId={activeSpellSubtab}
           onChange={setActiveSpellSubtab}
           trailingContent={
-            <SubtabActionButton
+            <WfrpStandardBtn
               onClick={openSpellShop}
+              name={`Add ${entryPluralLabel}`}
+              variant="action"
+              size="sm"
               hideOnMobile
               aria-label={`Add ${entryPluralLabel.toLowerCase()}`}
-            >
-              Add {entryPluralLabel}
-            </SubtabActionButton>
+            />
           }
         />
       )}

@@ -8,7 +8,6 @@ import { useCallback } from "react";
 import type { ReactNode } from "react";
 import {
   Dice5,
-  X,
 } from "lucide-react";
 import { AppShell } from "./components/AppShell";
 import { ArmourCard } from "./components/ArmourCard";
@@ -28,7 +27,7 @@ import { useNotesViewModel } from "./hooks/useNotesViewModel";
 import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
   InlineSubtabs,
-  StandardButton,
+  WfrpStandardBtn,
   PanelSectionHeader,
   ResourceCounterBar,
   ScrollableTabStrip,
@@ -367,9 +366,10 @@ export function AppComposition() {
     );
   };
   const advancementTalentNames = [...new Set([
+    ...ruleset.talents.map((talent) => talent.name),
     ...careerAdvancementData.talents,
     ...characterTalents.map((talent) => talent.name),
-  ])];
+  ])].sort((first, second) => first.localeCompare(second));
   const characterTalentRows = getCharacterTalentRows(characterTalents);
   const talentRowsBySource = useMemo(() => {
     const careerTalentNames = new Set(careerAdvancementData.talents);
@@ -1127,21 +1127,9 @@ export function AppComposition() {
     .sort((a, b) => a.skillName.localeCompare(b.skillName));
   const advancementSkillSections = [
     {
-      id: "advanced" as const,
-      title: "Advanced",
-      skills: advancementSkillRows.filter(
-        (skill) => !skill.isBasicSkill && skill.isCareerSkill && Boolean(skill.skill),
-      ),
-    },
-    {
-      id: "basic-trained" as const,
-      title: "Trained",
-      skills: advancementSkillRows.filter((skill) => skill.isBasicSkill && skill.isTrained),
-    },
-    {
-      id: "basic-untrained" as const,
-      title: "Untrained",
-      skills: advancementSkillRows.filter((skill) => skill.isBasicSkill && !skill.isTrained),
+      id: "all" as const,
+      title: "All",
+      skills: advancementSkillRows,
     },
   ];
 
@@ -1264,6 +1252,30 @@ export function AppComposition() {
 
     selectMobileMainView(displayedMobileTabMenuOptions[nextIndex].id);
   };
+  const navigateEditCharacterSubtab = (direction: -1 | 1) => {
+    const currentIndex = editCharacterTabOptions.findIndex((option) => option.id === activeCareerSubtab);
+    const safeCurrentIndex = currentIndex >= 0 ? currentIndex : 0;
+    const nextIndex =
+      (safeCurrentIndex + direction + editCharacterTabOptions.length) % editCharacterTabOptions.length;
+
+    setActiveCareerSubtab(editCharacterTabOptions[nextIndex].id);
+  };
+  const navigateMobileFrameNext = () => {
+    if (activeMainTab === "career") {
+      navigateEditCharacterSubtab(1);
+      return;
+    }
+
+    navigateMobileMainView(1);
+  };
+  const navigateMobileFramePrevious = () => {
+    if (activeMainTab === "career") {
+      navigateEditCharacterSubtab(-1);
+      return;
+    }
+
+    navigateMobileMainView(-1);
+  };
   const mobileMainViewSwipeHandlers = useHorizontalSwipePager({
     onNext: () => navigateMobileMainView(1),
     onPrevious: () => navigateMobileMainView(-1),
@@ -1272,7 +1284,18 @@ export function AppComposition() {
   const mobilePageTitle = activeMainTab === "career"
     ? "Edit Character"
     : displayedMobilePageTitleByView[activeMobileMainView];
-  const closeEditCharacterPage = () => selectMainTab("skills");
+  const closeEditCharacterPage = () => {
+    selectMainTab("skills");
+  };
+  const cancelEditCharacterPage = () => {
+    careerTabRef.current?.discardChanges();
+    resetPendingAdvancements();
+    setPendingXpAdjustment(0);
+    setPendingTotalXpAdjustment(0);
+    setHasCareerTabDraftChanges(false);
+    closeEditCharacterPage();
+  };
+  const editCharacterCloseActionLabel = hasUnsavedCareerEdits ? "Cancel" : "Close";
   const advancePageContent = (
     <LazyTabPanel>
       <CareerTab
@@ -1493,8 +1516,8 @@ export function AppComposition() {
               />
             )}
             mobileTitle={mobilePageTitle}
-            onMobileNextView={() => navigateMobileMainView(1)}
-            onMobilePreviousView={() => navigateMobileMainView(-1)}
+            onMobileNextView={navigateMobileFrameNext}
+            onMobilePreviousView={navigateMobileFramePrevious}
           >
 
           {activeMainTab === "career" ? (
@@ -1509,7 +1532,7 @@ export function AppComposition() {
                   <div className="flex w-full min-w-max items-center justify-between gap-4">
                     <div className="flex min-w-max items-center gap-4 lg:gap-6">
                       {editCharacterTabOptions.map((tab) => (
-                        <StandardButton
+                        <WfrpStandardBtn
                           key={tab.id}
                           type="button"
                           name={tab.label}
@@ -1523,26 +1546,25 @@ export function AppComposition() {
                           {activeCareerSubtab === tab.id ? (
                             <div className={mainTabUnderlineClassName} />
                           ) : null}
-                        </StandardButton>
+                        </WfrpStandardBtn>
                       ))}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
-                      <StandardButton
+                      <WfrpStandardBtn
                         type="button"
                         name="Save"
                         onClick={handleEditCharacterSave}
                         isDeactivated={!hasUnsavedCareerEdits}
                         isGolden={hasUnsavedCareerEdits}
-                        className="inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 py-2 text-[10px] font-bold uppercase tracking-widest shadow-sm transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed"
+                        className="wfrp-roll-cta"
                         aria-label="Save edit character changes"
                       />
-                      <StandardButton
+                      <WfrpStandardBtn
                         type="button"
-                        name="Close"
-                        onClick={closeEditCharacterPage}
-                        className="inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-wfrp-border bg-wfrp-surface px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-300 shadow-sm transition-all hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                        aria-label="Close Edit Character page"
-                        leadingIcon={<X size={14} />}
+                        name={editCharacterCloseActionLabel}
+                        onClick={hasUnsavedCareerEdits ? cancelEditCharacterPage : closeEditCharacterPage}
+                        className="wfrp-roll-cta"
+                        aria-label={hasUnsavedCareerEdits ? "Cancel edit character changes" : "Close Edit Character page"}
                       />
                     </div>
                   </div>
@@ -1608,7 +1630,7 @@ export function AppComposition() {
               <ScrollableTabStrip className="hidden sm:flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
                 <div className="mx-auto flex w-full min-w-max justify-center gap-4 lg:mx-0 lg:w-max lg:min-w-0 lg:justify-start lg:gap-6">
                   {displayedMainTabOptions.map((tab) => (
-                    <StandardButton
+                    <WfrpStandardBtn
                       key={tab.id}
                       name={tab.label}
                       onClick={() => selectMainTab(tab.id)}
@@ -1621,7 +1643,7 @@ export function AppComposition() {
                       {activeMainTab === tab.id && (
                         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-muted-text" />
                       )}
-                    </StandardButton>
+                    </WfrpStandardBtn>
                   ))}
                 </div>
               </ScrollableTabStrip>

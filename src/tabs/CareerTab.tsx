@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus, Search } from "lucide-react";
-import { AdvancementSection, InlineSubtabs, StandardButton, SubtabContentFrame } from "../components/ui";
+import { AdvancementSection, InlineSubtabs, WfrpStandardBtn, SubtabContentFrame } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import {
   SheetDataAccordionDetails,
@@ -108,25 +108,32 @@ export const careerSubtabOptions: Array<{ id: CareerSubtab; label: string }> = [
   { id: "talents", label: "Talents" },
 ];
 
-type CareerListFilter = "all" | "career" | "other" | "basic" | "advanced" | "trained" | "untrained" | "taken";
+type CareerListFilter =
+  | "all"
+  | "career"
+  | "other"
+  | "basic"
+  | "advanced"
+  | "trained"
+  | "taken";
 
 const filterOptionsBySubtab: Record<CareerSubtab, Array<{ id: CareerListFilter; label: string }>> = {
   experience: [{ id: "all", label: "All" }],
   characteristics: [{ id: "all", label: "All" }],
-  careers: [{ id: "all", label: "All" }],
+  careers: [
+    { id: "all", label: "All" },
+    { id: "taken", label: "Taken" },
+  ],
   skills: [
     { id: "all", label: "All" },
     { id: "career", label: "Career" },
     { id: "basic", label: "Basic" },
     { id: "advanced", label: "Advanced" },
     { id: "trained", label: "Trained" },
-    { id: "untrained", label: "Untrained" },
   ],
   talents: [
     { id: "all", label: "All" },
-    { id: "career", label: "Career" },
-    { id: "taken", label: "Taken" },
-    { id: "other", label: "Other" },
+    { id: "taken", label: "Bought" },
   ],
 };
 
@@ -136,6 +143,7 @@ const characteristicAdvanceGridClass = "grid-cols-[minmax(0,1fr)_minmax(132px,au
 const skillAdvanceGridClass = "grid-cols-[minmax(0,1fr)_minmax(132px,auto)_36px] md:grid-cols-[minmax(0,1fr)_56px_minmax(132px,auto)_48px]";
 const talentAdvanceGridClass = "grid-cols-[minmax(0,1fr)_52px_minmax(132px,auto)_36px] md:grid-cols-[minmax(0,1fr)_72px_minmax(132px,auto)_48px]";
 const advanceRowInsetClass = "pl-5 md:pl-6";
+const advanceHeaderTitleClass = "-ml-1";
 const advanceRowTitleClass = "ml-0! pl-4! md:pl-5!";
 
 const toRoman = (value: number) => ["", "I", "II", "III", "IV"][value] ?? String(value);
@@ -146,6 +154,7 @@ const formatCareerClass = (classId: string) =>
     .join(" ");
 
 export type CareerTabHandle = {
+  discardChanges: () => void;
   saveChanges: () => void;
 };
 
@@ -348,20 +357,18 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
     if (effectiveListFilter === "basic") return Boolean(skillRow.isBasicSkill);
     if (effectiveListFilter === "advanced") return !skillRow.isBasicSkill;
     if (effectiveListFilter === "trained") return Boolean(skillRow.isTrained);
-    if (effectiveListFilter === "untrained") return !skillRow.isTrained;
     return true;
   };
   const matchesTalentFilter = (talentName: string) => {
-    const takenCount = characterTalents.filter((talent) => talent.name === talentName).length;
-    const isCareerTalent = careerAdvancementData.talents.includes(talentName);
-
-    if (effectiveListFilter === "career") return isCareerTalent;
-    if (effectiveListFilter === "taken") return takenCount > 0;
-    if (effectiveListFilter === "other") return !isCareerTalent;
+    if (effectiveListFilter === "taken") return characterTalents.some((talent) => talent.name === talentName);
+    return true;
+  };
+  const matchesCareerFilter = (careerRow: CareerCatalogRow) => {
+    if (effectiveListFilter === "taken") return careerRow.careerName === characterData.career;
     return true;
   };
   const filteredCareerRows = careerRows.filter((careerRow) =>
-    matchesSearch(
+    matchesCareerFilter(careerRow) && matchesSearch(
       careerRow.careerName,
       formatCareerClass(careerRow.classId),
       ...careerRow.tiers.flatMap((tier) => [
@@ -374,15 +381,19 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
   const filteredAdvancementCharacteristics = advancementCharacteristics.filter((item) =>
     matchesCharacteristicFilter(item) && matchesSearch(item.label, item.key, getCharacteristicLabel(item.key)),
   );
-  const filteredAdvancementSkillSections = advancementSkillSections.map((section) => ({
-    ...section,
-    skills: section.skills.filter((skillRow) =>
-      matchesSkillFilter(skillRow) && matchesSearch(skillRow.skillName, skillRow.characteristicKey, section.title),
-    ),
-  }));
+  const filteredAdvancementSkillSections = [{
+    id: effectiveListFilter,
+    title: activeFilterOptions.find((option) => option.id === effectiveListFilter)?.label ?? "Skills",
+    skills: advancementSkillSections
+      .flatMap((section) => section.skills)
+      .filter((skillRow) =>
+        matchesSkillFilter(skillRow) && matchesSearch(skillRow.skillName, skillRow.characteristicKey),
+      )
+      .sort((first, second) => first.skillName.localeCompare(second.skillName)),
+  }];
   const filteredAdvancementTalentNames = advancementTalentNames.filter((talentName) =>
     matchesTalentFilter(talentName) && matchesSearch(talentName),
-  );
+  ).sort((first, second) => first.localeCompare(second));
   useEffect(() => {
     setListFilter("all");
     setListSearch("");
@@ -417,6 +428,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
   };
 
   useImperativeHandle(ref, () => ({
+    discardChanges: clearAdvancementDrafts,
     saveChanges: handleSaveCareerClick,
   }));
 
@@ -444,7 +456,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
         ) : undefined
       }
     >
-        {activeCareerSubtab !== "experience" ? (
+        {activeCareerSubtab !== "experience" && activeCareerSubtab !== "characteristics" ? (
           <div className="px-3 pb-3 pt-0 md:px-4">
             <form
               className="flex min-w-0 items-center gap-2"
@@ -455,15 +467,15 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                 value={listSearch}
                 onChange={(event) => setListSearch(event.target.value)}
                 placeholder="Search"
-                className="h-9 min-w-0 flex-1 appearance-none rounded-lg border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
+                className="h-7 min-w-0 flex-1 appearance-none rounded-lg border border-white/10 bg-black/30 px-3 text-xs text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
                 aria-label="Search edit character list"
               />
-              <StandardButton
+              <WfrpStandardBtn
                 type="submit"
-                name={<Search size={15} />}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-wfrp-border bg-wfrp-surface text-gray-300 transition-colors hover:border-wfrp-gold/50 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                name="Search"
+                leadingIcon={<Search size={15} />}
+                className="wfrp-roll-cta shrink-0"
                 aria-label="Search"
-                labelClassName="inline-flex items-center justify-center"
               />
             </form>
           </div>
@@ -473,6 +485,8 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           <AdvancementSection title="Experience" hideHeader>
             <SheetDataSection
               gridClassName={experienceGridClass}
+              headerClassName={advanceRowInsetClass}
+              sectionLabelClassName={advanceHeaderTitleClass}
               sectionLabel="Experience"
               valueLabels={[
                 { align: "center", label: "Value" },
@@ -536,6 +550,8 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           <AdvancementSection title="Careers" meta="All Paths" hideHeader>
             <SheetDataSection
               gridClassName={careerPathGridClass}
+              headerClassName={advanceRowInsetClass}
+              sectionLabelClassName={advanceHeaderTitleClass}
               sectionLabel="Career"
               valueLabels={[
                 { className: "hidden md:block", label: "Class" },
@@ -575,7 +591,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       summary={(
                         <>
                           <div className={`min-w-0 ${advanceRowTitleClass}`}>
-                            <StandardButton
+                            <WfrpStandardBtn
                               onClick={(event) => {
                                 event.preventDefault();
                                 setActiveInfo({
@@ -630,6 +646,8 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           <AdvancementSection title="Characteristics" hideHeader>
             <SheetDataSection
               gridClassName={characteristicAdvanceGridClass}
+              headerClassName={advanceRowInsetClass}
+              sectionLabelClassName={advanceHeaderTitleClass}
               sectionLabel="Characteristics"
               valueLabels={[
                 { align: "center", className: "hidden md:block", label: "Initial" },
@@ -713,7 +731,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
-                          <StandardButton
+                          <WfrpStandardBtn
                             type="button"
                             onClick={(event) => {
                               event.preventDefault();
@@ -802,6 +820,8 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                 <SheetDataSection
                   key={section.id}
                   gridClassName={skillAdvanceGridClass}
+                  headerClassName={advanceRowInsetClass}
+                  sectionLabelClassName={advanceHeaderTitleClass}
                   sectionLabel={section.title}
                   valueLabels={[
                     { align: "center", className: "hidden md:block", label: "Initial" },
@@ -845,7 +865,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                             contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                             summary={(
                               <>
-                              <StandardButton
+                              <WfrpStandardBtn
                                 type="button"
                                 onClick={(event) => {
                                   event.preventDefault();
@@ -923,6 +943,8 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
           <AdvancementSection title="Talents" hideHeader>
             <SheetDataSection
               gridClassName={talentAdvanceGridClass}
+              headerClassName={advanceRowInsetClass}
+              sectionLabelClassName={advanceHeaderTitleClass}
               sectionLabel="Talents"
               valueLabels={[
                 { align: "center", label: "Max" },
@@ -956,7 +978,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
-                        <StandardButton
+                        <WfrpStandardBtn
                           type="button"
                           onClick={(event) => {
                             event.preventDefault();

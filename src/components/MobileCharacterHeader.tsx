@@ -1,5 +1,6 @@
-import { Menu, Settings } from "lucide-react";
+import { ArrowUpFromLine, Menu, Settings } from "lucide-react";
 import { useGameSessionContext } from "../context/GameSessionContext";
+import { WfrpStandardIcon } from "./ui";
 
 interface MobileCharacterHeaderProps {
   campaignName: string;
@@ -35,16 +36,14 @@ export function MobileCharacterHeader({
   return (
     <section className="md:hidden border-b border-wfrp-border bg-wfrp-surface shadow-lg shadow-black/20">
       <div className="flex h-[60px] items-center">
-        <button
-          type="button"
+        <WfrpStandardIcon
           onClick={onOpenNavigation}
-          className="flex h-full w-14 shrink-0 items-center justify-center text-wfrp-muted-text transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-          aria-label="Open navigation drawer"
+          className="ml-1 rounded"
+          label="Open navigation drawer"
           aria-haspopup="dialog"
           aria-expanded={isMobileNavigationOpen}
-        >
-          <Menu size={18} />
-        </button>
+          icon={<Menu />}
+        />
         <button
           type="button"
           onClick={onOpenCharacterList}
@@ -99,16 +98,17 @@ export function MobileCharacterHeader({
                 role="menuitem"
               >
                 <span>Edit Character</span>
-                <span className="text-xs font-bold text-blue-400">{xpCurrent}/{xpTotal}</span>
+                <ArrowUpFromLine size={14} aria-hidden="true" />
               </button>
               <button
                 type="button"
                 onClick={onOpenXpDialog}
                 className="flex w-full items-center justify-between gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                aria-label={`Add XP (${xpCurrent}/${xpTotal})`}
                 role="menuitem"
               >
                 <span>Add XP</span>
-                <span className="text-xs font-bold text-blue-400">{xpCurrent}/{xpTotal}</span>
+                <ArrowUpFromLine size={14} aria-hidden="true" />
               </button>
               <button
                 type="button"

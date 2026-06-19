@@ -1,16 +1,16 @@
 import { useState, type FormEvent } from "react";
+import { X } from "lucide-react";
 import { CharacterHeader } from "./CharacterHeader";
 import { MobileCharacterHeader } from "./MobileCharacterHeader";
 import {
-  Button,
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   Input,
+  WfrpStandardBtn,
 } from "./ui";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import type { CharacterSummary } from "../data/repository";
@@ -136,12 +136,20 @@ export function CharacterSheetHeader({
             </div>
 
             <DialogFooter>
-              <DialogClose className="inline-flex min-h-10 items-center justify-center rounded-lg border border-input bg-background px-4 py-2 text-sm font-bold uppercase tracking-widest text-foreground shadow-sm transition-all hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-                Cancel
-              </DialogClose>
-              <Button type="submit" disabled={xpGainAmount <= 0}>
-                Add XP
-              </Button>
+              <WfrpStandardBtn
+                type="button"
+                name="Cancel"
+                onClick={() => setIsXpDialogOpen(false)}
+                className="wfrp-roll-cta"
+                leadingIcon={<X size={14} />}
+              />
+              <WfrpStandardBtn
+                type="submit"
+                name="Add XP"
+                disabled={xpGainAmount <= 0}
+                isGolden={xpGainAmount > 0}
+                className="wfrp-roll-cta"
+              />
             </DialogFooter>
           </form>
         </DialogContent>

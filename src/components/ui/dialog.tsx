@@ -12,7 +12,7 @@ import {
 } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/src/lib/utils";
-import { Button } from "./button";
+import { WfrpStandardIcon } from "./WfrpStandardIcon";
 
 interface DialogContextValue {
   descriptionId: string;
@@ -118,9 +118,12 @@ export function DialogContent({ className, children, onKeyDown, ...props }: HTML
         {...props}
       >
         {children}
-        <Button aria-label="Close dialog" variant="ghost" size="icon" className="absolute right-4 top-4 h-8 w-8" onClick={() => context.setOpen(false)}>
-          <X className="h-4 w-4" />
-        </Button>
+        <WfrpStandardIcon
+          className="absolute right-3 top-3"
+          label="Close dialog"
+          onClick={() => context.setOpen(false)}
+          icon={<X />}
+        />
       </div>
     </DialogPortal>
   );
