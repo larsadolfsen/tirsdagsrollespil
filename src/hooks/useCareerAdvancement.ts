@@ -4,11 +4,6 @@ import type {
   ResolvedCharacterSkill,
   ResolvedCharacterTalent,
 } from "../data/characters/resolved";
-import {
-  getAdvanceCost,
-  getCharacteristicAdvanceCost,
-  getTalentPurchaseCost,
-} from "../lib/advanceCosts";
 import { UI_LABELS } from "../labels";
 import type { Ruleset, SkillDefinition } from "../types";
 
@@ -53,49 +48,6 @@ export function useCareerAdvancement({
   const [pendingSkillAdvances, setPendingSkillAdvances] = useState<Record<string, number>>({});
   const [pendingTalentPurchases, setPendingTalentPurchases] = useState<Record<string, number>>({});
   const [pendingCareerRank, setPendingCareerRank] = useState<number | null>(null);
-
-  const pendingCharacteristicSpend = Object.entries(pendingCharacteristicAdvances).reduce<number>(
-    (total, [characteristicKey, count]) => {
-      const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
-
-      let nextTotal = total;
-      for (let step = 0; step < Number(count); step += 1) {
-        nextTotal += getCharacteristicAdvanceCost(baseAdvances + step);
-      }
-
-      return nextTotal;
-    },
-    0,
-  );
-
-  const pendingSkillSpend = Object.entries(pendingSkillAdvances).reduce<number>(
-    (total, [skillName, count]) => {
-      const baseAdvances =
-        characterSkills.find((skill) => skill.displayName === skillName)?.advances ?? 0;
-
-      let nextTotal = total;
-      for (let step = 0; step < Number(count); step += 1) {
-        nextTotal += getAdvanceCost(baseAdvances + step);
-      }
-
-      return nextTotal;
-    },
-    0,
-  );
-
-  const pendingTalentSpend = Object.entries(pendingTalentPurchases).reduce<number>(
-    (total, [talentName, count]) => {
-      const baseTakenCount = characterTalents.filter((talent) => talent.name === talentName).length;
-
-      let nextTotal = total;
-      for (let step = 0; step < Number(count); step += 1) {
-        nextTotal += getTalentPurchaseCost(baseTakenCount + step);
-      }
-
-      return nextTotal;
-    },
-    0,
-  );
 
   const displayedCareerRank = pendingCareerRank ?? currentCareerRank;
   const displayedCareerRankRecord =
@@ -201,17 +153,7 @@ export function useCareerAdvancement({
       hasCareerTalentRequirement
     );
   };
-  const getCareerAdvanceCost = (rank: number) => (isCareerStepComplete(rank) ? 100 : 200);
-  const pendingCareerSpend =
-    pendingCareerRank === null || pendingCareerRank <= currentCareerRank
-      ? 0
-      : Array.from(
-          { length: pendingCareerRank - currentCareerRank },
-          (_, index) => currentCareerRank + index,
-        ).reduce((total, rank) => total + getCareerAdvanceCost(rank), 0);
-  const pendingSpentXp =
-    pendingCharacteristicSpend + pendingSkillSpend + pendingTalentSpend + pendingCareerSpend;
-  const pendingAvailableXp = Math.max(0, Number(xpCurrent) - pendingSpentXp);
+  const pendingAvailableXp = Math.max(0, Number(xpCurrent));
   const requiredCareerAdvances = displayedCareerRank * 5;
   const completedCareerCharacteristics = availableCareerCharacteristicKeys.filter((characteristicKey) => {
     const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
@@ -227,7 +169,6 @@ export function useCareerAdvancement({
   const advancementProgress = careerProgressGoalCount === 0
     ? 0
     : Math.round((careerProgressCompletedCount / careerProgressGoalCount) * 100);
-  const nextCareerAdvanceCost = nextCareerRankRecord ? getCareerAdvanceCost(displayedCareerRank) : null;
   const hasPendingCareerChanges =
     Object.keys(pendingCharacteristicAdvances).length > 0 ||
     Object.keys(pendingSkillAdvances).length > 0 ||
@@ -250,18 +191,12 @@ export function useCareerAdvancement({
     getCareerSkillOptions,
     hasPendingCareerChanges,
     isCareerSkillName,
-    nextCareerAdvanceCost,
     nextCareerRankRecord,
     pendingAvailableXp,
     pendingCareerRank,
-    pendingCareerSpend,
     pendingCharacteristicAdvances,
-    pendingCharacteristicSpend,
     pendingSkillAdvances,
-    pendingSkillSpend,
-    pendingSpentXp,
     pendingTalentPurchases,
-    pendingTalentSpend,
     resetPendingAdvancements,
     setPendingCareerRank,
     setPendingCharacteristicAdvances,

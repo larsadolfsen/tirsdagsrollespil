@@ -1,10 +1,10 @@
-import { ArrowDown, ArrowUp, ChevronDown, ListFilter, Search, ShoppingBag } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Chip } from "./Chip";
-import { WfrpSidebar } from "./wfrp";
+import { useMemo, useState } from "react";
+import { AppSidebar, SidebarFilterList, SidebarItemList } from "./sidebar";
+import { WfrpSearchField } from "./ui";
 import { allItemDefinitions, wfrp4eRuleset } from "../data/rules/wfrp4e";
-import { formatItemValue, getItemPriceInBrass } from "../lib/gameSession";
-import type { ItemDefinition } from "../types";
+import { formatItemValue } from "../lib/gameSession";
+import { cn } from "../lib/utils";
+import type { CharacterCoins, ItemDefinition } from "../types";
 
 const weaponAvailabilityById = new Map(
   wfrp4eRuleset.weapons.map((weapon) => [weapon.id, weapon.availability]),
@@ -13,29 +13,33 @@ const armourAvailabilityById = new Map(
   wfrp4eRuleset.armours.map((armour) => [armour.id, armour.availability]),
 );
 
-const shopStock = [...allItemDefinitions].sort((firstItem, secondItem) => {
+const inventoryStock = [...allItemDefinitions].sort((firstItem, secondItem) => {
   const typeOrder = firstItem.type.localeCompare(secondItem.type);
   return typeOrder || firstItem.name.localeCompare(secondItem.name);
 });
 
 const availabilityOrder = ["common", "average", "scarce", "rare", "exotic", "n/a"];
-type ItemSortKey = "name" | "type" | "rarity" | "price";
-type SortDirection = "asc" | "desc";
-
-function OwnershipDot({ label }: { label: string }) {
-  return (
-    <span
-      className="h-1 w-1 shrink-0 rounded-full bg-wfrp-gold shadow-wfrp-gold-glow"
-      aria-label={label}
-    />
-  );
-}
+const coinRows = [
+  ["gc", "Gold Crowns", "bg-wfrp-gold"],
+  ["s", "Silver Shillings", "bg-wfrp-silver"],
+  ["d", "Brass Pennies", "bg-wfrp-coin-brass"],
+] as const;
 
 function formatFilterLabel(value: string) {
   return value
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+}
+
+function formatItemTypeLabel(type: string) {
+  return type.toLowerCase() === "packs and containers" ? "Containers" : formatFilterLabel(type);
+}
+
+function formatItemTypeShortLabel(type: string) {
+  if (type === "Melee Weapon") return "Melee";
+  if (type === "Ranged Weapon") return "Ranged";
+  return formatItemTypeLabel(type);
 }
 
 function getItemRarity(item: ItemDefinition) {
@@ -54,75 +58,6 @@ function getItemRarity(item: ItemDefinition) {
   return "n/a";
 }
 
-function getItemSortValue(item: ItemDefinition, sortKey: ItemSortKey) {
-  if (sortKey === "type") {
-    return item.type;
-  }
-
-  if (sortKey === "rarity") {
-    const rarity = getItemRarity(item);
-    const rarityIndex = availabilityOrder.indexOf(rarity);
-    return rarityIndex === -1 ? Number.MAX_SAFE_INTEGER : rarityIndex;
-  }
-
-  if (sortKey === "price") {
-    return getItemPriceInBrass(item);
-  }
-
-  return item.name;
-}
-
-function compareItems(firstItem: ItemDefinition, secondItem: ItemDefinition, sortKey: ItemSortKey) {
-  const firstValue = getItemSortValue(firstItem, sortKey);
-  const secondValue = getItemSortValue(secondItem, sortKey);
-
-  if (typeof firstValue === "number" && typeof secondValue === "number") {
-    return firstValue - secondValue || firstItem.name.localeCompare(secondItem.name, undefined, { sensitivity: "base" });
-  }
-
-  return String(firstValue).localeCompare(String(secondValue), undefined, { sensitivity: "base" }) ||
-    firstItem.name.localeCompare(secondItem.name, undefined, { sensitivity: "base" });
-}
-
-function SortHeaderButton({
-  align = "left",
-  activeSortKey,
-  label,
-  sortDirection,
-  sortKey,
-  onSort,
-}: {
-  align?: "left" | "center" | "right";
-  activeSortKey: ItemSortKey;
-  label: string;
-  sortDirection: SortDirection;
-  sortKey: ItemSortKey;
-  onSort: (sortKey: ItemSortKey) => void;
-}) {
-  const isActive = activeSortKey === sortKey;
-  const alignClass = align === "center" ? "justify-center text-center" : align === "right" ? "justify-end text-right" : "justify-start text-left";
-
-  return (
-    <button
-      type="button"
-      onClick={() => onSort(sortKey)}
-      className={`inline-flex items-center gap-1 uppercase transition-colors hover:text-wfrp-gold ${alignClass} ${
-        isActive ? "text-wfrp-gold" : ""
-      }`}
-      aria-label={`Sort goods by ${label}`}
-    >
-      <span>{label}</span>
-      {isActive ? (
-        sortDirection === "asc" ? (
-          <ArrowUp size={10} aria-hidden="true" strokeWidth={3} />
-        ) : (
-          <ArrowDown size={10} aria-hidden="true" strokeWidth={3} />
-        )
-      ) : null}
-    </button>
-  );
-}
-
 export function ShopSidebar({
   isOpen,
   coins,
@@ -132,7 +67,7 @@ export function ShopSidebar({
   onClose,
 }: {
   isOpen: boolean;
-  coins: string;
+  coins: CharacterCoins;
   ownedItemIds: Set<string>;
   onAddToInventory: (item: ItemDefinition) => void;
   onBuy: (item: ItemDefinition) => void;
@@ -140,396 +75,157 @@ export function ShopSidebar({
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItemType, setSelectedItemType] = useState("All");
-  const [selectedAvailability, setSelectedAvailability] = useState("All");
-  const [sortKey, setSortKey] = useState<ItemSortKey>("name");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
-  const sidebarRef = useRef<HTMLElement | null>(null);
-  const filterRef = useRef<HTMLDivElement>(null);
+  const [selectedRarity, setSelectedRarity] = useState("All");
 
-  useEffect(() => {
-    if (!isFilterOpen) return;
-
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!filterRef.current?.contains(event.target as Node)) {
-        setIsFilterOpen(false);
-      }
-    };
-
-    document.addEventListener("pointerdown", handlePointerDown);
-
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-    };
-  }, [isFilterOpen]);
-
-  const itemTypes = useMemo(() => {
-    return Array.from(new Set(shopStock.map((item) => item.type)));
-  }, []);
-
-  const itemTypeCounts = useMemo(() => {
-    return shopStock.reduce((counts, item) => {
-      counts.set(item.type, (counts.get(item.type) ?? 0) + 1);
-      return counts;
-    }, new Map<string, number>());
-  }, []);
-
-  const itemRarityCounts = useMemo(() => {
-    return shopStock.reduce((counts, item) => {
-      const rarity = getItemRarity(item);
-      counts.set(rarity, (counts.get(rarity) ?? 0) + 1);
-      return counts;
-    }, new Map<string, number>());
-  }, []);
-
-  const itemAvailabilities = useMemo(() => {
-    return Array.from(new Set(shopStock.map((item) => getItemRarity(item)))).sort(
-      (firstAvailability, secondAvailability) => {
-        const firstIndex = availabilityOrder.indexOf(firstAvailability);
-        const secondIndex = availabilityOrder.indexOf(secondAvailability);
+  const itemTypes = useMemo(() => Array.from(new Set(inventoryStock.map((item) => item.type))), []);
+  const itemTypeOptions = useMemo(
+    () => [
+      { id: "All", label: "All" },
+      ...itemTypes.map((itemType) => ({
+        id: itemType,
+        label: formatItemTypeLabel(itemType),
+        shortLabel: formatItemTypeShortLabel(itemType),
+      })),
+    ],
+    [itemTypes],
+  );
+  const itemRarities = useMemo(() => {
+    return Array.from(new Set(inventoryStock.map((item) => getItemRarity(item)))).sort(
+      (firstRarity, secondRarity) => {
+        const firstIndex = availabilityOrder.indexOf(firstRarity);
+        const secondIndex = availabilityOrder.indexOf(secondRarity);
 
         if (firstIndex !== -1 || secondIndex !== -1) {
           return (firstIndex === -1 ? Number.MAX_SAFE_INTEGER : firstIndex) -
             (secondIndex === -1 ? Number.MAX_SAFE_INTEGER : secondIndex);
         }
 
-        return firstAvailability.localeCompare(secondAvailability);
+        return firstRarity.localeCompare(secondRarity);
       },
     );
   }, []);
+  const rarityOptions = useMemo(
+    () => [
+      { id: "All", label: "All" },
+      ...itemRarities.map((rarity) => ({ id: rarity, label: formatFilterLabel(rarity) })),
+    ],
+    [itemRarities],
+  );
 
   const filteredStock = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
-    const typeFilteredStock =
-      selectedItemType === "All"
-        ? shopStock
-        : shopStock.filter((item) => item.type === selectedItemType);
-    const availabilityFilteredStock =
-      selectedAvailability === "All"
-        ? typeFilteredStock
-        : typeFilteredStock.filter((item) => getItemRarity(item) === selectedAvailability);
 
-    if (!normalizedSearchTerm) {
-      return availabilityFilteredStock;
-    }
+    return inventoryStock.filter((item) => {
+      if (selectedItemType !== "All" && item.type !== selectedItemType) return false;
+      if (selectedRarity !== "All" && getItemRarity(item) !== selectedRarity) return false;
 
-    return availabilityFilteredStock.filter((item) =>
-      [item.name, item.type, item.description, getItemRarity(item)]
+      if (!normalizedSearchTerm) return true;
+
+      return [item.name, item.type, formatItemTypeLabel(item.type), item.description, getItemRarity(item)]
         .filter(Boolean)
-        .some((value) => value!.toLowerCase().includes(normalizedSearchTerm)),
-    );
-  }, [searchTerm, selectedAvailability, selectedItemType]);
+        .some((value) => value!.toLowerCase().includes(normalizedSearchTerm));
+    });
+  }, [searchTerm, selectedItemType, selectedRarity]);
 
-  const groupedStock = useMemo(() => {
-    const sortItems = (stock: typeof shopStock) =>
-      [...stock].sort((firstItem, secondItem) => {
-        const comparison = compareItems(firstItem, secondItem, sortKey);
-        return sortDirection === "asc" ? comparison : -comparison;
-      });
+  const inventoryItems = filteredStock.map((item) => {
+    const rarity = getItemRarity(item);
+    const isOwned = ownedItemIds.has(item.id);
 
-    if (selectedItemType === "All") {
-      return [
+    return {
+      actions: [
         {
-          type: "All Goods",
-          items: sortItems(filteredStock),
+          isActive: true,
+          label: "Add",
+          onClick: () => onAddToInventory(item),
         },
-      ];
-    }
+        {
+          label: "Buy",
+          onClick: () => onBuy(item),
+        },
+      ],
+      description: item.description,
+      details: [
+        { label: "Type", value: formatItemTypeLabel(item.type) },
+        { label: "Rarity", value: formatFilterLabel(rarity) },
+        { label: "Encumbrance", value: item.encumbrance || "-" },
+        { label: "Price", value: formatItemValue(item) },
+        ...(item.carries ? [{ label: "Carries", value: `${item.carries} enc` }] : []),
+      ],
+      id: item.id,
+      isMarked: isOwned,
+      name: item.name,
+    };
+  });
 
-    const groups = filteredStock.reduce<Array<{ type: string; items: typeof shopStock }>>((groups, item) => {
-      const existingGroup = groups.find((group) => group.type === item.type);
-
-      if (existingGroup) {
-        existingGroup.items.push(item);
-      } else {
-        groups.push({ type: item.type, items: [item] });
-      }
-
-      return groups;
-    }, []);
-
-    return groups.map((group) => ({ ...group, items: sortItems(group.items) }));
-  }, [filteredStock, selectedItemType, sortDirection, sortKey]);
-
-  const handleSort = (nextSortKey: ItemSortKey) => {
-    setSortDirection((currentDirection) =>
-      sortKey === nextSortKey && currentDirection === "asc" ? "desc" : "asc",
-    );
-    setSortKey(nextSortKey);
-  };
+  const listTitle = selectedItemType === "All" ? "All Items" : formatItemTypeLabel(selectedItemType);
 
   return (
-    <WfrpSidebar
+    <AppSidebar
       isOpen={isOpen}
-      motionKey="shop-sidebar"
+      motionKey="add-inventory-sidebar"
       onClose={onClose}
-      className="w-[min(86vw,340px)] md:w-[400px]"
-      contentClassName="p-3"
-      icon={<ShoppingBag size={18} />}
-      title="Shop"
-      titleId="shop-sidebar-title"
-      kicker="Market & trade"
-      closeLabel="Close shop"
-      sidebarRef={sidebarRef}
+      overlayUntil="desktop"
+      side="right"
+      title="Add Inventory"
+      titleId="add-inventory-sidebar-title"
+      closeLabel="Close add inventory sidebar"
+      contentClassName="!p-0"
       trapFocus
       closeOnOutsidePointerDown
     >
-      <div className="flex flex-col gap-3">
-        <div className="wfrp-subpanel p-3">
-          <div className="flex items-center justify-between gap-4">
-            <span className="wfrp-table-label">Coin</span>
-            <span className="wfrp-list-cell-strong font-mono text-gray-100">{coins}</span>
-          </div>
-        </div>
-
-        <div ref={filterRef} className="relative flex gap-2">
-          <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded border border-white/5 bg-black/30 px-3 text-wfrp-muted-text focus-within:border-wfrp-gold/40">
-            <Search size={14} />
-            <input
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              className="min-w-0 flex-1 bg-transparent text-xs font-semibold text-gray-200 outline-none placeholder:text-gray-600"
-              placeholder="Search goods"
-              aria-label="Search shop goods"
-            />
-          </label>
-
-          <button
-            type="button"
-            onClick={() => setIsFilterOpen((isOpen) => !isOpen)}
-            className="wfrp-action-btn h-10 shrink-0 gap-2 px-4"
-            aria-expanded={isFilterOpen}
-            aria-label="Filter shop goods by item type"
-          >
-            <ListFilter size={14} />
-            Filter
-          </button>
-
-          {isFilterOpen && (
-            <div className="absolute right-0 top-12 z-20 max-h-[70vh] w-64 overflow-y-auto rounded border border-white/10 bg-wfrp-popover p-2 shadow-xl shadow-black/40 no-scrollbar">
-              <div className="px-2 pb-1 text-[9px] font-black uppercase tracking-widest text-gray-700">
-                Type
-              </div>
-              {["All", ...itemTypes].map((itemType) => {
-                const itemCount =
-                  itemType === "All"
-                    ? shopStock.length
-                    : itemTypeCounts.get(itemType) ?? 0;
-
-                return (
-                  <button
-                    key={itemType}
-                    type="button"
-                    aria-label={`Filter by type ${itemType}`}
-                    onClick={() => {
-                      setSelectedItemType(itemType);
-                      setExpandedItemId(null);
-                    }}
-                    className={`flex h-8 w-full items-center justify-between rounded px-2 text-left text-[10px] font-black uppercase tracking-widest transition-colors ${
-                      selectedItemType === itemType
-                        ? "bg-wfrp-gold/10 text-wfrp-gold"
-                        : "text-wfrp-muted-text hover:bg-white/5 hover:text-gray-200"
-                    }`}
-                  >
-                    <span>{itemType}</span>
-                    <span className="font-mono text-[9px] text-gray-600">{itemCount}</span>
-                  </button>
-                );
-              })}
-
-              <div className="mx-2 my-2 border-t border-white/5" />
-              <div className="px-2 pb-1 text-[9px] font-black uppercase tracking-widest text-gray-700">
-                Rarity
-              </div>
-              {["All", ...itemAvailabilities].map((availability) => {
-                const itemCount =
-                  availability === "All"
-                    ? shopStock.length
-                    : itemRarityCounts.get(availability) ?? 0;
-
-                return (
-                  <button
-                    key={availability}
-                    type="button"
-                    aria-label={`Filter by rarity ${formatFilterLabel(availability)}`}
-                    onClick={() => {
-                      setSelectedAvailability(availability);
-                      setExpandedItemId(null);
-                    }}
-                    className={`flex h-8 w-full items-center justify-between rounded px-2 text-left text-[10px] font-black uppercase tracking-widest transition-colors ${
-                      selectedAvailability === availability
-                        ? "bg-wfrp-gold/10 text-wfrp-gold"
-                        : "text-wfrp-muted-text hover:bg-white/5 hover:text-gray-200"
-                    }`}
-                  >
-                    <span>{formatFilterLabel(availability)}</span>
-                    <span className="font-mono text-[9px] text-gray-600">{itemCount}</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {(selectedItemType !== "All" || selectedAvailability !== "All") && (
-          <div className="flex flex-wrap gap-2">
-            {selectedItemType !== "All" && (
-              <Chip
-                onClose={() => {
-                  setSelectedItemType("All");
-                  setExpandedItemId(null);
-                }}
-                closeLabel={`Clear ${selectedItemType} shop filter`}
-              >
-                {selectedItemType}
-              </Chip>
-            )}
-            {selectedAvailability !== "All" && (
-              <Chip
-                onClose={() => {
-                  setSelectedAvailability("All");
-                  setExpandedItemId(null);
-                }}
-                closeLabel={`Clear ${formatFilterLabel(selectedAvailability)} rarity filter`}
-              >
-                {formatFilterLabel(selectedAvailability)}
-              </Chip>
-            )}
-          </div>
-        )}
-
-        <div className="wfrp-subpanel-shell">
-          <div className="grid grid-cols-[minmax(0,1fr)_76px_18px] gap-2 wfrp-list-header">
-            <SortHeaderButton activeSortKey={sortKey} label="Item" sortDirection={sortDirection} sortKey="name" onSort={handleSort} />
-            <SortHeaderButton align="right" activeSortKey={sortKey} label="Price" sortDirection={sortDirection} sortKey="price" onSort={handleSort} />
-            <span aria-hidden="true" />
-          </div>
-
-          <div className="max-h-[calc(100vh-250px)] overflow-y-auto p-2 no-scrollbar">
-            {groupedStock.map((group) => (
-              <div key={group.type} className="mb-3 last:mb-0">
-                {selectedItemType !== "All" ? (
-                  <h4 className="wfrp-list-group">
-                    <span>{group.type}</span>
-                    <div className="wfrp-panel-rule" />
-                  </h4>
-                ) : null}
-
-                {group.items.map((item) => {
-                  const isOwned = ownedItemIds.has(item.id);
-
-                  return (
-                    <div key={item.id} className="rounded border border-transparent transition-colors hover:border-white/5">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setExpandedItemId((currentId) =>
-                            currentId === item.id ? null : item.id,
-                          )
-                        }
-                        className="wfrp-table-row grid w-full grid-cols-[minmax(0,1fr)_76px_18px] gap-2 border-0 text-left"
-                        aria-expanded={expandedItemId === item.id}
-                      >
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="wfrp-list-cell-strong truncate text-gray-200">
-                              {item.name}
-                            </span>
-                            {isOwned ? <OwnershipDot label="Already owned" /> : null}
-                          </div>
-                          <div className="mt-1 flex min-w-0 items-center gap-2">
-                            <span className="truncate text-[9px] font-black uppercase tracking-widest text-gray-600">
-                              {item.type}
-                            </span>
-                            <span className="h-1 w-1 shrink-0 rounded-full bg-white/10" />
-                            <span className="truncate text-[9px] font-black uppercase tracking-widest text-gray-600">
-                              {formatFilterLabel(getItemRarity(item))}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="wfrp-list-cell-strong text-right font-mono">
-                          {formatItemValue(item)}
-                        </div>
-
-                        <ChevronDown
-                          size={14}
-                          className={`mt-0.5 text-gray-600 transition-transform ${
-                            expandedItemId === item.id ? "rotate-180 text-wfrp-gold" : ""
-                          }`}
-                        />
-                      </button>
-
-                      {expandedItemId === item.id && (
-                        <div className="mx-2 mb-2 rounded border border-white/5 bg-black/20 p-3">
-                          <p className="text-[11px] font-semibold leading-relaxed text-wfrp-muted-text">
-                            {item.description}
-                          </p>
-                          <div className="mt-3 grid grid-cols-2 gap-2">
-                            <div>
-                              <span className="wfrp-table-label">Type</span>
-                              <p className="wfrp-list-cell-strong mt-1 text-gray-200">{item.type}</p>
-                            </div>
-                            <div>
-                              <span className="wfrp-table-label">Availability</span>
-                              <p className="wfrp-list-cell-strong mt-1 text-gray-200">
-                                {formatFilterLabel(getItemRarity(item))}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="wfrp-table-label">Encumbrance</span>
-                              <p className="wfrp-list-cell-strong mt-1 font-mono text-gray-200">
-                                {item.encumbrance || "-"}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="wfrp-table-label">Price</span>
-                              <p className="wfrp-list-cell-strong mt-1 font-mono text-gray-200">
-                                {formatItemValue(item)}
-                              </p>
-                            </div>
-                            {item.carries ? (
-                              <div className="col-span-2">
-                                <span className="wfrp-table-label">Carries</span>
-                                <p className="wfrp-list-cell-strong mt-1 font-mono text-gray-200">
-                                  {item.carries} enc
-                                </p>
-                              </div>
-                            ) : null}
-                          </div>
-                          <div className="mt-3 flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => onAddToInventory(item)}
-                              className="wfrp-standard-btn h-7 whitespace-nowrap px-4"
-                            >
-                              Add
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => onBuy(item)}
-                              className="wfrp-standard-btn h-7 whitespace-nowrap px-4"
-                            >
-                              Buy
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+      <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
+        <div className="space-y-1.5">
+          <span className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+            Coin
+          </span>
+          <div className="space-y-1">
+            {coinRows.map(([coinKey, label, colorClass]) => (
+              <div key={coinKey} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 text-[14px] font-bold text-wfrp-muted-text">
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full shadow-sm", colorClass)} aria-hidden="true" />
+                  <span className="min-w-0 truncate">{label}</span>
+                </span>
+                <span className="font-mono text-[14px] font-black text-wfrp-muted-text">{coins[coinKey]}</span>
               </div>
             ))}
-
-            {filteredStock.length === 0 && (
-              <div className="px-2 py-6 text-center text-[10px] font-bold uppercase tracking-widest text-gray-700">
-                No matching goods
-              </div>
-            )}
           </div>
         </div>
       </div>
-    </WfrpSidebar>
+
+      <WfrpSearchField
+        id="add-inventory-sidebar-search"
+        label="Search inventory"
+        placeholder="Search inventory"
+        value={searchTerm}
+        onSearch={setSearchTerm}
+        onValueChange={setSearchTerm}
+      />
+
+      <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
+        <div className="space-y-2">
+          <SidebarFilterList
+            ariaLabel="Inventory type filters"
+            label="Type"
+            options={itemTypeOptions}
+            value={selectedItemType}
+            onChange={setSelectedItemType}
+          />
+          <SidebarFilterList
+            ariaLabel="Inventory rarity filters"
+            label="Rarity"
+            options={rarityOptions}
+            value={selectedRarity}
+            onChange={setSelectedRarity}
+          />
+        </div>
+      </div>
+
+      <SidebarItemList
+        className="!rounded-none !border-0"
+        items={inventoryItems}
+        title={listTitle}
+        emptyMessage="No inventory items match the selected filters."
+      />
+    </AppSidebar>
   );
 }

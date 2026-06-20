@@ -9,8 +9,11 @@ import zlib from "node:zlib";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
-const isProductionDeployment = process.env.NODE_ENV === "production" ||
-  Boolean(process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_SERVICE_ID);
+const isRailwayDeployment = Boolean(
+  process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_SERVICE_ID,
+);
+const isProductionDeployment = process.env.NODE_ENV === "production" || isRailwayDeployment;
+const disableHttpCache = process.env.WFRP_DISABLE_HTTP_CACHE !== "false";
 const stateDataDirectory = path.resolve(
   process.env.WFRP_DATA_DIR ??
     process.env.RAILWAY_VOLUME_MOUNT_PATH ??
@@ -606,8 +609,15 @@ app.put("/api/character-progress", async (req, res, next) => {
 app.use(
   express.static(path.join(__dirname, "dist"), {
     index: false,
-    maxAge: isProductionDeployment ? "1d" : 0,
+    maxAge: disableHttpCache ? 0 : isProductionDeployment ? "1d" : 0,
     setHeaders(res, filePath) {
+      if (disableHttpCache) {
+        res.setHeader("Cache-Control", "no-store, max-age=0");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Expires", "0");
+        return;
+      }
+
       if (filePath.endsWith(".html")) {
         res.setHeader("Cache-Control", "no-cache");
         return;
@@ -630,7 +640,13 @@ app.use(
 );
 
 app.get("*", (_req, res) => {
-  res.setHeader("Cache-Control", "no-cache");
+  if (disableHttpCache) {
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+  } else {
+    res.setHeader("Cache-Control", "no-cache");
+  }
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 

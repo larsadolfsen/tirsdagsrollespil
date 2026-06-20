@@ -1,5 +1,6 @@
-import { Menu, Settings } from "lucide-react";
+import { ArrowUpFromLine, Menu, Settings } from "lucide-react";
 import { useGameSessionContext } from "../context/GameSessionContext";
+import { WfrpStandardIcon } from "./ui";
 
 interface MobileCharacterHeaderProps {
   campaignName: string;
@@ -11,6 +12,7 @@ interface MobileCharacterHeaderProps {
   onOpenCharacterActions: () => void;
   onOpenCharacterList: () => void;
   onOpenNavigation: () => void;
+  onOpenXpDialog: () => void;
   xpCurrent: number;
   xpTotal: number;
 }
@@ -25,6 +27,7 @@ export function MobileCharacterHeader({
   onOpenCharacterActions,
   onOpenCharacterList,
   onOpenNavigation,
+  onOpenXpDialog,
   xpCurrent,
   xpTotal,
 }: MobileCharacterHeaderProps) {
@@ -33,16 +36,14 @@ export function MobileCharacterHeader({
   return (
     <section className="md:hidden border-b border-wfrp-border bg-wfrp-surface shadow-lg shadow-black/20">
       <div className="flex h-[60px] items-center">
-        <button
-          type="button"
+        <WfrpStandardIcon
           onClick={onOpenNavigation}
-          className="flex h-full w-14 shrink-0 items-center justify-center text-wfrp-muted-text transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-          aria-label="Open navigation drawer"
+          className="ml-1 rounded"
+          label="Open navigation drawer"
           aria-haspopup="dialog"
           aria-expanded={isMobileNavigationOpen}
-        >
-          <Menu size={18} />
-        </button>
+          icon={<Menu />}
+        />
         <button
           type="button"
           onClick={onOpenCharacterList}
@@ -62,7 +63,7 @@ export function MobileCharacterHeader({
           <button
             type="button"
             onClick={onOpenCharacterActions}
-            className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-wfrp-gold/70 bg-black/30 p-0.5 shadow-inner transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+            className="wfrp-character-portrait-button flex h-10 w-10 items-center justify-center"
             aria-label="Open character actions"
             aria-haspopup="menu"
             aria-expanded={isMobilePortraitMenuOpen}
@@ -73,12 +74,12 @@ export function MobileCharacterHeader({
                 alt=""
                 width={40}
                 height={40}
-                className="h-full w-full rounded-full object-cover grayscale brightness-90"
+                className="wfrp-character-portrait-image"
               />
             ) : (
               <span
                 aria-hidden="true"
-                className="flex h-full w-full items-center justify-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#5a4a2d,#191919_72%)] text-xs font-black text-wfrp-gold"
+                className="wfrp-character-portrait-fallback text-xs"
               >
                 {characterName.charAt(0)}
               </span>
@@ -96,8 +97,18 @@ export function MobileCharacterHeader({
                 className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                 role="menuitem"
               >
-                <span>Advance</span>
-                <span className="text-xs font-bold text-blue-400">{xpCurrent}/{xpTotal}</span>
+                <span>Edit Character</span>
+                <ArrowUpFromLine size={14} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={onOpenXpDialog}
+                className="flex w-full items-center justify-between gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                aria-label={`Add XP (${xpCurrent}/${xpTotal})`}
+                role="menuitem"
+              >
+                <span>Add XP</span>
+                <ArrowUpFromLine size={14} aria-hidden="true" />
               </button>
               <button
                 type="button"

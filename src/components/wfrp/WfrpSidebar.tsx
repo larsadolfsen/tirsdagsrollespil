@@ -1,9 +1,10 @@
 import type { ReactNode, RefObject } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/src/lib/utils";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { WfrpStandardIcon } from "../ui";
 
 type WfrpSidebarProps = {
   ariaLabelledBy?: string;
@@ -44,14 +45,27 @@ export function WfrpSidebar({
 }: WfrpSidebarProps) {
   const internalSidebarRef = useRef<HTMLElement | null>(null);
   const resolvedSidebarRef = sidebarRef ?? internalSidebarRef;
+  const [usesModalBehavior, setUsesModalBehavior] = useState(false);
 
-  useFocusTrap(resolvedSidebarRef, isOpen && trapFocus, onClose);
+  useFocusTrap(resolvedSidebarRef, isOpen && trapFocus && usesModalBehavior, onClose);
 
   useEffect(() => {
-    if (!isOpen || !closeOnOutsidePointerDown) return;
+    if (!isOpen) return;
+
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const updateModalBehavior = () => {
+      setUsesModalBehavior(mediaQuery.matches);
+    };
+
+    updateModalBehavior();
+    mediaQuery.addEventListener("change", updateModalBehavior);
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (!resolvedSidebarRef.current?.contains(event.target as Node)) {
+      if (
+        closeOnOutsidePointerDown &&
+        mediaQuery.matches &&
+        !resolvedSidebarRef.current?.contains(event.target as Node)
+      ) {
         onClose();
       }
     };
@@ -60,6 +74,8 @@ export function WfrpSidebar({
 
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
+      mediaQuery.removeEventListener("change", updateModalBehavior);
+      setUsesModalBehavior(false);
     };
   }, [closeOnOutsidePointerDown, isOpen, onClose, resolvedSidebarRef]);
 
@@ -75,7 +91,7 @@ export function WfrpSidebar({
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
           className={cn("wfrp-sidebar-shell", className)}
           role="dialog"
-          aria-modal="true"
+          aria-modal={usesModalBehavior}
           aria-labelledby={ariaLabelledBy ?? titleId}
         >
           <div className="wfrp-sidebar-header shrink-0 p-3">
@@ -92,14 +108,11 @@ export function WfrpSidebar({
                 {kicker ? <span className="wfrp-sidebar-kicker">{kicker}</span> : null}
               </div>
             </div>
-            <button
-              type="button"
+            <WfrpStandardIcon
               onClick={onClose}
-              className="wfrp-icon-btn rounded-full p-1 hover:bg-wfrp-border"
-              aria-label={closeLabel}
-            >
-              <X size={20} className="cursor-pointer" />
-            </button>
+              label={closeLabel}
+              icon={<X />}
+            />
           </div>
 
           <div

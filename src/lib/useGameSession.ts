@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { SetStateAction } from "react";
 import { hydrateCharacterProgress } from "../data/persistence";
+import { characterRecordById } from "../data/characters";
 import { defaultCharacterId } from "../data/repository";
 import {
   getCareerAdvancementData,
@@ -8,6 +9,7 @@ import {
   loadGameSession,
   saveGameSessionProgress,
 } from "./gameSession";
+import { parseCampaignCharacterPath } from "./campaignRoutes";
 import { getConsumableCount } from "./consumables";
 import type {
   ResolvedCharacterEquipment,
@@ -130,8 +132,25 @@ const resolveNumberStateAction = (action: SetStateAction<number>, previousValue:
     ? (action as (previousValue: number) => number)(previousValue)
     : action;
 
+const getInitialSelectedCharacterId = () => {
+  if (typeof window === "undefined") {
+    return defaultCharacterId;
+  }
+
+  const route = parseCampaignCharacterPath(window.location.pathname);
+  if (!route) {
+    return defaultCharacterId;
+  }
+
+  const routedCharacter = route ? characterRecordById[route.characterId] : null;
+
+  return routedCharacter?.campaignId === route.campaignId
+    ? routedCharacter.id
+    : defaultCharacterId;
+};
+
 export function useGameSession() {
-  const [selectedCharacterId, setSelectedCharacterId] = useState(defaultCharacterId);
+  const [selectedCharacterId, setSelectedCharacterId] = useState(getInitialSelectedCharacterId);
   const [isProgressHydrated, setIsProgressHydrated] = useState(false);
   const [isSessionStateReadyToSave, setIsSessionStateReadyToSave] = useState(false);
   const [hydratedCharacterId, setHydratedCharacterId] = useState<string | null>(null);
@@ -145,6 +164,7 @@ export function useGameSession() {
     character,
     ruleset,
     rulesIndex,
+    initialTalentIds,
     resourceCaps: baseResourceCaps,
     initialCorruptionCurrent,
     initialFateCurrent,
@@ -348,7 +368,8 @@ export function useGameSession() {
     if (
       !isProgressHydrated ||
       !isSessionStateReadyToSave ||
-      hydratedCharacterId !== selectedCharacterId
+      hydratedCharacterId !== selectedCharacterId ||
+      character.id !== selectedCharacterId
     ) {
       return;
     }
@@ -404,6 +425,7 @@ export function useGameSession() {
     isSessionStateReadyToSave,
     hydratedCharacterId,
     selectedCharacterId,
+    character.id,
     character.equipment,
     woundsCurrent,
     corruptionCurrent,
@@ -477,6 +499,7 @@ export function useGameSession() {
     rulesIndex,
     resourceCaps,
     careerAdvancementData,
+    initialTalentIds,
     woundsCurrent,
     setWoundsCurrent,
     corruptionCurrent,

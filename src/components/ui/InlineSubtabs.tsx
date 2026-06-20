@@ -43,17 +43,17 @@ export function InlineSubtabs<T extends string>({
 
   return (
     <div
-      className="flex min-w-0 items-center gap-2 bg-transparent pt-1"
+      className="flex w-full items-center gap-2 bg-transparent pt-1"
       onTouchCancel={(event) => event.stopPropagation()}
       onTouchEnd={(event) => event.stopPropagation()}
       onTouchStart={(event) => event.stopPropagation()}
     >
-      <div className="min-w-0 flex-1 self-stretch overflow-hidden">
+      <div className="min-w-0 flex-1 self-stretch">
         <ScrollableTabStrip
-          className="flex w-full min-w-0 flex-nowrap items-center justify-start overflow-x-auto px-0 py-0 !px-0 md:flex-nowrap md:overflow-x-auto md:py-0 no-scrollbar"
+          className="flex w-full min-w-max flex-nowrap items-center justify-center overflow-x-auto px-0 py-0 !px-0 md:flex-nowrap md:overflow-x-auto md:py-0 lg:w-max lg:min-w-0 lg:justify-start no-scrollbar"
         >
           <div
-            className="inline-flex w-max min-w-max items-center"
+            className="inline-flex items-center"
             role="tablist"
             aria-label={ariaLabel}
           >
@@ -93,7 +93,7 @@ export function InlineSubtabs<T extends string>({
         </ScrollableTabStrip>
       </div>
       {trailingContent ? (
-        <div className="flex h-12 shrink-0 items-center justify-end pr-2 sm:pr-3 lg:pr-4">
+        <div className="ml-auto flex h-12 shrink-0 items-center justify-end pr-2 sm:pr-3 lg:pr-4">
           {trailingContent}
         </div>
       ) : null}

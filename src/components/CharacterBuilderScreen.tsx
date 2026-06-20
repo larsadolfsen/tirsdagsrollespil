@@ -376,14 +376,14 @@ export function CharacterBuilderScreen({
                   className="flex items-center gap-2 px-4 py-2 font-black tracking-[0.12em]"
                 >
                   <ChevronLeft size={14} />
-                  Back
+                  <span>Back</span>
                 </Button>
                 <Button
                   onClick={goToNextStep}
                   variant="outline"
                   className="flex items-center gap-2 px-4 py-2 font-black tracking-[0.12em] text-gray-100"
                 >
-                  {isLastStep ? "Finish" : "Next"}
+                  <span>{isLastStep ? "Finish" : "Next"}</span>
                   {!isLastStep && <ChevronRight size={14} />}
                 </Button>
               </div>

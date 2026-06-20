@@ -1,4 +1,6 @@
-import { SubtabContentFrame } from "../components/ui";
+import { useState } from "react";
+import { SubtabActionButton, SubtabContentFrame, WfrpStandardBtn } from "../components/ui";
+import { InlineSubtabs } from "../components/ui/InlineSubtabs";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -11,20 +13,68 @@ import type { ResolvedCharacterTalent } from "../data/characters/resolved";
 type TalentEffect = NonNullable<ResolvedCharacterTalent["effects"]>[number];
 
 const talentGridClass = "grid-cols-[minmax(0,1fr)_72px_48px] md:grid-cols-[minmax(120px,0.75fr)_72px_minmax(180px,1.25fr)_48px]";
+type TalentSourceSubtab = "all" | "career" | "origin" | "other";
+type CharacterTalentRow = { talent: ResolvedCharacterTalent; count: number };
+
+const talentSourceSubtabOptions: Array<{ id: TalentSourceSubtab; label: string }> = [
+  { id: "all", label: "All" },
+  { id: "career", label: "Career" },
+  { id: "origin", label: "Background" },
+  { id: "other", label: "Other" },
+];
+
+const emptyTalentTitleBySource: Record<TalentSourceSubtab, string> = {
+  all: "No Talents",
+  career: "No Career Talents",
+  origin: "No Background Talents",
+  other: "No Other Talents",
+};
+
+const emptyTalentMessageBySource: Record<TalentSourceSubtab, string> = {
+  all: "Talents bought during play will appear here.",
+  career: "Talents from your career path will appear here.",
+  origin: "Talents from your character background will appear here.",
+  other: "Talents outside your career and background will appear here.",
+};
 
 export function TalentsTab({
-  characterTalentRows,
-  openTalentInfo,
+  talentRowsBySource,
   getTalentMaxDisplay,
   formatTalentEffect,
+  onOpenTalentSidebar,
+  onRemoveTalent,
 }: {
-  characterTalentRows: Array<{ talent: ResolvedCharacterTalent; count: number }>;
-  openTalentInfo: (talentName: string) => void;
+  talentRowsBySource: Record<TalentSourceSubtab, CharacterTalentRow[]>;
   getTalentMaxDisplay: (max: string) => string | number;
   formatTalentEffect: (effect: TalentEffect) => string;
+  onOpenTalentSidebar: () => void;
+  onRemoveTalent: (talentName: string) => void;
 }) {
+  const [activeTalentSourceSubtab, setActiveTalentSourceSubtab] = useState<TalentSourceSubtab>("all");
+  const characterTalentRows = talentRowsBySource[activeTalentSourceSubtab];
+
   return (
-    <SubtabContentFrame>
+    <SubtabContentFrame
+      contentClassName="max-md:pb-24"
+      subtabBar={(
+        <InlineSubtabs
+          options={talentSourceSubtabOptions}
+          activeId={activeTalentSourceSubtab}
+          onChange={setActiveTalentSourceSubtab}
+          ariaLabel="Talent source tabs"
+          trailingContent={(
+            <WfrpStandardBtn
+              onClick={onOpenTalentSidebar}
+              name="Add"
+              variant="action"
+              size="sm"
+              hideOnMobile
+              aria-label="Open talent sidebar"
+            />
+          )}
+        />
+      )}
+    >
       {characterTalentRows.length > 0 ? (
         <SheetDataSection
           gridClassName={talentGridClass}
@@ -38,7 +88,7 @@ export function TalentsTab({
         >
             {characterTalentRows.map(({ talent, count }) => {
               const takenDisplay = `${count}/${getTalentMaxDisplay(talent.max)}`;
-              const ruleText = talent.effects?.length
+              const summaryRuleText = talent.effects?.length
                 ? talent.effects.map(formatTalentEffect).join("; ")
                 : talent.description;
 
@@ -49,40 +99,44 @@ export function TalentsTab({
                   contentClassName="px-3 pb-4 pt-1 md:col-start-1 md:col-end-5 md:px-4 md:pb-4"
                   summary={(
                     <>
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          openTalentInfo(talent.name);
-                        }}
-                        className="wfrp-skill-link wfrp-no-roll-cell min-w-0 truncate text-left text-gray-200"
-                        aria-label={`Open ${talent.name} talent rule`}
-                      >
+                      <span className="wfrp-no-roll-cell min-w-0 truncate text-left font-semibold text-gray-200">
                         {talent.name}
-                      </button>
+                      </span>
                       <div className="wfrp-list-cell-strong text-center font-mono">
                         {takenDisplay}
                       </div>
                       <div className="hidden min-w-0 truncate text-xs font-semibold leading-relaxed text-wfrp-muted-text md:block">
-                        {ruleText}
+                        {summaryRuleText}
                       </div>
                       <SheetDataDisclosureCell />
                     </>
                   )}
                 >
                   <SheetDataAccordionDetails
-                    description={ruleText}
+                    description={talent.description}
                     rows={[
                       { label: "Taken", value: count },
                       { label: "Maximum", value: getTalentMaxDisplay(talent.max) },
+                      ...(talent.tests ? [{ label: "Tests", value: talent.tests }] : []),
                     ]}
-                  />
+                  >
+                    <div className="pt-2">
+                      <SubtabActionButton
+                        onClick={() => onRemoveTalent(talent.name)}
+                        aria-label={`Remove ${talent.name}`}
+                      >
+                        Remove
+                      </SubtabActionButton>
+                    </div>
+                  </SheetDataAccordionDetails>
                 </SheetDataAccordionRow>
               );
             })}
         </SheetDataSection>
       ) : (
-        <SheetEmptyState title="No Talents">Talents bought during play will appear here.</SheetEmptyState>
+        <SheetEmptyState title={emptyTalentTitleBySource[activeTalentSourceSubtab]}>
+          {emptyTalentMessageBySource[activeTalentSourceSubtab]}
+        </SheetEmptyState>
       )}
     </SubtabContentFrame>
   );

@@ -16,6 +16,7 @@ type UseCampaignRouteSyncOptions = {
   activeMobileMainView: MobileTabMenuTarget;
   availableCharacters: CharacterRouteOption[];
   handleMobileMainViewSelect: (target: MobileTabMenuTarget) => void;
+  routeSyncEnabled?: boolean;
   selectedCharacterId: string;
   setActiveMainTab: (tab: MainTab) => void;
   setActiveMobileMainView: (target: MobileTabMenuTarget) => void;
@@ -37,6 +38,7 @@ export function useCampaignRouteSync({
   activeMobileMainView,
   availableCharacters,
   handleMobileMainViewSelect,
+  routeSyncEnabled = true,
   selectedCharacterId,
   setActiveMainTab,
   setActiveMobileMainView,
@@ -53,6 +55,8 @@ export function useCampaignRouteSync({
     mode = "replace",
     omitDefaultView = currentCampaignRoute.current?.hasExplicitView === false,
   }: SyncRouteOptions = {}) => {
+    if (!routeSyncEnabled) return;
+
     const campaignId = currentCampaignRoute.current?.campaignId ?? defaultCampaignId;
     const nextPath = buildCampaignCharacterPath({
       campaignId,
@@ -77,9 +81,15 @@ export function useCampaignRouteSync({
     }
 
     window.history.replaceState(null, "", nextUrl);
-  }, [activeMobileMainView, selectedCharacterId]);
+  }, [activeMobileMainView, routeSyncEnabled, selectedCharacterId]);
 
   useEffect(() => {
+    if (!routeSyncEnabled) {
+      setHasAppliedInitialRoute(false);
+      currentCampaignRoute.current = null;
+      return;
+    }
+
     const applyRoute = (pathname: string) => {
       const route = parseCampaignCharacterPath(pathname);
       if (!route) return;
@@ -103,7 +113,13 @@ export function useCampaignRouteSync({
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [availableCharacters, setActiveMainTab, setActiveMobileMainView, setSelectedCharacterId]);
+  }, [
+    availableCharacters,
+    routeSyncEnabled,
+    setActiveMainTab,
+    setActiveMobileMainView,
+    setSelectedCharacterId,
+  ]);
 
   useEffect(() => {
     if (!hasAppliedInitialRoute) return;

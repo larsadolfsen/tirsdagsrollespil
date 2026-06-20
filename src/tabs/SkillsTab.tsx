@@ -1,4 +1,4 @@
-import { InlineSubtabs, SubtabContentFrame } from "../components/ui";
+import { InlineSubtabs, SubtabContentFrame, WfrpStandardBtn } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -15,6 +15,7 @@ type SkillRow = {
   advances: number;
   shortDescription?: string;
   description?: string;
+  specialization?: string;
 };
 
 const desktopSkillGridClass = "md:grid-cols-[56px_minmax(10rem,0.8fr)_minmax(14rem,1.2fr)_56px_56px_56px_56px_48px]";
@@ -40,27 +41,42 @@ export function SkillsTab({
   visibleSkillRows,
   attributes,
   handleRoll,
+  onOpenAdvance,
 }: {
   activeSkillSubtab: SkillSubtab;
   setActiveSkillSubtab: (subtab: SkillSubtab) => void;
   visibleSkillRows: SkillRow[];
   attributes: Record<string, number>;
   handleRoll: (characteristic: { key: string; label: string }) => void;
+  onOpenAdvance: () => void;
   openSkillInfo?: (skillName: string) => void;
 }) {
   return (
     <SubtabContentFrame
+      contentClassName="max-md:pb-24"
       subtabBar={(
-        <InlineSubtabs<SkillSubtab>
-          options={[
-            { id: "all", label: "All" },
-            { id: "trained", label: "Trained" },
-            { id: "advanced", label: "Advanced" },
-            { id: "basic", label: "Basic" },
-          ]}
-          activeId={activeSkillSubtab}
-          onChange={setActiveSkillSubtab}
-        />
+        <div className="flex w-full items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <InlineSubtabs<SkillSubtab>
+              options={[
+                { id: "all", label: "All" },
+                { id: "advanced", label: "Advanced" },
+                { id: "basic", label: "Basic" },
+              ]}
+              activeId={activeSkillSubtab}
+              onChange={setActiveSkillSubtab}
+            />
+          </div>
+          <WfrpStandardBtn
+            onClick={onOpenAdvance}
+            name="Add Skill"
+            variant="action"
+            size="sm"
+            hideOnMobile
+            aria-label="Open skill sidebar"
+            className="mr-2 sm:mr-3 lg:mr-4"
+          />
+        </div>
       )}
     >
       <SheetDataSection
@@ -134,6 +150,7 @@ export function SkillsTab({
                   description={skill.description}
                   rows={[
                     { label: "Characteristic", value: characteristicNames[skill.characteristic] ?? skill.characteristic, valueClassName: "!text-left" },
+                    ...(skill.specialization ? [{ label: "Specialization", value: skill.specialization, valueClassName: "!text-left" }] : []),
                     { label: "Score", value: charValue, valueClassName: "!text-left" },
                     { label: "Advances", value: formattedAdvances, valueClassName: "!text-left" },
                   ]}

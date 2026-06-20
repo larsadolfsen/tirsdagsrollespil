@@ -1,10 +1,16 @@
 export { AdvancementSection } from "./AdvancementSection";
 export { HeaderResourceSlider, ResourceCounterBar } from "./ResourceCounterBar";
 export { InlineSubtabs } from "./InlineSubtabs";
+export { WfrpStandardBtn } from "./WfrpStandardBtn";
 export { PanelSectionHeader } from "./PanelSectionHeader";
 export { ScrollableTabStrip } from "./ScrollableTabStrip";
 export { SubtabActionButton } from "./SubtabActionButton";
 export { SubtabContentFrame } from "./SubtabContentFrame";
+export { WfrpSearchField } from "./WfrpSearchField";
+export { WfrpStandardIcon } from "./WfrpStandardIcon";
+export { WfrpDropdownMenuContent, WfrpDropdownMenuGroup, WfrpDropdownMenuItem, WfrpDropdownMenuLabel, WfrpDropdownMenuSeparator } from "./WfrpDropdownMenu";
+export { WfrpSuggestionChips } from "./WfrpSuggestionChips";
+export type { WfrpSuggestionChipOption } from "./WfrpSuggestionChips";
 
 export { Badge } from "./badge";
 export type { BadgeProps } from "./badge";

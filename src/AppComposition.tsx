@@ -4,6 +4,7 @@
  */
 
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback } from "react";
 import type { ReactNode } from "react";
 import {
   Dice5,
@@ -13,8 +14,9 @@ import { ArmourCard } from "./components/ArmourCard";
 import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
 import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
 import { CharacteristicsView } from "./components/CharacteristicsView";
+import { LandingPage } from "./components/LandingPage";
 import { MobileMainViewSwipeProvider } from "./components/MobileMainViewSwipeContext";
-import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
+import { getAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
 import { useCharacterDerivedStats } from "./hooks/useCharacterDerivedStats";
 import { useDiceRoller } from "./features/dice/useDiceRoller";
@@ -25,6 +27,7 @@ import { useNotesViewModel } from "./hooks/useNotesViewModel";
 import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
   InlineSubtabs,
+  WfrpStandardBtn,
   PanelSectionHeader,
   ResourceCounterBar,
   ScrollableTabStrip,
@@ -43,6 +46,7 @@ import {
 } from "./tabs/talents/talentUtils";
 import type {
   ResolvedCharacterSkill,
+  ResolvedCharacterTalent,
 } from "./data/characters/resolved";
 import { listCharacters } from "./data/repository";
 import {
@@ -50,15 +54,22 @@ import {
   getCharacterSkillKey,
 } from "./lib/gameSession";
 import { useCampaignRouteSync } from "./lib/useCampaignRouteSync";
-import { mainTabButtonActiveClassName, mainTabButtonBaseClassName, mainTabButtonInactiveClassName } from "./lib/tabStyles";
+import { buildCampaignCharacterPath, parseCampaignCharacterPath } from "./lib/campaignRoutes";
+import {
+  mainTabButtonActiveClassName,
+  mainTabButtonBaseClassName,
+  mainTabButtonInactiveClassName,
+  mainTabUnderlineClassName,
+} from "./lib/tabStyles";
 import { cn } from "./lib/utils";
 import { formatTalentEffect } from "./lib/talentEffects";
 import { UI_LABELS } from "./labels";
 import {
   mainTabOptions,
 } from "./tabs/tabOptions";
-import type { MobileTabMenuTarget } from "./tabs/tabTypes";
-import type { Characteristic, Ruleset, SkillDefinition } from "./types";
+import type { CareerTabHandle } from "./tabs/CareerTab";
+import type { CareerSubtab, MobileTabMenuTarget } from "./tabs/tabTypes";
+import type { Characteristic, Ruleset, SkillDefinition, SkillSpecialisationDefinition } from "./types";
 
 const InfoSidebar = lazy(() =>
   import("./components/InfoSidebar").then((module) => ({ default: module.InfoSidebar })),
@@ -68,6 +79,12 @@ const ShopSidebar = lazy(() =>
 );
 const SpellShopSidebar = lazy(() =>
   import("./components/SpellShopSidebar").then((module) => ({ default: module.SpellShopSidebar })),
+);
+const TalentSidebar = lazy(() =>
+  import("./components/sidebar").then((module) => ({ default: module.TalentSidebar })),
+);
+const SkillSidebar = lazy(() =>
+  import("./components/sidebar").then((module) => ({ default: module.SkillSidebar })),
 );
 const DiceLogSidebar = lazy(() =>
   import("./features/dice/DiceLogSidebar").then((module) => ({ default: module.DiceLogSidebar })),
@@ -85,6 +102,14 @@ const SpellsTab = lazy(() => import("./tabs/SpellsTab").then((module) => ({ defa
 const TalentsTab = lazy(() => import("./tabs/TalentsTab").then((module) => ({ default: module.TalentsTab })));
 const JournalTab = lazy(() => import("./tabs/JournalTab").then((module) => ({ default: module.JournalTab })));
 const CareerTab = lazy(() => import("./tabs/CareerTab").then((module) => ({ default: module.CareerTab })));
+
+const editCharacterTabOptions: Array<{ id: CareerSubtab; label: string }> = [
+  { id: "experience", label: "Experience" },
+  { id: "characteristics", label: "Characteristics" },
+  { id: "careers", label: "Careers" },
+  { id: "skills", label: "Skills" },
+  { id: "talents", label: "Talents" },
+];
 
 type RollActionButton = {
   id: string;
@@ -123,6 +148,7 @@ export function AppComposition() {
     rulesIndex,
     resourceCaps,
     careerAdvancementData,
+    initialTalentIds,
     woundsCurrent,
     setWoundsCurrent,
     corruptionCurrent,
@@ -159,6 +185,18 @@ export function AppComposition() {
     setNotes,
   } = useGameSessionContext();
   const [pendingXpAdjustment, setPendingXpAdjustment] = useState(0);
+  const [pendingTotalXpAdjustment, setPendingTotalXpAdjustment] = useState(0);
+  const [hasCareerTabDraftChanges, setHasCareerTabDraftChanges] = useState(false);
+  const [isTalentSidebarOpen, setIsTalentSidebarOpen] = useState(false);
+  const [isSkillSidebarOpen, setIsSkillSidebarOpen] = useState(false);
+  const careerTabRef = useRef<CareerTabHandle>(null);
+  const [isLandingPageOpen, setIsLandingPageOpen] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return parseCampaignCharacterPath(window.location.pathname) === null;
+  });
   const isDesktopLayout = useIsDesktopLayout();
   const availableCharacters = useMemo(() => listCharacters(), []);
   const {
@@ -263,24 +301,17 @@ export function AppComposition() {
   } = useNotesViewModel({ notes, setNotes });
   const {
     advancementCharacteristics,
-    advancementProgress,
-    availableCareerCharacteristicKeys,
     displayedCareerRank,
     displayedCareerRankRecord,
     getCareerSkillOptions,
     hasPendingCareerChanges,
     isCareerSkillName,
-    nextCareerAdvanceCost,
     nextCareerRankRecord,
     pendingAvailableXp,
     pendingCareerRank,
     pendingCharacteristicAdvances,
-    pendingCharacteristicSpend,
     pendingSkillAdvances,
-    pendingSkillSpend,
-    pendingSpentXp,
     pendingTalentPurchases,
-    pendingTalentSpend,
     resetPendingAdvancements,
     setPendingCareerRank,
     setPendingCharacteristicAdvances,
@@ -295,16 +326,34 @@ export function AppComposition() {
     currentCharacteristicAdvances,
     rulesIndex,
     ruleset,
-    xpCurrent: xpCurrent + pendingXpAdjustment,
+    xpCurrent: Math.max(0, xpCurrent + pendingXpAdjustment),
   });
-  const hasPendingAdvanceChanges = hasPendingCareerChanges || pendingXpAdjustment > 0;
+  const hasPendingAdvanceChanges =
+    hasPendingCareerChanges || pendingXpAdjustment !== 0 || pendingTotalXpAdjustment !== 0;
+  const hasUnsavedCareerEdits = hasPendingAdvanceChanges || hasCareerTabDraftChanges;
+  const handleCareerTabDraftChangesChange = useCallback((hasDraftChanges: boolean) => {
+    setHasCareerTabDraftChanges(hasDraftChanges);
+  }, []);
+  const handleEditCharacterSave = useCallback(() => {
+    if (!hasUnsavedCareerEdits) return;
+
+    careerTabRef.current?.saveChanges();
+  }, [hasUnsavedCareerEdits]);
   useEffect(() => {
-    document.title = `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
-  }, [characterData.name]);
+    document.title = isLandingPageOpen
+      ? `${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`
+      : `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
+  }, [characterData.name, isLandingPageOpen]);
 
   type ResolvedSkillOption = (typeof rulesIndex.resolvedSkillOptions)[number];
   const skillDefinitionById = new Map<string, SkillDefinition>(
     ruleset.skills.map((skill) => [skill.id, skill]),
+  );
+  const skillDefinitionByName = new Map<string, SkillDefinition>(
+    ruleset.skills.map((skill) => [skill.name, skill]),
+  );
+  const skillSpecialisationById = new Map<string, SkillSpecialisationDefinition>(
+    ruleset.skillSpecialisations.map((specialisation) => [specialisation.id, specialisation]),
   );
   const characterSkillByName = new Map<string, ResolvedCharacterSkill>(
     characterSkills.map((skill) => [skill.displayName, skill]),
@@ -317,10 +366,31 @@ export function AppComposition() {
     );
   };
   const advancementTalentNames = [...new Set([
+    ...ruleset.talents.map((talent) => talent.name),
     ...careerAdvancementData.talents,
     ...characterTalents.map((talent) => talent.name),
-  ])];
+  ])].sort((first, second) => first.localeCompare(second));
   const characterTalentRows = getCharacterTalentRows(characterTalents);
+  const talentRowsBySource = useMemo(() => {
+    const careerTalentNames = new Set(careerAdvancementData.talents);
+    const originTalentIds = new Set(initialTalentIds);
+    const getFilteredRows = (predicate: (talent: ResolvedCharacterTalent) => boolean) =>
+      getCharacterTalentRows(characterTalents.filter(predicate));
+
+    return {
+      all: characterTalentRows,
+      career: getFilteredRows((talent) => careerTalentNames.has(talent.name)),
+      origin: getFilteredRows((talent) => originTalentIds.has(talent.id) && !careerTalentNames.has(talent.name)),
+      other: getFilteredRows(
+        (talent) => !careerTalentNames.has(talent.name) && !originTalentIds.has(talent.id),
+      ),
+    };
+  }, [
+    careerAdvancementData.talents,
+    characterTalentRows,
+    characterTalents,
+    initialTalentIds,
+  ]);
   const {
     attributes,
     armourTotals,
@@ -348,6 +418,10 @@ export function AppComposition() {
   });
   const getTalentMaxDisplay = (max: string) =>
     getTalentMaxDisplayValue(max, attributes);
+  const getTalentMaxDisplayByName = (talentName: string) => {
+    const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
+    return talentDefinition ? getTalentMaxDisplay(talentDefinition.max) : "-";
+  };
   const isPrayerCaster = useMemo(() => {
     const careerText = [
       characterData.careerRecord.id,
@@ -380,7 +454,7 @@ export function AppComposition() {
     () =>
       displayedMobileTabMenuOptions.reduce(
         (titles, option) => ({ ...titles, [option.id]: option.label }),
-        {} as Record<MobileTabMenuTarget, string>,
+        { career: "Edit Character" } as Record<MobileTabMenuTarget, string>,
       ),
     [displayedMobileTabMenuOptions],
   );
@@ -428,6 +502,7 @@ export function AppComposition() {
     activeMobileMainView,
     availableCharacters,
     handleMobileMainViewSelect,
+    routeSyncEnabled: !isLandingPageOpen,
     selectedCharacterId,
     setActiveMainTab,
     setActiveMobileMainView,
@@ -435,10 +510,38 @@ export function AppComposition() {
   });
 
   useEffect(() => {
+    const handlePopState = () => {
+      setIsLandingPageOpen(parseCampaignCharacterPath(window.location.pathname) === null);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  const openCharacterFromLanding = useCallback((characterId: string) => {
+    const character = availableCharacters.find((availableCharacter) => availableCharacter.id === characterId);
+    const nextPath = buildCampaignCharacterPath({
+      campaignId: character?.campaignId,
+      characterId,
+      view: "characteristics",
+      omitDefaultView: true,
+    });
+    const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
+
+    window.history.pushState(null, "", nextUrl);
+    setIsLandingPageOpen(false);
+    setSelectedCharacterId(characterId);
+  }, [availableCharacters, setSelectedCharacterId]);
+
+  useEffect(() => {
     resetAppShellState();
     setActiveInventoryMenu(null);
     resetPendingAdvancements();
     setPendingXpAdjustment(0);
+    setPendingTotalXpAdjustment(0);
     resetDiceRoller();
 
     restoreRouteForCharacter(characterData.id);
@@ -555,40 +658,31 @@ export function AppComposition() {
     setResolveCurrent(prev => Math.min(Math.max(0, prev + delta), Math.min(resourceCaps.resolve, resilienceCurrent)));
   };
 
+  const awardXp = (amount: number) => {
+    const gainedXp = Math.max(0, Math.floor(amount));
+
+    if (gainedXp <= 0) {
+      return;
+    }
+
+    setXpCurrent(prev => prev + gainedXp);
+    setXpTotal(prev => prev + gainedXp);
+  };
+
   const openTalentInfo = (talentName: string) => {
     const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
+    closeSidebars();
     setActiveInfo({
       type: "talent",
       name: talentName,
       extra: talentDefinition ? { description: talentDefinition.description } : undefined,
     });
-    setRollState(prev => ({ ...prev, characteristic: null }));
   };
 
   const purchaseSkillAdvance = (skillName: string) => {
-    const baseAdvances =
-      characterSkills.find((skill) => skill.displayName === skillName)?.advances ?? 0;
-    const pendingAdvances = pendingSkillAdvances[skillName] ?? 0;
-    const nextCost = getAdvanceCost(baseAdvances + pendingAdvances);
-
-    if (pendingAvailableXp < nextCost) return;
-
     setPendingSkillAdvances((prev) => ({
       ...prev,
       [skillName]: (prev[skillName] ?? 0) + 1,
-    }));
-  };
-
-  const purchaseCharacteristicAdvance = (characteristicKey: string) => {
-    const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
-    const pendingAdvances = pendingCharacteristicAdvances[characteristicKey] ?? 0;
-    const nextCost = getCharacteristicAdvanceCost(baseAdvances + pendingAdvances);
-
-    if (pendingAvailableXp < nextCost) return;
-
-    setPendingCharacteristicAdvances((prev) => ({
-      ...prev,
-      [characteristicKey]: (prev[characteristicKey] ?? 0) + 1,
     }));
   };
 
@@ -598,21 +692,88 @@ export function AppComposition() {
       return;
     }
 
-    const baseTakenCount = characterTalents.filter((talent) => talent.name === talentName).length;
-    const pendingTakenCount = pendingTalentPurchases[talentName] ?? 0;
-    const nextCost = getTalentPurchaseCost(baseTakenCount + pendingTakenCount);
-
-    if (pendingAvailableXp < nextCost) return;
-
-    setPendingTalentPurchases((prev) => ({
+    setCharacterTalents((prev) => [
       ...prev,
-      [talentName]: (prev[talentName] ?? 0) + 1,
-    }));
+      {
+        id: talentDefinition.id,
+        name: talentDefinition.name,
+        description: talentDefinition.description,
+        max: talentDefinition.max,
+        tests: talentDefinition.tests,
+        effects: talentDefinition.effects,
+      },
+    ]);
+  };
+
+  const addTalentForFree = (talentName: string) => {
+    const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
+    if (!talentDefinition) {
+      return;
+    }
+
+    setCharacterTalents((prev) => [
+      ...prev,
+      {
+        id: talentDefinition.id,
+        name: talentDefinition.name,
+        description: talentDefinition.description,
+        max: talentDefinition.max,
+        tests: talentDefinition.tests,
+        effects: talentDefinition.effects,
+      },
+    ]);
+  };
+
+  const removeTalent = (talentName: string) => {
+    if ((pendingTalentPurchases[talentName] ?? 0) > 0) {
+      removePendingTalentPurchase(talentName);
+      return;
+    }
+
+    setCharacterTalents((prev) => {
+      const removeIndex = prev.findLastIndex((talent) => talent.name === talentName);
+      if (removeIndex < 0) {
+        return prev;
+      }
+
+      return prev.filter((_, index) => index !== removeIndex);
+    });
+  };
+
+  const updateTalentTaken = (talentName: string, takenCount: number) => {
+    const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
+    if (!talentDefinition) {
+      return;
+    }
+
+    setCharacterTalents((prev) => {
+      const safeTakenCount = Math.max(0, Math.floor(takenCount));
+      const firstTalentIndex = prev.findIndex((talent) => talent.name === talentName);
+      const nextTalents = prev.filter((talent) => talent.name !== talentName);
+      const replacementTalents = Array.from({ length: safeTakenCount }, () => ({
+        id: talentDefinition.id,
+        name: talentDefinition.name,
+        description: talentDefinition.description,
+        max: talentDefinition.max,
+        tests: talentDefinition.tests,
+        effects: talentDefinition.effects,
+      }));
+
+      if (firstTalentIndex < 0) {
+        return [...nextTalents, ...replacementTalents];
+      }
+
+      nextTalents.splice(firstTalentIndex, 0, ...replacementTalents);
+      return nextTalents;
+    });
+  };
+
+  const removeSpell = (spellId: string) => {
+    setCharacterSpells((prev) => prev.filter((spell) => spell.id !== spellId));
   };
 
   const increasePendingCareerRank = () => {
     if (!nextCareerRankRecord) return;
-    if (nextCareerAdvanceCost === null || pendingAvailableXp < nextCareerAdvanceCost) return;
     setPendingCareerRank(displayedCareerRank + 1);
   };
 
@@ -634,21 +795,6 @@ export function AppComposition() {
       return {
         ...prev,
         [skillName]: current - 1,
-      };
-    });
-  };
-
-  const removePendingCharacteristicAdvance = (characteristicKey: string) => {
-    setPendingCharacteristicAdvances((prev) => {
-      const current = prev[characteristicKey] ?? 0;
-      if (current <= 1) {
-        const { [characteristicKey]: _removed, ...rest } = prev;
-        return rest;
-      }
-
-      return {
-        ...prev,
-        [characteristicKey]: current - 1,
       };
     });
   };
@@ -815,11 +961,10 @@ export function AppComposition() {
       setCurrentCareerRank(pendingCareerRank);
     }
 
-    if (pendingXpAdjustment > 0) {
-      setXpTotal((prev) => prev + pendingXpAdjustment);
-    }
-    setXpCurrent((prev) => Math.max(0, prev + pendingXpAdjustment - pendingSpentXp));
+    setXpCurrent((prev) => Math.max(0, prev + pendingXpAdjustment));
+    setXpTotal((prev) => Math.max(0, prev + pendingTotalXpAdjustment));
     setPendingXpAdjustment(0);
+    setPendingTotalXpAdjustment(0);
     resetPendingAdvancements();
   };
 
@@ -869,6 +1014,9 @@ export function AppComposition() {
         advances: characterSkill?.advances ?? 0,
         shortDescription: skillDef?.shortDescription,
         description: skillDef?.description,
+        specialization: option.specialisationId
+          ? skillSpecialisationById.get(option.specialisationId)?.name
+          : undefined,
         isTrained: (characterSkill?.advances ?? 0) > 0,
         skillId: option.skillId,
         isGrouped: skillDef?.grouped ?? false,
@@ -898,43 +1046,49 @@ export function AppComposition() {
       advances: skill.advances,
       shortDescription: skillDefinitionById.get(skill.skillId)?.shortDescription,
       description: skillDefinitionById.get(skill.skillId)?.description,
+      specialization: skill.specialisationId
+        ? skillSpecialisationById.get(skill.specialisationId)?.name
+        : undefined,
     }))
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
-  const basicVisibleSkillRows = [...trainedBasicSkillRows, ...untrainedBasicSkillRows].sort((a, b) =>
-    a.displayName.localeCompare(b.displayName),
-  );
-  const trainedSkillRows = [...trainedBasicSkillRows, ...advancedSkillRows]
-    .filter((skill) => skill.advances > 0)
-    .sort((a, b) => a.displayName.localeCompare(b.displayName));
-  const allSkillRows = [...basicVisibleSkillRows, ...advancedSkillRows].sort((a, b) =>
+  const allSkillRows = [...trainedBasicSkillRows, ...advancedSkillRows].sort((a, b) =>
     a.displayName.localeCompare(b.displayName),
   );
   const visibleSkillRows =
     activeSkillSubtab === "all"
       ? allSkillRows
-      : activeSkillSubtab === "trained"
-        ? trainedSkillRows
-        : activeSkillSubtab === "advanced"
+      : activeSkillSubtab === "advanced"
           ? advancedSkillRows
-          : basicVisibleSkillRows;
+          : trainedBasicSkillRows;
   const skillSections = [
     { id: "advanced" as const, title: "Advanced", skills: advancedSkillRows },
     { id: "basic-trained" as const, title: "Trained", skills: trainedBasicSkillRows },
     { id: "basic-untrained" as const, title: "Untrained", skills: untrainedBasicSkillRows },
   ];
   const advancementSkillNames = [...new Set([
+    ...careerAdvancementData.skills,
     ...careerAdvancementData.skills.flatMap(getCareerSkillOptions),
+    ...rulesIndex.resolvedSkillOptions.map((option) => option.name),
     ...skillSections.flatMap((section) => section.skills.map((skill) => skill.displayName)),
   ])];
+  const sidebarCareerSkillNames = new Set(careerAdvancementData.skills);
   const advancementSkillRows = advancementSkillNames
     .map((skillName) => {
       const skill = characterSkills.find((entry) => entry.displayName === skillName);
       const skillOption = rulesIndex.resolvedSkillOptions.find((option) => option.name === skillName);
+      const specialisationId = skillOption?.specialisationId ?? skill?.specialisationId;
+      const skillDefinition =
+        skillDefinitionById.get(skillOption?.skillId ?? skill?.skillId ?? "") ??
+        skillDefinitionByName.get(skillName);
       const pendingAdvances = pendingSkillAdvances[skillName] ?? 0;
       const baseAdvances = skill?.advances ?? 0;
       const characteristicKey =
         skill?.characteristic ??
-        (skillOption ? rulesIndex.skillCharacteristicById[skillOption.skillId] ?? "" : "");
+        (skillOption
+          ? rulesIndex.skillCharacteristicById[skillOption.skillId] ?? ""
+          : skillDefinition
+            ? rulesIndex.skillCharacteristicById[skillDefinition.id] ?? ""
+            : "");
       const baseCharacteristicValue =
         characteristicKey
           ? (attributes[characteristicKey] ?? 0)
@@ -949,7 +1103,7 @@ export function AppComposition() {
                 specialisationId: skill.specialisationId,
                 name: skill.displayName,
               })
-            : false;
+            : skillDefinition?.type === "basic";
 
       return {
         skillName,
@@ -960,56 +1114,72 @@ export function AppComposition() {
         baseCharacteristicValue,
         nextSkillCost: getAdvanceCost(baseAdvances + pendingAdvances),
         isCareerSkill: isCareerSkillName(skillName),
+        isSidebarCareerSkill: sidebarCareerSkillNames.has(skillName),
         isBasicSkill,
         isTrained: baseAdvances + pendingAdvances > 0,
+        shortDescription: skillDefinition?.shortDescription,
+        description: skillDefinition?.description,
+        specialization: specialisationId
+          ? skillSpecialisationById.get(specialisationId)?.name
+          : undefined,
       };
     })
     .sort((a, b) => a.skillName.localeCompare(b.skillName));
   const advancementSkillSections = [
     {
-      id: "advanced" as const,
-      title: "Advanced",
-      skills: advancementSkillRows.filter(
-        (skill) => !skill.isBasicSkill && skill.isCareerSkill && Boolean(skill.skill),
-      ),
-    },
-    {
-      id: "basic-trained" as const,
-      title: "Trained",
-      skills: advancementSkillRows.filter((skill) => skill.isBasicSkill && skill.isTrained),
-    },
-    {
-      id: "basic-untrained" as const,
-      title: "Untrained",
-      skills: advancementSkillRows.filter((skill) => skill.isBasicSkill && !skill.isTrained),
+      id: "all" as const,
+      title: "All",
+      skills: advancementSkillRows,
     },
   ];
 
-  const openAdvanceView = () => {
+  const closeSidebars = () => {
     setActiveInfo(null);
     setIsShopOpen(false);
     setIsSpellShopOpen(false);
     setIsDiceLogOpen(false);
+    setIsSkillSidebarOpen(false);
+    setIsTalentSidebarOpen(false);
+    setRollState((prev) => ({ ...prev, characteristic: null }));
+  };
+
+  const openAdvanceView = () => {
+    closeSidebars();
     selectMainTab("career");
   };
 
   const openCharacterBuilder = () => {
-    setActiveInfo(null);
-    setIsShopOpen(false);
-    setIsSpellShopOpen(false);
-    setIsDiceLogOpen(false);
-    setRollState((prev) => ({ ...prev, characteristic: null }));
+    closeSidebars();
     setIsCharacterBuilderOpen(true);
   };
 
   const openDiceLog = () => {
-    setActiveInfo(null);
-    setIsShopOpen(false);
+    closeSidebars();
     setIsDiceLogOpen(true);
   };
 
   const openMobileAdvanceView = () => {
     openAdvanceView();
+    setIsMobilePortraitMenuOpen(false);
+  };
+
+  const openTalentSidebar = () => {
+    closeSidebars();
+    setIsTalentSidebarOpen(true);
+  };
+
+  const openSkillSidebar = () => {
+    closeSidebars();
+    setIsSkillSidebarOpen(true);
+  };
+
+  const openMobileTalentSidebar = () => {
+    openTalentSidebar();
+    setIsMobilePortraitMenuOpen(false);
+  };
+
+  const openMobileSkillSidebar = () => {
+    openSkillSidebar();
     setIsMobilePortraitMenuOpen(false);
   };
 
@@ -1035,12 +1205,21 @@ export function AppComposition() {
   };
 
   const mobileAddAction =
-    activeMobileMainView === "inventory"
+    activeMobileMainView === "skills"
       ? {
-          label: "Add item",
+          label: "Open skill sidebar",
+          onClick: openMobileSkillSidebar,
+        }
+      : activeMobileMainView === "features"
+        ? {
+            label: "Open talent sidebar",
+            onClick: openMobileTalentSidebar,
+          }
+      : activeMobileMainView === "inventory"
+      ? {
+          label: "Add Inventory",
           onClick: () => {
-            setActiveInfo(null);
-            setIsDiceLogOpen(false);
+            closeSidebars();
             setIsMobileNavigationOpen(false);
             setIsMobileCharacterListOpen(false);
             setIsMobilePortraitMenuOpen(false);
@@ -1051,6 +1230,7 @@ export function AppComposition() {
         ? {
             label: isPrayerCaster ? "Add prayer" : "Add spell",
             onClick: () => {
+              closeSidebars();
               setIsMobileNavigationOpen(false);
               setIsMobileCharacterListOpen(false);
               setIsMobilePortraitMenuOpen(false);
@@ -1072,11 +1252,95 @@ export function AppComposition() {
 
     selectMobileMainView(displayedMobileTabMenuOptions[nextIndex].id);
   };
+  const navigateEditCharacterSubtab = (direction: -1 | 1) => {
+    const currentIndex = editCharacterTabOptions.findIndex((option) => option.id === activeCareerSubtab);
+    const safeCurrentIndex = currentIndex >= 0 ? currentIndex : 0;
+    const nextIndex =
+      (safeCurrentIndex + direction + editCharacterTabOptions.length) % editCharacterTabOptions.length;
+
+    setActiveCareerSubtab(editCharacterTabOptions[nextIndex].id);
+  };
+  const navigateMobileFrameNext = () => {
+    if (activeMainTab === "career") {
+      navigateEditCharacterSubtab(1);
+      return;
+    }
+
+    navigateMobileMainView(1);
+  };
+  const navigateMobileFramePrevious = () => {
+    if (activeMainTab === "career") {
+      navigateEditCharacterSubtab(-1);
+      return;
+    }
+
+    navigateMobileMainView(-1);
+  };
   const mobileMainViewSwipeHandlers = useHorizontalSwipePager({
     onNext: () => navigateMobileMainView(1),
     onPrevious: () => navigateMobileMainView(-1),
   });
   const shouldRenderMainTabPanel = isDesktopLayout || activeMobileMainView !== "characteristics";
+  const mobilePageTitle = activeMainTab === "career"
+    ? "Edit Character"
+    : displayedMobilePageTitleByView[activeMobileMainView];
+  const closeEditCharacterPage = () => {
+    selectMainTab("skills");
+  };
+  const cancelEditCharacterPage = () => {
+    careerTabRef.current?.discardChanges();
+    resetPendingAdvancements();
+    setPendingXpAdjustment(0);
+    setPendingTotalXpAdjustment(0);
+    setHasCareerTabDraftChanges(false);
+    closeEditCharacterPage();
+  };
+  const editCharacterCloseActionLabel = hasUnsavedCareerEdits ? "Cancel" : "Close";
+  const advancePageContent = (
+    <LazyTabPanel>
+      <CareerTab
+        ref={careerTabRef}
+        activeCareerSubtab={activeCareerSubtab}
+        saveCareerChanges={saveCareerChanges}
+        hasPendingCareerChanges={hasPendingAdvanceChanges}
+        onDraftChangesChange={handleCareerTabDraftChangesChange}
+        characterData={characterData}
+        pendingXpAdjustment={pendingXpAdjustment}
+        pendingTotalXpAdjustment={pendingTotalXpAdjustment}
+        setPendingXpAdjustment={setPendingXpAdjustment}
+        setPendingTotalXpAdjustment={setPendingTotalXpAdjustment}
+        displayedCareerRank={displayedCareerRank}
+        displayedCareerRankRecord={displayedCareerRankRecord}
+        careerAdvancementData={careerAdvancementData}
+        pendingAvailableXp={pendingAvailableXp}
+        nextCareerRankRecord={nextCareerRankRecord}
+        increasePendingCareerRank={increasePendingCareerRank}
+        advancementCharacteristics={advancementCharacteristics}
+        getCharacteristicLabel={getCharacteristicLabel}
+        updateCharacteristicInitial={updateCharacteristicInitial}
+        updateCharacteristicAdvances={updateCharacteristicAdvances}
+        advancementSkillSections={advancementSkillSections}
+        updateSkillAdvances={updateSkillAdvances}
+        advancementTalentNames={advancementTalentNames}
+        characterTalents={characterTalents}
+        purchaseTalent={purchaseTalent}
+        updateTalentTaken={updateTalentTaken}
+        getTalentMaxDisplayByName={getTalentMaxDisplayByName}
+        openTalentInfo={openTalentInfo}
+        setActiveInfo={setActiveInfo}
+        clearRollCharacteristic={() => setRollState((prev) => ({ ...prev, characteristic: null }))}
+      />
+    </LazyTabPanel>
+  );
+
+  if (isLandingPageOpen) {
+    return (
+      <LandingPage
+        characters={availableCharacters}
+        onSelectCharacter={openCharacterFromLanding}
+      />
+    );
+  }
 
   if (isCharacterBuilderOpen) {
     return (
@@ -1159,22 +1423,13 @@ export function AppComposition() {
               <InfoSidebar
                 activeInfo={activeInfo}
                 setActiveInfo={setActiveInfo}
-                characterData={characterData}
-                characterSkills={characterSkills}
-                advancementTalentNames={advancementTalentNames}
-                ruleset={ruleset}
-                rulesIndex={rulesIndex}
                 getCharacteristicDescription={getCharacteristicDescription}
-                formatSpellDuration={formatSpellDuration}
-                skillListRefs={skillListRefs}
-                propertyListRefs={propertyListRefs}
-                talentListRefs={talentListRefs}
               />
             ) : null}
             {isShopOpen ? (
               <ShopSidebar
                 isOpen={isShopOpen}
-                coins={formattedCoins}
+                coins={characterData.coins}
                 ownedItemIds={ownedShopItemIds}
                 onAddToInventory={handleAddShopItem}
                 onBuy={handleAddShopItem}
@@ -1189,8 +1444,31 @@ export function AppComposition() {
                 isPrayerMode={isPrayerCaster}
                 onAddSpell={handleAddSpell}
                 onClose={() => setIsSpellShopOpen(false)}
+                onRemoveSpell={removeSpell}
               />
             ) : null}
+            <SkillSidebar
+              initialFilter="all"
+              isOpen={isSkillSidebarOpen}
+              onClose={() => setIsSkillSidebarOpen(false)}
+              pendingAvailableXp={pendingAvailableXp}
+              purchaseSkillAdvance={purchaseSkillAdvance}
+              removePendingSkillAdvance={removePendingSkillAdvance}
+              skills={advancementSkillRows}
+            />
+            <TalentSidebar
+              characterTalents={characterTalents}
+              careerTalentNames={careerAdvancementData.talents}
+              getTalentMaxDisplay={getTalentMaxDisplay}
+              getTalentPurchaseCost={getTalentPurchaseCost}
+              isOpen={isTalentSidebarOpen}
+              pendingAvailableXp={pendingAvailableXp}
+              pendingTalentPurchases={pendingTalentPurchases}
+              onRemoveTalent={removeTalent}
+              purchaseTalent={purchaseTalent}
+              talents={ruleset.talents}
+              onClose={() => setIsTalentSidebarOpen(false)}
+            />
           </Suspense>
         </>
       )}
@@ -1211,6 +1489,7 @@ export function AppComposition() {
                 onOpenMobileCharacterList={() => openMobileNavigation(true)}
                 onOpenMobileNavigation={() => openMobileNavigation(false)}
                 onSelectCharacter={selectCharacter}
+                onAwardXp={awardXp}
                 selectedCharacterId={selectedCharacterId}
                 variant="desktop"
                 xpCurrent={xpCurrent}
@@ -1230,16 +1509,71 @@ export function AppComposition() {
                 onOpenMobileCharacterList={() => openMobileNavigation(true)}
                 onOpenMobileNavigation={() => openMobileNavigation(false)}
                 onSelectCharacter={selectCharacter}
+                onAwardXp={awardXp}
                 selectedCharacterId={selectedCharacterId}
                 variant="mobile"
                 xpCurrent={xpCurrent}
               />
             )}
-            mobileTitle={displayedMobilePageTitleByView[activeMobileMainView]}
-            onMobileNextView={() => navigateMobileMainView(1)}
-            onMobilePreviousView={() => navigateMobileMainView(-1)}
+            mobileTitle={mobilePageTitle}
+            onMobileNextView={navigateMobileFrameNext}
+            onMobilePreviousView={navigateMobileFramePrevious}
           >
 
+          {activeMainTab === "career" ? (
+            <>
+              <div className="hidden items-center justify-between gap-3 md:flex">
+                <h1 className="min-w-0 truncate font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
+                  Edit Character
+                </h1>
+              </div>
+              <section className="min-h-[500px] overflow-hidden rounded-lg border border-wfrp-border bg-card shadow-lg">
+                <ScrollableTabStrip className="flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
+                  <div className="flex w-full min-w-max items-center justify-between gap-4">
+                    <div className="flex min-w-max items-center gap-4 lg:gap-6">
+                      {editCharacterTabOptions.map((tab) => (
+                        <WfrpStandardBtn
+                          key={tab.id}
+                          type="button"
+                          name={tab.label}
+                          onClick={() => setActiveCareerSubtab(tab.id)}
+                          className={cn(
+                            mainTabButtonBaseClassName,
+                            activeCareerSubtab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
+                          )}
+                          aria-current={activeCareerSubtab === tab.id ? "page" : undefined}
+                        >
+                          {activeCareerSubtab === tab.id ? (
+                            <div className={mainTabUnderlineClassName} />
+                          ) : null}
+                        </WfrpStandardBtn>
+                      ))}
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <WfrpStandardBtn
+                        type="button"
+                        name="Save"
+                        onClick={handleEditCharacterSave}
+                        isDeactivated={!hasUnsavedCareerEdits}
+                        isGolden={hasUnsavedCareerEdits}
+                        className="wfrp-roll-cta"
+                        aria-label="Save edit character changes"
+                      />
+                      <WfrpStandardBtn
+                        type="button"
+                        name={editCharacterCloseActionLabel}
+                        onClick={hasUnsavedCareerEdits ? cancelEditCharacterPage : closeEditCharacterPage}
+                        className="wfrp-roll-cta"
+                        aria-label={hasUnsavedCareerEdits ? "Cancel edit character changes" : "Close Edit Character page"}
+                      />
+                    </div>
+                  </div>
+                </ScrollableTabStrip>
+                {advancePageContent}
+              </section>
+            </>
+          ) : (
+            <>
           <div {...mobileMainViewSwipeHandlers}>
             <CharacteristicsView
               activeMobileMainView={activeMobileMainView}
@@ -1296,8 +1630,9 @@ export function AppComposition() {
               <ScrollableTabStrip className="hidden sm:flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
                 <div className="mx-auto flex w-full min-w-max justify-center gap-4 lg:mx-0 lg:w-max lg:min-w-0 lg:justify-start lg:gap-6">
                   {displayedMainTabOptions.map((tab) => (
-                    <button
+                    <WfrpStandardBtn
                       key={tab.id}
+                      name={tab.label}
                       onClick={() => selectMainTab(tab.id)}
                       className={cn(
                         mainTabButtonBaseClassName,
@@ -1305,11 +1640,10 @@ export function AppComposition() {
                       )}
                       aria-current={activeMainTab === tab.id ? 'page' : undefined}
                     >
-                      {tab.label}
                       {activeMainTab === tab.id && (
                         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-muted-text" />
                       )}
-                    </button>
+                    </WfrpStandardBtn>
                   ))}
                 </div>
               </ScrollableTabStrip>
@@ -1326,9 +1660,10 @@ export function AppComposition() {
                             visibleSkillRows={visibleSkillRows}
                             attributes={attributes}
                             handleRoll={handleRoll}
+                            onOpenAdvance={openSkillSidebar}
                             openSkillInfo={(skillName) => {
+                              closeSidebars();
                               setActiveInfo({ type: 'skill', name: skillName });
-                              setRollState(prev => ({ ...prev, characteristic: null }));
                             }}
                           />
                         )}
@@ -1363,6 +1698,7 @@ export function AppComposition() {
                         spellRows={spellRows}
                         handleRoll={handleRoll}
                         isPrayerMode={isPrayerCaster}
+                        onRemoveSpell={removeSpell}
                         openSpellShop={openSpellShop}
                       />
                       )}
@@ -1406,8 +1742,7 @@ export function AppComposition() {
                         handleStoreItem={handleStoreItem}
                         formatItemValue={formatItemValue}
                         openShop={() => {
-                          setActiveInfo(null);
-                          setIsDiceLogOpen(false);
+                          closeSidebars();
                           setIsShopOpen(true);
                         }}
                       />
@@ -1415,53 +1750,14 @@ export function AppComposition() {
                     
                       {activeMainTab === 'features' && (
                         <TalentsTab
-                        characterTalentRows={characterTalentRows}
-                        openTalentInfo={openTalentInfo}
+                        talentRowsBySource={talentRowsBySource}
                         getTalentMaxDisplay={getTalentMaxDisplay}
                         formatTalentEffect={formatTalentEffect}
+                        onOpenTalentSidebar={openTalentSidebar}
+                        onRemoveTalent={removeTalent}
                       />
                       )}
 
-                      {activeMainTab === 'career' && (
-                        <CareerTab
-                        activeCareerSubtab={activeCareerSubtab}
-                        setActiveCareerSubtab={setActiveCareerSubtab}
-                        saveCareerChanges={saveCareerChanges}
-                        hasPendingCareerChanges={hasPendingAdvanceChanges}
-                        characterData={characterData}
-                        pendingXpAdjustment={pendingXpAdjustment}
-                        setPendingXpAdjustment={setPendingXpAdjustment}
-                        displayedCareerRank={displayedCareerRank}
-                        displayedCareerRankRecord={displayedCareerRankRecord}
-                        careerAdvancementData={careerAdvancementData}
-                        advancementProgress={advancementProgress}
-                        nextCareerAdvanceCost={nextCareerAdvanceCost}
-                        pendingAvailableXp={pendingAvailableXp}
-                        nextCareerRankRecord={nextCareerRankRecord}
-                        increasePendingCareerRank={increasePendingCareerRank}
-                        advancementCharacteristics={advancementCharacteristics}
-                        availableCareerCharacteristicKeys={availableCareerCharacteristicKeys}
-                        getCharacteristicAdvanceCost={getCharacteristicAdvanceCost}
-                        getCharacteristicLabel={getCharacteristicLabel}
-                        removePendingCharacteristicAdvance={removePendingCharacteristicAdvance}
-                        purchaseCharacteristicAdvance={purchaseCharacteristicAdvance}
-                        updateCharacteristicInitial={updateCharacteristicInitial}
-                        updateCharacteristicAdvances={updateCharacteristicAdvances}
-                        advancementSkillSections={advancementSkillSections}
-                        removePendingSkillAdvance={removePendingSkillAdvance}
-                        purchaseSkillAdvance={purchaseSkillAdvance}
-                        updateSkillAdvances={updateSkillAdvances}
-                        advancementTalentNames={advancementTalentNames}
-                        characterTalents={characterTalents}
-                        pendingTalentPurchases={pendingTalentPurchases}
-                        getTalentPurchaseCost={getTalentPurchaseCost}
-                        removePendingTalentPurchase={removePendingTalentPurchase}
-                        purchaseTalent={purchaseTalent}
-                        openTalentInfo={openTalentInfo}
-                        setActiveInfo={setActiveInfo}
-                        clearRollCharacteristic={() => setRollState((prev) => ({ ...prev, characteristic: null }))}
-                      />
-                      )}
                       {activeMainTab === 'journal' && (
                         <JournalTab
                         activeJournalSubtab={activeJournalSubtab}
@@ -1498,6 +1794,8 @@ export function AppComposition() {
               </div>
             </section>
           </div>
+            </>
+          )}
           </CharacterSheetFrame>
     </AppShell>
   );

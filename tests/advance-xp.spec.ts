@@ -1,30 +1,197 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
+import { talentDefinitions } from "../src/data/rules/wfrp4e/talents";
 
-test("advance XP controls use table layout and hide unavailable removals", async ({ page }) => {
+async function openAdvanceTab(page: Page) {
   await page.goto("/");
-  await page.getByRole("button", { name: "Open Advance tab" }).click();
+  await page.getByRole("button", { name: "Open sheet" }).first().click();
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("menuitem", { name: "Edit Character" }).click();
+  await expect(page.getByRole("heading", { name: "Edit Character" })).toBeVisible();
+}
 
-  await expect(page.getByText("XP", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Current", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Total", { exact: true }).first()).toBeVisible();
+async function swipeMobileEditCharacterPage(page: Page, direction: "left" | "right") {
+  const startX = direction === "left" ? 340 : 40;
+  const endX = direction === "left" ? 40 : 340;
+  const mobileTitle = page.getByRole("heading", { name: "Edit Character" });
+
+  await mobileTitle.evaluate((element, swipe) => {
+    const createTouch = (clientX: number, clientY: number) =>
+      new Touch({ identifier: 1, target: element, clientX, clientY });
+
+    const startTouch = createTouch(swipe.startX, 280);
+    element.dispatchEvent(new TouchEvent("touchstart", {
+      bubbles: true,
+      cancelable: true,
+      changedTouches: [startTouch],
+      targetTouches: [startTouch],
+      touches: [startTouch],
+    }));
+
+    element.dispatchEvent(new TouchEvent("touchend", {
+      bubbles: true,
+      cancelable: true,
+      changedTouches: [createTouch(swipe.endX, 284)],
+      targetTouches: [],
+      touches: [],
+    }));
+  }, {
+    endX,
+    startX,
+  });
+}
+
+async function getAdvanceTalentNames(page: Page) {
+  return page.locator(".wfrp-data-accordion-row button.wfrp-skill-link span").evaluateAll((items) =>
+    items
+      .map((item) => item.textContent?.trim() ?? "")
+      .filter(Boolean),
+  );
+}
+
+test("advance XP controls use table layout and keep removal buttons active", async ({ page }) => {
+  await openAdvanceTab(page);
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+  await expect(page.locator(".wfrp-subpanel-header").filter({ hasText: "Experience" })).toBeVisible();
+
+  await expect(page.getByText("Current Experience", { exact: true })).toBeVisible();
+  await expect(page.getByText("Total Experience", { exact: true })).toBeVisible();
+  await expect(page.getByText("Value", { exact: true })).toBeVisible();
   await expect(page.getByText("Adjust", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Experience", { exact: true }).first()).toBeVisible();
 
-  await expect(page.getByRole("button", { name: "Add 10 current and total XP" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Add 100 current and total XP" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add 10 current XP" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add 100 current XP" })).toBeVisible();
 
-  const remove100 = page.getByRole("button", { name: "Remove 100 current and total XP" });
-  for (let index = 0; index < 50 && (await remove100.count()) > 0; index += 1) {
+  const remove100 = page.getByRole("button", { name: "Remove 100 pending XP" });
+  await expect(remove100).toBeEnabled();
+  for (let index = 0; index < 50; index += 1) {
     await remove100.click();
   }
-  await expect(remove100).toHaveCount(0);
+  await expect(remove100).toBeVisible();
+  await expect(remove100).toBeEnabled();
 
-  const remove10 = page.getByRole("button", { name: "Remove 10 current and total XP" });
-  for (let index = 0; index < 10 && (await remove10.count()) > 0; index += 1) {
+  const remove10 = page.getByRole("button", { name: "Remove 10 pending XP" });
+  await expect(remove10).toBeEnabled();
+  for (let index = 0; index < 10; index += 1) {
     await remove10.click();
   }
-  await expect(remove10).toHaveCount(0);
+  await expect(remove10).toBeVisible();
+  await expect(remove10).toBeEnabled();
 
-  await expect(page.getByRole("button", { name: "Add 10 current and total XP" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Add 100 current and total XP" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add 10 current XP" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Add 100 current XP" })).toBeVisible();
+});
+
+test("advance careers tab lists the full career catalog", async ({ page }) => {
+  await openAdvanceTab(page);
+  await page.getByRole("button", { name: "Careers", exact: true }).click();
+
+  await expect(page.getByRole("tab", { name: "All" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Taken" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Apothecary" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Warrior Priest" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Apothecary I" })).toHaveCount(0);
+
+  await page.getByRole("tab", { name: "Taken" }).click();
+  await expect(page.getByRole("button", { name: "Wizard", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Apothecary" })).toHaveCount(0);
+});
+
+test("mobile swipe changes edit character tabs", async ({ page }) => {
+  await openAdvanceTab(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  await swipeMobileEditCharacterPage(page, "left");
+
+  await expect(page.getByRole("button", { name: "Apothecary" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Careers", exact: true })).toHaveAttribute("aria-current", "page");
+});
+
+test("advance skills filters render one alphabetical list", async ({ page }) => {
+  await openAdvanceTab(page);
+  await page.getByRole("button", { name: "Skills", exact: true }).click();
+
+  async function expectSingleAlphabeticalSkillList(title: string) {
+    await expect(page.locator(".wfrp-subpanel-header")).toHaveCount(1);
+    await expect(page.locator(".wfrp-subpanel-header").filter({ hasText: title })).toHaveCount(1);
+
+    const skillNames = await page.locator(".wfrp-data-accordion-row button.wfrp-skill-link span").evaluateAll((items) =>
+      items
+        .map((item) => item.textContent?.replace(/\s+\([^)]*\)\s*$/, "").trim() ?? "")
+        .filter(Boolean),
+    );
+
+    expect(skillNames.length).toBeGreaterThan(0);
+    expect(skillNames).toEqual([...skillNames].sort((first, second) => first.localeCompare(second)));
+  }
+
+  await expectSingleAlphabeticalSkillList("All");
+  await expect(page.getByRole("tab", { name: "Untrained" })).toHaveCount(0);
+  await page.getByRole("tab", { name: "Career" }).click();
+  await expectSingleAlphabeticalSkillList("Career");
+  await expect(page.getByRole("button", { name: "Dodge (Ag)" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Charm (Fel)" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Animal Care (Int)" })).toHaveCount(0);
+  await page.getByRole("tab", { name: "Basic" }).click();
+  await expectSingleAlphabeticalSkillList("Basic");
+  await page.getByRole("tab", { name: "Advanced" }).click();
+  await expectSingleAlphabeticalSkillList("Advanced");
+  await expect(page.getByRole("button", { name: "Animal Care (Int)" })).toBeVisible();
+  await page.getByRole("tab", { name: "Trained" }).click();
+  await expectSingleAlphabeticalSkillList("Trained");
+});
+
+test("advance talents all filter lists every system talent", async ({ page }) => {
+  await openAdvanceTab(page);
+  await page.getByRole("button", { name: "Talents", exact: true }).click();
+  await expect(page.locator(".wfrp-subpanel-header").filter({ hasText: "Talents" })).toBeVisible();
+
+  const talentNames = await getAdvanceTalentNames(page);
+
+  expect(talentNames).toHaveLength(talentDefinitions.length);
+  expect(talentNames).toEqual([...talentNames].sort((first, second) => first.localeCompare(second)));
+});
+
+test("advance talents submenu filters bought talents", async ({ page }) => {
+  await openAdvanceTab(page);
+  await page.getByRole("button", { name: "Talents", exact: true }).click();
+
+  await expect(page.getByRole("tab", { name: "All" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Bought" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Current" })).toHaveCount(0);
+  await expect(page.getByRole("tab", { name: "Former" })).toHaveCount(0);
+  await expect(page.getByRole("tab", { name: "Career" })).toHaveCount(0);
+  await expect(page.getByRole("tab", { name: "Taken" })).toHaveCount(0);
+  await expect(page.getByRole("tab", { name: "Other" })).toHaveCount(0);
+
+  await page.getByRole("tab", { name: "Bought" }).click();
+  const boughtTalentNames = await getAdvanceTalentNames(page);
+  expect(boughtTalentNames).toEqual([
+    "Aethyric Attunement",
+    "Doomed",
+    "Instinctive Diction",
+    "Perfect Pitch",
+    "Petty Magic",
+    "Read/Write",
+    "Resistance (Corruption)",
+    "Second Sight",
+    "Suave",
+  ]);
+});
+
+test("cancel edit character discards pending XP changes", async ({ page }) => {
+  await openAdvanceTab(page);
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+
+  await page.getByRole("button", { name: "Add 10 current XP" }).click();
+  await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
+  await page.getByRole("button", { name: "Cancel" }).click();
+
+  await expect(page.getByRole("heading", { name: "Edit Character" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("menuitem", { name: "Edit Character" }).click();
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+
+  await expect(page.getByRole("spinbutton", { name: "Current XP" })).toHaveValue("550");
+  await expect(page.getByRole("button", { name: "Close" })).toBeVisible();
 });

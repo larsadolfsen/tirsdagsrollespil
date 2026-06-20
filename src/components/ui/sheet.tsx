@@ -1,7 +1,6 @@
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/src/lib/utils";
-import { Button } from "./button";
 import {
   Dialog,
   DialogClose,
@@ -13,6 +12,7 @@ import {
   DialogTrigger,
   useDialogContext,
 } from "./dialog";
+import { WfrpStandardIcon } from "./WfrpStandardIcon";
 
 export {
   Dialog as Sheet,
@@ -72,9 +72,12 @@ export function SheetContent({
         {...props}
       >
         {children}
-        <Button aria-label="Close sheet" variant="ghost" size="icon" className="absolute right-4 top-4 h-8 w-8" onClick={() => context.setOpen(false)}>
-          <X className="h-4 w-4" />
-        </Button>
+        <WfrpStandardIcon
+          className="absolute right-3 top-3"
+          label="Close sheet"
+          onClick={() => context.setOpen(false)}
+          icon={<X />}
+        />
       </div>
     </SheetPortal>
   );

@@ -1,4 +1,4 @@
-import { InlineSubtabs, SubtabActionButton, SubtabContentFrame } from "../components/ui";
+import { InlineSubtabs, SubtabContentFrame, WfrpStandardBtn } from "../components/ui";
 import type { CharacterNoteData } from "../types/storage";
 import { BackgroundTab } from "./BackgroundTab";
 import { NotesTab } from "./NotesTab";
@@ -102,22 +102,24 @@ export function JournalTab({
           trailingContent={activeJournalSubtab === "background" ? null : (
             <>
               {activeJournalSubtab === "sessions" ? (
-                <SubtabActionButton
+                <WfrpStandardBtn
                   onClick={startSessionEntry}
+                  name="Add Session"
+                  variant="action"
+                  size="sm"
                   hideOnMobile
                   aria-label="Add session"
-                >
-                  Add Session
-                </SubtabActionButton>
+                />
               ) : null}
               {activeJournalSubtab === "npcs" ? (
-                <SubtabActionButton
+                <WfrpStandardBtn
                   onClick={startNpcEntry}
+                  name="Add NPC"
+                  variant="action"
+                  size="sm"
                   hideOnMobile
                   aria-label="Add NPC"
-                >
-                  Add NPC
-                </SubtabActionButton>
+                />
               ) : null}
             </>
           )}

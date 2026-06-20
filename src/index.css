@@ -161,8 +161,36 @@
   @apply inline-flex items-center justify-center rounded border border-wfrp-border bg-wfrp-dark text-[9px] font-bold uppercase tracking-widest text-gray-300 shadow-sm transition-all cursor-pointer active:scale-90 hover:border-wfrp-gold/50 hover:text-wfrp-gold disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
-@utility wfrp-standard-btn {
-  @apply inline-flex items-center justify-center rounded bg-wfrp-border text-[9px] font-bold uppercase tracking-widest text-gray-300 transition-all cursor-pointer active:scale-95 hover:bg-wfrp-control-hover hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+.wfrp-standard-btn--gold {
+  @apply bg-wfrp-gold text-primary-foreground hover:bg-[#d1ad65] hover:text-primary-foreground;
+}
+
+.wfrp-standard-btn--deactivated {
+  @apply bg-[#3f3f3f] text-[#d0d0d0] hover:bg-[#3f3f3f] hover:text-[#d0d0d0];
+  cursor: default !important;
+  opacity: 0.2 !important;
+  pointer-events: none;
+  transform: none !important;
+  transition: none;
+}
+
+.wfrp-standard-btn--deactivated:hover,
+.wfrp-standard-btn--deactivated:active {
+  transform: none !important;
+}
+
+.wfrp-standard-btn--has-leading-icon {
+  justify-content: flex-start;
+}
+
+.wfrp-standard-btn__leading-icon {
+  display: flex;
+  width: 14px;
+  height: 14px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: currentColor;
 }
 
 @utility wfrp-surface-strong {
@@ -175,6 +203,69 @@
 
 @utility wfrp-card {
   @apply wfrp-surface-strong border rounded-lg p-3 lg:p-4 shadow-lg;
+}
+
+@utility wfrp-landing-shell {
+  @apply flex min-h-screen items-center justify-center px-4 py-8 text-wfrp-page-text;
+  background-color: var(--color-background);
+}
+
+@utility wfrp-landing-list {
+  @apply flex w-[27rem] max-w-full flex-col gap-4;
+}
+
+@utility wfrp-landing-character-card {
+  @apply wfrp-card grid w-full grid-cols-[9rem_minmax(0,1fr)] overflow-hidden p-0 text-left;
+}
+
+@utility wfrp-landing-portrait {
+  @apply flex h-36 w-36 items-center justify-center overflow-hidden bg-wfrp-dark;
+}
+
+@utility wfrp-landing-portrait-image {
+  @apply h-full w-full object-cover grayscale brightness-90;
+}
+
+@utility wfrp-landing-initials {
+  @apply flex h-full w-full items-center justify-center bg-wfrp-stone font-serif text-4xl font-bold text-wfrp-muted-text;
+}
+
+@utility wfrp-landing-card-body {
+  @apply flex min-w-0 flex-col p-4 pb-0;
+}
+
+@utility wfrp-landing-card-title {
+  @apply font-serif text-2xl font-bold leading-tight text-gray-100 transition-none;
+}
+
+@utility wfrp-landing-card-copy {
+  @apply text-sm font-semibold leading-relaxed text-wfrp-muted-text;
+}
+
+@utility wfrp-landing-card-action {
+  @apply mt-auto self-end;
+}
+
+@utility wfrp-character-portrait-control {
+  @apply overflow-hidden rounded-full border border-wfrp-border bg-wfrp-stone p-0.5 shadow-inner focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+}
+
+@utility wfrp-character-portrait-button {
+  @apply wfrp-character-portrait-control cursor-pointer transition-all hover:brightness-110;
+}
+
+@utility wfrp-character-portrait-image {
+  @apply h-full w-full rounded-full object-cover grayscale brightness-90;
+}
+
+@utility wfrp-character-portrait-fallback {
+  @apply flex h-full w-full items-center justify-center rounded-full bg-wfrp-stone font-black text-wfrp-muted-text;
+}
+
+@media (min-width: 640px) {
+  .wfrp-landing-character-card {
+    grid-template-columns: 9rem minmax(0, 1fr);
+  }
 }
 
 @utility wfrp-card-tab-header {
@@ -227,12 +318,33 @@
   @apply rounded text-wfrp-muted-text transition-colors cursor-pointer hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
+@utility wfrp-standard-icon {
+  @apply inline-flex h-12 w-12 min-w-12 shrink-0 items-center justify-center rounded p-0 text-wfrp-muted-text transition-all cursor-pointer hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+}
+
+.wfrp-standard-icon__glyph {
+  @apply flex h-9 w-9 items-center justify-center rounded transition-colors;
+}
+
+.wfrp-standard-icon:hover .wfrp-standard-icon__glyph {
+  @apply bg-wfrp-surface-muted-hover;
+}
+
+.wfrp-standard-icon__glyph svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.wfrp-standard-icon__label {
+  @apply hidden max-w-full truncate text-[8px] font-black leading-none uppercase tracking-widest text-current sm:block;
+}
+
 @utility wfrp-mini-action-btn {
   @apply px-2.5 py-1 bg-wfrp-surface-raised border border-wfrp-border rounded text-[9px] font-black text-wfrp-muted-text hover:text-white hover:border-wfrp-gold/50 transition-all active:scale-95 cursor-pointer shadow-sm;
 }
 
 @utility wfrp-roll-cta {
-  @apply w-fit px-6 py-1.5 bg-wfrp-dice-bg text-[9px] font-bold uppercase tracking-widest text-wfrp-dice-text rounded transition-all active:scale-95 cursor-pointer hover:bg-wfrp-dice-hover-bg hover:text-wfrp-dice-text;
+  @apply inline-flex w-fit items-center justify-center gap-2 whitespace-nowrap px-6 py-1.5 bg-wfrp-dice-bg text-[9px] font-bold uppercase tracking-widest text-wfrp-dice-text rounded transition-all active:scale-95 cursor-pointer hover:bg-wfrp-dice-hover-bg hover:text-wfrp-dice-text;
 }
 
 @utility wfrp-subpanel {

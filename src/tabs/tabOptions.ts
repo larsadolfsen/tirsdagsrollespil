@@ -7,7 +7,6 @@ export const mainTabOptions: Array<TabOption<MainTab>> = [
   { id: "spells", label: "Spells" },
   { id: "features", label: "Talents" },
   { id: "journal", label: "Journal" },
-  { id: "career", label: "Advance" },
 ];
 
 export const mobileTabMenuOptions: Array<TabOption<MobileTabMenuTarget>> = [
@@ -17,5 +16,5 @@ export const mobileTabMenuOptions: Array<TabOption<MobileTabMenuTarget>> = [
 
 export const mobilePageTitleByView: Record<MobileTabMenuTarget, string> = mobileTabMenuOptions.reduce(
   (titles, option) => ({ ...titles, [option.id]: option.label }),
-  {} as Record<MobileTabMenuTarget, string>,
+  { career: "Edit Character" } as Record<MobileTabMenuTarget, string>,
 );
