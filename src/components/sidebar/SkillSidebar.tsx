@@ -98,7 +98,7 @@ export function SkillSidebar({
         return {
           actions: [
             ...(skill.pendingAdvances > 0 ? [{
-              className: "[&_span]:bg-[#4a4a4a] [&_span]:text-gray-100 hover:[&_span]:bg-[#555555]",
+              className: "[&_span]:bg-[#4a4a4a] [&_span]:text-wfrp-muted-text hover:[&_span]:bg-[#555555]",
               label: "Remove pending",
               onClick: () => removePendingSkillAdvance(skill.skillName),
             }] : []),

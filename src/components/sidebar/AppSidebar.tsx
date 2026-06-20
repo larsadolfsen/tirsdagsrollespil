@@ -1,9 +1,10 @@
 import type { ReactNode, RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/src/lib/utils";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
-import { SubtabActionButton } from "../ui/SubtabActionButton";
+import { WfrpStandardIcon } from "../ui";
 
 type AppSidebarProps = {
   ariaLabelledBy?: string;
@@ -139,24 +140,22 @@ export function AppSidebar({
             aria-modal={usesModalBehavior}
             aria-labelledby={ariaLabelledBy ?? titleId}
           >
-            <header className="flex min-h-16 shrink-0 items-center justify-between gap-4 border-b border-wfrp-border bg-[#242424] px-4 py-3">
-              <div className="min-w-0">
+            <header className="flex h-14 max-h-14 shrink-0 items-center justify-between gap-4 border-b border-wfrp-border bg-[#242424] px-4 py-1">
+              <div className="max-h-12 min-w-0">
                 {eyebrow ? (
                   <div className="mb-1 text-[9px] font-black uppercase tracking-widest text-wfrp-gold/70">
                     {eyebrow}
                   </div>
                 ) : null}
-                <h2 id={titleId} className="truncate text-sm font-black uppercase tracking-widest text-gray-100">
+                <p id={titleId} className="truncate font-serif text-base font-semibold text-white">
                   {title}
-                </h2>
+                </p>
               </div>
-              <SubtabActionButton
-                className="[&_span]:bg-[#303030] [&_span]:text-gray-200 hover:[&_span]:bg-[#3a3a3a] hover:[&_span]:text-white"
+              <WfrpStandardIcon
                 onClick={onClose}
-                aria-label={closeLabel}
-              >
-                Close
-              </SubtabActionButton>
+                label={closeLabel}
+                icon={<X />}
+              />
             </header>
 
             <div

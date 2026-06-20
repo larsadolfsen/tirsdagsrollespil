@@ -25,6 +25,7 @@ type CharacterSheetHeaderProps = {
   onOpenAdvance: () => void;
   onOpenDice: () => void;
   onOpenMobileCharacterActions: () => void;
+  onOpenMobileMenu: () => void;
   onSelectCharacter: (characterId: string) => void;
   onAwardXp: (amount: number) => void;
   selectedCharacterId: string;
@@ -41,6 +42,7 @@ export function CharacterSheetHeader({
   onOpenAdvance,
   onOpenDice,
   onOpenMobileCharacterActions,
+  onOpenMobileMenu,
   onSelectCharacter,
   onAwardXp,
   selectedCharacterId,
@@ -75,6 +77,7 @@ export function CharacterSheetHeader({
         onClosePortraitMenu={onCloseMobilePortraitMenu}
         onOpenAdvance={onOpenAdvance}
         onOpenCharacterActions={onOpenMobileCharacterActions}
+        onOpenMenu={onOpenMobileMenu}
         onOpenXpDialog={openXpDialog}
         xpCurrent={xpCurrent}
         xpTotal={characterData.xpTotal}

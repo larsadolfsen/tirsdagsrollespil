@@ -187,9 +187,9 @@ export function CharacterHeader({
   };
 
   return (
-    <section className="flex min-h-[60px] flex-col gap-2 overflow-visible rounded-t border-b border-wfrp-border bg-sidebar px-3 py-2 sm:min-h-0 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+    <section className="flex h-14 max-h-14 items-center gap-4 overflow-visible rounded-t border-b border-wfrp-border bg-sidebar px-3 py-1">
       <div className="flex min-w-0 items-center gap-2 sm:contents">
-        <div className="relative order-3 flex-shrink-0 sm:order-none">
+        <div className="relative order-3 max-h-12 flex-shrink-0 sm:order-none">
           <input
             ref={portraitInputRef}
             type="file"
@@ -201,7 +201,7 @@ export function CharacterHeader({
           <button
             type="button"
             onClick={() => portraitInputRef.current?.click()}
-            className="wfrp-character-portrait-button hidden h-10 w-10 sm:block sm:h-12 sm:w-12"
+            className="wfrp-character-portrait-button hidden h-10 max-h-12 w-10 sm:block sm:h-12 sm:w-12"
             aria-label="Upload character portrait"
             title={portraitError ?? "Upload character portrait"}
           >
@@ -222,7 +222,7 @@ export function CharacterHeader({
               </span>
             )}
           </button>
-          <div className="wfrp-character-portrait-control h-10 w-10 sm:hidden">
+          <div className="wfrp-character-portrait-control h-10 max-h-12 w-10 sm:hidden">
             {portraitSrc ? (
               <img
                 src={portraitSrc}
@@ -242,7 +242,7 @@ export function CharacterHeader({
           </div>
         </div>
 
-        <div className="order-2 flex min-w-0 flex-1 flex-col justify-center overflow-hidden sm:order-none sm:min-w-[160px]">
+        <div className="order-2 flex max-h-12 min-w-0 flex-1 flex-col justify-center overflow-hidden sm:order-none sm:min-w-[160px]">
           {isEditingName ? (
             <div className="flex min-w-0 items-center gap-1">
               <input
@@ -298,15 +298,15 @@ export function CharacterHeader({
         </div>
       </div>
 
-      <div className="order-1 flex min-w-0 flex-wrap items-center justify-start gap-2 sm:order-none sm:ml-auto sm:justify-end sm:gap-4">
+      <div className="order-1 flex max-h-12 min-w-0 items-center justify-start gap-2 sm:order-none sm:ml-auto sm:justify-end sm:gap-4">
         {headerResources && (
-          <div className="flex min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-1 pr-1 no-scrollbar sm:max-w-[min(100%,58rem)] sm:gap-3 sm:overflow-visible sm:pb-0 sm:pr-0">
+          <div className="flex max-h-12 min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-1 pr-1 no-scrollbar sm:max-w-[min(100%,58rem)] sm:gap-3 sm:overflow-visible sm:pb-0 sm:pr-0">
             {headerResources}
             <div className="h-8 w-[1px] shrink-0 bg-wfrp-border opacity-50" />
           </div>
         )}
 
-        <div className="flex items-center gap-1 transition-colors">
+        <div className="flex max-h-12 items-center gap-1 transition-colors">
           <div className="hidden items-center gap-1 sm:flex">
             <WfrpStandardIcon
               onClick={onOpenXpDialog}

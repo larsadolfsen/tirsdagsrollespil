@@ -91,7 +91,7 @@ export function TalentSidebar({
       return {
         actions: [
           ...(isOwned ? [{
-            className: "[&_span]:bg-[#4a4a4a] [&_span]:text-gray-100 hover:[&_span]:bg-[#555555]",
+            className: "[&_span]:bg-[#4a4a4a] [&_span]:text-wfrp-muted-text hover:[&_span]:bg-[#555555]",
             label: "Remove",
             onClick: () => onRemoveTalent(talent.name),
           }] : []),

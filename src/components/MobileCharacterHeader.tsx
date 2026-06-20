@@ -1,5 +1,6 @@
-import { ArrowUpFromLine, Settings } from "lucide-react";
+import { ArrowUpFromLine, Menu, Settings } from "lucide-react";
 import { useGameSessionContext } from "../context/GameSessionContext";
+import { WfrpStandardIcon } from "./ui";
 
 interface MobileCharacterHeaderProps {
   campaignName: string;
@@ -8,6 +9,7 @@ interface MobileCharacterHeaderProps {
   onClosePortraitMenu: () => void;
   onOpenAdvance: () => void;
   onOpenCharacterActions: () => void;
+  onOpenMenu: () => void;
   onOpenXpDialog: () => void;
   xpCurrent: number;
   xpTotal: number;
@@ -20,6 +22,7 @@ export function MobileCharacterHeader({
   onClosePortraitMenu,
   onOpenAdvance,
   onOpenCharacterActions,
+  onOpenMenu,
   onOpenXpDialog,
   xpCurrent,
   xpTotal,
@@ -27,13 +30,13 @@ export function MobileCharacterHeader({
   const { portraitDataUrl } = useGameSessionContext();
 
   return (
-    <section className="md:hidden border-b border-wfrp-border bg-wfrp-surface shadow-lg shadow-black/20">
-      <div className="flex h-[60px] items-center">
+    <section className="h-14 border-b border-wfrp-border bg-wfrp-surface py-1 shadow-lg shadow-black/20 md:hidden">
+      <div className="flex h-full max-h-12 items-center">
         <div className="relative ml-3 shrink-0">
           <button
             type="button"
             onClick={onOpenCharacterActions}
-            className="wfrp-character-portrait-button flex h-10 w-10 items-center justify-center"
+            className="wfrp-character-portrait-button flex h-10 max-h-12 w-10 items-center justify-center"
             aria-label="Open character actions"
             aria-haspopup="menu"
             aria-expanded={isMobilePortraitMenuOpen}
@@ -92,7 +95,7 @@ export function MobileCharacterHeader({
             </div>
           )}
         </div>
-        <div className="ml-3 flex min-w-0 flex-1 items-center gap-3 text-left">
+        <div className="ml-3 flex max-h-12 min-w-0 flex-1 items-center gap-3 text-left">
           <span className="min-w-0">
             <span className="block truncate font-serif text-xl font-bold leading-tight text-gray-100">
               {characterName}
@@ -102,6 +105,13 @@ export function MobileCharacterHeader({
             </span>
           </span>
         </div>
+        <WfrpStandardIcon
+          onClick={onOpenMenu}
+          className="mr-2"
+          label="Open menu"
+          aria-haspopup="dialog"
+          icon={<Menu />}
+        />
       </div>
     </section>
   );
