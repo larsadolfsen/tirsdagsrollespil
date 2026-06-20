@@ -1,17 +1,13 @@
-import { ArrowUpFromLine, Menu, Settings } from "lucide-react";
+import { ArrowUpFromLine, Settings } from "lucide-react";
 import { useGameSessionContext } from "../context/GameSessionContext";
-import { WfrpStandardIcon } from "./ui";
 
 interface MobileCharacterHeaderProps {
   campaignName: string;
   characterName: string;
-  isMobileNavigationOpen: boolean;
   isMobilePortraitMenuOpen: boolean;
   onClosePortraitMenu: () => void;
   onOpenAdvance: () => void;
   onOpenCharacterActions: () => void;
-  onOpenCharacterList: () => void;
-  onOpenNavigation: () => void;
   onOpenXpDialog: () => void;
   xpCurrent: number;
   xpTotal: number;
@@ -20,13 +16,10 @@ interface MobileCharacterHeaderProps {
 export function MobileCharacterHeader({
   campaignName,
   characterName,
-  isMobileNavigationOpen,
   isMobilePortraitMenuOpen,
   onClosePortraitMenu,
   onOpenAdvance,
   onOpenCharacterActions,
-  onOpenCharacterList,
-  onOpenNavigation,
   onOpenXpDialog,
   xpCurrent,
   xpTotal,
@@ -36,30 +29,7 @@ export function MobileCharacterHeader({
   return (
     <section className="md:hidden border-b border-wfrp-border bg-wfrp-surface shadow-lg shadow-black/20">
       <div className="flex h-[60px] items-center">
-        <WfrpStandardIcon
-          onClick={onOpenNavigation}
-          className="ml-1 rounded"
-          label="Open navigation drawer"
-          aria-haspopup="dialog"
-          aria-expanded={isMobileNavigationOpen}
-          icon={<Menu />}
-        />
-        <button
-          type="button"
-          onClick={onOpenCharacterList}
-          className="flex min-w-0 flex-1 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-          aria-label="Change character"
-        >
-          <span className="min-w-0">
-            <span className="block truncate font-serif text-xl font-bold leading-tight text-gray-100">
-              {characterName}
-            </span>
-            <span className="mt-0.5 block truncate text-[9px] font-black uppercase tracking-[0.22em] text-wfrp-muted-text">
-              {campaignName}
-            </span>
-          </span>
-        </button>
-        <div className="relative mr-3 shrink-0">
+        <div className="relative ml-3 shrink-0">
           <button
             type="button"
             onClick={onOpenCharacterActions}
@@ -87,7 +57,7 @@ export function MobileCharacterHeader({
           </button>
           {isMobilePortraitMenuOpen && (
             <div
-              className="absolute right-0 top-[calc(100%+0.5rem)] z-40 min-w-44 overflow-hidden rounded border border-wfrp-border bg-wfrp-popover shadow-2xl"
+              className="absolute left-0 top-[calc(100%+0.5rem)] z-40 min-w-44 overflow-hidden rounded border border-wfrp-border bg-wfrp-popover shadow-2xl"
               role="menu"
               aria-label="Character actions"
             >
@@ -121,6 +91,16 @@ export function MobileCharacterHeader({
               </button>
             </div>
           )}
+        </div>
+        <div className="ml-3 flex min-w-0 flex-1 items-center gap-3 text-left">
+          <span className="min-w-0">
+            <span className="block truncate font-serif text-xl font-bold leading-tight text-gray-100">
+              {characterName}
+            </span>
+            <span className="mt-0.5 block truncate text-[9px] font-black uppercase tracking-[0.22em] text-wfrp-muted-text">
+              {campaignName}
+            </span>
+          </span>
         </div>
       </div>
     </section>

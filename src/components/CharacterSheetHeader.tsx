@@ -19,15 +19,12 @@ import { UI_LABELS } from "../labels";
 type CharacterSheetHeaderProps = {
   availableCharacters: CharacterSummary[];
   characterData: ResolvedCharacterRecord;
-  isMobileNavigationOpen: boolean;
   isMobilePortraitMenuOpen: boolean;
   onCloseMobilePortraitMenu: () => void;
   onCreateCharacter: () => void;
   onOpenAdvance: () => void;
   onOpenDice: () => void;
   onOpenMobileCharacterActions: () => void;
-  onOpenMobileCharacterList: () => void;
-  onOpenMobileNavigation: () => void;
   onSelectCharacter: (characterId: string) => void;
   onAwardXp: (amount: number) => void;
   selectedCharacterId: string;
@@ -38,15 +35,12 @@ type CharacterSheetHeaderProps = {
 export function CharacterSheetHeader({
   availableCharacters,
   characterData,
-  isMobileNavigationOpen,
   isMobilePortraitMenuOpen,
   onCloseMobilePortraitMenu,
   onCreateCharacter,
   onOpenAdvance,
   onOpenDice,
   onOpenMobileCharacterActions,
-  onOpenMobileCharacterList,
-  onOpenMobileNavigation,
   onSelectCharacter,
   onAwardXp,
   selectedCharacterId,
@@ -77,13 +71,10 @@ export function CharacterSheetHeader({
       <MobileCharacterHeader
         campaignName={UI_LABELS.CAMPAIGN_NAME}
         characterName={characterData.name}
-        isMobileNavigationOpen={isMobileNavigationOpen}
         isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
         onClosePortraitMenu={onCloseMobilePortraitMenu}
         onOpenAdvance={onOpenAdvance}
         onOpenCharacterActions={onOpenMobileCharacterActions}
-        onOpenCharacterList={onOpenMobileCharacterList}
-        onOpenNavigation={onOpenMobileNavigation}
         onOpenXpDialog={openXpDialog}
         xpCurrent={xpCurrent}
         xpTotal={characterData.xpTotal}

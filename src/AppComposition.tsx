@@ -89,9 +89,6 @@ const SkillSidebar = lazy(() =>
 const DiceLogSidebar = lazy(() =>
   import("./features/dice/DiceLogSidebar").then((module) => ({ default: module.DiceLogSidebar })),
 );
-const MobileTabMenu = lazy(() =>
-  import("./components/MobileTabMenu").then((module) => ({ default: module.MobileTabMenu })),
-);
 const CharacterBuilderScreen = lazy(() =>
   import("./components/CharacterBuilderScreen").then((module) => ({ default: module.CharacterBuilderScreen })),
 );
@@ -209,15 +206,11 @@ export function AppComposition() {
     activeCareerSubtab,
     activeJournalSubtab,
     activeMobileMainView,
-    closeMobileNavigation,
     handleMobileMainViewSelect,
-    isMobileCharacterListOpen,
-    isMobileNavigationOpen,
     isMobilePortraitMenuOpen,
     isShopOpen,
     isSpellShopOpen,
     isCharacterBuilderOpen,
-    openMobileNavigation,
     resetAppShellState,
     setActiveInfo,
     setActiveMainTab,
@@ -228,8 +221,6 @@ export function AppComposition() {
     setActiveCareerSubtab,
     setActiveJournalSubtab,
     setActiveMobileMainView,
-    setIsMobileCharacterListOpen,
-    setIsMobileNavigationOpen,
     setIsMobilePortraitMenuOpen,
     setIsShopOpen,
     setIsSpellShopOpen,
@@ -1184,14 +1175,10 @@ export function AppComposition() {
   };
 
   const openMobileCharacterActions = () => {
-    setIsMobileNavigationOpen(false);
-    setIsMobileCharacterListOpen(false);
     setIsMobilePortraitMenuOpen((isOpen) => !isOpen);
   };
 
   const openMobileJournalEntry = () => {
-    setIsMobileNavigationOpen(false);
-    setIsMobileCharacterListOpen(false);
     setIsMobilePortraitMenuOpen(false);
     openNoteComposer();
 
@@ -1220,8 +1207,6 @@ export function AppComposition() {
           label: "Add Inventory",
           onClick: () => {
             closeSidebars();
-            setIsMobileNavigationOpen(false);
-            setIsMobileCharacterListOpen(false);
             setIsMobilePortraitMenuOpen(false);
             setIsShopOpen(true);
           },
@@ -1231,8 +1216,6 @@ export function AppComposition() {
             label: isPrayerCaster ? "Add prayer" : "Add spell",
             onClick: () => {
               closeSidebars();
-              setIsMobileNavigationOpen(false);
-              setIsMobileCharacterListOpen(false);
               setIsMobilePortraitMenuOpen(false);
               setIsSpellShopOpen(true);
             },
@@ -1357,32 +1340,6 @@ export function AppComposition() {
   return (
     <AppShell
       mobileAddAction={mobileAddAction}
-      mobileNavigation={isMobileNavigationOpen ? (
-        <Suspense fallback={null}>
-          <MobileTabMenu
-            activeMobileMainView={activeMobileMainView}
-            availableCharacters={availableCharacters}
-            campaignName={UI_LABELS.CAMPAIGN_NAME}
-            characterName={characterData.name}
-            closeMobileNavigation={closeMobileNavigation}
-            handleMobileMainViewSelect={selectMobileMainView}
-            isMobileCharacterListOpen={isMobileCharacterListOpen}
-            isMobileNavigationOpen={isMobileNavigationOpen}
-            mobileTabMenuOptions={displayedMobileTabMenuOptions}
-            onCreateCharacter={() => {
-              openCharacterBuilder();
-              closeMobileNavigation();
-            }}
-            onOpenDiceLog={() => {
-              openDiceLog();
-              closeMobileNavigation();
-            }}
-            selectedCharacterId={selectedCharacterId}
-            setIsMobileCharacterListOpen={setIsMobileCharacterListOpen}
-            setSelectedCharacterId={selectCharacter}
-          />
-        </Suspense>
-      ) : null}
       sidebars={(
         <>
           {(isDiceLogOpen || Boolean(rollState.characteristic)) && (
@@ -1479,15 +1436,12 @@ export function AppComposition() {
               <CharacterSheetHeader
                 availableCharacters={availableCharacters}
                 characterData={characterData}
-                isMobileNavigationOpen={isMobileNavigationOpen}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
                 onCreateCharacter={openCharacterBuilder}
                 onOpenAdvance={openAdvanceView}
                 onOpenDice={openDiceLog}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
-                onOpenMobileCharacterList={() => openMobileNavigation(true)}
-                onOpenMobileNavigation={() => openMobileNavigation(false)}
                 onSelectCharacter={selectCharacter}
                 onAwardXp={awardXp}
                 selectedCharacterId={selectedCharacterId}
@@ -1499,15 +1453,12 @@ export function AppComposition() {
               <CharacterSheetHeader
                 availableCharacters={availableCharacters}
                 characterData={characterData}
-                isMobileNavigationOpen={isMobileNavigationOpen}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
                 onCreateCharacter={openCharacterBuilder}
                 onOpenAdvance={openMobileAdvanceView}
                 onOpenDice={openDiceLog}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
-                onOpenMobileCharacterList={() => openMobileNavigation(true)}
-                onOpenMobileNavigation={() => openMobileNavigation(false)}
                 onSelectCharacter={selectCharacter}
                 onAwardXp={awardXp}
                 selectedCharacterId={selectedCharacterId}

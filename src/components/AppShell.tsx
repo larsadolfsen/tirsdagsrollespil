@@ -8,14 +8,12 @@ interface AppShellProps {
     label: string;
     onClick: () => void;
   } | null;
-  mobileNavigation: ReactNode;
   sidebars: ReactNode;
 }
 
 export function AppShell({
   children,
   mobileAddAction,
-  mobileNavigation,
   sidebars,
 }: AppShellProps) {
   return (
@@ -36,7 +34,6 @@ export function AppShell({
           />
         )}
 
-        {mobileNavigation}
         {sidebars}
       </div>
     </div>
