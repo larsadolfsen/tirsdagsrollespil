@@ -10,7 +10,7 @@ export { SpellsTab } from "./SpellsTab";
 export { TalentsTab } from "./TalentsTab";
 export { TabLoadingFallback } from "./TabLoadingFallback";
 export { preloadPriorityTabs, preloadTab, preloadTabs } from "./preloadTabs";
-export { mainTabOptions, mobilePageTitleByView, mobileTabMenuOptions } from "./tabOptions";
+export { mainTabOptions } from "./tabOptions";
 export { usePriorityTabPreload } from "./usePriorityTabPreload";
 export type {
   ActionCategory,
@@ -19,7 +19,7 @@ export type {
   InventorySubtab,
   JournalSubtab,
   MainTab,
-  MobileTabMenuTarget,
+  MobileMainView,
   SkillSubtab,
   SpellSubtab,
   TabOption,

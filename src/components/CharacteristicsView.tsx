@@ -1,9 +1,9 @@
-import type { MobileTabMenuTarget } from "../tabs/tabTypes";
+import type { MobileMainView } from "../tabs/tabTypes";
 import type { Characteristic } from "../types";
 import { UI_LABELS } from "../labels";
 
 type CharacteristicsViewProps = {
-  activeMobileMainView: MobileTabMenuTarget;
+  activeMobileMainView: MobileMainView;
   attributes: Record<string, number>;
   onRoll: (characteristic: Characteristic) => void;
 };

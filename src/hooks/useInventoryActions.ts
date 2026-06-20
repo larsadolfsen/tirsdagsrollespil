@@ -12,7 +12,7 @@ import {
   isWearableInventoryItem,
   isWornInventoryItem,
 } from "../tabs/inventory/inventoryUtils";
-import type { MainTab, MobileTabMenuTarget } from "../tabs/tabTypes";
+import type { MainTab, MobileMainView } from "../tabs/tabTypes";
 import type { CoinKey } from "../tabs/tabTypes";
 import type { ItemDefinition, SpellDefinition } from "../types";
 import type { InventoryDragState, InventoryDropTargetId, InventoryMenuState } from "../types/inventory";
@@ -26,7 +26,7 @@ interface UseInventoryActionsOptions {
     items: ResolvedCharacterEquipment[],
   ) => unknown[];
   setActiveMainTab: Dispatch<SetStateAction<MainTab>>;
-  setActiveMobileMainView: Dispatch<SetStateAction<MobileTabMenuTarget>>;
+  setActiveMobileMainView: Dispatch<SetStateAction<MobileMainView>>;
   setCharacterCoins: Dispatch<SetStateAction<ResolvedCharacterRecord["coins"]>>;
   setCoinContainerId: Dispatch<SetStateAction<string | null>>;
   setCharacterSpells: Dispatch<SetStateAction<ResolvedCharacterRecord["spells"]>>;

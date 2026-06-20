@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { MainTab, MobileTabMenuTarget } from "../tabs/tabTypes";
+import type { MainTab, MobileMainView } from "../tabs/tabTypes";
 
 interface UseMobileNavigationOptions {
   setActiveMainTab: Dispatch<SetStateAction<MainTab>>;
@@ -8,10 +8,10 @@ interface UseMobileNavigationOptions {
 
 export function useMobileNavigation({ setActiveMainTab }: UseMobileNavigationOptions) {
   const [activeMobileMainView, setActiveMobileMainView] =
-    useState<MobileTabMenuTarget>("characteristics");
+    useState<MobileMainView>("characteristics");
   const [isMobilePortraitMenuOpen, setIsMobilePortraitMenuOpen] = useState(false);
 
-  const handleMobileMainViewSelect = (target: MobileTabMenuTarget) => {
+  const handleMobileMainViewSelect = (target: MobileMainView) => {
     setActiveMobileMainView(target);
 
     if (target === "characteristics") {

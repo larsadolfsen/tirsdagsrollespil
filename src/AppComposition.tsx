@@ -68,7 +68,7 @@ import {
   mainTabOptions,
 } from "./tabs/tabOptions";
 import type { CareerTabHandle } from "./tabs/CareerTab";
-import type { CareerSubtab, MobileTabMenuTarget } from "./tabs/tabTypes";
+import type { CareerSubtab, MobileMainView } from "./tabs/tabTypes";
 import type { Characteristic, Ruleset, SkillDefinition, SkillSpecialisationDefinition } from "./types";
 
 const InfoSidebar = lazy(() =>
@@ -437,17 +437,17 @@ export function AppComposition() {
       ),
     [isPrayerCaster],
   );
-  const displayedMobileTabMenuOptions = useMemo(
+  const displayedMobileMainViewOptions = useMemo(
     () => [{ id: "characteristics" as const, label: "Characteristics" }, ...displayedMainTabOptions],
     [displayedMainTabOptions],
   );
   const displayedMobilePageTitleByView = useMemo(
     () =>
-      displayedMobileTabMenuOptions.reduce(
+      displayedMobileMainViewOptions.reduce(
         (titles, option) => ({ ...titles, [option.id]: option.label }),
-        { career: "Edit Character" } as Record<MobileTabMenuTarget, string>,
+        { career: "Edit Character" } as Record<MobileMainView, string>,
       ),
-    [displayedMobileTabMenuOptions],
+    [displayedMobileMainViewOptions],
   );
   const availableSpellDefinitions = useMemo(
     () => filterSpellDefinitionsForMode(ruleset.spells, isPrayerCaster),
@@ -1228,12 +1228,12 @@ export function AppComposition() {
       : null;
 
   const navigateMobileMainView = (direction: -1 | 1) => {
-    const currentIndex = displayedMobileTabMenuOptions.findIndex((option) => option.id === activeMobileMainView);
+    const currentIndex = displayedMobileMainViewOptions.findIndex((option) => option.id === activeMobileMainView);
     const safeCurrentIndex = currentIndex >= 0 ? currentIndex : 0;
     const nextIndex =
-      (safeCurrentIndex + direction + displayedMobileTabMenuOptions.length) % displayedMobileTabMenuOptions.length;
+      (safeCurrentIndex + direction + displayedMobileMainViewOptions.length) % displayedMobileMainViewOptions.length;
 
-    selectMobileMainView(displayedMobileTabMenuOptions[nextIndex].id);
+    selectMobileMainView(displayedMobileMainViewOptions[nextIndex].id);
   };
   const navigateEditCharacterSubtab = (direction: -1 | 1) => {
     const currentIndex = editCharacterTabOptions.findIndex((option) => option.id === activeCareerSubtab);
