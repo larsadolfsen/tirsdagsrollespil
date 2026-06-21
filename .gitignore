@@ -4,21 +4,13 @@ build/
 dist/
 coverage/
 test-results/
-data/character-progress.json
-data/character-notes/*.json
-data/character-status/*.json
-data/characters/*/sheet.json
-data/characters/*/notes.json
-data/characters/*/background.md
-data/**/*.sqlite
-data/**/*.sqlite-*
 .DS_Store
 *.log
 .env*
 !.env.example
 
-# Ignore all character data directories and files
-# Keep per-character directories and saved files out of the repo
-data/characters/
+# Ignore all character data - these are user-specific and should not be tracked
+data/character-progress.json
 data/character-notes/
 data/character-status/
+data/characters/
