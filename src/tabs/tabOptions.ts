@@ -1,4 +1,4 @@
-import type { MainTab, MobileTabMenuTarget, TabOption } from "./tabTypes";
+import type { MainTab, TabOption } from "./tabTypes";
 
 export const mainTabOptions: Array<TabOption<MainTab>> = [
   { id: "skills", label: "Skills" },
@@ -8,13 +8,3 @@ export const mainTabOptions: Array<TabOption<MainTab>> = [
   { id: "features", label: "Talents" },
   { id: "journal", label: "Journal" },
 ];
-
-export const mobileTabMenuOptions: Array<TabOption<MobileTabMenuTarget>> = [
-  { id: "characteristics", label: "Characteristics" },
-  ...mainTabOptions,
-];
-
-export const mobilePageTitleByView: Record<MobileTabMenuTarget, string> = mobileTabMenuOptions.reduce(
-  (titles, option) => ({ ...titles, [option.id]: option.label }),
-  { career: "Edit Character" } as Record<MobileTabMenuTarget, string>,
-);

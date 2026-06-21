@@ -33,7 +33,7 @@ function MobileTitlePager({
     >
       <WfrpStandardIcon
         onClick={onPrevious}
-        className="border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm hover:border-wfrp-gold/50"
+        className="border-transparent bg-transparent text-gray-300 shadow-none hover:border-transparent hover:bg-transparent hover:text-white"
         label="Show previous character sheet tab"
         icon={<ChevronLeft />}
       />
@@ -43,7 +43,7 @@ function MobileTitlePager({
       {action ?? (
         <WfrpStandardIcon
           onClick={onNext}
-          className="border border-wfrp-border bg-wfrp-surface text-gray-300 shadow-sm hover:border-wfrp-gold/50"
+          className="border-transparent bg-transparent text-gray-300 shadow-none hover:border-transparent hover:bg-transparent hover:text-white"
           label="Show next character sheet tab"
           icon={<ChevronRight />}
         />

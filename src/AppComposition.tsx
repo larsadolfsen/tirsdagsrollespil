@@ -16,7 +16,7 @@ import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
 import { CharacteristicsView } from "./components/CharacteristicsView";
 import { LandingPage } from "./components/LandingPage";
 import { MobileMainViewSwipeProvider } from "./components/MobileMainViewSwipeContext";
-import { getAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
+import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
 import { useCharacterDerivedStats } from "./hooks/useCharacterDerivedStats";
 import { useDiceRoller } from "./features/dice/useDiceRoller";
@@ -68,7 +68,7 @@ import {
   mainTabOptions,
 } from "./tabs/tabOptions";
 import type { CareerTabHandle } from "./tabs/CareerTab";
-import type { CareerSubtab, MobileTabMenuTarget } from "./tabs/tabTypes";
+import type { CareerSubtab, MobileMainView } from "./tabs/tabTypes";
 import type { Characteristic, Ruleset, SkillDefinition, SkillSpecialisationDefinition } from "./types";
 
 const InfoSidebar = lazy(() =>
@@ -82,6 +82,12 @@ const SpellShopSidebar = lazy(() =>
 );
 const TalentSidebar = lazy(() =>
   import("./components/sidebar").then((module) => ({ default: module.TalentSidebar })),
+);
+const CharacteristicSidebar = lazy(() =>
+  import("./components/sidebar").then((module) => ({ default: module.CharacteristicSidebar })),
+);
+const MobileMenuSidebar = lazy(() =>
+  import("./components/sidebar").then((module) => ({ default: module.MobileMenuSidebar })),
 );
 const SkillSidebar = lazy(() =>
   import("./components/sidebar").then((module) => ({ default: module.SkillSidebar })),
@@ -184,8 +190,10 @@ export function AppComposition() {
   const [pendingXpAdjustment, setPendingXpAdjustment] = useState(0);
   const [pendingTotalXpAdjustment, setPendingTotalXpAdjustment] = useState(0);
   const [hasCareerTabDraftChanges, setHasCareerTabDraftChanges] = useState(false);
+  const [isCharacteristicSidebarOpen, setIsCharacteristicSidebarOpen] = useState(false);
   const [isTalentSidebarOpen, setIsTalentSidebarOpen] = useState(false);
   const [isSkillSidebarOpen, setIsSkillSidebarOpen] = useState(false);
+  const [isMobileMenuSidebarOpen, setIsMobileMenuSidebarOpen] = useState(false);
   const careerTabRef = useRef<CareerTabHandle>(null);
   const [isLandingPageOpen, setIsLandingPageOpen] = useState(() => {
     if (typeof window === "undefined") {
@@ -437,17 +445,17 @@ export function AppComposition() {
       ),
     [isPrayerCaster],
   );
-  const displayedMobileTabMenuOptions = useMemo(
+  const displayedMobileMainViewOptions = useMemo(
     () => [{ id: "characteristics" as const, label: "Characteristics" }, ...displayedMainTabOptions],
     [displayedMainTabOptions],
   );
   const displayedMobilePageTitleByView = useMemo(
     () =>
-      displayedMobileTabMenuOptions.reduce(
+      displayedMobileMainViewOptions.reduce(
         (titles, option) => ({ ...titles, [option.id]: option.label }),
-        { career: "Edit Character" } as Record<MobileTabMenuTarget, string>,
+        { career: "Edit Character" } as Record<MobileMainView, string>,
       ),
-    [displayedMobileTabMenuOptions],
+    [displayedMobileMainViewOptions],
   );
   const availableSpellDefinitions = useMemo(
     () => filterSpellDefinitionsForMode(ruleset.spells, isPrayerCaster),
@@ -677,6 +685,13 @@ export function AppComposition() {
     }));
   };
 
+  const purchaseCharacteristicAdvance = (characteristicKey: string) => {
+    setPendingCharacteristicAdvances((prev) => ({
+      ...prev,
+      [characteristicKey]: (prev[characteristicKey] ?? 0) + 1,
+    }));
+  };
+
   const purchaseTalent = (talentName: string) => {
     const talentDefinition = ruleset.talents.find((talent) => talent.name === talentName);
     if (!talentDefinition) {
@@ -786,6 +801,21 @@ export function AppComposition() {
       return {
         ...prev,
         [skillName]: current - 1,
+      };
+    });
+  };
+
+  const removePendingCharacteristicAdvance = (characteristicKey: string) => {
+    setPendingCharacteristicAdvances((prev) => {
+      const current = prev[characteristicKey] ?? 0;
+      if (current <= 1) {
+        const { [characteristicKey]: _removed, ...rest } = prev;
+        return rest;
+      }
+
+      return {
+        ...prev,
+        [characteristicKey]: current - 1,
       };
     });
   };
@@ -1129,8 +1159,10 @@ export function AppComposition() {
     setIsShopOpen(false);
     setIsSpellShopOpen(false);
     setIsDiceLogOpen(false);
+    setIsCharacteristicSidebarOpen(false);
     setIsSkillSidebarOpen(false);
     setIsTalentSidebarOpen(false);
+    setIsMobileMenuSidebarOpen(false);
     setRollState((prev) => ({ ...prev, characteristic: null }));
   };
 
@@ -1159,6 +1191,11 @@ export function AppComposition() {
     setIsTalentSidebarOpen(true);
   };
 
+  const openCharacteristicSidebar = () => {
+    closeSidebars();
+    setIsCharacteristicSidebarOpen(true);
+  };
+
   const openSkillSidebar = () => {
     closeSidebars();
     setIsSkillSidebarOpen(true);
@@ -1178,6 +1215,12 @@ export function AppComposition() {
     setIsMobilePortraitMenuOpen((isOpen) => !isOpen);
   };
 
+  const openMobileMenuSidebar = () => {
+    closeSidebars();
+    setIsMobilePortraitMenuOpen(false);
+    setIsMobileMenuSidebarOpen(true);
+  };
+
   const openMobileJournalEntry = () => {
     setIsMobilePortraitMenuOpen(false);
     openNoteComposer();
@@ -1192,7 +1235,12 @@ export function AppComposition() {
   };
 
   const mobileAddAction =
-    activeMobileMainView === "skills"
+    activeMobileMainView === "characteristics"
+      ? {
+          label: "Open characteristic advances",
+          onClick: openCharacteristicSidebar,
+        }
+      : activeMobileMainView === "skills"
       ? {
           label: "Open skill sidebar",
           onClick: openMobileSkillSidebar,
@@ -1228,12 +1276,12 @@ export function AppComposition() {
       : null;
 
   const navigateMobileMainView = (direction: -1 | 1) => {
-    const currentIndex = displayedMobileTabMenuOptions.findIndex((option) => option.id === activeMobileMainView);
+    const currentIndex = displayedMobileMainViewOptions.findIndex((option) => option.id === activeMobileMainView);
     const safeCurrentIndex = currentIndex >= 0 ? currentIndex : 0;
     const nextIndex =
-      (safeCurrentIndex + direction + displayedMobileTabMenuOptions.length) % displayedMobileTabMenuOptions.length;
+      (safeCurrentIndex + direction + displayedMobileMainViewOptions.length) % displayedMobileMainViewOptions.length;
 
-    selectMobileMainView(displayedMobileTabMenuOptions[nextIndex].id);
+    selectMobileMainView(displayedMobileMainViewOptions[nextIndex].id);
   };
   const navigateEditCharacterSubtab = (direction: -1 | 1) => {
     const currentIndex = editCharacterTabOptions.findIndex((option) => option.id === activeCareerSubtab);
@@ -1413,6 +1461,19 @@ export function AppComposition() {
               removePendingSkillAdvance={removePendingSkillAdvance}
               skills={advancementSkillRows}
             />
+            <CharacteristicSidebar
+              characteristics={advancementCharacteristics}
+              careerCharacteristicKeys={careerAdvancementData.characteristics
+                .filter((item) => item.availableFromRank <= displayedCareerRank)
+                .map((item) => item.key)}
+              getCharacteristicDescription={getCharacteristicDescription}
+              getNextAdvanceCost={getCharacteristicAdvanceCost}
+              isOpen={isCharacteristicSidebarOpen}
+              onClose={() => setIsCharacteristicSidebarOpen(false)}
+              pendingAvailableXp={pendingAvailableXp}
+              purchaseCharacteristicAdvance={purchaseCharacteristicAdvance}
+              removePendingCharacteristicAdvance={removePendingCharacteristicAdvance}
+            />
             <TalentSidebar
               characterTalents={characterTalents}
               careerTalentNames={careerAdvancementData.talents}
@@ -1425,6 +1486,10 @@ export function AppComposition() {
               purchaseTalent={purchaseTalent}
               talents={ruleset.talents}
               onClose={() => setIsTalentSidebarOpen(false)}
+            />
+            <MobileMenuSidebar
+              isOpen={isMobileMenuSidebarOpen}
+              onClose={() => setIsMobileMenuSidebarOpen(false)}
             />
           </Suspense>
         </>
@@ -1442,6 +1507,7 @@ export function AppComposition() {
                 onOpenAdvance={openAdvanceView}
                 onOpenDice={openDiceLog}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
+                onOpenMobileMenu={openMobileMenuSidebar}
                 onSelectCharacter={selectCharacter}
                 onAwardXp={awardXp}
                 selectedCharacterId={selectedCharacterId}
@@ -1459,6 +1525,7 @@ export function AppComposition() {
                 onOpenAdvance={openMobileAdvanceView}
                 onOpenDice={openDiceLog}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
+                onOpenMobileMenu={openMobileMenuSidebar}
                 onSelectCharacter={selectCharacter}
                 onAwardXp={awardXp}
                 selectedCharacterId={selectedCharacterId}

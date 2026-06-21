@@ -76,7 +76,7 @@ export function SidebarItemList({
             <button
               type="button"
               className={cn(
-                "flex w-full cursor-pointer justify-between gap-3 px-4 text-left text-sm font-semibold leading-6 text-gray-200 transition-colors hover:bg-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50",
+                "flex w-full cursor-pointer justify-between gap-3 px-4 text-left text-sm font-semibold leading-6 text-wfrp-muted-text transition-colors hover:bg-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50",
                 isOpen ? "min-h-10 items-start pb-1 pt-3" : "min-h-12 items-center py-2",
               )}
               aria-expanded={isOpen}
@@ -126,7 +126,7 @@ export function SidebarItemList({
                         className="grid min-w-0 grid-cols-[minmax(5rem,max-content)_minmax(0,1fr)] items-baseline gap-3 text-[11px] font-bold text-wfrp-muted-text"
                       >
                         <span className="text-wfrp-muted-text">{detail.label}</span>
-                        <span className="min-w-0 text-left text-gray-100">{detail.value}</span>
+                        <span className="min-w-0 text-left text-wfrp-muted-text">{detail.value}</span>
                       </div>
                     ))}
                   </div>

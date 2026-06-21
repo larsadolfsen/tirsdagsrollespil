@@ -1,11 +1,11 @@
-import type { MainTab, MobileTabMenuTarget } from "../tabs/tabTypes";
+import type { MainTab, MobileMainView } from "../tabs/tabTypes";
 import { campaignById, defaultCampaignId } from "../data/campaigns";
 import { characterRecords } from "../data/characters";
 
 export { defaultCampaignId } from "../data/campaigns";
 
 const campaignCharacterRoutePattern = /^\/([^/]+)\/([^/]+)(?:\/([^/?#]+))?\/?$/;
-const characterViewPathSegments: Record<MobileTabMenuTarget, string> = {
+const characterViewPathSegments: Record<MobileMainView, string> = {
   characteristics: "characteristics",
   skills: "skills",
   actions: "actions",
@@ -15,7 +15,7 @@ const characterViewPathSegments: Record<MobileTabMenuTarget, string> = {
   journal: "journal",
   career: "advance",
 };
-const viewAliases: Record<string, MobileTabMenuTarget> = {
+const viewAliases: Record<string, MobileMainView> = {
   action: "actions",
   actions: "actions",
   advance: "career",
@@ -34,7 +34,7 @@ const viewAliases: Record<string, MobileTabMenuTarget> = {
   // Keep existing routes working while new URLs use page-title slugs.
   faner: "skills",
 };
-const mainTabByCharacterView: Record<MobileTabMenuTarget, MainTab> = {
+const mainTabByCharacterView: Record<MobileMainView, MainTab> = {
   characteristics: "skills",
   skills: "skills",
   actions: "actions",
@@ -48,12 +48,12 @@ const mainTabByCharacterView: Record<MobileTabMenuTarget, MainTab> = {
 export type CampaignCharacterRoute = {
   campaignId: string;
   characterId: string;
-  view: MobileTabMenuTarget;
+  view: MobileMainView;
   tab: MainTab;
   hasExplicitView: boolean;
 };
 
-export const defaultCampaignCharacterTab: MobileTabMenuTarget = "characteristics";
+export const defaultCampaignCharacterTab: MobileMainView = "characteristics";
 
 const decodePathSegment = (value: string) => {
   try {
@@ -135,7 +135,7 @@ export function buildCampaignCharacterPath({
 }: {
   campaignId?: string;
   characterId: string;
-  view: MobileTabMenuTarget;
+  view: MobileMainView;
   omitDefaultView?: boolean;
 }) {
   const characterPath = `/${encodePathSegment(campaignId)}/${encodePathSegment(characterId)}`;
