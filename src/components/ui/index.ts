@@ -1,10 +1,9 @@
 export { AdvancementSection } from "./AdvancementSection";
 export { HeaderResourceSlider, ResourceCounterBar } from "./ResourceCounterBar";
 export { InlineSubtabs } from "./InlineSubtabs";
-export { WfrpStandardBtn } from "./WfrpStandardBtn";
 export { PanelSectionHeader } from "./PanelSectionHeader";
 export { ScrollableTabStrip } from "./ScrollableTabStrip";
-export { SubtabActionButton } from "./SubtabActionButton";
+export { MainTabMenu } from "./MainTabMenu";
 export { SubtabContentFrame } from "./SubtabContentFrame";
 export { WfrpSearchField } from "./WfrpSearchField";
 export { WfrpStandardIcon } from "./WfrpStandardIcon";

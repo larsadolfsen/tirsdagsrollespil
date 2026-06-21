@@ -1,63 +1,133 @@
-import type { MouseEventHandler, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { LoaderCircle } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { inlineSubtabButtonActiveClassName, inlineSubtabButtonInactiveClassName } from "@/src/lib/tabStyles";
 
-type ButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
-type ButtonSize = "default" | "sm" | "lg" | "icon";
-type ButtonType = "button" | "submit" | "reset";
+type StandardButtonVariant = "default" | "destructive" | "secondary" | "ghost" | "link";
+type WfrpButtonVariant = "unstyled" | "fab" | "wfrpIcon" | "subtabAction";
+type ButtonVariant = StandardButtonVariant | WfrpButtonVariant;
 
-const variantClasses: Record<ButtonVariant, string> = {
-  default: "bg-primary text-primary-foreground shadow hover:bg-primary/90 active:bg-primary/80",
-  destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 active:bg-destructive/80",
-  outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
-  secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 active:bg-secondary/70",
-  ghost: "hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
+const standardVariantClasses: Record<StandardButtonVariant, string> = {
+  default: "text-wfrp-dice-text before:bg-wfrp-dice-bg hover:before:bg-wfrp-dice-hover-bg hover:text-wfrp-dice-text",
+  destructive: "text-destructive-foreground before:bg-destructive hover:before:bg-destructive/90",
+  secondary: "text-wfrp-muted-text before:bg-wfrp-tab-active hover:text-white hover:before:bg-wfrp-control-hover",
+  ghost: "hover:before:bg-accent hover:text-accent-foreground",
   link: "text-primary underline-offset-4 hover:underline",
 };
 
-const sizeClasses: Record<ButtonSize, string> = {
-  default: "h-10 px-4 py-2",
-  sm: "h-9 rounded-md px-3",
-  lg: "h-11 rounded-md px-8",
-  icon: "h-10 w-10",
+const wfrpVariantClasses: Record<WfrpButtonVariant, string | undefined> = {
+  unstyled: undefined,
+  fab: "fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-wfrp-gold/70 bg-wfrp-gold p-0 text-black shadow-xl shadow-black/50 transition-colors hover:border-wfrp-gold hover:bg-[#d1ad65] active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wfrp-gold/60 md:hidden",
+  wfrpIcon: "wfrp-standard-icon",
+  subtabAction: "group inline-flex cursor-pointer items-center justify-center bg-transparent p-0 font-black tracking-[0.12em] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed",
 };
 
-export interface ButtonProps {
-  "aria-expanded"?: boolean;
-  "aria-haspopup"?: boolean | "dialog" | "grid" | "listbox" | "menu" | "tree";
-  "aria-label"?: string;
-  "data-state"?: string;
+export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children" | "name"> {
   children?: ReactNode;
-  className?: string;
-  disabled?: boolean;
-  id?: string;
+  desktopLabel?: ReactNode;
+  hideOnMobile?: boolean;
+  isDeactivated?: boolean;
+  isGolden?: boolean;
+  isActive?: boolean;
+  labelClassName?: string;
+  leadingIcon?: ReactNode;
   loading?: boolean;
   loadingLabel?: string;
-  name?: string;
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  size?: ButtonSize;
-  title?: string;
-  type?: ButtonType;
-  value?: string | number | readonly string[];
+  name?: ReactNode;
+  nativeName?: string;
+  trailingIcon?: ReactNode;
   variant?: ButtonVariant;
 }
 
-export function buttonVariants({ variant = "default", size = "default", className }: { variant?: ButtonVariant; size?: ButtonSize; className?: string } = {}) {
+function isWfrpVariant(variant: ButtonVariant): variant is WfrpButtonVariant {
+  return variant === "unstyled" || variant === "fab" || variant === "wfrpIcon" || variant === "subtabAction";
+}
+
+export function buttonVariants({ variant = "default", className }: { variant?: ButtonVariant; className?: string } = {}) {
+  if (isWfrpVariant(variant)) {
+    return cn(wfrpVariantClasses[variant], className);
+  }
+
   return cn(
-    "inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-bold uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-    variantClasses[variant],
-    sizeClasses[size],
+    "group relative isolate inline-flex h-12 items-center justify-center gap-1 whitespace-nowrap bg-transparent px-3 text-[11px] font-bold uppercase tracking-widest before:absolute before:inset-x-0 before:top-1/2 before:-z-10 before:h-6 before:-translate-y-1/2 before:rounded before:shadow-sm before:transition-all active:before:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+    standardVariantClasses[variant],
     className,
   );
 }
 
-export function Button({ children, className, disabled, loading = false, loadingLabel = "Loading", size, type = "button", variant, ...props }: ButtonProps) {
-  const isDisabled = disabled || loading;
+export function Button({
+  children,
+  className,
+  desktopLabel,
+  disabled,
+  hideOnMobile = false,
+  isDeactivated = false,
+  isGolden = false,
+  isActive = false,
+  labelClassName,
+  leadingIcon,
+  loading = false,
+  loadingLabel = "Loading",
+  name,
+  nativeName,
+  trailingIcon,
+  type = "button",
+  variant = "default",
+  ...props
+}: ButtonProps) {
+  const isDisabled = disabled || isDeactivated || loading;
+  const wfrp = isWfrpVariant(variant);
+  const standard = !wfrp;
+  const label = loading ? loadingLabel : name;
 
   return (
-    <button type={type} aria-busy={loading || undefined} disabled={isDisabled} className={buttonVariants({ variant, size, className })} {...props}>
-      {loading && <LoaderCircle aria-hidden="true" className="animate-spin" />}
-      <span className={cn(size === "icon" && loading ? "sr-only" : undefined)}>{loading ? loadingLabel : children}</span>
+    <button
+      type={type}
+      name={nativeName}
+      aria-busy={loading || undefined}
+      disabled={isDisabled}
+      className={cn(
+        buttonVariants({ variant }),
+        "cursor-pointer disabled:cursor-not-allowed",
+        wfrp && hideOnMobile && "max-md:hidden",
+        wfrp && leadingIcon && variant !== "wfrpIcon" && "wfrp-standard-btn--has-leading-icon",
+        variant === "wfrpIcon" && desktopLabel && "sm:flex-col",
+        wfrp && isGolden && !isDeactivated && "wfrp-standard-btn--gold",
+        wfrp && isDeactivated && "wfrp-standard-btn--deactivated",
+        standard && isGolden && !isDeactivated && "text-primary-foreground before:bg-wfrp-gold hover:before:bg-[#d1ad65]",
+        standard && isDeactivated && "cursor-default opacity-20 before:bg-[#3f3f3f] text-[#d0d0d0] active:before:scale-100",
+        className,
+        variant !== "fab" && "!h-12 !text-[11px]",
+      )}
+      {...props}
+    >
+      {standard ? (
+        <>
+          {loading ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : leadingIcon ? (
+            <span className="wfrp-standard-btn__leading-icon" aria-hidden="true">{leadingIcon}</span>
+          ) : null}
+          {label !== undefined ? (labelClassName ? <span className={labelClassName}>{label}</span> : label) : null}
+          {!loading ? children : null}
+          {!loading ? trailingIcon : null}
+        </>
+      ) : variant === "subtabAction" ? (
+        <span className={cn(
+          "inline-flex !h-6 items-center justify-center whitespace-nowrap rounded px-3 text-[11px] font-bold uppercase tracking-widest transition-all group-active:scale-95",
+          isActive ? `${inlineSubtabButtonActiveClassName} group-hover:bg-[#d1ad65]` : inlineSubtabButtonInactiveClassName,
+        )}>{children}</span>
+      ) : (
+        <>
+          {loading ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : leadingIcon ? (
+            <span className={variant === "wfrpIcon" ? "wfrp-standard-icon__glyph" : "wfrp-standard-btn__leading-icon"} aria-hidden="true">{leadingIcon}</span>
+          ) : null}
+          {label !== undefined ? (labelClassName ? <span className={labelClassName}>{label}</span> : label) : null}
+          {!loading ? children : null}
+          {!loading ? trailingIcon : null}
+        </>
+      )}
+      {!loading && variant === "wfrpIcon" && desktopLabel ? (
+        <span className="wfrp-standard-icon__label" aria-hidden="true">{desktopLabel}</span>
+      ) : null}
     </button>
   );
 }

@@ -13,6 +13,7 @@ import { AppShell } from "./components/AppShell";
 import { ArmourCard } from "./components/ArmourCard";
 import { CharacterSheetFrame } from "./components/CharacterSheetFrame";
 import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
+import { GainExperiencePage } from "./components/GainExperiencePage";
 import { CharacteristicsView } from "./components/CharacteristicsView";
 import { LandingPage } from "./components/LandingPage";
 import { MobileMainViewSwipeProvider } from "./components/MobileMainViewSwipeContext";
@@ -27,7 +28,8 @@ import { useNotesViewModel } from "./hooks/useNotesViewModel";
 import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
   InlineSubtabs,
-  WfrpStandardBtn,
+  MainTabMenu,
+  Button,
   PanelSectionHeader,
   ResourceCounterBar,
   ScrollableTabStrip,
@@ -194,6 +196,7 @@ export function AppComposition() {
   const [isTalentSidebarOpen, setIsTalentSidebarOpen] = useState(false);
   const [isSkillSidebarOpen, setIsSkillSidebarOpen] = useState(false);
   const [isMobileMenuSidebarOpen, setIsMobileMenuSidebarOpen] = useState(false);
+  const [isMobileGainExperienceOpen, setIsMobileGainExperienceOpen] = useState(false);
   const careerTabRef = useRef<CareerTabHandle>(null);
   const [isLandingPageOpen, setIsLandingPageOpen] = useState(() => {
     if (typeof window === "undefined") {
@@ -305,7 +308,6 @@ export function AppComposition() {
     getCareerSkillOptions,
     hasPendingCareerChanges,
     isCareerSkillName,
-    nextCareerRankRecord,
     pendingAvailableXp,
     pendingCareerRank,
     pendingCharacteristicAdvances,
@@ -778,16 +780,12 @@ export function AppComposition() {
     setCharacterSpells((prev) => prev.filter((spell) => spell.id !== spellId));
   };
 
-  const increasePendingCareerRank = () => {
-    if (!nextCareerRankRecord) return;
-    setPendingCareerRank(displayedCareerRank + 1);
-  };
-
-  const decreasePendingCareerRank = () => {
-    setPendingCareerRank((prev) => {
-      if (prev === null) return null;
-      return prev <= currentCareerRank ? null : prev - 1;
-    });
+  const updateCareerTier = (tier: number) => {
+    const availableRanks = characterData.careerRecord.ranks.map((rank) => rank.rank);
+    const minimumTier = Math.min(...availableRanks);
+    const maximumTier = Math.max(...availableRanks);
+    const safeTier = Math.min(maximumTier, Math.max(minimumTier, Math.floor(tier)));
+    setPendingCareerRank(safeTier === currentCareerRank ? null : safeTier);
   };
 
   const removePendingSkillAdvance = (skillName: string) => {
@@ -1163,6 +1161,7 @@ export function AppComposition() {
     setIsSkillSidebarOpen(false);
     setIsTalentSidebarOpen(false);
     setIsMobileMenuSidebarOpen(false);
+    setIsMobileGainExperienceOpen(false);
     setRollState((prev) => ({ ...prev, characteristic: null }));
   };
 
@@ -1219,6 +1218,12 @@ export function AppComposition() {
     closeSidebars();
     setIsMobilePortraitMenuOpen(false);
     setIsMobileMenuSidebarOpen(true);
+  };
+
+  const openMobileGainExperience = () => {
+    closeSidebars();
+    setIsMobilePortraitMenuOpen(false);
+    setIsMobileGainExperienceOpen(true);
   };
 
   const openMobileJournalEntry = () => {
@@ -1315,18 +1320,15 @@ export function AppComposition() {
   const mobilePageTitle = activeMainTab === "career"
     ? "Edit Character"
     : displayedMobilePageTitleByView[activeMobileMainView];
-  const closeEditCharacterPage = () => {
-    selectMainTab("skills");
-  };
+  const showMobileGainExperiencePage = isMobileGainExperienceOpen && !isDesktopLayout;
+  const displayedMobilePageTitle = showMobileGainExperiencePage ? "Gain Experience" : mobilePageTitle;
   const cancelEditCharacterPage = () => {
     careerTabRef.current?.discardChanges();
     resetPendingAdvancements();
     setPendingXpAdjustment(0);
     setPendingTotalXpAdjustment(0);
     setHasCareerTabDraftChanges(false);
-    closeEditCharacterPage();
   };
-  const editCharacterCloseActionLabel = hasUnsavedCareerEdits ? "Cancel" : "Close";
   const advancePageContent = (
     <LazyTabPanel>
       <CareerTab
@@ -1344,8 +1346,7 @@ export function AppComposition() {
         displayedCareerRankRecord={displayedCareerRankRecord}
         careerAdvancementData={careerAdvancementData}
         pendingAvailableXp={pendingAvailableXp}
-        nextCareerRankRecord={nextCareerRankRecord}
-        increasePendingCareerRank={increasePendingCareerRank}
+        updateCareerTier={updateCareerTier}
         advancementCharacteristics={advancementCharacteristics}
         getCharacteristicLabel={getCharacteristicLabel}
         updateCharacteristicInitial={updateCharacteristicInitial}
@@ -1490,6 +1491,18 @@ export function AppComposition() {
             <MobileMenuSidebar
               isOpen={isMobileMenuSidebarOpen}
               onClose={() => setIsMobileMenuSidebarOpen(false)}
+              onOpenCharacterSheet={() => {
+                setIsMobileMenuSidebarOpen(false);
+                setIsMobileGainExperienceOpen(false);
+                selectMainTab("skills");
+              }}
+              onOpenDiceLog={openDiceLog}
+              onOpenEditCharacter={() => {
+                setIsMobileMenuSidebarOpen(false);
+                setIsMobileGainExperienceOpen(false);
+                openAdvanceView();
+              }}
+              onOpenGainExperience={openMobileGainExperience}
             />
           </Suspense>
         </>
@@ -1499,46 +1512,55 @@ export function AppComposition() {
           <CharacterSheetFrame
             desktopHeader={(
               <CharacterSheetHeader
-                availableCharacters={availableCharacters}
+                activeMenuItem={isDiceLogOpen || Boolean(rollState.characteristic) ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
-                onCreateCharacter={openCharacterBuilder}
+                onOpenCharacterSheet={() => selectMainTab("skills")}
                 onOpenAdvance={openAdvanceView}
                 onOpenDice={openDiceLog}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
+                onOpenMobileGainExperience={openMobileGainExperience}
                 onOpenMobileMenu={openMobileMenuSidebar}
-                onSelectCharacter={selectCharacter}
                 onAwardXp={awardXp}
-                selectedCharacterId={selectedCharacterId}
                 variant="desktop"
                 xpCurrent={xpCurrent}
               />
             )}
             mobileHeader={(
               <CharacterSheetHeader
-                availableCharacters={availableCharacters}
+                activeMenuItem={isDiceLogOpen || Boolean(rollState.characteristic) ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
-                onCreateCharacter={openCharacterBuilder}
+                onOpenCharacterSheet={() => selectMainTab("skills")}
                 onOpenAdvance={openMobileAdvanceView}
                 onOpenDice={openDiceLog}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
+                onOpenMobileGainExperience={openMobileGainExperience}
                 onOpenMobileMenu={openMobileMenuSidebar}
-                onSelectCharacter={selectCharacter}
                 onAwardXp={awardXp}
-                selectedCharacterId={selectedCharacterId}
                 variant="mobile"
                 xpCurrent={xpCurrent}
               />
             )}
-            mobileTitle={mobilePageTitle}
-            onMobileNextView={navigateMobileFrameNext}
-            onMobilePreviousView={navigateMobileFramePrevious}
+            hideMobileNavigation={showMobileGainExperiencePage}
+            mobileTitle={displayedMobilePageTitle}
+            onMobileNextView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFrameNext}
+            onMobilePreviousView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFramePrevious}
           >
 
-          {activeMainTab === "career" ? (
+          {showMobileGainExperiencePage ? (
+            <GainExperiencePage
+              onAwardXp={(amount) => {
+                awardXp(amount);
+                setIsMobileGainExperienceOpen(false);
+              }}
+              onCancel={() => setIsMobileGainExperienceOpen(false)}
+              xpCurrent={xpCurrent}
+              xpTotal={characterData.xpTotal}
+            />
+          ) : activeMainTab === "career" ? (
             <>
               <div className="hidden items-center justify-between gap-3 md:flex">
                 <h1 className="min-w-0 truncate font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
@@ -1550,7 +1572,7 @@ export function AppComposition() {
                   <div className="flex w-full min-w-max items-center justify-between gap-4">
                     <div className="flex min-w-max items-center gap-4 lg:gap-6">
                       {editCharacterTabOptions.map((tab) => (
-                        <WfrpStandardBtn
+                        <Button variant="unstyled"
                           key={tab.id}
                           type="button"
                           name={tab.label}
@@ -1564,25 +1586,24 @@ export function AppComposition() {
                           {activeCareerSubtab === tab.id ? (
                             <div className={mainTabUnderlineClassName} />
                           ) : null}
-                        </WfrpStandardBtn>
+                        </Button>
                       ))}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
-                      <WfrpStandardBtn
+                      <Button
+                        type="button"
+                        name="Cancel"
+                        onClick={cancelEditCharacterPage}
+                        isDeactivated={!hasUnsavedCareerEdits}
+                        aria-label="Cancel edit character changes"
+                      />
+                      <Button
                         type="button"
                         name="Save"
                         onClick={handleEditCharacterSave}
                         isDeactivated={!hasUnsavedCareerEdits}
                         isGolden={hasUnsavedCareerEdits}
-                        className="wfrp-roll-cta"
                         aria-label="Save edit character changes"
-                      />
-                      <WfrpStandardBtn
-                        type="button"
-                        name={editCharacterCloseActionLabel}
-                        onClick={hasUnsavedCareerEdits ? cancelEditCharacterPage : closeEditCharacterPage}
-                        className="wfrp-roll-cta"
-                        aria-label={hasUnsavedCareerEdits ? "Cancel edit character changes" : "Close Edit Character page"}
                       />
                     </div>
                   </div>
@@ -1646,24 +1667,13 @@ export function AppComposition() {
             }`}
           >
               <ScrollableTabStrip className="hidden sm:flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
-                <div className="mx-auto flex w-full min-w-max justify-center gap-4 lg:mx-0 lg:w-max lg:min-w-0 lg:justify-start lg:gap-6">
-                  {displayedMainTabOptions.map((tab) => (
-                    <WfrpStandardBtn
-                      key={tab.id}
-                      name={tab.label}
-                      onClick={() => selectMainTab(tab.id)}
-                      className={cn(
-                        mainTabButtonBaseClassName,
-                        activeMainTab === tab.id ? mainTabButtonActiveClassName : mainTabButtonInactiveClassName,
-                      )}
-                      aria-current={activeMainTab === tab.id ? 'page' : undefined}
-                    >
-                      {activeMainTab === tab.id && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-muted-text" />
-                      )}
-                    </WfrpStandardBtn>
-                  ))}
-                </div>
+                <MainTabMenu
+                  activeId={activeMainTab}
+                  ariaLabel="Character sheet sections"
+                  className="mx-auto w-full min-w-max justify-center gap-4 lg:mx-0 lg:w-max lg:min-w-0 lg:justify-start lg:gap-6"
+                  options={displayedMainTabOptions}
+                  onChange={selectMainTab}
+                />
               </ScrollableTabStrip>
 
               <div className="flex-1 flex flex-col min-h-0 md:bg-card">

@@ -9,7 +9,7 @@ import {
   getWeaponTraitNotes,
 } from "../lib/rollMechanics";
 import { DigitReel } from "./DigitReel";
-import { WfrpStandardBtn, WfrpStandardIcon } from "./ui";
+import { Button, WfrpStandardIcon } from "./ui";
 import type { RollHistoryItem, RollState } from "./appTypes";
 
 export function DiceRoller({
@@ -320,17 +320,17 @@ export function DiceRoller({
                   )}
 
                   {!rollState.isRolling && rollState.result === null && (
-                    <WfrpStandardBtn
+                    <Button
                       onClick={executeRoll}
-                      className="wfrp-roll-cta mt-4"
+                      className="mt-4"
                       name="Roll"
                     />
                   )}
 
                   {!rollState.isRolling && rollState.result !== null && fortuneCurrent > 0 && (
-                    <WfrpStandardBtn
+                    <Button
                       onClick={handleReroll}
-                      className="wfrp-roll-cta mt-4"
+                      className="mt-4"
                       name="Reroll"
                     />
                   )}

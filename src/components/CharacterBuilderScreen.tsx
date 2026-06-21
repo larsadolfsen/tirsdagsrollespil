@@ -298,18 +298,15 @@ export function CharacterBuilderScreen({
 
   return (
     <div className="min-h-screen bg-wfrp-dark font-sans selection:bg-wfrp-gold/40 flex flex-col">
-      <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
       <main className="mx-auto flex w-full max-w-[1199px] flex-1 flex-col gap-4 p-4">
         <Card className="overflow-hidden p-0">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-wfrp-border px-4 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-t-4 border-wfrp-border border-t-wfrp-red px-4 py-3">
             <div>
               <p className="wfrp-sidebar-kicker">Character Builder</p>
               <h1 className="text-xl font-bold font-serif tracking-tight">New Character</h1>
             </div>
             <Button
               onClick={onClose}
-              variant="outline"
-              size="sm"
               className="flex items-center gap-2 font-black tracking-[0.12em]"
             >
               <X size={14} />
@@ -372,7 +369,6 @@ export function CharacterBuilderScreen({
                 <Button
                   onClick={goToPreviousStep}
                   disabled={isFirstStep}
-                  variant="outline"
                   className="flex items-center gap-2 px-4 py-2 font-black tracking-[0.12em]"
                 >
                   <ChevronLeft size={14} />
@@ -380,7 +376,6 @@ export function CharacterBuilderScreen({
                 </Button>
                 <Button
                   onClick={goToNextStep}
-                  variant="outline"
                   className="flex items-center gap-2 px-4 py-2 font-black tracking-[0.12em] text-gray-100"
                 >
                   <span>{isLastStep ? "Finish" : "Next"}</span>

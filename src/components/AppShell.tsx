@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
-import {
-  MobileFloatingActionButton,
-  type MobileFloatingAction,
-} from "./MobileFloatingActionButton";
+import { Plus } from "lucide-react";
+import { Button } from "./ui";
+
+type MobileFloatingAction = {
+  label: string;
+  onClick: () => void;
+};
 
 interface AppShellProps {
   children: ReactNode;
@@ -17,18 +20,19 @@ export function AppShell({
 }: AppShellProps) {
   return (
     <div className="min-h-screen bg-background text-wfrp-page-text font-sans selection:bg-wfrp-gold/40 flex flex-col">
-      <div className="h-1 bg-wfrp-red w-full flex-shrink-0" />
-
       <div className="flex flex-1 overflow-hidden relative">
         <main className="flex-1 overflow-y-auto p-0">
           {children}
         </main>
 
         {mobileAddAction && (
-          <MobileFloatingActionButton
+          <Button
+            variant="fab"
             onClick={mobileAddAction.onClick}
-            label={mobileAddAction.label}
-          />
+            aria-label={mobileAddAction.label}
+          >
+            <Plus aria-hidden="true" className="h-7 w-7" />
+          </Button>
         )}
 
         {sidebars}

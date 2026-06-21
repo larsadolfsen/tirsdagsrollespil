@@ -1,7 +1,7 @@
 import { GripVertical, Minus, Plus } from "lucide-react";
 import { useEffect, useState, type DragEvent as ReactDragEvent, type MouseEvent as ReactMouseEvent, type RefObject } from "react";
 import { useMobileMainViewSwipeHandlers } from "../components/MobileMainViewSwipeContext";
-import { InlineSubtabs, WfrpStandardBtn } from "../components/ui";
+import { Button, InlineSubtabs } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -370,11 +370,10 @@ export function InventoryTab({
         activeId={activeInventorySubtab}
         onChange={setActiveInventorySubtab}
         trailingContent={
-          <WfrpStandardBtn
+          <Button
+            variant="secondary"
             onClick={openShop}
             name="Add Inventory"
-            variant="action"
-            size="sm"
             hideOnMobile
             aria-label="Add Inventory"
           />

@@ -1,4 +1,4 @@
-import { InlineSubtabs, SubtabContentFrame, WfrpStandardBtn } from "../components/ui";
+import { Button, InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -67,11 +67,10 @@ export function SkillsTab({
               onChange={setActiveSkillSubtab}
             />
           </div>
-          <WfrpStandardBtn
+          <Button
+            variant="secondary"
             onClick={onOpenAdvance}
             name="Add Skill"
-            variant="action"
-            size="sm"
             hideOnMobile
             aria-label="Open skill sidebar"
             className="mr-2 sm:mr-3 lg:mr-4"

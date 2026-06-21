@@ -6,7 +6,7 @@ export const mainTabButtonBaseClassName =
 
 export const mainTabButtonActiveClassName = "text-white";
 export const mainTabButtonInactiveClassName = "text-[var(--color-wfrp-muted-text)] hover:text-white";
-export const mainTabUnderlineClassName = "absolute bottom-0 left-0 right-0 h-0.5 bg-wfrp-gold/70";
+export const mainTabUnderlineClassName = "absolute bottom-0 left-0 right-0 h-0.5 bg-white";
 
 export const inlineSubtabButtonBaseClassName =
   "group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 text-[11px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50";

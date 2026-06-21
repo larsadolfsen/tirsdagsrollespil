@@ -1,4 +1,4 @@
-import { Button, Input, SubtabActionButton, Textarea } from "../components/ui";
+import { Button, Input, Textarea } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -112,17 +112,17 @@ export function NotesTab({
               aria-label="New note text"
             />
             <div className="flex flex-wrap justify-start gap-3">
-              <SubtabActionButton
+              <Button variant="subtabAction"
                 onClick={addNote}
                 disabled={!newNoteTitle.trim() || !newNoteText.trim()}
               >
                 {editingNoteId ? "Update Note" : "Save"}
-              </SubtabActionButton>
-              <SubtabActionButton
+              </Button>
+              <Button variant="subtabAction"
                 onClick={cancelNoteComposer}
               >
                 Cancel
-              </SubtabActionButton>
+              </Button>
             </div>
           </div>
 
@@ -213,33 +213,31 @@ export function NotesTab({
                       aria-label="Edit note text"
                     />
                     <div className="-mt-1 flex flex-wrap justify-start gap-3">
-                      <SubtabActionButton onClick={cancelNoteComposer}>
+                      <Button variant="subtabAction" onClick={cancelNoteComposer}>
                         Cancel
-                      </SubtabActionButton>
-                      <SubtabActionButton
+                      </Button>
+                      <Button variant="subtabAction"
                         onClick={addNote}
                         disabled={!newNoteTitle.trim() || !newNoteText.trim()}
                       >
                         Save
-                      </SubtabActionButton>
+                      </Button>
                     </div>
                   </div>
                 ) : (
                   <div className="flex flex-wrap items-center gap-2">
-                    <SubtabActionButton
+                    <Button variant="subtabAction"
                       onClick={() => editNote(note)}
-                      className="h-8"
                       aria-label={`Edit note from ${formatNoteDate(note.createdAt)}`}
                     >
                       Edit
-                    </SubtabActionButton>
-                    <SubtabActionButton
+                    </Button>
+                    <Button variant="subtabAction"
                       onClick={() => deleteNote(note.id)}
-                      className="h-8"
                       aria-label={`Delete note from ${formatNoteDate(note.createdAt)}`}
                     >
                       Delete
-                    </SubtabActionButton>
+                    </Button>
                   </div>
                 )}
               </SheetDataAccordionDetails>

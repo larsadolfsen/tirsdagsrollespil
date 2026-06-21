@@ -6,6 +6,7 @@ import { WfrpStandardIcon } from "./ui";
 interface CharacterSheetFrameProps {
   children: ReactNode;
   desktopHeader: ReactNode;
+  hideMobileNavigation?: boolean;
   mobileHeader: ReactNode;
   onMobileNextView: () => void;
   onMobilePreviousView: () => void;
@@ -15,16 +16,28 @@ interface CharacterSheetFrameProps {
 
 function MobileTitlePager({
   action,
+  hideNavigation = false,
   onNext,
   onPrevious,
   title,
 }: {
   action?: ReactNode;
+  hideNavigation?: boolean;
   onNext: () => void;
   onPrevious: () => void;
   title: string;
 }) {
   const swipeHandlers = useHorizontalSwipePager({ onNext, onPrevious });
+
+  if (hideNavigation) {
+    return (
+      <div className="md:hidden">
+        <h1 className="min-w-0 text-center font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
+          {title}
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -55,6 +68,7 @@ function MobileTitlePager({
 export function CharacterSheetFrame({
   children,
   desktopHeader,
+  hideMobileNavigation = false,
   mobileHeader,
   onMobileNextView,
   onMobilePreviousView,
@@ -77,6 +91,7 @@ export function CharacterSheetFrame({
       <div className="mx-auto flex w-full max-w-[1199px] flex-col gap-4 px-4 py-4 md:gap-8">
         <MobileTitlePager
           action={mobileTitleAction}
+          hideNavigation={hideMobileNavigation}
           onNext={onMobileNextView}
           onPrevious={onMobilePreviousView}
           title={mobileTitle}
@@ -84,7 +99,7 @@ export function CharacterSheetFrame({
 
         <div
           className="flex min-h-[calc(100dvh-9rem)] flex-col md:contents"
-          {...mobileContentSwipeHandlers}
+          {...(hideMobileNavigation ? {} : mobileContentSwipeHandlers)}
         >
           {children}
         </div>

@@ -1,18 +1,18 @@
 import { type ChangeEvent, type ReactNode, useEffect, useRef, useState } from "react";
-import { ArrowUpFromLine, Check, Dice5, Plus, Settings, Users, X } from "lucide-react";
+import { ArrowUpFromLine, Check, Dice5, X } from "lucide-react";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
-import type { CharacterSummary } from "../data/repository";
 import { useGameSessionContext } from "../context/GameSessionContext";
 import {
-  WfrpDropdownMenuContent,
-  WfrpDropdownMenuGroup,
-  WfrpDropdownMenuItem,
-  WfrpDropdownMenuLabel,
-  WfrpDropdownMenuSeparator,
   WfrpStandardIcon,
+  MainTabMenu,
 } from "./ui";
 
 const portraitSize = 256;
+
+const characterMenuOptions = [
+  { id: "sheet", label: "Character Sheet" },
+  { id: "edit", label: "Edit Character" },
+] as const;
 
 const readFileAsDataUrl = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -72,68 +72,31 @@ const optimizePortraitFile = async (file: File) => {
 };
 
 export function CharacterHeader({
+  activeMenuItem,
   characterData,
-  availableCharacters,
-  selectedCharacterId,
   xpCurrent,
   headerResources,
-  onSelectCharacter,
-  onCreateCharacter,
+  onOpenCharacterSheet,
   onOpenDice,
   onOpenAdvance,
   onOpenXpDialog,
 }: {
+  activeMenuItem: "sheet" | "edit" | "experience" | "dice";
   characterData: ResolvedCharacterRecord;
-  availableCharacters: CharacterSummary[];
-  selectedCharacterId: string;
   xpCurrent: number;
   headerResources?: ReactNode;
-  onSelectCharacter: (characterId: string) => void;
-  onCreateCharacter: () => void;
+  onOpenCharacterSheet: () => void;
   onOpenDice: () => void;
   onOpenAdvance: () => void;
   onOpenXpDialog: () => void;
 }) {
   const { portraitDataUrl, setCharacterName, setPortraitDataUrl } = useGameSessionContext();
-  const [isCampaignMenuOpen, setIsCampaignMenuOpen] = useState(false);
-  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [draftName, setDraftName] = useState(characterData.name);
   const [portraitError, setPortraitError] = useState<string | null>(null);
-  const campaignMenuRef = useRef<HTMLDivElement>(null);
-  const settingsMenuRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const portraitInputRef = useRef<HTMLInputElement>(null);
   const portraitSrc = portraitDataUrl;
-
-  useEffect(() => {
-    if (!isCampaignMenuOpen && !isSettingsMenuOpen) return;
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (isCampaignMenuOpen && !campaignMenuRef.current?.contains(event.target as Node)) {
-        setIsCampaignMenuOpen(false);
-      }
-
-      if (isSettingsMenuOpen && !settingsMenuRef.current?.contains(event.target as Node)) {
-        setIsSettingsMenuOpen(false);
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsCampaignMenuOpen(false);
-        setIsSettingsMenuOpen(false);
-      }
-    };
-
-    window.addEventListener("mousedown", handlePointerDown);
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      window.removeEventListener("mousedown", handlePointerDown);
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [isCampaignMenuOpen, isSettingsMenuOpen]);
 
   useEffect(() => {
     if (!isEditingName) {
@@ -187,7 +150,7 @@ export function CharacterHeader({
   };
 
   return (
-    <section className="flex h-14 max-h-14 items-center gap-4 overflow-visible rounded-t border-b border-wfrp-border bg-sidebar px-3 py-1">
+    <section className="flex h-14 max-h-14 items-center gap-4 overflow-visible rounded-t border-b border-t-4 border-wfrp-border border-t-wfrp-red bg-sidebar px-3 py-1">
       <div className="flex min-w-0 items-center gap-2 sm:contents">
         <div className="relative order-3 max-h-12 flex-shrink-0 sm:order-none">
           <input
@@ -285,9 +248,6 @@ export function CharacterHeader({
             </button>
           )}
           <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[9px] font-bold uppercase text-wfrp-muted-text sm:text-[10px]">
-            {characterData.race} {characterData.career} 1
-          </div>
-          <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[9px] font-bold uppercase text-wfrp-muted-text sm:text-[10px]">
             XP {xpCurrent}/{characterData.xpTotal}
           </div>
           {portraitError ? (
@@ -306,103 +266,30 @@ export function CharacterHeader({
           </div>
         )}
 
-        <div className="flex max-h-12 items-center gap-1 transition-colors">
-          <div className="hidden items-center gap-1 sm:flex">
-            <WfrpStandardIcon
-              onClick={onOpenXpDialog}
-              desktopLabel="XP"
-              label={`Upgrade character (${xpCurrent}/${characterData.xpTotal} XP)`}
-              title={`Upgrade (${xpCurrent}/${characterData.xpTotal} XP)`}
-              icon={<ArrowUpFromLine />}
-            />
-            <div className="relative" ref={campaignMenuRef}>
-              <WfrpStandardIcon
-                onClick={() => setIsCampaignMenuOpen((prev) => !prev)}
-                className={isCampaignMenuOpen ? "text-wfrp-gold" : undefined}
-                desktopLabel="Group"
-                label="Open character selection"
-                aria-haspopup="menu"
-                aria-expanded={isCampaignMenuOpen}
-                title="Characters"
-                icon={<Users />}
-              />
-
-              {isCampaignMenuOpen && (
-                <WfrpDropdownMenuContent
-                  align="end"
-                  className="min-w-[240px]"
-                  aria-label="Character selection"
-                >
-                  <WfrpDropdownMenuLabel>Characters</WfrpDropdownMenuLabel>
-                  <WfrpDropdownMenuGroup>
-                    {availableCharacters.map((character) => {
-                      const isSelected = character.id === selectedCharacterId;
-
-                      return (
-                        <WfrpDropdownMenuItem
-                          key={character.id}
-                          onClick={() => {
-                            onSelectCharacter(character.id);
-                            setIsCampaignMenuOpen(false);
-                          }}
-                          active={isSelected}
-                          role="menuitemradio"
-                          aria-checked={isSelected}
-                          trailingIcon={isSelected ? <Check size={12} /> : null}
-                        >
-                          {character.name}
-                        </WfrpDropdownMenuItem>
-                      );
-                    })}
-                  </WfrpDropdownMenuGroup>
-                  <WfrpDropdownMenuSeparator />
-                  <WfrpDropdownMenuGroup>
-                    <WfrpDropdownMenuItem
-                      onClick={() => {
-                        onCreateCharacter();
-                        setIsCampaignMenuOpen(false);
-                      }}
-                      leadingIcon={<Plus size={12} />}
-                    >
-                      Create a new one
-                    </WfrpDropdownMenuItem>
-                  </WfrpDropdownMenuGroup>
-                </WfrpDropdownMenuContent>
-              )}
-            </div>
-            <WfrpStandardIcon
-              onClick={onOpenDice}
-              desktopLabel="Dice log"
-              label="Toggle tactical navigation dice"
-              icon={<Dice5 />}
-            />
-            <div className="h-4 w-[1px] bg-wfrp-border opacity-50" />
-            <div className="relative" ref={settingsMenuRef}>
-              <WfrpStandardIcon
-                onClick={() => setIsSettingsMenuOpen((isOpen) => !isOpen)}
-                desktopLabel="Settings"
-                label="Settings"
-                aria-haspopup="menu"
-                aria-expanded={isSettingsMenuOpen}
-                icon={<Settings />}
-              />
-              {isSettingsMenuOpen && (
-                <WfrpDropdownMenuContent
-                  align="end"
-                  aria-label="Settings"
-                >
-                  <WfrpDropdownMenuItem
-                    onClick={() => {
-                      onOpenAdvance();
-                      setIsSettingsMenuOpen(false);
-                    }}
-                  >
-                    Edit Character
-                  </WfrpDropdownMenuItem>
-                </WfrpDropdownMenuContent>
-              )}
-            </div>
-          </div>
+        <div className="hidden h-12 items-stretch sm:flex">
+          <MainTabMenu<"sheet" | "edit" | "experience" | "dice">
+            activeId={activeMenuItem}
+            ariaLabel="Character menu"
+            options={characterMenuOptions}
+            onChange={(item) => {
+              if (item === "sheet") onOpenCharacterSheet();
+              if (item === "edit") onOpenAdvance();
+            }}
+          />
+          <WfrpStandardIcon
+            label="Gain Experience"
+            icon={<ArrowUpFromLine />}
+            onClick={onOpenXpDialog}
+            aria-current={activeMenuItem === "experience" ? "page" : undefined}
+            className={activeMenuItem === "experience" ? "text-white" : undefined}
+          />
+          <WfrpStandardIcon
+            label="Dice Log"
+            icon={<Dice5 />}
+            onClick={onOpenDice}
+            aria-current={activeMenuItem === "dice" ? "page" : undefined}
+            className={activeMenuItem === "dice" ? "text-white" : undefined}
+          />
         </div>
       </div>
     </section>

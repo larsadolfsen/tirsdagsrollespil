@@ -1,4 +1,4 @@
-import { InlineSubtabs, SubtabActionButton, SubtabContentFrame, WfrpStandardBtn } from "../components/ui";
+import { Button, InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
@@ -55,11 +55,10 @@ export function SpellsTab({
           activeId={activeSpellSubtab}
           onChange={setActiveSpellSubtab}
           trailingContent={
-            <WfrpStandardBtn
+            <Button
+              variant="secondary"
               onClick={openSpellShop}
               name={`Add ${entryPluralLabel}`}
-              variant="action"
-              size="sm"
               hideOnMobile
               aria-label={`Add ${entryPluralLabel.toLowerCase()}`}
             />
@@ -133,12 +132,12 @@ export function SpellsTab({
                   ]}
                 >
                   <div className="pt-2">
-                    <SubtabActionButton
+                    <Button variant="subtabAction"
                       onClick={() => onRemoveSpell(spell.id)}
                       aria-label={`Remove ${spell.name}`}
                     >
                       Remove
-                    </SubtabActionButton>
+                    </Button>
                   </div>
                 </SheetDataAccordionDetails>
               </SheetDataAccordionRow>

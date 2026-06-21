@@ -30,7 +30,7 @@ export function MobileCharacterHeader({
   const { portraitDataUrl } = useGameSessionContext();
 
   return (
-    <section className="h-14 border-b border-wfrp-border bg-wfrp-surface py-1 shadow-lg shadow-black/20 md:hidden">
+    <section className="h-14 border-b border-t-4 border-wfrp-border border-t-wfrp-red bg-wfrp-surface py-1 shadow-lg shadow-black/20 md:hidden">
       <div className="flex h-full max-h-12 items-center">
         <div className="relative ml-3 shrink-0">
           <button
@@ -77,10 +77,10 @@ export function MobileCharacterHeader({
                 type="button"
                 onClick={onOpenXpDialog}
                 className="flex w-full items-center justify-between gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                aria-label={`Add XP (${xpCurrent}/${xpTotal})`}
+                aria-label={`Gain Experience (${xpCurrent}/${xpTotal} XP)`}
                 role="menuitem"
               >
-                <span>Add XP</span>
+                <span>Gain Experience</span>
                 <ArrowUpFromLine size={14} aria-hidden="true" />
               </button>
               <button

@@ -10,42 +10,39 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-  WfrpStandardBtn,
+  Button,
 } from "./ui";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
-import type { CharacterSummary } from "../data/repository";
 import { UI_LABELS } from "../labels";
 
 type CharacterSheetHeaderProps = {
-  availableCharacters: CharacterSummary[];
+  activeMenuItem: "sheet" | "edit" | "dice";
   characterData: ResolvedCharacterRecord;
   isMobilePortraitMenuOpen: boolean;
   onCloseMobilePortraitMenu: () => void;
-  onCreateCharacter: () => void;
+  onOpenCharacterSheet: () => void;
   onOpenAdvance: () => void;
   onOpenDice: () => void;
   onOpenMobileCharacterActions: () => void;
+  onOpenMobileGainExperience: () => void;
   onOpenMobileMenu: () => void;
-  onSelectCharacter: (characterId: string) => void;
   onAwardXp: (amount: number) => void;
-  selectedCharacterId: string;
   variant: "desktop" | "mobile";
   xpCurrent: number;
 };
 
 export function CharacterSheetHeader({
-  availableCharacters,
+  activeMenuItem,
   characterData,
   isMobilePortraitMenuOpen,
   onCloseMobilePortraitMenu,
-  onCreateCharacter,
+  onOpenCharacterSheet,
   onOpenAdvance,
   onOpenDice,
   onOpenMobileCharacterActions,
+  onOpenMobileGainExperience,
   onOpenMobileMenu,
-  onSelectCharacter,
   onAwardXp,
-  selectedCharacterId,
   variant,
   xpCurrent,
 }: CharacterSheetHeaderProps) {
@@ -78,18 +75,16 @@ export function CharacterSheetHeader({
         onOpenAdvance={onOpenAdvance}
         onOpenCharacterActions={onOpenMobileCharacterActions}
         onOpenMenu={onOpenMobileMenu}
-        onOpenXpDialog={openXpDialog}
+        onOpenXpDialog={onOpenMobileGainExperience}
         xpCurrent={xpCurrent}
         xpTotal={characterData.xpTotal}
       />
   ) : (
     <CharacterHeader
+      activeMenuItem={isXpDialogOpen ? "experience" : activeMenuItem}
       characterData={characterData}
-      availableCharacters={availableCharacters}
-      selectedCharacterId={selectedCharacterId}
       xpCurrent={xpCurrent}
-      onSelectCharacter={onSelectCharacter}
-      onCreateCharacter={onCreateCharacter}
+      onOpenCharacterSheet={onOpenCharacterSheet}
       onOpenDice={onOpenDice}
       onOpenAdvance={onOpenAdvance}
       onOpenXpDialog={openXpDialog}
@@ -130,19 +125,17 @@ export function CharacterSheetHeader({
             </div>
 
             <DialogFooter>
-              <WfrpStandardBtn
+              <Button
                 type="button"
                 name="Cancel"
                 onClick={() => setIsXpDialogOpen(false)}
-                className="wfrp-roll-cta"
                 leadingIcon={<X size={14} />}
               />
-              <WfrpStandardBtn
+              <Button
                 type="submit"
                 name="Add XP"
                 disabled={xpGainAmount <= 0}
                 isGolden={xpGainAmount > 0}
-                className="wfrp-roll-cta"
               />
             </DialogFooter>
           </form>

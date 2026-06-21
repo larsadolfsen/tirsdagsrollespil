@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/src/lib/utils";
-import { SubtabActionButton } from "../ui/SubtabActionButton";
+import { Button } from "../ui";
 
 export type SidebarListItem = {
   actions?: Array<{
@@ -76,7 +76,7 @@ export function SidebarItemList({
             <button
               type="button"
               className={cn(
-                "flex w-full cursor-pointer justify-between gap-3 px-4 text-left text-sm font-semibold leading-6 text-wfrp-muted-text transition-colors hover:bg-transparent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50",
+                "flex w-full cursor-pointer justify-between gap-3 px-4 text-left text-sm font-semibold leading-6 text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
                 isOpen ? "min-h-10 items-start pb-1 pt-3" : "min-h-12 items-center py-2",
               )}
               aria-expanded={isOpen}
@@ -134,7 +134,7 @@ export function SidebarItemList({
                 {item.actions?.length ? (
                   <div className="mt-0 flex flex-wrap gap-2">
                     {item.actions.map((action) => (
-                      <SubtabActionButton
+                      <Button variant="subtabAction"
                         key={String(action.label)}
                         className={action.className}
                         disabled={action.disabled}
@@ -142,7 +142,7 @@ export function SidebarItemList({
                         onClick={action.onClick}
                       >
                         {action.label}
-                      </SubtabActionButton>
+                      </Button>
                     ))}
                   </div>
                 ) : null}

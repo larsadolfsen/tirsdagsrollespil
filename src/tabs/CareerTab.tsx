@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { Minus, Plus, Search } from "lucide-react";
-import { AdvancementSection, InlineSubtabs, WfrpStandardBtn, SubtabContentFrame } from "../components/ui";
+import { AdvancementSection, Button, InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import type { ActiveInfoState } from "../components/appTypes";
 import {
   SheetDataAccordionDetails,
@@ -82,8 +82,7 @@ interface CareerTabProps {
   pendingTotalXpAdjustment: number;
   setPendingXpAdjustment: Dispatch<SetStateAction<number>>;
   setPendingTotalXpAdjustment: Dispatch<SetStateAction<number>>;
-  nextCareerRankRecord: ResolvedCharacterRecord["careerRecord"]["ranks"][number] | null;
-  increasePendingCareerRank: () => void;
+  updateCareerTier: (tier: number) => void;
   advancementCharacteristics: AdvancementCharacteristic[];
   getCharacteristicLabel: (key: string) => string;
   updateCharacteristicInitial: (characteristicKey: string, initialValue: number) => void;
@@ -172,8 +171,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
   pendingTotalXpAdjustment,
   setPendingXpAdjustment,
   setPendingTotalXpAdjustment,
-  nextCareerRankRecord,
-  increasePendingCareerRank,
+  updateCareerTier,
   advancementCharacteristics,
   getCharacteristicLabel,
   updateCharacteristicInitial,
@@ -399,9 +397,17 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
     setListSearch("");
   }, [activeCareerSubtab]);
   const hasAdvancementDraftChanges =
-    Object.keys(characteristicInitialDrafts).length > 0 ||
-    Object.keys(characteristicAdvanceDrafts).length > 0 ||
-    Object.keys(skillAdvanceDrafts).length > 0;
+    Object.entries(characteristicInitialDrafts).some(([key, value]) =>
+      value !== advancementCharacteristics.find((item) => item.key === key)?.initial
+    ) ||
+    Object.entries(characteristicAdvanceDrafts).some(([key, value]) =>
+      value !== advancementCharacteristics.find((item) => item.key === key)?.advances
+    ) ||
+    Object.entries(skillAdvanceDrafts).some(([skillName, value]) =>
+      value !== advancementSkillSections
+        .flatMap((section) => section.skills)
+        .find((skill) => skill.skillName === skillName)?.baseAdvances
+    );
   const clearAdvancementDrafts = () => {
     setCharacteristicInitialDrafts({});
     setCharacteristicAdvanceDrafts({});
@@ -470,11 +476,11 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                 className="h-7 min-w-0 flex-1 appearance-none rounded-lg border border-white/10 bg-black/30 px-3 text-xs text-white outline-none transition focus:border-wfrp-gold/60 focus:ring-1 focus:ring-wfrp-gold/40"
                 aria-label="Search edit character list"
               />
-              <WfrpStandardBtn
+              <Button
                 type="submit"
                 name="Search"
                 leadingIcon={<Search size={15} />}
-                className="wfrp-roll-cta shrink-0"
+                className="shrink-0"
                 aria-label="Search"
               />
             </form>
@@ -555,30 +561,58 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
               sectionLabel="Career"
               valueLabels={[
                 { className: "hidden md:block", label: "Class" },
-                { align: "right", label: "Advance" },
+                { align: "center", label: "Tier" },
                 { align: "center", label: "More" },
               ]}
             >
                 {filteredCareerRows.map((careerRow) => {
                   const isActiveCareerRow = careerRow.careerName === characterData.career;
                   const currentTier = careerRow.tiers.find((tier) => tier.rank === displayedCareerRank) ?? null;
-                  const advanceAction = isActiveCareerRow ? (
-                    <button
-                      onClick={(event) => {
-                        event.preventDefault();
-                        increasePendingCareerRank();
-                      }}
-                      disabled={!nextCareerRankRecord}
-                      className="wfrp-stepper-btn"
-                      aria-label={`Advance ${careerRow.careerName} from rank ${displayedCareerRank}`}
-                      title="Advance career"
-                    >
-                      <span className="wfrp-stepper-btn__inner">
-                        <Plus size={12} />
-                      </span>
-                    </button>
+                  const minimumTier = Math.min(...careerRow.tiers.map((tier) => tier.rank));
+                  const maximumTier = Math.max(...careerRow.tiers.map((tier) => tier.rank));
+                  const tierControl = isActiveCareerRow ? (
+                    <div className="flex items-center justify-center gap-1">
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          updateCareerTier(displayedCareerRank - 1);
+                        }}
+                        disabled={displayedCareerRank <= minimumTier}
+                        className="wfrp-stepper-btn focus-visible:ring-wfrp-red/50"
+                        aria-label={`Decrease tier for ${careerRow.careerName}`}
+                      >
+                        <span className="wfrp-stepper-btn__inner">
+                          <Minus size={10} />
+                        </span>
+                      </button>
+                      <input
+                        type="number"
+                        min={minimumTier}
+                        max={maximumTier}
+                        value={displayedCareerRank}
+                        onClick={(event) => event.stopPropagation()}
+                        onChange={(event) => updateCareerTier(parseDraftNumber(event.target.value))}
+                        className="h-6 w-11 rounded border border-white/10 bg-black/40 px-1 text-center font-mono text-[11px] text-white"
+                        aria-label={`Tier for ${careerRow.careerName}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          updateCareerTier(displayedCareerRank + 1);
+                        }}
+                        disabled={displayedCareerRank >= maximumTier}
+                        className="wfrp-stepper-btn focus-visible:ring-green-600/50"
+                        aria-label={`Increase tier for ${careerRow.careerName}`}
+                      >
+                        <span className="wfrp-stepper-btn__inner">
+                          <Plus size={12} />
+                        </span>
+                      </button>
+                    </div>
                   ) : (
-                    <span className="wfrp-list-cell text-right" aria-label="Read-only career rank">
+                    <span className="wfrp-list-cell text-center" aria-label="Career not selected">
                       -
                     </span>
                   );
@@ -591,7 +625,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       summary={(
                         <>
                           <div className={`min-w-0 ${advanceRowTitleClass}`}>
-                            <WfrpStandardBtn
+                            <Button variant="unstyled"
                               onClick={(event) => {
                                 event.preventDefault();
                                 setActiveInfo({
@@ -618,7 +652,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                           <div className="hidden wfrp-list-cell-strong min-w-0 truncate text-left md:block">
                             {formatCareerClass(careerRow.classId)}
                           </div>
-                          <div className="flex justify-end">{advanceAction}</div>
+                          <div className="flex justify-center">{tierControl}</div>
                           <SheetDataDisclosureCell />
                         </>
                       )}
@@ -731,7 +765,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
-                          <WfrpStandardBtn
+                          <Button variant="unstyled"
                             type="button"
                             onClick={(event) => {
                               event.preventDefault();
@@ -865,7 +899,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                             contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                             summary={(
                               <>
-                              <WfrpStandardBtn
+                              <Button variant="unstyled"
                                 type="button"
                                 onClick={(event) => {
                                   event.preventDefault();
@@ -978,7 +1012,7 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
-                        <WfrpStandardBtn
+                        <Button variant="unstyled"
                           type="button"
                           onClick={(event) => {
                             event.preventDefault();

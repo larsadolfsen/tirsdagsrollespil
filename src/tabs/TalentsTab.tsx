@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SubtabActionButton, SubtabContentFrame, WfrpStandardBtn } from "../components/ui";
+import { Button, SubtabContentFrame } from "../components/ui";
 import { InlineSubtabs } from "../components/ui/InlineSubtabs";
 import {
   SheetDataAccordionDetails,
@@ -63,11 +63,10 @@ export function TalentsTab({
           onChange={setActiveTalentSourceSubtab}
           ariaLabel="Talent source tabs"
           trailingContent={(
-            <WfrpStandardBtn
+            <Button
+              variant="secondary"
               onClick={onOpenTalentSidebar}
               name="Add"
-              variant="action"
-              size="sm"
               hideOnMobile
               aria-label="Open talent sidebar"
             />
@@ -121,12 +120,12 @@ export function TalentsTab({
                     ]}
                   >
                     <div className="pt-2">
-                      <SubtabActionButton
+                      <Button variant="subtabAction"
                         onClick={() => onRemoveTalent(talent.name)}
                         aria-label={`Remove ${talent.name}`}
                       >
                         Remove
-                      </SubtabActionButton>
+                      </Button>
                     </div>
                   </SheetDataAccordionDetails>
                 </SheetDataAccordionRow>

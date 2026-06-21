@@ -147,9 +147,9 @@ export function AppSidebar({
                     {eyebrow}
                   </div>
                 ) : null}
-                <p id={titleId} className="truncate font-serif text-base font-semibold text-white">
+                <h2 id={titleId} className="truncate font-serif text-xl font-bold leading-tight tracking-tight text-gray-100">
                   {title}
-                </p>
+                </h2>
               </div>
               <WfrpStandardIcon
                 onClick={onClose}
