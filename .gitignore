@@ -16,3 +16,9 @@ data/**/*.sqlite-*
 *.log
 .env*
 !.env.example
+
+# Ignore all character data directories and files
+# Keep per-character directories and saved files out of the repo
+data/characters/
+data/character-notes/
+data/character-status/
