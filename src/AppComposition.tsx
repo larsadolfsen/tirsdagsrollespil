@@ -41,7 +41,6 @@ import {
   isBackpackContainerItem,
 } from "./tabs/inventory/inventoryUtils";
 import { filterSpellDefinitionsForMode } from "./tabs/spells/spellUtils";
-import { useSpellsViewModel } from "./tabs/spells/useSpellsViewModel";
 import {
   getCharacterTalentRows,
   getTalentMaxDisplay as getTalentMaxDisplayValue,
@@ -400,9 +399,6 @@ export function AppComposition() {
     containers,
     encumbrancePercent,
     equippedArmourNames,
-    formatSpellDuration,
-    formatSpellRange,
-    formatSpellTarget,
     formattedCoins,
     getArmourFitConflicts,
     getContainerContents,
@@ -471,27 +467,6 @@ export function AppComposition() {
     () => new Set(availableCharacterSpells.map((spell) => spell.id)),
     [availableCharacterSpells],
   );
-  const {
-    openSpellShop,
-    spellRows,
-    spellSubtabOptions,
-  } = useSpellsViewModel({
-    activeSpellSubtab,
-    attributes,
-    characterSkills,
-    formatSpellDuration,
-    formatSpellRange,
-    formatSpellTarget,
-    isPrayerMode: isPrayerCaster,
-    setIsSpellShopOpen,
-    spells: availableCharacterSpells,
-  });
-
-  useEffect(() => {
-    if (!spellSubtabOptions.some((option) => option.id === activeSpellSubtab)) {
-      setActiveSpellSubtab("all");
-    }
-  }, [activeSpellSubtab, setActiveSpellSubtab, spellSubtabOptions]);
 
   const {
     restoreRouteForCharacter,
@@ -1720,14 +1695,15 @@ export function AppComposition() {
 
                       {activeMainTab === 'spells' && (
                         <SpellsTab
-                        spellSubtabOptions={spellSubtabOptions}
                         activeSpellSubtab={activeSpellSubtab}
+                        attributes={attributes}
+                        characterData={characterData}
+                        characterSkills={characterSkills}
                         setActiveSpellSubtab={setActiveSpellSubtab}
-                        spellRows={spellRows}
                         handleRoll={handleRoll}
                         isPrayerMode={isPrayerCaster}
                         onRemoveSpell={removeSpell}
-                        openSpellShop={openSpellShop}
+                        setIsSpellShopOpen={setIsSpellShopOpen}
                       />
                       )}
                       {activeMainTab === 'inventory' && (
