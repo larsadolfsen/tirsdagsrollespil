@@ -420,7 +420,7 @@ export function DiceLogSidebar({
             )}
 
             {!rollState.isRolling && rollState.result === null && (
-              <Button onClick={executeRoll} className="w-fit" name="Roll" />
+              <Button onClick={executeRoll} name="Roll" />
             )}
 
             {!rollState.isRolling && rollState.result !== null && (
@@ -432,7 +432,6 @@ export function DiceLogSidebar({
                       onClick={handleRollCritical}
                       title="Critical action"
                       aria-label="Critical action: roll critical"
-                      className="w-fit"
                       name="Roll Critical"
                     />
                   </div>
@@ -517,7 +516,7 @@ function DigitReel({
         {repeatedReel.map((num, index) => (
           <div
             key={`${num}-${index}`}
-            className="h-8 w-8 flex items-center justify-center text-lg font-mono font-black text-wfrp-gold/80"
+            className="h-8 w-8 flex items-center justify-center text-lg font-mono font-semibold text-wfrp-gold/80"
           >
             {num}
           </div>
