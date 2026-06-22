@@ -4,6 +4,7 @@ export { InlineSubtabs } from "./InlineSubtabs";
 export { PanelSectionHeader } from "./PanelSectionHeader";
 export { ScrollableTabStrip } from "./ScrollableTabStrip";
 export { MainTabMenu } from "./MainTabMenu";
+export { BottomSheetPaper } from "./BottomSheetPaper";
 export { SubtabContentFrame } from "./SubtabContentFrame";
 export { WfrpSearchField } from "./WfrpSearchField";
 export { WfrpStandardIcon } from "./WfrpStandardIcon";
