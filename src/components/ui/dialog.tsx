@@ -140,13 +140,13 @@ export function DialogFooter({ className, ...props }: HTMLAttributes<HTMLDivElem
 export function DialogTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   const context = useDialogContext("DialogTitle");
 
-  return <h2 id={context.titleId} className={cn("font-display text-lg font-semibold leading-none tracking-wide text-foreground", className)} {...props} />;
+  return <h2 id={context.titleId} className={cn("wfrp-heading font-display tracking-wide text-foreground", className)} {...props} />;
 }
 
 export function DialogDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   const context = useDialogContext("DialogDescription");
 
-  return <p id={context.descriptionId} className={cn("text-sm text-muted-foreground", className)} {...props} />;
+  return <p id={context.descriptionId} className={cn("wfrp-text text-muted-foreground", className)} {...props} />;
 }
 
 export function DialogClose(props: HTMLAttributes<HTMLButtonElement>) {

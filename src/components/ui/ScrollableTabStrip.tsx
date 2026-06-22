@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { WfrpStandardIcon } from "./WfrpStandardIcon";
+import { WfrpArrowButton } from "./WfrpArrowButton";
 
 export function ScrollableTabStrip({
   children,
@@ -66,26 +65,20 @@ export function ScrollableTabStrip({
         {children}
       </div>
       {canScrollLeft && (
-        <>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background via-background/85 to-transparent md:w-14 md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
-          <WfrpStandardIcon
-            onClick={scrollTabsLeft}
-            className="absolute left-0 top-1/2 z-10 -translate-y-1/2 border-0 bg-gradient-to-l from-background/0 to-background text-gray-300 shadow-none hover:border-0 hover:from-background/0 hover:to-background hover:text-white focus-visible:ring-white/30 md:bg-none md:bg-wfrp-tab-control/95 md:shadow-lg md:hover:bg-wfrp-tab-control"
-            label="Show previous tabs"
-            icon={<ChevronLeft />}
-          />
-        </>
+        <WfrpArrowButton
+          direction="left"
+          label="Show previous tabs"
+          onClick={scrollTabsLeft}
+          variant="scrollOverlay"
+        />
       )}
       {canScrollRight && (
-        <>
-          <div className="pointer-events-none absolute -right-4 inset-y-0 w-16 bg-gradient-to-l from-background via-background/85 to-transparent md:right-0 md:w-14 md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
-          <WfrpStandardIcon
-            onClick={scrollTabsRight}
-            className="absolute -right-4 top-1/2 z-10 -translate-y-1/2 border-0 bg-gradient-to-r from-background/0 to-background text-gray-300 shadow-none hover:border-0 hover:from-background/0 hover:to-background hover:text-white focus-visible:ring-white/30 md:right-0 md:bg-none md:bg-wfrp-tab-control/95 md:shadow-lg md:hover:bg-wfrp-tab-control"
-            label="Show more tabs"
-            icon={<ChevronRight />}
-          />
-        </>
+        <WfrpArrowButton
+          direction="right"
+          label="Show more tabs"
+          onClick={scrollTabsRight}
+          variant="scrollOverlay"
+        />
       )}
     </div>
   );

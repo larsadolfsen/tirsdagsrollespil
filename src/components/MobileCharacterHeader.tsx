@@ -67,7 +67,7 @@ export function MobileCharacterHeader({
               <button
                 type="button"
                 onClick={onOpenAdvance}
-                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left wfrp-label text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                 role="menuitem"
               >
                 <span>Edit Character</span>
@@ -76,7 +76,7 @@ export function MobileCharacterHeader({
               <button
                 type="button"
                 onClick={onOpenXpDialog}
-                className="flex w-full items-center justify-between gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                className="flex w-full items-center justify-between gap-3 border-t border-white/5 px-4 py-3 text-left wfrp-label text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                 aria-label={`Gain Experience (${xpCurrent}/${xpTotal} XP)`}
                 role="menuitem"
               >
@@ -86,7 +86,7 @@ export function MobileCharacterHeader({
               <button
                 type="button"
                 onClick={onClosePortraitMenu}
-                className="flex w-full items-center gap-3 border-t border-white/5 px-4 py-3 text-left text-[11px] font-black uppercase tracking-widest text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                className="flex w-full items-center gap-3 border-t border-white/5 px-4 py-3 text-left wfrp-label text-gray-300 transition-colors hover:bg-wfrp-surface-raised hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
                 role="menuitem"
               >
                 <Settings size={14} />
@@ -97,10 +97,10 @@ export function MobileCharacterHeader({
         </div>
         <div className="ml-3 flex max-h-12 min-w-0 flex-1 items-center gap-3 text-left">
           <span className="min-w-0">
-            <span className="block truncate font-serif text-xl font-bold leading-tight text-gray-100">
+            <span className="block truncate font-serif text-xl font-semibold leading-tight text-gray-100">
               {characterName}
             </span>
-            <span className="mt-0.5 block truncate text-[9px] font-black uppercase tracking-[0.22em] text-wfrp-muted-text">
+            <span className="mt-0.5 block truncate wfrp-label tracking-[0.22em] text-wfrp-muted-text">
               {campaignName}
             </span>
           </span>

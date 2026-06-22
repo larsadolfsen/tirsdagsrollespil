@@ -53,7 +53,7 @@ export function SkillsTab({
 }) {
   return (
     <SubtabContentFrame
-      contentClassName="max-md:pb-24"
+      contentClassName="max-xl:pb-24"
       subtabBar={(
         <div className="flex w-full items-center gap-2">
           <div className="min-w-0 flex-1">
@@ -121,7 +121,7 @@ export function SkillsTab({
                       {skill.displayName}
                     </span>
 
-                    <span className="hidden min-w-0 truncate text-left text-[11px] font-bold leading-tight text-wfrp-muted-text md:block">
+                    <span className="hidden min-w-0 truncate text-left wfrp-text-strong leading-tight text-wfrp-muted-text md:block">
                       {skill.shortDescription ?? "-"}
                     </span>
 

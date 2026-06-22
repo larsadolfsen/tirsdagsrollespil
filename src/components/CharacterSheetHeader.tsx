@@ -105,7 +105,7 @@ export function CharacterSheetHeader({
             </DialogHeader>
 
             <div className="grid gap-2">
-              <label htmlFor="xp-gain-amount" className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+              <label htmlFor="xp-gain-amount" className="wfrp-label text-wfrp-muted-text">
                 XP gained
               </label>
               <Input
@@ -119,7 +119,7 @@ export function CharacterSheetHeader({
                 onChange={(event) => setXpGainDraft(event.target.value)}
                 aria-label="XP gained"
               />
-              <div className="text-xs font-semibold text-wfrp-muted-text">
+              <div className="wfrp-text-strong text-wfrp-muted-text">
                 Current: {xpCurrent}/{characterData.xpTotal}
               </div>
             </div>

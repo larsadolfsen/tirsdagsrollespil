@@ -24,7 +24,7 @@ export function WfrpSuggestionChips<TId extends string = string>({
 }: WfrpSuggestionChipsProps<TId>) {
   return (
     <div className={cn("border-b border-wfrp-border bg-[#242424] px-4 py-3", className)}>
-      <div className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+      <div className="wfrp-label text-wfrp-muted-text">
         {label}
       </div>
       <div className="flex flex-wrap gap-2">
@@ -43,7 +43,7 @@ export function WfrpSuggestionChips<TId extends string = string>({
             >
               <span
                 className={cn(
-                  "inline-flex h-6 min-w-[88px] items-center justify-start overflow-hidden rounded border-2 text-[11px] font-bold uppercase transition-colors",
+                  "inline-flex h-6 min-w-[88px] items-center justify-start overflow-hidden rounded border-2 wfrp-text-strong uppercase transition-colors",
                   isActive
                     ? "border-[#3f3f3f] bg-[#3f3f3f] pr-3 text-gray-100 group-hover:border-[#484848] group-hover:bg-[#484848]"
                     : "border-wfrp-border bg-black/15 px-3 text-wfrp-muted-text group-hover:border-wfrp-border group-hover:bg-white/8 group-hover:text-gray-100",

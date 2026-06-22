@@ -43,7 +43,7 @@ export function SidebarItemList({
 
   if (items.length === 0) {
     return (
-      <p className={cn("rounded border border-dashed border-wfrp-border bg-black/15 p-3 text-xs font-semibold text-wfrp-muted-text", className)}>
+      <p className={cn("rounded border border-dashed border-wfrp-border bg-black/15 p-3 wfrp-text-strong text-wfrp-muted-text", className)}>
         {emptyMessage}
       </p>
     );
@@ -52,7 +52,7 @@ export function SidebarItemList({
   return (
     <div className={cn("flex flex-col overflow-hidden rounded border border-wfrp-border bg-transparent pb-4", className)}>
       {title ? (
-        <div className="flex items-center gap-3 border-b border-wfrp-border bg-wfrp-table px-4 py-2 text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+        <div className="wfrp-label flex items-center gap-3 border-b border-wfrp-border bg-wfrp-table px-4 py-2 text-wfrp-muted-text">
           <span className="min-w-0 flex-1">{title}</span>
           {headerMeta ? (
             <span className="mr-[28px] shrink-0 text-right">
@@ -76,7 +76,7 @@ export function SidebarItemList({
             <button
               type="button"
               className={cn(
-                "flex w-full cursor-pointer justify-between gap-3 px-4 text-left text-sm font-semibold leading-6 text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
+                "flex w-full cursor-pointer justify-between gap-3 px-4 text-left wfrp-text-strong leading-6 text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
                 isOpen ? "min-h-10 items-start pb-1 pt-3" : "min-h-12 items-center py-2",
               )}
               aria-expanded={isOpen}
@@ -94,7 +94,7 @@ export function SidebarItemList({
                   />
                 ) : null}
                 {item.meta ? (
-                  <span className="ml-auto shrink-0 text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+                  <span className="wfrp-label ml-auto shrink-0 text-wfrp-muted-text">
                     {item.meta}
                   </span>
                 ) : null}
@@ -111,7 +111,7 @@ export function SidebarItemList({
             {isOpen ? (
               <div
                 className={cn(
-                  "px-4 pt-0 text-xs font-semibold leading-relaxed text-wfrp-muted-text",
+                  "px-4 pt-0 wfrp-text-strong text-wfrp-muted-text",
                   item.actions?.length ? "pb-0" : "pb-4",
                 )}
               >
@@ -123,7 +123,7 @@ export function SidebarItemList({
                     {item.details.map((detail) => (
                       <div
                         key={String(detail.label)}
-                        className="grid min-w-0 grid-cols-[minmax(5rem,max-content)_minmax(0,1fr)] items-baseline gap-3 text-[11px] font-bold text-wfrp-muted-text"
+                        className="grid min-w-0 grid-cols-[minmax(5rem,max-content)_minmax(0,1fr)] items-baseline gap-3 wfrp-text-strong text-wfrp-muted-text"
                       >
                         <span className="text-wfrp-muted-text">{detail.label}</span>
                         <span className="min-w-0 text-left text-wfrp-muted-text">{detail.value}</span>

@@ -55,7 +55,7 @@ export function TalentsTab({
 
   return (
     <SubtabContentFrame
-      contentClassName="max-md:pb-24"
+      contentClassName="max-xl:pb-24"
       subtabBar={(
         <InlineSubtabs
           options={talentSourceSubtabOptions}
@@ -104,7 +104,7 @@ export function TalentsTab({
                       <div className="wfrp-list-cell-strong text-center font-mono">
                         {takenDisplay}
                       </div>
-                      <div className="hidden min-w-0 truncate text-xs font-semibold leading-relaxed text-wfrp-muted-text md:block">
+                      <div className="hidden min-w-0 truncate wfrp-text-strong leading-relaxed text-wfrp-muted-text md:block">
                         {summaryRuleText}
                       </div>
                       <SheetDataDisclosureCell />

@@ -43,7 +43,7 @@ export function DigitReel({
         {repeatedReel.map((num, i) => (
           <div
             key={i}
-            className="h-16 flex items-center justify-center text-4xl font-mono font-black text-wfrp-gold/80"
+            className="h-16 flex items-center justify-center text-4xl font-mono font-semibold text-wfrp-gold/80"
           >
             {num}
           </div>

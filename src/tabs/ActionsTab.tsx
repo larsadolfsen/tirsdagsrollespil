@@ -407,7 +407,7 @@ export function ActionsTab({
                             <div className="hidden wfrp-list-cell-strong text-right md:block">{action.range}</div>
                             <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                               {action.properties.map((prop, propIndex) => (
-                                <span key={prop} className="text-xs font-semibold text-wfrp-muted-text">
+                                <span key={prop} className="wfrp-text-strong text-wfrp-muted-text">
                                   {prop}
                                   {propIndex < action.properties.length - 1 ? "," : ""}
                                 </span>
@@ -428,7 +428,7 @@ export function ActionsTab({
                           ]}
                         >
                           {action.note && rulesIndex.actionDescriptionByName[action.name] ? (
-                            <p className="text-[11px] font-bold leading-relaxed text-wfrp-muted-text">{action.note}</p>
+                            <p className="wfrp-text-strong leading-relaxed text-wfrp-muted-text">{action.note}</p>
                           ) : null}
                           {renderPropertyDetails(action.properties)}
                         </SheetDataAccordionDetails>
@@ -494,7 +494,7 @@ export function ActionsTab({
                             <div className="hidden wfrp-list-cell-strong text-right font-mono opacity-50 md:block">{rangeBands?.e ?? "-"}</div>
                             <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                               {action.properties.map((prop, propIndex) => (
-                                <span key={prop} className="text-xs font-semibold text-wfrp-muted-text">
+                                <span key={prop} className="wfrp-text-strong text-wfrp-muted-text">
                                   {prop}
                                   {propIndex < action.properties.length - 1 ? "," : ""}
                                 </span>
@@ -516,7 +516,7 @@ export function ActionsTab({
                           ]}
                         >
                           {action.note && rulesIndex.actionDescriptionByName[action.name] ? (
-                            <p className="text-[11px] font-bold leading-relaxed text-wfrp-muted-text">{action.note}</p>
+                            <p className="wfrp-text-strong leading-relaxed text-wfrp-muted-text">{action.note}</p>
                           ) : null}
                           {renderPropertyDetails(action.properties)}
                         </SheetDataAccordionDetails>
@@ -583,7 +583,7 @@ export function ActionsTab({
                           <div className="hidden wfrp-list-cell-strong text-right md:block">{action.range}</div>
                           <div className="hidden w-full flex-wrap content-start items-center justify-end gap-x-1 text-right md:flex">
                             {action.properties.map((prop, propIndex) => (
-                              <span key={prop} className="text-xs font-semibold text-wfrp-muted-text">
+                              <span key={prop} className="wfrp-text-strong text-wfrp-muted-text">
                                 {prop}
                                 {propIndex < action.properties.length - 1 ? "," : ""}
                               </span>

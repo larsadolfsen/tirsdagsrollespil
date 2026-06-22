@@ -94,6 +94,7 @@ export function JournalTab({
 
   return (
     <SubtabContentFrame
+      contentClassName="max-xl:pb-24"
       subtabBar={(
         <InlineSubtabs<JournalSubtab>
           options={journalSubtabOptions}

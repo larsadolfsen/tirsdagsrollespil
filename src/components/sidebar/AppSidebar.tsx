@@ -143,11 +143,11 @@ export function AppSidebar({
             <header className="flex h-14 max-h-14 shrink-0 items-center justify-between gap-4 border-b border-wfrp-border bg-[#242424] px-4 py-1">
               <div className="max-h-12 min-w-0">
                 {eyebrow ? (
-                  <div className="mb-1 text-[9px] font-black uppercase tracking-widest text-wfrp-gold/70">
+                  <div className="mb-1 wfrp-label text-wfrp-gold/70">
                     {eyebrow}
                   </div>
                 ) : null}
-                <h2 id={titleId} className="truncate font-serif text-xl font-bold leading-tight tracking-tight text-gray-100">
+                <h2 id={titleId} className="truncate font-serif text-xl font-semibold leading-tight tracking-tight text-gray-100">
                   {title}
                 </h2>
               </div>
@@ -185,7 +185,7 @@ export function AppSidebarSection({
   return (
     <section className={cn("rounded border border-wfrp-border bg-card p-4", className)}>
       {heading ? (
-        <h3 className="mb-3 text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+        <h3 className="mb-3 wfrp-label text-wfrp-muted-text">
           {heading}
         </h3>
       ) : null}

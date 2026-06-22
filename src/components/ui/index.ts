@@ -6,6 +6,7 @@ export { ScrollableTabStrip } from "./ScrollableTabStrip";
 export { MainTabMenu } from "./MainTabMenu";
 export { BottomSheetPaper } from "./BottomSheetPaper";
 export { SubtabContentFrame } from "./SubtabContentFrame";
+export { WfrpArrowButton } from "./WfrpArrowButton";
 export { WfrpSearchField } from "./WfrpSearchField";
 export { WfrpStandardIcon } from "./WfrpStandardIcon";
 export { WfrpDropdownMenuContent, WfrpDropdownMenuGroup, WfrpDropdownMenuItem, WfrpDropdownMenuLabel, WfrpDropdownMenuSeparator } from "./WfrpDropdownMenu";

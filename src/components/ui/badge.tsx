@@ -11,5 +11,5 @@ const variants: Record<BadgeVariant, string> = {
 
 export type BadgeProps = HTMLAttributes<HTMLDivElement> & { variant?: BadgeVariant };
 export function Badge({ className, variant = "default", ...props }: BadgeProps) {
-  return <div className={cn("inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-black uppercase tracking-widest transition-colors", variants[variant], className)} {...props} />;
+  return <div className={cn("wfrp-label inline-flex items-center rounded-md border px-2.5 py-0.5 transition-colors", variants[variant], className)} {...props} />;
 }

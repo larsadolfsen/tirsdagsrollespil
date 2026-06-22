@@ -27,7 +27,7 @@ export function WfrpDropdownMenuLabel({ className, ...props }: HTMLAttributes<HT
   return (
     <div
       className={cn(
-        "border-b border-wfrp-border-muted px-3 py-2 text-[9px] font-bold uppercase tracking-[0.24em] text-wfrp-muted-text",
+        "border-b border-wfrp-border-muted px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.24em] text-wfrp-muted-text",
         className,
       )}
       {...props}
@@ -62,7 +62,7 @@ export function WfrpDropdownMenuItem({
     <button
       type={type}
       className={cn(
-        "flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-[12px] font-bold tracking-wide text-[var(--color-wfrp-muted-text)] transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50",
+        "flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left wfrp-text-strong tracking-wide text-[var(--color-wfrp-muted-text)] transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50",
         active && "bg-[var(--color-wfrp-dice-bg)] text-white hover:text-white",
         className,
       )}

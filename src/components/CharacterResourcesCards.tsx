@@ -174,7 +174,7 @@ function CoinStepper({
       aria-label={`${isDecrease ? "Decrease" : "Increase"} ${coinName.toLowerCase()} by ${Math.abs(amount)}`}
       disabled={isDecrease && coinValue <= 0}
     >
-      <span className="wfrp-stepper-btn__inner font-mono text-[10px] font-bold leading-none">
+      <span className="wfrp-stepper-btn__inner font-mono text-[10px] font-semibold leading-none">
         {amount > 0 ? `+${amount}` : amount}
       </span>
     </button>

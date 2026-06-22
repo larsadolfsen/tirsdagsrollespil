@@ -1539,7 +1539,7 @@ export function AppComposition() {
           ) : activeMainTab === "career" ? (
             <>
               <div className="hidden items-center justify-between gap-3 md:flex">
-                <h1 className="min-w-0 truncate font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
+                <h1 className="min-w-0 truncate font-serif text-2xl font-semibold leading-tight tracking-tight text-gray-100">
                   Edit Character
                 </h1>
               </div>

@@ -248,7 +248,7 @@ export function SheetDataAccordionDetails({
   return (
     <div className={cn("flex min-w-0 max-w-full flex-col gap-2", className)}>
       <div className="min-w-0 max-w-full">
-        <div className="flex max-w-full flex-col gap-2 break-words text-[11px] font-bold leading-relaxed text-wfrp-muted-text md:max-w-3xl">
+        <div className="flex max-w-full flex-col gap-2 break-words wfrp-text-strong text-wfrp-muted-text md:max-w-3xl">
           {renderMarkedDescription(description, descriptionFallback)}
         </div>
       </div>
@@ -259,7 +259,7 @@ export function SheetDataAccordionDetails({
             <div
               key={row.label}
               className={cn(
-                "grid min-w-0 grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 text-[11px] font-bold text-wfrp-muted-text",
+                "grid min-w-0 grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 wfrp-text-strong text-wfrp-muted-text",
                 row.bordered && "border-y border-white/10 py-1",
               )}
             >
@@ -278,8 +278,8 @@ export function SheetDataAccordionDetails({
 export function SheetEmptyState({ title, children, className }: { title: string; children?: ReactNode; className?: string }) {
   return (
     <div className={cn("flex min-h-48 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-white/5 text-wfrp-muted-text", className)}>
-      <span className="text-[9px] font-black uppercase tracking-widest">{title}</span>
-      {children ? <p className="text-[10px] italic">{children}</p> : null}
+      <span className="wfrp-label">{title}</span>
+      {children ? <p className="wfrp-text italic">{children}</p> : null}
     </div>
   );
 }

@@ -57,8 +57,8 @@ export function DiceRoller({
             <div className="wfrp-sidebar-header p-3 shrink-0 sticky top-0 z-20">
               <div className="flex items-center gap-3">
                 <div>
-                  <h2 className="font-bold text-base leading-none text-gray-100">Dice Log</h2>
-                  <p className="text-[10px] text-wfrp-muted-text uppercase font-bold tracking-widest mt-1">
+                  <h2 className="font-semibold text-base leading-none text-gray-100">Dice Log</h2>
+                  <p className="wfrp-label text-wfrp-muted-text mt-1">
                     Roll & Results
                   </p>
                 </div>
@@ -104,22 +104,22 @@ export function DiceRoller({
                     animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col gap-1 px-1"
                   >
-                    <h3 className="text-sm font-bold font-serif uppercase tracking-tight text-white/50">
+                    <h3 className="wfrp-text-strong font-serif uppercase tracking-tight text-white/50">
                       {item.label} Roll
                     </h3>
-                    <div className="text-[11px] text-wfrp-muted-text font-bold">
+                    <div className="wfrp-text-strong text-wfrp-muted-text">
                       Difficulty {item.modifier >= 0 ? "+" : ""}
                       {item.modifier}
                     </div>
                     {(item.targetBonusSources ?? []).map((bonus) => (
-                      <div key={`${item.id}-${bonus.label}`} className="text-[11px] text-wfrp-muted-text font-bold">
+                      <div key={`${item.id}-${bonus.label}`} className="wfrp-text-strong text-wfrp-muted-text">
                         {bonus.label} {bonus.value >= 0 ? "+" : ""}
                         {bonus.value}
                       </div>
                     ))}
-                    <div className="text-[11px] text-wfrp-muted-text font-bold">Target: {item.target}</div>
+                    <div className="wfrp-text-strong text-wfrp-muted-text">Target: {item.target}</div>
 
-                    <div className="text-[11px] text-wfrp-muted-text font-bold flex items-center h-8 gap-2">
+                    <div className="wfrp-text-strong text-wfrp-muted-text flex items-center h-8 gap-2">
                       Result:
                       <div className="flex gap-1 scale-[0.3] origin-left grayscale opacity-50">
                         <DigitReel
@@ -149,12 +149,12 @@ export function DiceRoller({
                         </span>
                       </div>
                       {(item.isCritical || item.isFumble) && (
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-wfrp-gold/80">
+                        <div className="wfrp-label text-wfrp-gold/80">
                           {item.isCritical ? "Critical" : "Fumble"}
                         </div>
                       )}
                       {item.damage !== null && item.damage !== undefined && (
-                        <div className="text-[10px] font-bold text-wfrp-red/70 uppercase tracking-widest">
+                        <div className="wfrp-label text-wfrp-red/70">
                           Damage: <span className="font-mono">{item.damage}</span>
                         </div>
                       )}
@@ -168,18 +168,18 @@ export function DiceRoller({
                   ref={activeRollerRef}
                   className="flex flex-col gap-1 px-1 scroll-mt-20 mb-[80vh] min-h-[200px] transition-all"
                 >
-                  <h3 className="text-sm font-bold font-serif uppercase tracking-tight text-white mb-1">
+                  <h3 className="wfrp-text-strong font-serif uppercase tracking-tight text-white mb-1">
                     {rollState.characteristic.label} Roll
                   </h3>
 
                   {(rollState.targetBonusSources ?? []).map((bonus) => (
-                    <div key={bonus.label} className="text-[11px] text-wfrp-muted-text font-bold">
+                    <div key={bonus.label} className="wfrp-text-strong text-wfrp-muted-text">
                       {bonus.label} {bonus.value >= 0 ? "+" : ""}
                       {bonus.value}
                     </div>
                   ))}
 
-                  <div className="flex items-center gap-2 text-[11px] text-wfrp-muted-text font-bold">
+                  <div className="flex items-center gap-2 wfrp-text-strong text-wfrp-muted-text">
                     <span>
                       Difficulty {rollState.modifier >= 0 ? "+" : ""}
                       {rollState.modifier}
@@ -212,7 +212,7 @@ export function DiceRoller({
                     )}
                   </div>
 
-                  <div className="text-[11px] text-wfrp-muted-text font-bold mb-1">
+                  <div className="wfrp-text-strong text-wfrp-muted-text mb-1">
                     Target:{" "}
                     <span className="text-gray-200">
                       {(characterData.attributes as Record<string, number>)[
@@ -221,7 +221,7 @@ export function DiceRoller({
                     </span>
                   </div>
 
-                  <div className="text-[11px] text-wfrp-muted-text font-bold flex items-center h-8 gap-3">
+                  <div className="wfrp-text-strong text-wfrp-muted-text flex items-center h-8 gap-3">
                     <span className="shrink-0">Result:</span>
                     <div className="flex items-center gap-3">
                       {(rollState.isRolling || rollState.result !== null) && (
@@ -255,10 +255,10 @@ export function DiceRoller({
 
                   {!rollState.isRolling && rollState.result !== null && (
                     <div className="mt-4 flex flex-col gap-2">
-                      <div className="text-[11px] text-wfrp-muted-text font-bold px-1">
+                      <div className="wfrp-text-strong text-wfrp-muted-text px-1">
                         SL:{" "}
                         <span
-                          className={`font-black uppercase tracking-widest ${rollState.isSuccess ? "text-wfrp-gold" : "text-wfrp-red"}`}
+                          className={`font-semibold uppercase tracking-widest ${rollState.isSuccess ? "text-wfrp-gold" : "text-wfrp-red"}`}
                         >
                           {adjustedSl.total > 0 ? `+${adjustedSl.total}` : adjustedSl.total} -{" "}
                           {rollState.isSuccess ? "Critical Impact" : "Fumbled Attempt"}
@@ -266,7 +266,7 @@ export function DiceRoller({
                       </div>
 
                       {(rollFlags.isCritical || rollFlags.isFumble) && (
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-wfrp-gold/80 px-1">
+                        <div className="wfrp-label text-wfrp-gold/80 px-1">
                           {rollFlags.isCritical ? "Critical" : "Fumble"}
                           {rollFlags.hasImpaleCritical ? " from Impale" : ""}
                           {rollFlags.hasDangerousFumble ? " from Dangerous" : ""}
@@ -274,7 +274,7 @@ export function DiceRoller({
                       )}
 
                       {(adjustedSl.preciseBonus > 0 || adjustedSl.imprecisePenalty > 0) && (
-                        <div className="text-[9px] font-bold uppercase tracking-widest text-wfrp-muted-text px-1">
+                        <div className="wfrp-label text-wfrp-muted-text px-1">
                           Base SL {adjustedSl.baseSl}
                           {adjustedSl.preciseBonus > 0 ? " + 1 Precise" : ""}
                           {adjustedSl.imprecisePenalty > 0 ? " - 1 Imprecise" : ""}
@@ -283,20 +283,20 @@ export function DiceRoller({
 
                       {currentDamage && (
                         <div className="flex flex-col gap-1 px-1">
-                          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-600">
+                          <span className="wfrp-label tracking-[0.2em] text-gray-600">
                             Total Damage
                           </span>
                           <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-black font-mono text-wfrp-red/80">
+                            <span className="text-2xl font-semibold font-mono text-wfrp-red/80">
                               {currentDamage.total}
                             </span>
-                            <span className="text-[10px] font-bold text-gray-600 uppercase">
+                            <span className="wfrp-label text-gray-600">
                               ({currentDamage.damageSl} SL + {rollState.damageBase} Base
                               {currentDamage.hasImpact ? ` + ${currentDamage.impactDamage} Impact` : ""})
                             </span>
                           </div>
                           {currentDamage.hasDamaging && (
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-wfrp-muted-text">
+                            <span className="wfrp-label text-wfrp-muted-text">
                               Damaging used higher of SL or units die ({currentDamage.unitsDie})
                             </span>
                           )}
@@ -306,14 +306,14 @@ export function DiceRoller({
                       {traitNotes.length > 0 && (
                         <div className="mt-2 flex flex-col gap-1 border-l border-white/5 px-2">
                           {traitNotes.map((note) => (
-                            <div key={note} className="text-[9px] font-bold uppercase tracking-widest text-wfrp-muted-text">
+                            <div key={note} className="wfrp-label text-wfrp-muted-text">
                               {note}
                             </div>
                           ))}
                         </div>
                       )}
 
-                      <div className="mt-2 text-[9px] font-bold text-wfrp-muted-text uppercase italic px-1 border-l border-white/5">
+                      <div className="mt-2 wfrp-label text-wfrp-muted-text italic px-1 border-l border-white/5">
                         {getOutcome(adjustedSl.total, rollState.isSuccess!)}
                       </div>
                     </div>

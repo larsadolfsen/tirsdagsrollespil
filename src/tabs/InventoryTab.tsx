@@ -187,7 +187,7 @@ export function InventoryTab({
   );
 
   const renderActionLabel = (label: string) => (
-    <span className="block whitespace-nowrap font-mono text-[10px] font-bold leading-none">{label}</span>
+    <span className="block whitespace-nowrap font-mono text-[10px] font-semibold leading-none">{label}</span>
   );
 
   const renderItemDropAction = (item: ResolvedCharacterEquipment) => (
@@ -219,7 +219,7 @@ export function InventoryTab({
 
     if (!hasMoveActions) {
       return (
-        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-wfrp-muted-text">
+        <span className="font-mono wfrp-label tracking-wider text-wfrp-muted-text">
           No moves
         </span>
       );
@@ -281,7 +281,7 @@ export function InventoryTab({
 
     if (!hasMoveActions) {
       return (
-        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-wfrp-muted-text">
+        <span className="font-mono wfrp-label tracking-wider text-wfrp-muted-text">
           No moves
         </span>
       );
@@ -381,14 +381,14 @@ export function InventoryTab({
 
       <div
         {...(mobileMainViewSwipeHandlers ?? {})}
-        className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent px-2 pb-2 pt-1 sm:px-3 sm:pb-3 lg:px-4 lg:pb-4"
+        className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden bg-transparent px-2 pb-24 pt-1 sm:px-3 lg:px-4 xl:pb-4"
       >
         <SheetDataPanel className="bg-wfrp-table px-3 py-3 sm:px-4">
           <div className="flex items-end justify-between leading-none">
-            <span className="text-[9px] font-bold uppercase tracking-tight text-wfrp-muted-text">
+            <span className="wfrp-label tracking-tight text-wfrp-muted-text">
               Encumbrance
             </span>
-            <span className="font-mono text-[10px] font-bold text-gray-200">
+            <span className="font-mono text-[10px] font-semibold text-gray-200">
               {totalEncumbrance} / {carryCapacity}
             </span>
           </div>
@@ -469,7 +469,7 @@ export function InventoryTab({
                   <span className="flex min-w-0 items-center gap-2">
                     <span className="truncate">{section.title}</span>
                     {section.subtitle ? (
-                      <span className="truncate font-mono text-[9px] font-bold uppercase tracking-wider text-wfrp-muted-text">
+                      <span className="truncate font-mono text-[9px] font-semibold uppercase tracking-wider text-wfrp-muted-text">
                         {section.subtitle}
                       </span>
                     ) : null}
@@ -522,7 +522,7 @@ export function InventoryTab({
                         rows={wallet.mobileDetails.map((field) => ({ label: field.label, value: field.value }))}
                       >
                         <div className="border-t border-white/10 pt-2">
-                          <div className="mb-1 text-[9px] font-black uppercase tracking-widest text-wfrp-muted-text">
+                          <div className="mb-1 wfrp-label text-wfrp-muted-text">
                             Move
                           </div>
                           {renderCoinMoveActions()}
@@ -582,7 +582,7 @@ export function InventoryTab({
                           ]}
                         >
                           <div className="border-t border-white/10 pt-2">
-                            <div className="mb-1 text-[9px] font-black uppercase tracking-widest text-wfrp-muted-text">
+                            <div className="mb-1 wfrp-label text-wfrp-muted-text">
                               Move
                             </div>
                             <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
@@ -597,7 +597,7 @@ export function InventoryTab({
                     );
                   })}
                 {section.itemRows.length === 0 && !showsWallet && section.id !== "carried" && (
-                  <div className="px-2 py-3 text-[10px] font-bold uppercase tracking-widest text-wfrp-muted-text">
+                  <div className="px-2 py-3 wfrp-label text-wfrp-muted-text">
                     {canDropHere ? "Drop here" : "Empty"}
                   </div>
                 )}

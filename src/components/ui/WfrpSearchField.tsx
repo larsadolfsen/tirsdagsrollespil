@@ -35,7 +35,7 @@ export function WfrpSearchField({
           value={value}
           onChange={(event) => onValueChange(event.target.value)}
           placeholder={placeholder ?? label}
-          className="h-9 min-h-9 rounded border-wfrp-border bg-black/20 py-1 pl-3 pr-11 text-xs font-semibold text-gray-100 placeholder:text-wfrp-muted-text focus-visible:ring-1 focus-visible:ring-wfrp-gold/60"
+          className="h-9 min-h-9 rounded border-wfrp-border bg-black/20 py-1 pl-3 pr-11 wfrp-text-strong text-gray-100 placeholder:text-wfrp-muted-text focus-visible:ring-1 focus-visible:ring-wfrp-gold/60"
         />
         <button
           type="button"

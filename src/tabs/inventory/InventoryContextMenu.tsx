@@ -64,7 +64,7 @@ export function InventoryContextMenu({
         {canMoveCoinsToCarried && (
           <button
             onClick={() => handleMoveCoins(null)}
-            className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+            className="flex w-full items-center justify-between px-3 py-1.5 text-left wfrp-text-strong leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
           >
             Carried
           </button>
@@ -73,13 +73,13 @@ export function InventoryContextMenu({
           <button
             key={container.id}
             onClick={() => handleMoveCoins(container.id)}
-            className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+            className="flex w-full items-center justify-between px-3 py-1.5 text-left wfrp-text-strong leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
           >
             {container.name}
           </button>
         ))}
         {!canMoveCoinsToCarried && stowableCoinContainers.length === 0 && (
-          <div className="px-3 py-1.5 text-xs font-semibold leading-relaxed text-wfrp-muted-text">
+          <div className="px-3 py-1.5 wfrp-text-strong leading-relaxed text-wfrp-muted-text">
             No room
           </div>
         )}
@@ -111,7 +111,7 @@ export function InventoryContextMenu({
       {activeInventoryMenu.mode === "drop" ? (
         <button
           onClick={() => handleDropItem(activeItem.id)}
-          className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+          className="flex w-full items-center justify-between px-3 py-1.5 text-left wfrp-text-strong leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
         >
           Confirm
         </button>
@@ -120,7 +120,7 @@ export function InventoryContextMenu({
           {canMoveToWorn && (
             <button
               onClick={() => handleWearItem(activeItem.id)}
-              className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+              className="flex w-full items-center justify-between px-3 py-1.5 text-left wfrp-text-strong leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
             >
               Wear
             </button>
@@ -134,7 +134,7 @@ export function InventoryContextMenu({
                   handleCarryItem(activeItem.id);
                 }
               }}
-              className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+              className="flex w-full items-center justify-between px-3 py-1.5 text-left wfrp-text-strong leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
             >
               Carried
             </button>
@@ -143,7 +143,7 @@ export function InventoryContextMenu({
             <button
               key={container.id}
               onClick={() => handleStoreItem(activeItem.id, container.id)}
-              className="flex w-full items-center justify-between px-3 py-1.5 text-left text-xs font-semibold leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
+              className="flex w-full items-center justify-between px-3 py-1.5 text-left wfrp-text-strong leading-relaxed text-gray-300 transition-colors hover:bg-white/5 hover:text-wfrp-gold"
             >
               {container.name}
             </button>

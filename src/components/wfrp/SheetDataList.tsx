@@ -121,7 +121,7 @@ export function SheetDataInfoButton({
     <button
       type={type}
       className={cn(
-        "min-h-8 rounded border border-white/10 px-2 text-[10px] font-black uppercase tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden",
+        "min-h-8 rounded border border-white/10 px-2 wfrp-label tracking-wider text-gray-300 hover:border-wfrp-gold/40 hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 md:hidden",
         className,
       )}
       {...props}

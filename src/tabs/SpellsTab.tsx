@@ -88,6 +88,7 @@ export function SpellsTab({
 
   return (
     <SubtabContentFrame
+      contentClassName="max-xl:pb-24"
       subtabBar={(
         <InlineSubtabs
           options={spellSubtabOptions}
