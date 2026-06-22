@@ -13,6 +13,7 @@
     "check:no-character-data": "node scripts/check-no-character-data.mjs",
     "deploy": "node scripts/deploy.mjs",
     "pagespeed": "node scripts/pagespeed.mjs",
+    "security:audit": "npm audit --audit-level=moderate",
     "start": "node server.mjs",
     "preview": "vite preview",
     "clean": "rm -rf dist",
