@@ -219,11 +219,20 @@
 }
 
 @utility wfrp-landing-portrait-image {
-  @apply h-full w-full object-cover grayscale brightness-90;
+  @apply h-full w-full object-cover brightness-90 transition-[filter,transform] duration-200 ease-out;
+}
+
+.wfrp-landing-character-card:hover .wfrp-landing-portrait-image {
+  filter: brightness(1.05);
+  transform: scale(1.04);
 }
 
 @utility wfrp-landing-initials {
-  @apply flex h-full w-full items-center justify-center bg-wfrp-stone font-serif text-xl font-bold text-wfrp-muted-text;
+  @apply flex h-full w-full items-center justify-center bg-wfrp-stone font-serif text-xl font-bold text-wfrp-muted-text transition-colors duration-200 ease-out;
+}
+
+.wfrp-landing-character-card:hover .wfrp-landing-initials {
+  background-color: #343434;
 }
 
 @utility wfrp-landing-card-body {
