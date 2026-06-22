@@ -231,30 +231,38 @@ export function DiceLogSidebar({
 
               <span className="wfrp-list-cell-strong">Difficulty:</span>
               {rollState.result === null || rollState.isRolling ? (
-                <div className="col-span-2 flex items-center gap-2">
-                  <button
-                    disabled={rollState.isRolling}
-                    onClick={() => setRollState((prev) => ({ ...prev, modifier: prev.modifier - 10 }))}
-                    className="wfrp-stepper-btn"
-                  >
-                    <span className="wfrp-stepper-btn__inner">
-                      <Minus size={10} />
+                <>
+                <div className="flex items-center justify-end">
+                  <div className="flex items-center gap-4">
+                    <button
+                      aria-label="Decrease difficulty modifier"
+                      disabled={rollState.isRolling}
+                      onClick={() => setRollState((prev) => ({ ...prev, modifier: prev.modifier - 10 }))}
+                      className="wfrp-stepper-btn !h-5 !w-5 !min-w-5"
+                    >
+                      <span className="wfrp-stepper-btn__inner">
+                        <Minus size={10} />
+                      </span>
+                    </button>
+                    <span className="wfrp-sidebar-body text-right text-gray-200">
+                      {rollState.modifier >= 0 ? "+" : ""}
+                      {rollState.modifier}
                     </span>
-                  </button>
-                  <span className="wfrp-sidebar-body min-w-8 text-center text-gray-200">
-                    {rollState.modifier >= 0 ? "+" : ""}
-                    {rollState.modifier}
-                  </span>
+                  </div>
+                </div>
+                <div className="flex items-center pl-4">
                   <button
+                    aria-label="Increase difficulty modifier"
                     disabled={rollState.isRolling}
                     onClick={() => setRollState((prev) => ({ ...prev, modifier: prev.modifier + 10 }))}
-                    className="wfrp-stepper-btn"
+                    className="wfrp-stepper-btn !h-5 !w-5 !min-w-5"
                   >
                     <span className="wfrp-stepper-btn__inner">
                       <Plus size={10} />
                     </span>
                   </button>
                 </div>
+                </>
               ) : (
                 <>
                   <span className="wfrp-sidebar-body text-right text-gray-200">
