@@ -187,21 +187,20 @@ export function InventoryTab({
   );
 
   const renderActionLabel = (label: string) => (
-    <span className="block max-w-40 truncate font-mono text-[10px] font-bold leading-none">{label}</span>
+    <span className="block whitespace-nowrap font-mono text-[10px] font-bold leading-none">{label}</span>
   );
 
   const renderItemDropAction = (item: ResolvedCharacterEquipment) => (
-    <div className="flex flex-wrap items-center justify-end gap-1">
-      <SheetRowActionButton
-        onClick={(event) => {
-          event.preventDefault();
-          handleToggleInventoryMenu(item.id, event, "drop");
-        }}
-        aria-label={`Drop ${item.name}`}
-      >
-        {renderActionLabel("Drop")}
-      </SheetRowActionButton>
-    </div>
+    <SheetRowActionButton
+      className="wfrp-stepper-btn--danger justify-self-end"
+      onClick={(event) => {
+        event.preventDefault();
+        handleToggleInventoryMenu(item.id, event, "drop");
+      }}
+      aria-label={`Drop ${item.name}`}
+    >
+      {renderActionLabel("Drop")}
+    </SheetRowActionButton>
   );
 
   const renderItemMoveActions = (item: ResolvedCharacterEquipment) => {
@@ -227,7 +226,7 @@ export function InventoryTab({
     }
 
     return (
-      <div className="flex min-w-0 flex-wrap items-center gap-1">
+      <>
         {canMoveToWorn && (
           <SheetRowActionButton
             onClick={(event) => {
@@ -266,7 +265,7 @@ export function InventoryTab({
             {renderActionLabel(container.name)}
           </SheetRowActionButton>
         ))}
-      </div>
+      </>
     );
   };
 
@@ -289,7 +288,7 @@ export function InventoryTab({
     }
 
     return (
-      <div className="flex min-w-0 flex-wrap items-center gap-1">
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
         {canMoveCoinsToCarried && (
           <SheetRowActionButton
             onClick={(event) => {
@@ -500,7 +499,7 @@ export function InventoryTab({
                         isDesktopDragEnabled && wallet.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                       }`}
                       summaryClassName={`${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
-                      contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
+                      contentClassName="px-4 pb-4 pt-0 md:pb-4"
                       summary={(
                         <>
                           {renderDragHandle({
@@ -522,7 +521,10 @@ export function InventoryTab({
                       <SheetDataAccordionDetails
                         rows={wallet.mobileDetails.map((field) => ({ label: field.label, value: field.value }))}
                       >
-                        <div className="flex flex-wrap items-center justify-start gap-1 border-t border-white/10 pt-2">
+                        <div className="border-t border-white/10 pt-2">
+                          <div className="mb-1 text-[9px] font-black uppercase tracking-widest text-wfrp-muted-text">
+                            Move
+                          </div>
                           {renderCoinMoveActions()}
                         </div>
                       </SheetDataAccordionDetails>
@@ -549,7 +551,7 @@ export function InventoryTab({
                           isDesktopDragEnabled && row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                         }`}
                         summaryClassName={`${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
-                        contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
+                        contentClassName="px-4 pb-4 pt-0 md:pb-4"
                         summary={(
                           <>
                             {renderDragHandle({
@@ -579,11 +581,16 @@ export function InventoryTab({
                             { label: "Value", value: row.value },
                           ]}
                         >
-                          <div className="flex min-w-0 flex-col gap-2 border-t border-white/10 pt-2 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex min-w-0 flex-wrap items-center justify-start gap-1">
-                              {renderItemMoveActions(item)}
+                          <div className="border-t border-white/10 pt-2">
+                            <div className="mb-1 text-[9px] font-black uppercase tracking-widest text-wfrp-muted-text">
+                              Move
                             </div>
-                            {renderItemDropAction(item)}
+                            <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                                {renderItemMoveActions(item)}
+                              </div>
+                              {renderItemDropAction(item)}
+                            </div>
                           </div>
                         </SheetDataAccordionDetails>
                       </SheetDataAccordionRow>

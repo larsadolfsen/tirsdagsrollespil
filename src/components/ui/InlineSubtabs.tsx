@@ -46,11 +46,12 @@ export function InlineSubtabs<T extends string>({
       className="flex w-full items-center gap-2 bg-transparent pt-1"
       onTouchCancel={(event) => event.stopPropagation()}
       onTouchEnd={(event) => event.stopPropagation()}
+      onTouchMove={(event) => event.stopPropagation()}
       onTouchStart={(event) => event.stopPropagation()}
     >
       <div className="min-w-0 flex-1 self-stretch">
         <ScrollableTabStrip
-          className="flex w-full min-w-max flex-nowrap items-center justify-center overflow-x-auto px-0 py-0 !px-0 md:flex-nowrap md:overflow-x-auto md:py-0 lg:w-max lg:min-w-0 lg:justify-start no-scrollbar"
+          className="flex w-full max-w-full touch-pan-x flex-nowrap items-center justify-center overflow-x-auto overscroll-x-contain px-0 py-0 !px-0 data-[overflowing=true]:justify-start md:flex-nowrap md:overflow-x-auto md:py-0 lg:w-max lg:min-w-0 no-scrollbar"
         >
           <div
             className="inline-flex items-center"
@@ -77,7 +78,7 @@ export function InlineSubtabs<T extends string>({
                 >
                   <span
                     className={cn(
-                      "inline-flex h-6 items-center justify-center px-3 transition-all group-active:scale-95 sm:px-4",
+                      "inline-flex h-6 items-center justify-center whitespace-nowrap px-3 transition-all group-active:scale-95 sm:px-4",
                       index === 0 && "rounded-l",
                       index === options.length - 1 && "rounded-r",
                       index < options.length - 1 && "border-r border-card",

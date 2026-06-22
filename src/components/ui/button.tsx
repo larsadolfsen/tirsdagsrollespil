@@ -89,7 +89,7 @@ export function Button({
       className={cn(
         buttonVariants({ variant }),
         "cursor-pointer disabled:cursor-not-allowed",
-        wfrp && hideOnMobile && "max-md:hidden",
+        hideOnMobile && variant !== "fab" && "max-md:hidden",
         wfrp && leadingIcon && variant !== "wfrpIcon" && "wfrp-standard-btn--has-leading-icon",
         variant === "wfrpIcon" && desktopLabel && "sm:flex-col",
         wfrp && isGolden && !isDeactivated && "wfrp-standard-btn--gold",

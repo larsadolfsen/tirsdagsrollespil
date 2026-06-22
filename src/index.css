@@ -315,6 +315,18 @@
   min-width: 1.75rem;
 }
 
+.wfrp-stepper-btn--danger {
+  @apply focus-visible:ring-wfrp-red/50;
+}
+
+.wfrp-stepper-btn--danger .wfrp-stepper-btn__inner {
+  @apply bg-destructive text-destructive-foreground;
+}
+
+.wfrp-stepper-btn--danger:hover:not(:disabled) .wfrp-stepper-btn__inner {
+  background-color: color-mix(in srgb, var(--destructive) 88%, white);
+}
+
 @utility wfrp-icon-btn {
   @apply rounded text-wfrp-muted-text transition-colors cursor-pointer hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }

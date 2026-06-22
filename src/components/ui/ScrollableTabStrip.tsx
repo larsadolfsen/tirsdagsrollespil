@@ -17,6 +17,7 @@ export function ScrollableTabStrip({
   const stripRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   useEffect(() => {
     const element = stripRef.current;
@@ -24,6 +25,7 @@ export function ScrollableTabStrip({
 
     const updateScrollState = () => {
       const maxScrollLeft = element.scrollWidth - element.clientWidth;
+      setHasOverflow(maxScrollLeft > 4);
       setCanScrollLeft(element.scrollLeft > 4);
       setCanScrollRight(maxScrollLeft - element.scrollLeft > 4);
     };
@@ -57,6 +59,7 @@ export function ScrollableTabStrip({
       <div
         ref={stripRef}
         className={`${className} !pl-0 md:!pl-3 lg:!pl-4 md:pr-12`}
+        data-overflowing={hasOverflow ? "true" : "false"}
         role={role}
         aria-label={ariaLabel}
       >
@@ -64,10 +67,10 @@ export function ScrollableTabStrip({
       </div>
       {canScrollLeft && (
         <>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-transparent via-transparent to-transparent md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background via-background/85 to-transparent md:w-14 md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
           <WfrpStandardIcon
             onClick={scrollTabsLeft}
-            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 border border-white/10 bg-wfrp-tab-control/95 text-gray-300 shadow-lg hover:border-white/20 focus-visible:ring-white/30"
+            className="absolute left-0 top-1/2 z-10 -translate-y-1/2 border-0 bg-gradient-to-l from-background/0 to-background text-gray-300 shadow-none hover:border-0 hover:from-background/0 hover:to-background hover:text-white focus-visible:ring-white/30 md:bg-none md:bg-wfrp-tab-control/95 md:shadow-lg md:hover:bg-wfrp-tab-control"
             label="Show previous tabs"
             icon={<ChevronLeft />}
           />
@@ -75,10 +78,10 @@ export function ScrollableTabStrip({
       )}
       {canScrollRight && (
         <>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-transparent via-transparent to-transparent md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-[calc(-50vw+50%+0.5rem)] w-16 bg-gradient-to-l from-background via-background/85 to-transparent md:right-0 md:w-14 md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
           <WfrpStandardIcon
             onClick={scrollTabsRight}
-            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 border border-white/10 bg-wfrp-tab-control/95 text-gray-300 shadow-lg hover:border-white/20 focus-visible:ring-white/30"
+            className="absolute right-[calc(-50vw+50%+0.5rem)] top-1/2 z-10 -translate-y-1/2 border-0 bg-gradient-to-r from-background/0 to-background text-gray-300 shadow-none hover:border-0 hover:from-background/0 hover:to-background hover:text-white focus-visible:ring-white/30 md:right-0 md:bg-none md:bg-wfrp-tab-control/95 md:shadow-lg md:hover:bg-wfrp-tab-control"
             label="Show more tabs"
             icon={<ChevronRight />}
           />
