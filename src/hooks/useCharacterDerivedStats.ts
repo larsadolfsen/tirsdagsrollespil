@@ -37,7 +37,6 @@ export function useCharacterDerivedStats({
   const wpb = Math.floor((attributes.WP || 0) / 10);
   const sb = Math.floor((attributes.S || 0) / 10);
   const maxCorruption = tb + wpb;
-  const wp = attributes.WP || 0;
 
   const formattedCoins = useMemo(
     () => formatCharacterCoins(characterData.coins),
@@ -184,8 +183,6 @@ export function useCharacterDerivedStats({
     tb,
     totalEncumbrance,
     wornItems,
-    wp,
-    wpb,
     armourTotals,
   };
 }

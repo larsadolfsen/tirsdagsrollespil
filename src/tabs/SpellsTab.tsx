@@ -35,9 +35,6 @@ export function SpellsTab({
   attributes,
   characterData,
   characterSkills,
-  formatSpellDuration,
-  formatSpellRange,
-  formatSpellTarget,
   setActiveSpellSubtab,
   handleRoll,
   onRemoveSpell,
@@ -48,9 +45,6 @@ export function SpellsTab({
   attributes: Record<string, number>;
   characterData: ResolvedCharacterRecord;
   characterSkills: ResolvedCharacterSkill[];
-  formatSpellDuration?: (duration: string) => string;
-  formatSpellRange?: (range: string) => string;
-  formatSpellTarget?: (target: string) => string;
   setActiveSpellSubtab: (subtab: SpellSubtab) => void;
   handleRoll: (
     characteristic: Characteristic,
@@ -75,12 +69,12 @@ export function SpellsTab({
     activeSpellSubtab,
     attributes,
     characterSkills,
-    formatSpellDuration: formatSpellDuration ?? ((duration) =>
-      formatSpellDurationValue(duration, willpower, willpowerBonus)),
-    formatSpellRange: formatSpellRange ?? ((range) =>
-      formatSpellRangeValue(range, willpower, willpowerBonus)),
-    formatSpellTarget: formatSpellTarget ?? ((target) =>
-      formatSpellTargetValue(target, willpower, willpowerBonus)),
+    formatSpellDuration: (duration) =>
+      formatSpellDurationValue(duration, willpower, willpowerBonus),
+    formatSpellRange: (range) =>
+      formatSpellRangeValue(range, willpower, willpowerBonus),
+    formatSpellTarget: (target) =>
+      formatSpellTargetValue(target, willpower, willpowerBonus),
     isPrayerMode,
     setIsSpellShopOpen,
     spells: availableCharacterSpells,
