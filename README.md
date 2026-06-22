@@ -27,6 +27,26 @@ Railway injects `RAILWAY_VOLUME_MOUNT_PATH` at runtime when a Volume is attached
 and `server.mjs` uses it automatically. You can also override the storage path
 with `WFRP_DATA_DIR`.
 
+### Production access control
+
+Production and Railway deployments require HTTP Basic Auth by default. Configure
+these Railway environment variables before deploying:
+
+```sh
+WFRP_BASIC_AUTH_USERNAME=wfrp
+WFRP_BASIC_AUTH_PASSWORD=<strong-random-password>
+```
+
+Set `WFRP_REQUIRE_AUTH=false` only for trusted local or private-network
+deployments. Do not use it for a public Railway service.
+
+Optional API rate-limit tuning:
+
+```sh
+WFRP_API_RATE_LIMIT_MAX_REQUESTS=120
+WFRP_API_WRITE_RATE_LIMIT_MAX_REQUESTS=30
+```
+
 Railway build/start commands are configured in `railway.json`:
 
 ```sh
@@ -51,9 +71,10 @@ npm run deploy
 The deploy script runs a production build and then calls `railway up`.
 
 Runtime data under `data/` is protected by Git hooks. Commits and pushes that
-include character save files are blocked by default, so local saves are not
-published over production seed data by mistake. Intentional seed-data changes can
-be allowed with `ALLOW_DATA_COMMIT=1` and `ALLOW_DATA_PUSH=1`.
+include character save files or SQLite runtime database files are blocked by
+default, so local saves are not published over production seed data by mistake.
+Intentional seed-data changes can be allowed with `ALLOW_DATA_COMMIT=1` and
+`ALLOW_DATA_PUSH=1`.
 
 Enable the hooks in a fresh clone with:
 
@@ -86,6 +107,7 @@ The project uses TypeScript for static checks and Playwright for browser-based s
 Run the standard checks locally:
 
 ```sh
+npm run security:audit
 npm run lint
 npm run build
 npm test
