@@ -78,10 +78,10 @@ export function ScrollableTabStrip({
       )}
       {canScrollRight && (
         <>
-          <div className="pointer-events-none absolute inset-y-0 right-[calc(-50vw+50%+0.5rem)] w-16 bg-gradient-to-l from-background via-background/85 to-transparent md:right-0 md:w-14 md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
+          <div className="pointer-events-none absolute -right-4 inset-y-0 w-16 bg-gradient-to-l from-background via-background/85 to-transparent md:right-0 md:w-14 md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
           <WfrpStandardIcon
             onClick={scrollTabsRight}
-            className="absolute right-[calc(-50vw+50%+0.5rem)] top-1/2 z-10 -translate-y-1/2 border-0 bg-gradient-to-r from-background/0 to-background text-gray-300 shadow-none hover:border-0 hover:from-background/0 hover:to-background hover:text-white focus-visible:ring-white/30 md:right-0 md:bg-none md:bg-wfrp-tab-control/95 md:shadow-lg md:hover:bg-wfrp-tab-control"
+            className="absolute -right-4 top-1/2 z-10 -translate-y-1/2 border-0 bg-gradient-to-r from-background/0 to-background text-gray-300 shadow-none hover:border-0 hover:from-background/0 hover:to-background hover:text-white focus-visible:ring-white/30 md:right-0 md:bg-none md:bg-wfrp-tab-control/95 md:shadow-lg md:hover:bg-wfrp-tab-control"
             label="Show more tabs"
             icon={<ChevronRight />}
           />
