@@ -207,15 +207,15 @@
 }
 
 @utility wfrp-landing-list {
-  @apply flex w-[27rem] max-w-full flex-col gap-4;
+  @apply flex w-[288px] max-w-full flex-col gap-4;
 }
 
 @utility wfrp-landing-character-card {
-  @apply wfrp-card grid w-full grid-cols-[9rem_minmax(0,1fr)] overflow-hidden p-0 text-left;
+  @apply wfrp-card grid h-[72px] w-full cursor-pointer grid-cols-[72px_minmax(0,1fr)] items-center overflow-hidden p-0 text-left transition-all hover:bg-wfrp-control-hover hover:shadow-2xl focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/70;
 }
 
 @utility wfrp-landing-portrait {
-  @apply flex h-36 w-36 items-center justify-center overflow-hidden bg-wfrp-dark;
+  @apply flex h-[72px] w-[72px] items-center justify-center overflow-hidden bg-wfrp-dark;
 }
 
 @utility wfrp-landing-portrait-image {
@@ -223,23 +223,19 @@
 }
 
 @utility wfrp-landing-initials {
-  @apply flex h-full w-full items-center justify-center bg-wfrp-stone font-serif text-4xl font-bold text-wfrp-muted-text;
+  @apply flex h-full w-full items-center justify-center bg-wfrp-stone font-serif text-xl font-bold text-wfrp-muted-text;
 }
 
 @utility wfrp-landing-card-body {
-  @apply flex min-w-0 flex-col p-4 pb-0;
+  @apply flex min-w-0 flex-col justify-center px-4 py-0;
 }
 
 @utility wfrp-landing-card-title {
-  @apply font-serif text-2xl font-bold leading-tight text-gray-100 transition-none;
+  @apply font-serif text-[16px] font-bold leading-tight text-gray-100 transition-none;
 }
 
 @utility wfrp-landing-card-copy {
-  @apply text-sm font-semibold leading-relaxed text-wfrp-muted-text;
-}
-
-@utility wfrp-landing-card-action {
-  @apply mt-auto self-end;
+  @apply text-[14px] font-semibold leading-tight text-wfrp-muted-text;
 }
 
 @utility wfrp-character-portrait-control {
@@ -260,7 +256,7 @@
 
 @media (min-width: 640px) {
   .wfrp-landing-character-card {
-    grid-template-columns: 9rem minmax(0, 1fr);
+    grid-template-columns: 72px minmax(0, 1fr);
   }
 }
 
