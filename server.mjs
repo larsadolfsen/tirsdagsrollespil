@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import express from "express";
 import { mkdirSync } from "node:fs";
 import { promises as fs } from "node:fs";
@@ -14,6 +15,11 @@ const isRailwayDeployment = Boolean(
 );
 const isProductionDeployment = process.env.NODE_ENV === "production" || isRailwayDeployment;
 const disableHttpCache = process.env.WFRP_DISABLE_HTTP_CACHE !== "false";
+const requireAuthentication = process.env.WFRP_REQUIRE_AUTH
+  ? process.env.WFRP_REQUIRE_AUTH !== "false"
+  : isProductionDeployment;
+const basicAuthUsername = process.env.WFRP_BASIC_AUTH_USERNAME ?? "wfrp";
+const basicAuthPassword = process.env.WFRP_BASIC_AUTH_PASSWORD ?? process.env.WFRP_AUTH_PASSWORD ?? "";
 const stateDataDirectory = path.resolve(
   process.env.WFRP_DATA_DIR ??
     process.env.RAILWAY_VOLUME_MOUNT_PATH ??
@@ -46,6 +52,16 @@ const COMPRESSIBLE_CONTENT_TYPES = [
   /^font\/(?:ttf|otf)/i,
   /^image\/svg\+xml/i,
 ];
+const API_RATE_LIMIT_WINDOW_MS = 60_000;
+const API_RATE_LIMIT_MAX_REQUESTS = Number(process.env.WFRP_API_RATE_LIMIT_MAX_REQUESTS ?? 120);
+const API_WRITE_RATE_LIMIT_MAX_REQUESTS = Number(process.env.WFRP_API_WRITE_RATE_LIMIT_MAX_REQUESTS ?? 30);
+
+if (requireAuthentication && !basicAuthPassword) {
+  throw new Error(
+    "WFRP_BASIC_AUTH_PASSWORD must be set when authentication is required. " +
+      "Set WFRP_REQUIRE_AUTH=false only for trusted local/private deployments.",
+  );
+}
 
 mkdirSync(path.dirname(databaseFilePath), { recursive: true });
 const database = new DatabaseSync(databaseFilePath);
@@ -282,6 +298,118 @@ function compressionMiddleware(req, res, next) {
   };
 
   next();
+}
+
+function safeCompare(value, expectedValue) {
+  const valueBuffer = Buffer.from(value);
+  const expectedBuffer = Buffer.from(expectedValue);
+  return valueBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(valueBuffer, expectedBuffer);
+}
+
+function parseBasicAuthHeader(authorizationHeader) {
+  if (typeof authorizationHeader !== "string" || !authorizationHeader.startsWith("Basic ")) {
+    return null;
+  }
+
+  try {
+    const decodedValue = Buffer.from(authorizationHeader.slice("Basic ".length), "base64").toString("utf8");
+    const separatorIndex = decodedValue.indexOf(":");
+
+    if (separatorIndex === -1) {
+      return null;
+    }
+
+    return {
+      username: decodedValue.slice(0, separatorIndex),
+      password: decodedValue.slice(separatorIndex + 1),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function requireBasicAuth(req, res, next) {
+  if (!requireAuthentication) {
+    next();
+    return;
+  }
+
+  const credentials = parseBasicAuthHeader(req.headers.authorization);
+  const isAuthenticated = Boolean(credentials) &&
+    safeCompare(credentials.username, basicAuthUsername) &&
+    safeCompare(credentials.password, basicAuthPassword);
+
+  if (isAuthenticated) {
+    next();
+    return;
+  }
+
+  res.setHeader("WWW-Authenticate", 'Basic realm="Tirsdagsrollespil", charset="UTF-8"');
+  res.status(401).send("Authentication required");
+}
+
+function securityHeaders(req, res, next) {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "base-uri 'none'",
+      "object-src 'none'",
+      "frame-ancestors 'self'",
+      "form-action 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data:",
+      "font-src 'self'",
+      "connect-src 'self'",
+    ].join("; "),
+  );
+  next();
+}
+
+function clientIp(req) {
+  const forwardedFor = req.headers["x-forwarded-for"];
+  if (typeof forwardedFor === "string" && forwardedFor.trim()) {
+    return forwardedFor.split(",")[0].trim();
+  }
+
+  return req.ip || req.socket.remoteAddress || "unknown";
+}
+
+function createRateLimit({ windowMs, maxRequests, keyPrefix, methods = null }) {
+  const buckets = new Map();
+
+  return (req, res, next) => {
+    if (methods && !methods.has(req.method)) {
+      next();
+      return;
+    }
+
+    const now = Date.now();
+    const key = `${keyPrefix}:${clientIp(req)}`;
+    const bucket = buckets.get(key);
+
+    if (!bucket || bucket.resetAt <= now) {
+      buckets.set(key, { count: 1, resetAt: now + windowMs });
+      next();
+      return;
+    }
+
+    bucket.count += 1;
+    if (bucket.count <= maxRequests) {
+      next();
+      return;
+    }
+
+    const retryAfterSeconds = Math.max(1, Math.ceil((bucket.resetAt - now) / 1000));
+    res.setHeader("Retry-After", String(retryAfterSeconds));
+    res.status(429).json({ error: "Too many requests" });
+  };
 }
 
 function parseJsonValue(value, columnName, characterId) {
@@ -527,6 +655,10 @@ async function readCharacterProgressMap() {
 }
 
 async function writeCharacterProgressMap(progressMap) {
+  if (!isCharacterProgressMap(progressMap)) {
+    throw new Error("Expected character progress payload to be an object map.");
+  }
+
   await ensureLegacyMigration();
 
   const characterEntries = Object.entries(progressMap ?? {});
@@ -551,7 +683,28 @@ async function writeCharacterProgressMap(progressMap) {
   }
 }
 
+app.disable("x-powered-by");
+app.set("trust proxy", 1);
+app.use(securityHeaders);
 app.use(compressionMiddleware);
+app.use(requireBasicAuth);
+app.use(
+  "/api/",
+  createRateLimit({
+    keyPrefix: "api",
+    windowMs: API_RATE_LIMIT_WINDOW_MS,
+    maxRequests: API_RATE_LIMIT_MAX_REQUESTS,
+  }),
+);
+app.use(
+  "/api/",
+  createRateLimit({
+    keyPrefix: "api-write",
+    windowMs: API_RATE_LIMIT_WINDOW_MS,
+    maxRequests: API_WRITE_RATE_LIMIT_MAX_REQUESTS,
+    methods: new Set(["DELETE", "PATCH", "POST", "PUT"]),
+  }),
+);
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/character-progress/:characterId", async (req, res, next) => {
@@ -604,6 +757,26 @@ app.put("/api/character-progress", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+app.use((error, _req, res, next) => {
+  if (res.headersSent) {
+    next(error);
+    return;
+  }
+
+  const message = error instanceof Error ? error.message : "Unexpected server error.";
+  const statusCode = message.includes("Unsafe character id") ||
+      message.includes("Expected character progress payload") ||
+      error?.type === "entity.parse.failed"
+    ? 400
+    : 500;
+
+  if (statusCode >= 500) {
+    console.error(error);
+  }
+
+  res.status(statusCode).json({ error: statusCode === 500 ? "Internal server error" : message });
 });
 
 app.use(

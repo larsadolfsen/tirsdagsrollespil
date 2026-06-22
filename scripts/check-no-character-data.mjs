@@ -6,6 +6,8 @@ const protectedPaths = [
   'data/character-notes',
   'data/character-status',
   'data/characters',
+  'data/*.sqlite',
+  'data/*.sqlite-*',
 ];
 
 const gitCandidates = [
