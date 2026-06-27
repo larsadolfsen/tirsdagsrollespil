@@ -127,8 +127,27 @@ export {
 export {
   creatureTraitDefinitions,
   creatureTraitDefinitionsById,
+  type CharacteristicKey,
   type CreatureTraitDefinition,
   type CreatureTraitId,
   type CreatureTraitModifier,
   type CreatureTraitModifierType,
 } from "./creatureTraits";
+export {
+  creatureTemplates,
+  creatureTemplatesById,
+  resolvedCreatureTemplates,
+  resolvedCreatureTemplatesById,
+  resolveCreatureTemplate,
+  resolveCreatureTraitInstance,
+  skavenCreatureTemplates,
+  type CreatureCategory,
+  type CreatureCharacteristics,
+  type CreatureSize,
+  type CreatureStatBlock,
+  type CreatureTemplate,
+  type CreatureTemplateId,
+  type CreatureTraitInstance,
+  type ResolvedCreatureTemplate,
+  type ResolvedCreatureTraitInstance,
+} from "./creatures";
