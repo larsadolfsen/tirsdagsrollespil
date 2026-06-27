@@ -111,7 +111,7 @@ export function SpellsTab({
         leadingLabels={[{ align: "center", label: "Roll" }]}
         sectionLabel={entryLabel}
         valueLabels={[
-          { align: "right", className: "hidden md:block", label: "CN" },
+          { align: "center", className: "hidden md:block", label: "CN" },
           { align: "left", label: "RNG" },
           { align: "left", label: "Target" },
           { align: "right", className: "hidden md:block", label: "Duration" },
@@ -145,7 +145,7 @@ export function SpellsTab({
                       {spell.name}
                     </span>
 
-                    <SheetDataDesktopCell align="right">{spell.cn}</SheetDataDesktopCell>
+                    <SheetDataDesktopCell align="center">{spell.cn}</SheetDataDesktopCell>
                     <div className="wfrp-list-cell-strong truncate text-left font-mono md:font-sans">
                       {formatted.range}
                     </div>
