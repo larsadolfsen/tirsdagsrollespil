@@ -1,5 +1,5 @@
 import { type ChangeEvent, type ReactNode, useEffect, useRef, useState } from "react";
-import { ArrowUpFromLine, Check, Dice5, X } from "lucide-react";
+import { ArrowUpFromLine, Check, X } from "lucide-react";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import { useGameSessionContext } from "../context/GameSessionContext";
 import {
@@ -12,6 +12,7 @@ const portraitSize = 256;
 const characterMenuOptions = [
   { id: "sheet", label: "Character Sheet" },
   { id: "edit", label: "Edit Character" },
+  { id: "dice", label: "Dice Log" },
 ] as const;
 
 const readFileAsDataUrl = (file: File) =>
@@ -274,6 +275,7 @@ export function CharacterHeader({
             onChange={(item) => {
               if (item === "sheet") onOpenCharacterSheet();
               if (item === "edit") onOpenAdvance();
+              if (item === "dice") onOpenDice();
             }}
           />
           <WfrpStandardIcon
@@ -282,13 +284,6 @@ export function CharacterHeader({
             onClick={onOpenXpDialog}
             aria-current={activeMenuItem === "experience" ? "page" : undefined}
             className={activeMenuItem === "experience" ? "text-white" : undefined}
-          />
-          <WfrpStandardIcon
-            label="Dice Log"
-            icon={<Dice5 />}
-            onClick={onOpenDice}
-            aria-current={activeMenuItem === "dice" ? "page" : undefined}
-            className={activeMenuItem === "dice" ? "text-white" : undefined}
           />
         </div>
       </div>

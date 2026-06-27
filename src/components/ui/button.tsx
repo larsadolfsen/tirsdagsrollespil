@@ -19,7 +19,7 @@ const wfrpVariantClasses: Record<WfrpButtonVariant, string | undefined> = {
   unstyled: undefined,
   fab: "fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-wfrp-gold/70 bg-wfrp-gold p-0 text-black shadow-xl shadow-black/50 transition-colors hover:border-wfrp-gold hover:bg-[#d1ad65] active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wfrp-gold/60 xl:hidden",
   wfrpIcon: "wfrp-standard-icon",
-  subtabAction: "group inline-flex cursor-pointer items-center justify-center bg-transparent p-0 font-semibold tracking-[0.12em] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-not-allowed",
+  subtabAction: "group inline-flex cursor-pointer items-center justify-center bg-transparent p-0 font-semibold tracking-[0.12em] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 disabled:cursor-default",
 };
 
 export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children" | "name"> {
@@ -49,7 +49,7 @@ export function buttonVariants({ variant = "default", className }: { variant?: B
   }
 
   return cn(
-    "wfrp-label group relative isolate inline-flex h-12 items-center justify-center gap-1 whitespace-nowrap bg-transparent px-3 before:absolute before:inset-x-0 before:top-1/2 before:-z-10 before:h-6 before:-translate-y-1/2 before:rounded before:shadow-sm before:transition-all active:before:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+    "wfrp-label group relative isolate inline-flex h-12 items-center justify-center gap-1 whitespace-nowrap bg-transparent px-3 before:absolute before:inset-x-0 before:top-1/2 before:-z-10 before:h-6 before:-translate-y-1/2 before:rounded before:shadow-sm before:transition-all active:before:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-default disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
     standardVariantClasses[variant],
     className,
   );
@@ -88,7 +88,7 @@ export function Button({
       disabled={isDisabled}
       className={cn(
         buttonVariants({ variant }),
-        "cursor-pointer disabled:cursor-not-allowed",
+        "cursor-pointer disabled:cursor-default",
         hideOnMobile && variant !== "fab" && "max-xl:hidden",
         wfrp && leadingIcon && variant !== "wfrpIcon" && "wfrp-standard-btn--has-leading-icon",
         variant === "wfrpIcon" && desktopLabel && "sm:flex-col",

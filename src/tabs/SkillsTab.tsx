@@ -20,8 +20,6 @@ type SkillRow = {
 
 const desktopSkillGridClass = "md:grid-cols-[56px_minmax(10rem,0.8fr)_minmax(14rem,1.2fr)_56px_56px_56px_56px_48px]";
 const mobileSkillGridClass = "grid-cols-[40px_minmax(0,1fr)_40px_48px]";
-const skillContentGridClass = `${mobileSkillGridClass} ${desktopSkillGridClass}`;
-
 const characteristicNames: Record<string, string> = {
   Ag: "Agility",
   BS: "Ballistic Skill",
@@ -100,8 +98,6 @@ export function SkillsTab({
               <SheetDataAccordionRow
                 key={skill.key}
                 summaryClassName={`${mobileSkillGridClass} md:grid ${desktopSkillGridClass} md:gap-0`}
-                contentGridClassName={skillContentGridClass}
-                contentClassName="col-span-full min-w-0 max-w-full px-3 pb-4 pt-1 md:col-start-2 md:col-end-8 md:px-0 md:pr-14 md:pb-4"
                 summary={(
                   <>
                     <SheetDataRollCell>

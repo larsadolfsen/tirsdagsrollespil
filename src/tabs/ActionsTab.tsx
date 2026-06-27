@@ -3,6 +3,7 @@ import { InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
   SheetDataAccordionRow,
+  SheetDataDefinitionList,
   SheetDataDisclosureCell,
   SheetDataRollCell,
   SheetDataSection,
@@ -140,14 +141,12 @@ export function ActionsTab({
     }
 
     return (
-      <div className="flex flex-col gap-1 border-t border-white/10 pt-2">
-        {describedProperties.map(({ description, property }) => (
-          <div key={property} className="text-[11px] leading-relaxed">
-            <span className="wfrp-list-cell-strong text-wfrp-muted-text">{property}: </span>
-            <span className="wfrp-sidebar-body text-card-foreground">{description}</span>
-          </div>
-        ))}
-      </div>
+      <SheetDataDefinitionList
+        items={describedProperties.map(({ description, property }) => ({
+          label: property,
+          value: description,
+        }))}
+      />
     );
   };
 
@@ -207,7 +206,6 @@ export function ActionsTab({
                   <SheetDataAccordionRow
                     key={action.name}
                     summaryClassName={`${actionSummaryGridClass} md:grid ${channelingGridClass} md:gap-0`}
-                    contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                     summary={(
                       <>
                         <SheetDataRollCell>
@@ -377,7 +375,6 @@ export function ActionsTab({
                       <SheetDataAccordionRow
                         key={idx}
                         summaryClassName={`${actionSummaryGridClass} md:grid ${weaponActionGridClass} md:gap-0`}
-                        contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                         summary={(
                           <>
                             <SheetDataRollCell>
@@ -460,7 +457,6 @@ export function ActionsTab({
                       <SheetDataAccordionRow
                         key={idx}
                         summaryClassName={`${actionSummaryGridClass} md:grid ${rangedActionGridClass} md:gap-0`}
-                        contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                         summary={(
                           <>
                             <SheetDataRollCell>
@@ -554,7 +550,6 @@ export function ActionsTab({
                     <SheetDataAccordionRow
                       key={action.name}
                       summaryClassName={`${actionSummaryGridClass} md:grid ${weaponActionGridClass} md:gap-0`}
-                      contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
                           <SheetDataRollCell>

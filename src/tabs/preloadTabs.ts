@@ -7,6 +7,7 @@ const tabPreloaders: Record<MainTab, () => Promise<unknown>> = {
   spells: () => import("./SpellsTab"),
   features: () => import("./TalentsTab"),
   journal: () => import("./JournalTab"),
+  dice: () => import("../features/dice/DiceLogSidebar"),
   career: () => import("./CareerTab"),
 };
 

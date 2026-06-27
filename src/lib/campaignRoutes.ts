@@ -13,6 +13,7 @@ const characterViewPathSegments: Record<MobileMainView, string> = {
   spells: "spells",
   features: "talents",
   journal: "journal",
+  dice: "dice-log",
   career: "advance",
 };
 const viewAliases: Record<string, MobileMainView> = {
@@ -26,6 +27,8 @@ const viewAliases: Record<string, MobileMainView> = {
   features: "features",
   inventory: "inventory",
   journal: "journal",
+  dice: "dice",
+  "dice-log": "dice",
   notes: "journal",
   skills: "skills",
   spells: "spells",
@@ -42,6 +45,7 @@ const mainTabByCharacterView: Record<MobileMainView, MainTab> = {
   spells: "spells",
   features: "features",
   journal: "journal",
+  dice: "dice",
   career: "career",
 };
 

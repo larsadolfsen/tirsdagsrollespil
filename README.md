@@ -100,6 +100,10 @@ WFRP_DB_FILE=/path/to/tirsdagsrollespil.sqlite npm start
 
 Existing file-based progress under `data/characters` and the older legacy progress paths is copied into SQLite once. Existing SQLite rows are preserved during that migration.
 
+Campaign dice rolls are also stored in SQLite. The shared log retains only the current
+campaign day; set `WFRP_CAMPAIGN_TIME_ZONE` to control the day boundary (the default is
+`Europe/Copenhagen`).
+
 ## Testing
 
 The project uses TypeScript for static checks and Playwright for browser-based smoke and regression tests.

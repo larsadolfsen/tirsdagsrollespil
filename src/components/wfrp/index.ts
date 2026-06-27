@@ -10,6 +10,7 @@ export {
   SheetDataTable,
   SheetEmptyState,
 } from "./SheetDataTable";
+export { SheetDataDefinitionList } from "./SheetDataDefinitionList";
 export {
   SheetDataDesktopCell,
   SheetDataDisclosureCell,

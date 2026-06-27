@@ -95,7 +95,6 @@ export function TalentsTab({
                 <SheetDataAccordionRow
                   key={talent.name}
                   summaryClassName={`${talentGridClass} gap-0`}
-                  contentClassName="px-3 pb-4 pt-1 md:col-start-1 md:col-end-5 md:px-4 md:pb-4"
                   summary={(
                     <>
                       <span className="wfrp-no-roll-cell min-w-0 truncate text-left font-semibold text-gray-200">

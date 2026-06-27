@@ -35,12 +35,12 @@ export function ArmourCard({
           {armourLocations.map(({ label, value, className }) => (
             <div
               key={label}
-              className={`flex flex-col items-center justify-center border border-white/5 bg-black/30 px-3 py-2.5 text-center ${className}`}
+              className={`flex flex-col items-center justify-center border border-wfrp-border bg-wfrp-stone px-3 py-2.5 text-center ${className}`}
             >
               <div className="wfrp-label leading-tight text-wfrp-muted-text">
                 {label}
               </div>
-              <div className="mt-1 text-lg font-semibold text-gray-100">{value}</div>
+              <div className="mt-0.5 text-lg font-semibold text-gray-100">{value}</div>
             </div>
           ))}
         </div>

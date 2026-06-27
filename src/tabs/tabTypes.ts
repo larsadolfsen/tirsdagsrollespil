@@ -1,5 +1,5 @@
 export type ActionCategory = "all" | "magic" | "melee" | "ranged" | "other";
-export type MainTab = "skills" | "actions" | "inventory" | "spells" | "features" | "journal" | "career";
+export type MainTab = "skills" | "actions" | "inventory" | "spells" | "features" | "journal" | "dice" | "career";
 export type MobileMainView = MainTab | "characteristics";
 export type JournalSubtab = "sessions" | "npcs" | "background";
 export type SkillSubtab = "all" | "advanced" | "basic";

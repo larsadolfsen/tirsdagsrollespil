@@ -1,13 +1,15 @@
+import { useState } from "react";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { AppSidebar } from "../../components/sidebar";
-import { Button } from "../../components/ui";
+import { Button, WfrpFilterChips } from "../../components/ui";
 import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/dice";
 
-interface DiceLogSidebarProps {
+interface DicePanelProps {
   activeRollerRef: RefObject<HTMLDivElement | null>;
   archiveRoll: (state: RollState, labelSuffix?: string) => void;
+  campaignCharacters?: Array<{ id: string; name: string }>;
   canRollCritical: boolean;
   canUseFortuneActions: boolean;
   canUseResilienceAction: boolean;
@@ -27,16 +29,17 @@ interface DiceLogSidebarProps {
   handleIWillNotFail: () => void;
   handleReroll: () => void;
   handleRollCritical: () => void;
-  isOpen: boolean;
   rollHistory: RollHistoryItem[];
   rollState: RollState;
-  setIsDiceLogOpen: Dispatch<SetStateAction<boolean>>;
   setRollState: Dispatch<SetStateAction<RollState>>;
 }
 
-export function DiceLogSidebar({
+type DicePanelMode = "log" | "roller";
+
+function DicePanel({
   activeRollerRef,
   archiveRoll,
+  campaignCharacters = [],
   canRollCritical,
   canUseFortuneActions,
   canUseResilienceAction,
@@ -56,46 +59,59 @@ export function DiceLogSidebar({
   handleIWillNotFail,
   handleReroll,
   handleRollCritical,
-  isOpen,
   rollHistory,
   rollState,
-  setIsDiceLogOpen,
   setRollState,
-}: DiceLogSidebarProps) {
-  const closeDiceLog = () => {
+  mode,
+}: DicePanelProps & { mode: DicePanelMode }) {
+  const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
+  const closeDiceRoller = () => {
     archiveRoll(rollState);
-    setIsDiceLogOpen(false);
     setRollState((prev) => ({ ...prev, characteristic: null }));
   };
+  const filteredRollHistory = selectedCharacterIds.length === 0
+    ? rollHistory
+    : rollHistory.filter((item) =>
+        item.characterId && selectedCharacterIds.includes(item.characterId),
+      );
+  const characterFilterOptions = campaignCharacters.map((character) => ({
+      id: character.id,
+      label: character.name,
+    }));
 
-  return (
-    <AppSidebar
-      isOpen={isOpen}
-      motionKey="dice-roller"
-      onClose={closeDiceLog}
-      className="xl:w-[360px] xl:max-w-[360px]"
-      contentClassName="overflow-x-hidden px-4 pb-4 pt-8"
-      title="Dice Log"
-      titleId="dice-log-sidebar-title"
-      closeLabel="Close dice log"
-      overlayUntil="desktop"
-      side="right"
-      trapFocus
-      closeOnOutsidePointerDown
-    >
-      <div className="flex flex-col">
-        {rollHistory.length > 0 && (
+  const content = (
+      <div className={mode === "log"
+        ? "flex max-w-2xl flex-col overflow-x-hidden px-5 pb-24 pt-8"
+        : "flex flex-col"
+      }>
+        {mode === "log" && filteredRollHistory.length > 0 && (
           <div className="flex flex-col gap-12 mb-12">
-            {rollHistory.map((item) => (
+            {filteredRollHistory.map((item) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex flex-col gap-3 px-1"
               >
-              <h3 className="wfrp-sidebar-title text-[11px] uppercase tracking-tight text-white/60">
-                {item.title ?? getTestTypeTitle(item.testType)}
-              </h3>
+              <div>
+                <h3 className="wfrp-sidebar-title text-[11px] uppercase tracking-tight text-white/60">
+                  {item.characterName ?? item.title ?? getTestTypeTitle(item.testType)}
+                </h3>
+                {(item.characterName || item.rolledAt) && (
+                  <p className="mt-1 wfrp-sidebar-body text-xs text-wfrp-muted-text">
+                    {item.characterName
+                      ? item.title ?? getTestTypeTitle(item.testType)
+                      : ""}
+                    {item.characterName && item.rolledAt ? " · " : ""}
+                    {item.rolledAt
+                      ? new Intl.DateTimeFormat(undefined, {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }).format(new Date(item.rolledAt))
+                      : ""}
+                  </p>
+                )}
+              </div>
 
               <div className="grid grid-cols-[minmax(72px,1fr)_56px_minmax(0,1fr)] items-center gap-1">
                 <span className="wfrp-list-cell-strong">{item.label}:</span>
@@ -202,8 +218,13 @@ export function DiceLogSidebar({
             ))}
           </div>
         )}
+        {mode === "log" && filteredRollHistory.length === 0 && (
+          <p className="px-1 text-left wfrp-sidebar-body text-wfrp-muted-text">
+            No rolls today.
+          </p>
+        )}
 
-        {rollState.characteristic && (
+        {mode === "roller" && rollState.characteristic && (
           <div
             ref={activeRollerRef}
             className="flex flex-col gap-3 px-1 scroll-mt-20 mb-[80vh] min-h-[200px] transition-all"
@@ -420,7 +441,7 @@ export function DiceLogSidebar({
             )}
 
             {!rollState.isRolling && rollState.result === null && (
-              <Button onClick={executeRoll} name="Roll" />
+              <Button onClick={executeRoll} className="w-max" name="Roll" />
             )}
 
             {!rollState.isRolling && rollState.result !== null && (
@@ -473,8 +494,58 @@ export function DiceLogSidebar({
           </div>
         )}
       </div>
-    </AppSidebar>
   );
+
+  if (mode === "roller") {
+    return (
+      <AppSidebar
+        isOpen={Boolean(rollState.characteristic)}
+        motionKey="dice-roller"
+        onClose={closeDiceRoller}
+        className="xl:w-[360px] xl:max-w-[360px]"
+        contentClassName="overflow-x-hidden px-4 pb-4 pt-8"
+        title="Dice Roller"
+        titleId="dice-roller-sidebar-title"
+        closeLabel="Close dice roller"
+        overlayUntil="desktop"
+        side="right"
+        trapFocus
+        closeOnOutsidePointerDown
+      >
+        {content}
+      </AppSidebar>
+    );
+  }
+
+  return (
+    <section
+      aria-labelledby="dice-log-page-title"
+      className="min-h-[500px] overflow-hidden"
+    >
+      <header className="max-w-2xl px-6 pt-4">
+        <h1 id="dice-log-page-title" className="font-serif text-2xl font-semibold leading-tight tracking-tight text-gray-100">
+          Dice Log
+        </h1>
+        <div className="mt-3">
+          <WfrpFilterChips
+            options={characterFilterOptions}
+            selectedIds={selectedCharacterIds}
+            onChange={setSelectedCharacterIds}
+            ariaLabel="Filter dice log by character"
+          />
+        </div>
+      </header>
+      {content}
+    </section>
+  );
+}
+
+export function DiceLogPage(props: DicePanelProps) {
+  return <DicePanel {...props} mode="log" />;
+}
+
+export function DiceRollerSidebar(props: DicePanelProps) {
+  return <DicePanel {...props} mode="roller" />;
 }
 
 function DigitReel({

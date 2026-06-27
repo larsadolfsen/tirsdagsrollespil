@@ -184,7 +184,16 @@ export function SheetDataAccordionRow({
   summaryClassName?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const content = <div className={cn("min-w-0 max-w-full", contentClassName)}>{children}</div>;
+  const content = (
+    <div
+      className={cn(
+        "min-w-0 max-w-full px-3 pb-4 pt-1 text-left md:px-4 md:pb-4",
+        contentClassName,
+      )}
+    >
+      {children}
+    </div>
+  );
 
   return (
     <SheetDataRow className={cn("wfrp-data-accordion-row block group", className)}>
@@ -211,7 +220,7 @@ export function SheetDataAccordionRow({
             setIsOpen((current) => !current);
           }}
           className={cn(
-            "wfrp-data-accordion-summary grid min-w-0 max-w-full cursor-pointer list-none items-center gap-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
+            "wfrp-data-accordion-summary grid min-w-0 max-w-full cursor-pointer list-none items-center gap-0 transition-colors hover:bg-wfrp-control-hover focus-visible:bg-wfrp-control-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
             summaryClassName,
           )}
         >
@@ -247,26 +256,28 @@ export function SheetDataAccordionDetails({
 }) {
   return (
     <div className={cn("flex min-w-0 max-w-full flex-col gap-2", className)}>
-      <div className="min-w-0 max-w-full">
+      <div className="min-w-0 max-w-full border-b border-white/10 pb-3">
         <div className="flex max-w-full flex-col gap-2 break-words wfrp-text-strong text-wfrp-muted-text md:max-w-3xl">
           {renderMarkedDescription(description, descriptionFallback)}
         </div>
       </div>
 
       {rows.length > 0 ? (
-        <div className="inline-flex w-fit max-w-full min-w-0 flex-col gap-1 pt-2">
-          {rows.map((row) => (
-            <div
-              key={row.label}
-              className={cn(
-                "grid min-w-0 grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 wfrp-text-strong text-wfrp-muted-text",
-                row.bordered && "border-y border-white/10 py-1",
-              )}
-            >
-              <span className="wfrp-list-cell-strong text-wfrp-muted-text">{row.label}</span>
-              <span className={cn("wfrp-sidebar-body min-w-0 text-left text-card-foreground", row.valueClassName)}>{row.value}</span>
-            </div>
-          ))}
+        <div className="min-w-0 max-w-full border-b border-white/10 pb-3">
+          <div className="inline-flex w-fit max-w-full min-w-0 flex-col gap-1 pt-2">
+            {rows.map((row) => (
+              <div
+                key={row.label}
+                className={cn(
+                  "grid min-w-0 grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 wfrp-text-strong text-wfrp-muted-text",
+                  row.bordered && "border-y border-white/10 py-1",
+                )}
+              >
+                <span className="wfrp-list-cell-strong text-wfrp-muted-text">{row.label}</span>
+                <span className={cn("wfrp-sidebar-body min-w-0 text-left text-card-foreground", row.valueClassName)}>{row.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
 

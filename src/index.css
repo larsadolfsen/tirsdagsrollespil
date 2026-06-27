@@ -170,7 +170,7 @@
 }
 
 @utility wfrp-label {
-  @apply text-[12px] font-semibold uppercase leading-none tracking-widest;
+  @apply text-[11px] font-semibold uppercase leading-none tracking-widest;
 }
 
 @utility wfrp-value {
@@ -181,11 +181,14 @@
   @apply bg-wfrp-gold text-primary-foreground hover:bg-[#d1ad65] hover:text-primary-foreground;
 }
 
+button:disabled {
+  cursor: default !important;
+}
+
 .wfrp-standard-btn--deactivated {
   @apply bg-[#3f3f3f] text-[#d0d0d0] hover:bg-[#3f3f3f] hover:text-[#d0d0d0];
   cursor: default !important;
   opacity: 0.2 !important;
-  pointer-events: none;
   transform: none !important;
   transition: none;
 }
@@ -306,7 +309,7 @@
 }
 
 @utility wfrp-stepper-btn {
-  @apply wfrp-text-strong flex h-10 w-10 min-w-10 shrink-0 items-center justify-center rounded bg-transparent p-0 leading-none text-wfrp-dice-text transition-all cursor-pointer active:scale-95 hover:text-wfrp-dice-text disabled:cursor-not-allowed disabled:opacity-35 disabled:active:scale-100 disabled:hover:text-wfrp-dice-text focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply wfrp-text-strong flex h-10 w-10 min-w-10 shrink-0 items-center justify-center rounded bg-transparent p-0 leading-none text-wfrp-dice-text transition-all cursor-pointer active:scale-95 hover:text-wfrp-dice-text disabled:cursor-default disabled:opacity-35 disabled:active:scale-100 disabled:hover:text-wfrp-dice-text focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
   font-family: var(--font-dice);
 }
 
@@ -340,7 +343,7 @@
 }
 
 .wfrp-stepper-btn--danger .wfrp-stepper-btn__inner {
-  @apply bg-destructive text-destructive-foreground;
+  @apply bg-destructive text-white;
 }
 
 .wfrp-stepper-btn--danger:hover:not(:disabled) .wfrp-stepper-btn__inner {
@@ -352,7 +355,7 @@
 }
 
 @utility wfrp-standard-icon {
-  @apply inline-flex w-12 min-w-12 shrink-0 items-center justify-center rounded p-0 text-wfrp-muted-text transition-all cursor-pointer hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply inline-flex w-12 min-w-12 shrink-0 items-center justify-center rounded p-0 text-wfrp-muted-text transition-all cursor-pointer hover:text-white active:scale-95 disabled:cursor-default disabled:opacity-40 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
 .wfrp-standard-icon__glyph {

@@ -55,6 +55,7 @@ const COMPRESSIBLE_CONTENT_TYPES = [
 const API_RATE_LIMIT_WINDOW_MS = 60_000;
 const API_RATE_LIMIT_MAX_REQUESTS = Number(process.env.WFRP_API_RATE_LIMIT_MAX_REQUESTS ?? 120);
 const API_WRITE_RATE_LIMIT_MAX_REQUESTS = Number(process.env.WFRP_API_WRITE_RATE_LIMIT_MAX_REQUESTS ?? 30);
+const campaignTimeZone = process.env.WFRP_CAMPAIGN_TIME_ZONE ?? "Europe/Copenhagen";
 
 if (requireAuthentication && !basicAuthPassword) {
   throw new Error(
@@ -79,6 +80,19 @@ database.exec(`
     value TEXT NOT NULL,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS dice_rolls (
+    id TEXT PRIMARY KEY,
+    campaign_id TEXT NOT NULL,
+    character_id TEXT NOT NULL,
+    character_name TEXT NOT NULL,
+    roll_json TEXT NOT NULL,
+    roll_date TEXT NOT NULL,
+    rolled_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS dice_rolls_campaign_date
+    ON dice_rolls (campaign_id, roll_date, rolled_at DESC);
 `);
 
 const selectCharacterProgress = database.prepare(`
@@ -131,12 +145,110 @@ const upsertMetadataValue = database.prepare(`
     value = excluded.value,
     updated_at = CURRENT_TIMESTAMP
 `);
+const selectCampaignDiceRolls = database.prepare(`
+  SELECT id, campaign_id, character_id, character_name, roll_json, rolled_at
+  FROM dice_rolls
+  WHERE campaign_id = ? AND roll_date = ?
+  ORDER BY rolled_at DESC, rowid DESC
+`);
+const insertDiceRoll = database.prepare(`
+  INSERT INTO dice_rolls (
+    id,
+    campaign_id,
+    character_id,
+    character_name,
+    roll_json,
+    roll_date,
+    rolled_at
+  ) VALUES (?, ?, ?, ?, ?, ?, ?)
+`);
+const deleteOlderDiceRolls = database.prepare(`
+  DELETE FROM dice_rolls
+  WHERE roll_date < ?
+`);
 
 let legacyMigrationPromise = null;
+const campaignDateFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: campaignTimeZone,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 
 function isSafeCharacterId(characterId) {
-  return /^[a-zA-Z0-9_-]+$/.test(characterId);
+  return typeof characterId === "string" && /^[a-zA-Z0-9_-]+$/.test(characterId);
 }
+
+function isSafeCampaignId(campaignId) {
+  return typeof campaignId === "string" && /^[a-zA-Z0-9_-]+$/.test(campaignId);
+}
+
+function currentCampaignDate(now = new Date()) {
+  const parts = Object.fromEntries(
+    campaignDateFormatter
+      .formatToParts(now)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value]),
+  );
+
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+function isFiniteRollNumber(value) {
+  return typeof value === "number" && Number.isFinite(value) && Math.abs(value) <= 10_000;
+}
+
+function isRollBonusSource(value) {
+  return Boolean(value) &&
+    typeof value === "object" &&
+    typeof value.label === "string" &&
+    value.label.length <= 100 &&
+    isFiniteRollNumber(value.value);
+}
+
+function isDiceRollPayload(value) {
+  return Boolean(value) &&
+    typeof value === "object" &&
+    typeof value.id === "string" &&
+    /^[a-zA-Z0-9_-]{1,100}$/.test(value.id) &&
+    typeof value.label === "string" &&
+    value.label.length <= 200 &&
+    (value.title === null || value.title === undefined ||
+      (typeof value.title === "string" && value.title.length <= 200)) &&
+    ["dramatic", "attack", "channeling", "corruption"].includes(value.testType) &&
+    isFiniteRollNumber(value.result) &&
+    isFiniteRollNumber(value.sl) &&
+    typeof value.isSuccess === "boolean" &&
+    isFiniteRollNumber(value.modifier) &&
+    Array.isArray(value.targetBonusSources) &&
+    value.targetBonusSources.length <= 20 &&
+    value.targetBonusSources.every(isRollBonusSource) &&
+    isFiniteRollNumber(value.target) &&
+    (value.damage === null || value.damage === undefined || isFiniteRollNumber(value.damage)) &&
+    (value.hitLocation === null || value.hitLocation === undefined ||
+      (typeof value.hitLocation === "string" && value.hitLocation.length <= 100)) &&
+    (value.isCritical === undefined || typeof value.isCritical === "boolean");
+}
+
+function pruneOlderDiceRolls(today = currentCampaignDate()) {
+  deleteOlderDiceRolls.run(today);
+  return today;
+}
+
+function rowToDiceRoll(row) {
+  const roll = parseJsonValue(row.roll_json, "roll_json", row.character_id);
+
+  return {
+    ...roll,
+    id: row.id,
+    campaignId: row.campaign_id,
+    characterId: row.character_id,
+    characterName: row.character_name,
+    rolledAt: row.rolled_at,
+  };
+}
+
+pruneOlderDiceRolls();
 
 function characterDirectoryPath(characterId) {
   if (!isSafeCharacterId(characterId)) {
@@ -754,6 +866,73 @@ app.put("/api/character-progress", async (req, res, next) => {
   try {
     await writeCharacterProgressMap(req.body ?? {});
     res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/dice-rolls/:campaignId", (req, res, next) => {
+  try {
+    const { campaignId } = req.params;
+    if (!isSafeCampaignId(campaignId)) {
+      res.status(400).json({ error: "Invalid campaign id" });
+      return;
+    }
+
+    const today = pruneOlderDiceRolls();
+    const rolls = selectCampaignDiceRolls
+      .all(campaignId, today)
+      .map(rowToDiceRoll);
+
+    res.json(rolls);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/dice-rolls/:campaignId", (req, res, next) => {
+  try {
+    const { campaignId } = req.params;
+    const { characterId, characterName, roll } = req.body ?? {};
+
+    if (!isSafeCampaignId(campaignId)) {
+      res.status(400).json({ error: "Invalid campaign id" });
+      return;
+    }
+    if (!isSafeCharacterId(characterId)) {
+      res.status(400).json({ error: "Invalid character id" });
+      return;
+    }
+    if (typeof characterName !== "string" || characterName.length < 1 || characterName.length > 200) {
+      res.status(400).json({ error: "Invalid character name" });
+      return;
+    }
+    if (!isDiceRollPayload(roll)) {
+      res.status(400).json({ error: "Invalid dice roll" });
+      return;
+    }
+
+    const today = pruneOlderDiceRolls();
+    const id = crypto.randomUUID();
+    const rolledAt = new Date().toISOString();
+    insertDiceRoll.run(
+      id,
+      campaignId,
+      characterId,
+      characterName,
+      JSON.stringify(roll),
+      today,
+      rolledAt,
+    );
+
+    res.status(201).json({
+      ...roll,
+      id,
+      campaignId,
+      characterId,
+      characterName,
+      rolledAt,
+    });
   } catch (error) {
     next(error);
   }

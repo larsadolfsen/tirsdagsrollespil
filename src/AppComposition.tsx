@@ -29,6 +29,7 @@ import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
   InlineSubtabs,
   MainTabMenu,
+  Breadcrumbs,
   BottomSheetPaper,
   Button,
   PanelSectionHeader,
@@ -57,6 +58,7 @@ import {
 } from "./lib/gameSession";
 import { useCampaignRouteSync } from "./lib/useCampaignRouteSync";
 import { buildCampaignCharacterPath, parseCampaignCharacterPath } from "./lib/campaignRoutes";
+import { campaignById } from "./data/campaigns";
 import {
   mainTabButtonActiveClassName,
   mainTabButtonBaseClassName,
@@ -94,8 +96,11 @@ const MobileMenuSidebar = lazy(() =>
 const SkillSidebar = lazy(() =>
   import("./components/sidebar").then((module) => ({ default: module.SkillSidebar })),
 );
-const DiceLogSidebar = lazy(() =>
-  import("./features/dice/DiceLogSidebar").then((module) => ({ default: module.DiceLogSidebar })),
+const DiceLogPage = lazy(() =>
+  import("./features/dice/DiceLogSidebar").then((module) => ({ default: module.DiceLogPage })),
+);
+const DiceRollerSidebar = lazy(() =>
+  import("./features/dice/DiceLogSidebar").then((module) => ({ default: module.DiceRollerSidebar })),
 );
 const CharacterBuilderScreen = lazy(() =>
   import("./components/CharacterBuilderScreen").then((module) => ({ default: module.CharacterBuilderScreen })),
@@ -260,11 +265,10 @@ export function AppComposition() {
     handleReroll,
     handleRoll,
     handleRollCritical,
-    isDiceLogOpen,
+    refreshRollHistory,
     resetDiceRoller,
     rollHistory,
     rollState,
-    setIsDiceLogOpen,
     setRollState,
   } = useDiceRoller({
     characterData,
@@ -452,7 +456,7 @@ export function AppComposition() {
     () =>
       displayedMobileMainViewOptions.reduce(
         (titles, option) => ({ ...titles, [option.id]: option.label }),
-        { career: "Edit Character" } as Record<MobileMainView, string>,
+        { career: "Edit Character", dice: "Dice Log" } as Record<MobileMainView, string>,
       ),
     [displayedMobileMainViewOptions],
   );
@@ -1132,7 +1136,6 @@ export function AppComposition() {
     setActiveInfo(null);
     setIsShopOpen(false);
     setIsSpellShopOpen(false);
-    setIsDiceLogOpen(false);
     setIsCharacteristicSidebarOpen(false);
     setIsSkillSidebarOpen(false);
     setIsTalentSidebarOpen(false);
@@ -1152,9 +1155,22 @@ export function AppComposition() {
   };
 
   const openDiceLog = () => {
+    archiveRoll(rollState);
     closeSidebars();
-    setIsDiceLogOpen(true);
+    selectMainTab("dice");
+    void refreshRollHistory();
   };
+
+  useEffect(() => {
+    if (activeMainTab !== "dice") return;
+
+    void refreshRollHistory();
+    const refreshInterval = window.setInterval(() => {
+      void refreshRollHistory();
+    }, 15_000);
+
+    return () => window.clearInterval(refreshInterval);
+  }, [activeMainTab, refreshRollHistory]);
 
   const openMobileAdvanceView = () => {
     openAdvanceView();
@@ -1298,6 +1314,40 @@ export function AppComposition() {
     : displayedMobilePageTitleByView[activeMobileMainView];
   const showMobileGainExperiencePage = isMobileGainExperienceOpen && !isDesktopLayout;
   const displayedMobilePageTitle = showMobileGainExperiencePage ? "Gain Experience" : mobilePageTitle;
+  const campaignName = campaignById[characterData.campaignId]?.name ?? UI_LABELS.CAMPAIGN_NAME;
+  const characterRootPath = buildCampaignCharacterPath({
+    campaignId: characterData.campaignId,
+    characterId: characterData.id,
+    view: "characteristics",
+    omitDefaultView: true,
+  });
+  const currentSectionLabel = showMobileGainExperiencePage
+    ? "Gain Experience"
+    : activeMainTab === "career"
+      ? "Edit Character"
+      : displayedMobilePageTitleByView[activeMobileMainView];
+  const activeCareerSubtabLabel = editCharacterTabOptions.find(
+    (option) => option.id === activeCareerSubtab,
+  )?.label;
+  const breadcrumbItems = [
+    {
+      label: campaignName,
+      href: "/",
+      onClick: () => {
+        window.history.pushState(null, "", "/");
+        setIsLandingPageOpen(true);
+      },
+    },
+    {
+      label: characterData.name,
+      href: characterRootPath,
+      onClick: () => selectMobileMainView("characteristics"),
+    },
+    { label: currentSectionLabel },
+    ...(activeMainTab === "career" && activeCareerSubtabLabel
+      ? [{ label: activeCareerSubtabLabel }]
+      : []),
+  ];
   const cancelEditCharacterPage = () => {
     careerTabRef.current?.discardChanges();
     resetPendingAdvancements();
@@ -1367,9 +1417,9 @@ export function AppComposition() {
       mobileAddAction={mobileAddAction}
       sidebars={(
         <>
-          {(isDiceLogOpen || Boolean(rollState.characteristic)) && (
+          {Boolean(rollState.characteristic) && (
             <Suspense fallback={null}>
-              <DiceLogSidebar
+              <DiceRollerSidebar
                 activeRollerRef={activeRollerRef}
                 archiveRoll={archiveRoll}
                 canRollCritical={canRollCritical}
@@ -1391,10 +1441,8 @@ export function AppComposition() {
                 handleIWillNotFail={handleIWillNotFail}
                 handleReroll={handleReroll}
                 handleRollCritical={handleRollCritical}
-                isOpen={isDiceLogOpen || Boolean(rollState.characteristic)}
                 rollHistory={rollHistory}
                 rollState={rollState}
-                setIsDiceLogOpen={setIsDiceLogOpen}
                 setRollState={setRollState}
               />
             </Suspense>
@@ -1486,9 +1534,10 @@ export function AppComposition() {
     >
           
           <CharacterSheetFrame
+            breadcrumbs={<Breadcrumbs items={breadcrumbItems} />}
             desktopHeader={(
               <CharacterSheetHeader
-                activeMenuItem={isDiceLogOpen || Boolean(rollState.characteristic) ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
+                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
@@ -1505,7 +1554,7 @@ export function AppComposition() {
             )}
             mobileHeader={(
               <CharacterSheetHeader
-                activeMenuItem={isDiceLogOpen || Boolean(rollState.characteristic) ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
+                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
@@ -1520,7 +1569,7 @@ export function AppComposition() {
                 xpCurrent={xpCurrent}
               />
             )}
-            hideMobileNavigation={showMobileGainExperiencePage}
+            hideMobileNavigation={showMobileGainExperiencePage || activeMainTab === "dice"}
             mobileTitle={displayedMobilePageTitle}
             onMobileNextView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFrameNext}
             onMobilePreviousView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFramePrevious}
@@ -1535,6 +1584,36 @@ export function AppComposition() {
               onCancel={() => setIsMobileGainExperienceOpen(false)}
               xpCurrent={xpCurrent}
               xpTotal={characterData.xpTotal}
+            />
+          ) : activeMainTab === "dice" ? (
+            <DiceLogPage
+              activeRollerRef={activeRollerRef}
+              archiveRoll={archiveRoll}
+              campaignCharacters={availableCharacters
+                .filter((character) => character.campaignId === characterData.campaignId)
+                .map((character) => ({ id: character.id, name: character.name }))}
+              canRollCritical={canRollCritical}
+              canUseFortuneActions={canUseFortuneActions}
+              canUseResilienceAction={canUseResilienceAction}
+              displayRoll={displayRoll}
+              executeRoll={executeRoll}
+              formatSignedSl={formatSignedSl}
+              getDamageTotal={getDamageTotal}
+              getDifficultyLabel={getDifficultyLabel}
+              getHitLocation={getHitLocation}
+              getIsCritical={getIsCritical}
+              getOutcome={getOutcome}
+              getRollBaseValue={getRollBaseValue}
+              getRollTarget={getRollTarget}
+              getTargetBonusTotal={getTargetBonusTotal}
+              getTestTypeTitle={getTestTypeTitle}
+              handleAddSl={handleAddSl}
+              handleIWillNotFail={handleIWillNotFail}
+              handleReroll={handleReroll}
+              handleRollCritical={handleRollCritical}
+              rollHistory={rollHistory}
+              rollState={rollState}
+              setRollState={setRollState}
             />
           ) : activeMainTab === "career" ? (
             <>
@@ -1809,6 +1888,7 @@ export function AppComposition() {
                         setBackgroundText={setBackgroundText}
                       />
                       )}
+
                       </LazyTabPanel>
                     </MobileMainViewSwipeProvider>
                   </div>

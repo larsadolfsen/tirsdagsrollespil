@@ -5,6 +5,7 @@ import type {
   ResolvedCharacterSkill,
   ResolvedCharacterTalent,
 } from "../../data/characters/resolved";
+import { loadCampaignDiceRolls, saveCampaignDiceRoll } from "../../data/diceRolls";
 import { getApplicableTalentEffects, getTalentSlBonusSources } from "../../lib/talentEffects";
 import type { ActiveInfoState } from "../../components/appTypes";
 import type { Characteristic, Ruleset } from "../../types";
@@ -53,10 +54,22 @@ export function useDiceRoller({
   setResilienceCurrent,
 }: UseDiceRollerOptions) {
   const [rollHistory, setRollHistory] = useState<RollHistoryItem[]>([]);
-  const [isDiceLogOpen, setIsDiceLogOpen] = useState(false);
   const [rollState, setRollState] = useState<RollState>(createInitialRollState);
   const [displayRoll, setDisplayRoll] = useState(0);
   const activeRollerRef = useRef<HTMLDivElement>(null);
+
+  const refreshRollHistory = useCallback(async () => {
+    try {
+      setRollHistory(await loadCampaignDiceRolls(characterData.campaignId));
+    } catch (error) {
+      console.error("Could not refresh the campaign dice log.", error);
+    }
+  }, [characterData.campaignId]);
+
+  useEffect(() => {
+    setRollHistory([]);
+    void refreshRollHistory();
+  }, [refreshRollHistory]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -80,8 +93,6 @@ export function useDiceRoller({
   }, [rollState.characteristic, rollState.result]);
 
   const resetDiceRoller = useCallback(() => {
-    setIsDiceLogOpen(false);
-    setRollHistory([]);
     setRollState(createInitialRollState());
   }, []);
 
@@ -160,7 +171,11 @@ export function useDiceRoller({
     if (!state.characteristic || state.result === null) return;
 
     const historyItem: RollHistoryItem = {
-      id: Math.random().toString(36).substring(2, 9),
+      id: globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).substring(2, 12),
+      campaignId: characterData.campaignId,
+      characterId: characterData.id,
+      characterName: characterData.name,
+      rolledAt: new Date().toISOString(),
       label: `${state.characteristic.label}${labelSuffix ?? ""}`,
       title: state.title ? `${state.title}${labelSuffix ?? ""}` : null,
       testType: state.testType,
@@ -176,6 +191,23 @@ export function useDiceRoller({
     };
 
     setRollHistory((prev) => [historyItem, ...prev]);
+    void saveCampaignDiceRoll({
+      campaignId: characterData.campaignId,
+      characterId: characterData.id,
+      characterName: characterData.name,
+      roll: historyItem,
+    })
+      .then((savedRoll) => {
+        setRollHistory((prev) => {
+          const containsOptimisticRoll = prev.some((item) => item.id === historyItem.id);
+          return containsOptimisticRoll
+            ? prev.map((item) => item.id === historyItem.id ? savedRoll : item)
+            : [savedRoll, ...prev];
+        });
+      })
+      .catch((error) => {
+        console.error("Could not save the campaign dice roll.", error);
+      });
   };
 
   const applySlChange = (delta: number) => {
@@ -401,11 +433,10 @@ export function useDiceRoller({
     handleReroll,
     handleRoll,
     handleRollCritical,
-    isDiceLogOpen,
     resetDiceRoller,
+    refreshRollHistory,
     rollHistory,
     rollState,
-    setIsDiceLogOpen,
     setRollHistory,
     setRollState,
   };

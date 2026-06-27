@@ -15,7 +15,7 @@ export function CharacteristicsView({
 }: CharacteristicsViewProps) {
   return (
     <section className={activeMobileMainView === "characteristics" ? "relative block pb-5 md:pb-0" : "relative hidden md:block"}>
-      <div className="grid grid-cols-[repeat(5,max-content)] justify-center gap-x-[max(0px,min(1.5rem,calc((100%-280px)/4)))] gap-y-6 xl:grid-cols-[repeat(10,max-content)] xl:gap-x-[max(0px,min(1.5rem,calc((100%-800px)/9)))]">
+      <div className="grid grid-cols-[repeat(5,max-content)] justify-center gap-x-[max(0px,min(1.5rem,calc((100%-280px)/4)))] gap-y-6 md:grid-cols-[repeat(10,max-content)] md:gap-x-4">
         {(UI_LABELS.CHARACTERISTICS as Characteristic[]).map((characteristic) => {
           const value = attributes[characteristic.key] || 0;
           const bonus = Math.floor(value / 10);

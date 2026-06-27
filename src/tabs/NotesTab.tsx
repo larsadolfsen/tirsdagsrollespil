@@ -172,7 +172,7 @@ export function NotesTab({
             <SheetDataAccordionRow
               key={note.id}
               summaryClassName={`${entryGridClass} gap-0`}
-              contentClassName={`px-3 pb-1 pt-1 md:col-start-1 md:px-4 md:pb-1 ${isNpcList ? "md:col-end-4" : "md:col-end-5"}`}
+              contentClassName="pb-1 md:pb-1"
               summary={(
                 <>
                   <div className="wfrp-list-cell-strong min-w-0 text-center font-mono text-gray-200">

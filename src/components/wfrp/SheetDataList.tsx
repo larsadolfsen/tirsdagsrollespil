@@ -61,7 +61,7 @@ export function SheetDataResponsiveListRow({
       <details className={cn("group/details md:hidden", detailsClassName)}>
         <summary
           className={cn(
-            "grid min-h-11 cursor-pointer list-none items-center gap-2 [&::-webkit-details-marker]:hidden",
+            "grid min-h-11 cursor-pointer list-none items-center gap-2 transition-colors hover:bg-wfrp-control-hover focus-visible:bg-wfrp-control-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/40 [&::-webkit-details-marker]:hidden",
             summaryClassName,
           )}
         >
@@ -164,13 +164,17 @@ export function SheetRowActionButton({
   children,
   className,
   type = "button",
+  variant = "default",
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "default" | "danger";
+}) {
   return (
     <button
       type={type}
       className={cn(
-        "wfrp-stepper-btn wfrp-stepper-btn--value focus-visible:ring-wfrp-gold/50",
+        "wfrp-stepper-btn wfrp-stepper-btn--value justify-self-start text-left focus-visible:ring-wfrp-gold/50",
+        variant === "danger" && "wfrp-stepper-btn--danger",
         className,
       )}
       {...props}

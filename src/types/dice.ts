@@ -9,6 +9,10 @@ export interface RollBonusSource {
 
 export interface RollHistoryItem {
   id: string;
+  campaignId?: string;
+  characterId?: string;
+  characterName?: string;
+  rolledAt?: string;
   label: string;
   title?: string | null;
   testType: RollTestType;

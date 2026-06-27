@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
 
-test("dice roller starts close to the Dice Log header", async ({ page }) => {
+test("dice roller starts close to the Dice Roller header", async ({ page }) => {
   await page.goto("/enemy_within/karl_muller/skills");
 
   await page.getByRole("button", { name: /Roll for/ }).first().click();
 
   const sidebar = page.locator('aside[role="dialog"]').first();
-  await expect(sidebar.getByRole("heading", { name: "Dice Log" })).toBeVisible();
+  await expect(sidebar.getByRole("heading", { name: "Dice Roller" })).toBeVisible();
 
   const header = sidebar.locator("header");
   const rollerTitle = sidebar.locator(".wfrp-sidebar-title").first();

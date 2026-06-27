@@ -123,7 +123,6 @@ export function SpellsTab({
               <SheetDataAccordionRow
                 key={spell.name}
                 summaryClassName={`${mobileSpellGridClass} md:grid ${desktopSpellGridClass} md:gap-0`}
-                contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                 summary={(
                   <>
                     <SheetDataRollCell>

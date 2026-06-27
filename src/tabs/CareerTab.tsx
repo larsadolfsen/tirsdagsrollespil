@@ -502,7 +502,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
             >
               <SheetDataAccordionRow
                 summaryClassName={`${experienceGridClass} ${advanceRowInsetClass}`}
-                contentClassName="px-3 pb-4 pt-1 md:px-4"
                 summary={(
                   <>
                     <div className={`wfrp-list-cell-strong min-w-0 truncate text-left ${advanceRowTitleClass}`}>
@@ -526,7 +525,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
               </SheetDataAccordionRow>
               <SheetDataAccordionRow
                 summaryClassName={`${experienceGridClass} ${advanceRowInsetClass}`}
-                contentClassName="px-3 pb-4 pt-1 md:px-4"
                 summary={(
                   <>
                     <div className={`wfrp-list-cell-strong min-w-0 truncate text-left ${advanceRowTitleClass}`}>
@@ -621,7 +619,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                     <SheetDataAccordionRow
                       key={careerRow.id}
                       summaryClassName={`${careerPathGridClass} ${advanceRowInsetClass}`}
-                      contentClassName="px-3 pb-4 pt-1 md:px-4"
                       summary={(
                         <>
                           <div className={`min-w-0 ${advanceRowTitleClass}`}>
@@ -762,7 +759,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       key={item.key}
                       className="group"
                       summaryClassName={`${characteristicAdvanceGridClass} gap-0 ${advanceRowInsetClass}`}
-                      contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
                           <Button variant="unstyled"
@@ -896,7 +892,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                             key={skillRow.skillName}
                             className="group"
                             summaryClassName={`${skillAdvanceGridClass} gap-0 ${advanceRowInsetClass}`}
-                            contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                             summary={(
                               <>
                               <Button variant="unstyled"
@@ -1009,7 +1004,6 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
                       key={talentName}
                       className="group"
                       summaryClassName={`${talentAdvanceGridClass} gap-0 ${advanceRowInsetClass}`}
-                      contentClassName="px-10 pb-4 pt-1 md:col-span-full md:px-14 md:pb-4"
                       summary={(
                         <>
                         <Button variant="unstyled"

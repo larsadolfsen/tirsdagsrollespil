@@ -192,7 +192,7 @@ export function InventoryTab({
 
   const renderItemDropAction = (item: ResolvedCharacterEquipment) => (
     <SheetRowActionButton
-      className="wfrp-stepper-btn--danger justify-self-end"
+      variant="danger"
       onClick={(event) => {
         event.preventDefault();
         handleToggleInventoryMenu(item.id, event, "drop");
@@ -499,7 +499,6 @@ export function InventoryTab({
                         isDesktopDragEnabled && wallet.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                       }`}
                       summaryClassName={`${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
-                      contentClassName="px-4 pb-4 pt-0 md:pb-4"
                       summary={(
                         <>
                           {renderDragHandle({
@@ -521,7 +520,7 @@ export function InventoryTab({
                       <SheetDataAccordionDetails
                         rows={wallet.mobileDetails.map((field) => ({ label: field.label, value: field.value }))}
                       >
-                        <div className="border-t border-white/10 pt-2">
+                        <div className="pt-2">
                           <div className="mb-1 wfrp-label text-wfrp-muted-text">
                             Move
                           </div>
@@ -551,7 +550,6 @@ export function InventoryTab({
                           isDesktopDragEnabled && row.isDraggable ? "cursor-grab active:cursor-grabbing" : ""
                         }`}
                         summaryClassName={`${mobileInventoryGridClass} md:grid ${desktopInventoryGridClass} md:gap-0`}
-                        contentClassName="px-4 pb-4 pt-0 md:pb-4"
                         summary={(
                           <>
                             {renderDragHandle({
@@ -581,14 +579,12 @@ export function InventoryTab({
                             { label: "Value", value: row.value },
                           ]}
                         >
-                          <div className="border-t border-white/10 pt-2">
+                          <div className="pt-2">
                             <div className="mb-1 wfrp-label text-wfrp-muted-text">
                               Move
                             </div>
-                            <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-                              <div className="flex min-w-0 flex-wrap items-center gap-2">
-                                {renderItemMoveActions(item)}
-                              </div>
+                            <div className="flex min-w-0 flex-wrap items-center justify-start gap-2">
+                              {renderItemMoveActions(item)}
                               {renderItemDropAction(item)}
                             </div>
                           </div>

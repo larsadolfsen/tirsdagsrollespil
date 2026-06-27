@@ -3,6 +3,7 @@ import { useHorizontalSwipePager } from "../hooks/useHorizontalSwipePager";
 import { WfrpArrowButton } from "./ui";
 
 interface CharacterSheetFrameProps {
+  breadcrumbs: ReactNode;
   children: ReactNode;
   desktopHeader: ReactNode;
   hideMobileNavigation?: boolean;
@@ -63,6 +64,7 @@ function MobileTitlePager({
 }
 
 export function CharacterSheetFrame({
+  breadcrumbs,
   children,
   desktopHeader,
   hideMobileNavigation = false,
@@ -86,6 +88,8 @@ export function CharacterSheetFrame({
       {mobileHeader}
 
       <div className="mx-auto flex w-full max-w-[1199px] flex-col gap-4 px-4 py-4 md:gap-8">
+        {breadcrumbs}
+
         <MobileTitlePager
           action={mobileTitleAction}
           hideNavigation={hideMobileNavigation}

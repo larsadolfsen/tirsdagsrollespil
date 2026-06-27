@@ -1,17 +1,69 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import {randomUUID} from 'node:crypto';
 import fs from 'node:fs';
 import path from 'path';
+import {DatabaseSync} from 'node:sqlite';
 import {defineConfig} from 'vite';
 import type {Plugin} from 'vite';
 
 const progressFilePath = path.resolve(__dirname, 'data', 'character-progress.json');
 const characterDataDirectory = path.resolve(__dirname, 'data', 'characters');
+const databaseFilePath = path.resolve(__dirname, 'data', 'tirsdagsrollespil.sqlite');
+const campaignDateFormatter = new Intl.DateTimeFormat('en-CA', {
+  timeZone: process.env.WFRP_CAMPAIGN_TIME_ZONE ?? 'Europe/Copenhagen',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+const database = new DatabaseSync(databaseFilePath);
+database.exec(`
+  CREATE TABLE IF NOT EXISTS dice_rolls (
+    id TEXT PRIMARY KEY,
+    campaign_id TEXT NOT NULL,
+    character_id TEXT NOT NULL,
+    character_name TEXT NOT NULL,
+    roll_json TEXT NOT NULL,
+    roll_date TEXT NOT NULL,
+    rolled_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS dice_rolls_campaign_date
+    ON dice_rolls (campaign_id, roll_date, rolled_at DESC);
+`);
+const selectCampaignDiceRolls = database.prepare(`
+  SELECT id, campaign_id, character_id, character_name, roll_json, rolled_at
+  FROM dice_rolls
+  WHERE campaign_id = ? AND roll_date = ?
+  ORDER BY rolled_at DESC, rowid DESC
+`);
+const insertDiceRoll = database.prepare(`
+  INSERT INTO dice_rolls (
+    id, campaign_id, character_id, character_name, roll_json, roll_date, rolled_at
+  ) VALUES (?, ?, ?, ?, ?, ?, ?)
+`);
+const deleteOlderDiceRolls = database.prepare('DELETE FROM dice_rolls WHERE roll_date < ?');
 
 type CharacterProgressMap = Record<string, Record<string, unknown>>;
 
 function isSafeCharacterId(characterId: string) {
   return /^[a-zA-Z0-9_-]+$/.test(characterId);
+}
+
+function currentCampaignDate() {
+  const parts = Object.fromEntries(
+    campaignDateFormatter
+      .formatToParts(new Date())
+      .filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, part.value]),
+  );
+
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+function getRequestPathId(url: string | undefined) {
+  const encodedId = url?.match(/^\/([^/?#]+)/)?.[1];
+  return encodedId ? decodeURIComponent(encodedId) : null;
 }
 
 function readJsonFile(filePath: string, fallback: unknown) {
@@ -198,6 +250,93 @@ function characterProgressFilePlugin(): Plugin {
   };
 }
 
+function campaignDiceRollsPlugin(): Plugin {
+  return {
+    name: 'wfrp-campaign-dice-rolls',
+    configureServer(server) {
+      server.middlewares.use('/api/dice-rolls', async (req, res) => {
+        const campaignId = getRequestPathId(req.url);
+        if (!campaignId || !isSafeCharacterId(campaignId)) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({error: 'Invalid campaign id'}));
+          return;
+        }
+
+        const today = currentCampaignDate();
+        deleteOlderDiceRolls.run(today);
+        res.setHeader('Content-Type', 'application/json');
+
+        if (req.method === 'GET') {
+          const rolls = selectCampaignDiceRolls.all(campaignId, today).map((row) => {
+            const typedRow = row as Record<string, string>;
+            return {
+              ...JSON.parse(typedRow.roll_json),
+              id: typedRow.id,
+              campaignId: typedRow.campaign_id,
+              characterId: typedRow.character_id,
+              characterName: typedRow.character_name,
+              rolledAt: typedRow.rolled_at,
+            };
+          });
+          res.end(JSON.stringify(rolls));
+          return;
+        }
+
+        if (req.method === 'POST') {
+          try {
+            const body = await readRequestJson(req) as Record<string, unknown>;
+            const characterId = body.characterId;
+            const characterName = body.characterName;
+            const roll = body.roll;
+
+            if (
+              typeof characterId !== 'string' ||
+              !isSafeCharacterId(characterId) ||
+              typeof characterName !== 'string' ||
+              !characterName ||
+              !roll ||
+              typeof roll !== 'object'
+            ) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({error: 'Invalid dice roll'}));
+              return;
+            }
+
+            const id = randomUUID();
+            const rolledAt = new Date().toISOString();
+            insertDiceRoll.run(
+              id,
+              campaignId,
+              characterId,
+              characterName,
+              JSON.stringify(roll),
+              today,
+              rolledAt,
+            );
+
+            res.statusCode = 201;
+            res.end(JSON.stringify({
+              ...roll,
+              id,
+              campaignId,
+              characterId,
+              characterName,
+              rolledAt,
+            }));
+          } catch {
+            res.statusCode = 400;
+            res.end(JSON.stringify({error: 'Invalid dice roll JSON'}));
+          }
+          return;
+        }
+
+        res.statusCode = 405;
+        res.end(JSON.stringify({error: 'Method not allowed'}));
+      });
+    },
+  };
+}
+
 function nonBlockingStylesheetPlugin(): Plugin {
   return {
     name: 'wfrp-non-blocking-stylesheets',
@@ -222,7 +361,13 @@ function nonBlockingStylesheetPlugin(): Plugin {
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), characterProgressFilePlugin(), nonBlockingStylesheetPlugin()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      characterProgressFilePlugin(),
+      campaignDiceRollsPlugin(),
+      nonBlockingStylesheetPlugin(),
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
