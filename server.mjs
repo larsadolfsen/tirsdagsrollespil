@@ -991,7 +991,7 @@ app.use(
   }),
 );
 
-app.get("*", (_req, res) => {
+app.get(/.*/, (_req, res) => {
   if (disableHttpCache) {
     res.setHeader("Cache-Control", "no-store, max-age=0");
     res.setHeader("Pragma", "no-cache");
