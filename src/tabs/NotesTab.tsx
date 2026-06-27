@@ -137,7 +137,7 @@ export function NotesTab({
                     key={tag}
                     type="button"
                     onClick={() => setNoteSearch(isActive ? "" : tagSearch)}
-                    className={`rounded border px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                    className={`rounded border px-2 py-1 wfrp-label tracking-wider transition-colors ${
                       isActive
                         ? "border-wfrp-gold/60 bg-wfrp-gold/15 text-wfrp-gold"
                         : "border-white/10 bg-black/25 text-wfrp-muted-text hover:text-gray-200 hover:border-white/20"
@@ -178,7 +178,7 @@ export function NotesTab({
                   <div className="wfrp-list-cell-strong min-w-0 text-center font-mono text-gray-200">
                     {noteNumberById.get(note.id)}
                   </div>
-                  <div className="min-w-0 truncate text-[12px] font-semibold leading-relaxed text-wfrp-muted-text">
+                  <div className="min-w-0 truncate wfrp-text-strong leading-relaxed text-wfrp-muted-text">
                     {note.title ?? "Untitled Entry"}
                   </div>
                   {!isNpcList ? (

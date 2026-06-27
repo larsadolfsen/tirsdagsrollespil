@@ -158,7 +158,7 @@ export function SidebarFilterList<TId extends string = string>({
         aria-selected={isActive}
         onClick={() => selectVisibleOption(option.id)}
         tabIndex={isActive ? 0 : -1}
-        className="group inline-flex h-12 shrink-0 cursor-pointer items-center justify-center bg-transparent p-0 text-[11px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
+        className="group inline-flex h-12 shrink-0 cursor-pointer items-center justify-center bg-transparent p-0 wfrp-label focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
       >
         <span
           className={cn(
@@ -179,7 +179,7 @@ export function SidebarFilterList<TId extends string = string>({
 
   return (
     <div className={cn("relative", isMoreOpen ? "z-50" : "z-10")}>
-      <div className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">
+      <div className="wfrp-label text-wfrp-muted-text">
         {label}
       </div>
       <div ref={rowShellRef} className="min-w-0 max-w-full">
@@ -192,7 +192,7 @@ export function SidebarFilterList<TId extends string = string>({
               <button
                 type="button"
                 onClick={() => setIsMoreOpen((isOpen) => !isOpen)}
-                className="group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 text-[11px] font-bold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
+                className="group inline-flex h-12 cursor-pointer items-center justify-center bg-transparent p-0 wfrp-label focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
                 aria-expanded={isMoreOpen}
                 aria-label={`Show more ${label.toLowerCase()} filters`}
               >
@@ -219,7 +219,7 @@ export function SidebarFilterList<TId extends string = string>({
                           setIsMoreOpen(false);
                         }}
                         className={cn(
-                          "flex h-8 w-full items-center whitespace-nowrap rounded px-2 text-left text-[10px] font-black uppercase tracking-widest transition-colors",
+                          "flex h-8 w-full items-center whitespace-nowrap rounded px-2 text-left wfrp-label transition-colors",
                           isActive ? "bg-wfrp-gold/10 text-wfrp-gold" : "text-wfrp-muted-text hover:bg-white/10",
                         )}
                       >

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useHorizontalSwipePager } from "../hooks/useHorizontalSwipePager";
-import { WfrpStandardIcon } from "./ui";
+import { WfrpArrowButton } from "./ui";
 
 interface CharacterSheetFrameProps {
   children: ReactNode;
@@ -32,7 +31,7 @@ function MobileTitlePager({
   if (hideNavigation) {
     return (
       <div className="md:hidden">
-        <h1 className="min-w-0 text-center font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
+        <h1 className="min-w-0 text-center font-serif text-2xl font-semibold leading-tight tracking-tight text-gray-100">
           {title}
         </h1>
       </div>
@@ -44,21 +43,19 @@ function MobileTitlePager({
       className="grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-2 md:hidden"
       {...swipeHandlers}
     >
-      <WfrpStandardIcon
+      <WfrpArrowButton
+        direction="left"
         onClick={onPrevious}
-        className="border-transparent bg-transparent text-gray-300 shadow-none hover:border-transparent hover:bg-transparent hover:text-white"
         label="Show previous character sheet tab"
-        icon={<ChevronLeft />}
       />
-      <h1 className="min-w-0 text-center font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
+      <h1 className="min-w-0 text-center font-serif text-2xl font-semibold leading-tight tracking-tight text-gray-100">
         {title}
       </h1>
       {action ?? (
-        <WfrpStandardIcon
+        <WfrpArrowButton
+          direction="right"
           onClick={onNext}
-          className="border-transparent bg-transparent text-gray-300 shadow-none hover:border-transparent hover:bg-transparent hover:text-white"
           label="Show next character sheet tab"
-          icon={<ChevronRight />}
         />
       )}
     </div>

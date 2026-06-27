@@ -41,7 +41,7 @@ export function ResourceCounterBar({
   const safeMax = Math.max(0, max);
   const safeCurrent = Math.min(Math.max(0, current), safeMax);
   const percent = safeMax > 0 ? (safeCurrent / safeMax) * 100 : 0;
-  const counterClassName = `text-[10px] font-bold ${counterToneClassName}`;
+  const counterClassName = `text-[10px] font-semibold ${counterToneClassName}`;
 
   return (
     <div className={className ?? "flex items-center gap-0"}>
@@ -58,7 +58,7 @@ export function ResourceCounterBar({
 
       <div className={contentClassName ?? "flex w-20 min-w-0 flex-col gap-1 sm:w-24 lg:w-36"}>
         <div className="flex items-end justify-between gap-2 leading-none">
-          <span className="truncate text-[9px] font-bold uppercase tracking-tight text-wfrp-muted-text">
+          <span className="truncate wfrp-label tracking-tight text-wfrp-muted-text">
             {label}
           </span>
           <span className={`${counterClassName} shrink-0`}>

@@ -22,7 +22,7 @@ export function Chip({
           <X size={10} />
         </button>
       ) : null}
-      <span className="text-[10px] font-bold uppercase tracking-wider text-wfrp-muted-text transition-colors group-hover:text-gray-200">
+      <span className="wfrp-label tracking-wider text-wfrp-muted-text transition-colors group-hover:text-gray-200">
         {children}
       </span>
     </span>

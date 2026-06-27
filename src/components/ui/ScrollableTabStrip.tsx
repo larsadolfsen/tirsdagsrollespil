@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { WfrpStandardIcon } from "./WfrpStandardIcon";
+import { WfrpArrowButton } from "./WfrpArrowButton";
 
 export function ScrollableTabStrip({
   children,
@@ -17,6 +16,7 @@ export function ScrollableTabStrip({
   const stripRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
 
   useEffect(() => {
     const element = stripRef.current;
@@ -24,6 +24,7 @@ export function ScrollableTabStrip({
 
     const updateScrollState = () => {
       const maxScrollLeft = element.scrollWidth - element.clientWidth;
+      setHasOverflow(maxScrollLeft > 4);
       setCanScrollLeft(element.scrollLeft > 4);
       setCanScrollRight(maxScrollLeft - element.scrollLeft > 4);
     };
@@ -57,32 +58,27 @@ export function ScrollableTabStrip({
       <div
         ref={stripRef}
         className={`${className} !pl-0 md:!pl-3 lg:!pl-4 md:pr-12`}
+        data-overflowing={hasOverflow ? "true" : "false"}
         role={role}
         aria-label={ariaLabel}
       >
         {children}
       </div>
       {canScrollLeft && (
-        <>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-14 bg-gradient-to-r from-transparent via-transparent to-transparent md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
-          <WfrpStandardIcon
-            onClick={scrollTabsLeft}
-            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 border border-white/10 bg-wfrp-tab-control/95 text-gray-300 shadow-lg hover:border-white/20 focus-visible:ring-white/30"
-            label="Show previous tabs"
-            icon={<ChevronLeft />}
-          />
-        </>
+        <WfrpArrowButton
+          direction="left"
+          label="Show previous tabs"
+          onClick={scrollTabsLeft}
+          variant="scrollOverlay"
+        />
       )}
       {canScrollRight && (
-        <>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-transparent via-transparent to-transparent md:from-wfrp-surface-subtle md:via-wfrp-surface-subtle/95 md:to-transparent" />
-          <WfrpStandardIcon
-            onClick={scrollTabsRight}
-            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 border border-white/10 bg-wfrp-tab-control/95 text-gray-300 shadow-lg hover:border-white/20 focus-visible:ring-white/30"
-            label="Show more tabs"
-            icon={<ChevronRight />}
-          />
-        </>
+        <WfrpArrowButton
+          direction="right"
+          label="Show more tabs"
+          onClick={scrollTabsRight}
+          variant="scrollOverlay"
+        />
       )}
     </div>
   );

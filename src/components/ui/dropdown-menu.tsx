@@ -97,7 +97,7 @@ export function DropdownMenuItem({ className, inset, onClick, ...props }: HTMLAt
         context.setOpen(false);
       }}
       className={cn(
-        "relative flex min-h-9 cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "wfrp-text relative flex min-h-9 cursor-pointer select-none items-center rounded-sm px-2 py-1.5 outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         inset && "pl-8",
         className,
       )}
@@ -107,7 +107,7 @@ export function DropdownMenuItem({ className, inset, onClick, ...props }: HTMLAt
 }
 
 export function DropdownMenuLabel({ className, inset, ...props }: HTMLAttributes<HTMLDivElement> & { inset?: boolean }) {
-  return <div className={cn("px-2 py-1.5 text-xs font-black uppercase tracking-widest text-muted-foreground", inset && "pl-8", className)} {...props} />;
+  return <div className={cn("wfrp-label px-2 py-1.5 text-muted-foreground", inset && "pl-8", className)} {...props} />;
 }
 
 export function DropdownMenuSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -123,5 +123,5 @@ export const DropdownMenuSubContent = DropdownMenuContent;
 export const DropdownMenuCheckboxItem = DropdownMenuItem;
 export const DropdownMenuRadioItem = DropdownMenuItem;
 export const DropdownMenuShortcut = ({ className, ...props }: HTMLAttributes<HTMLSpanElement>) => (
-  <span className={cn("ml-auto text-xs tracking-widest opacity-60", className)} {...props} />
+  <span className={cn("ml-auto wfrp-label opacity-60", className)} {...props} />
 );

@@ -1,8 +1,8 @@
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
 import { motion } from "motion/react";
+import { AppSidebar } from "../../components/sidebar";
 import { Button } from "../../components/ui";
-import { WfrpSidebar } from "../../components/wfrp";
 import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/dice";
 
 interface DiceLogSidebarProps {
@@ -69,15 +69,19 @@ export function DiceLogSidebar({
   };
 
   return (
-    <WfrpSidebar
+    <AppSidebar
       isOpen={isOpen}
       motionKey="dice-roller"
       onClose={closeDiceLog}
-      className="w-[360px]"
-      contentClassName="overflow-x-hidden px-4 pb-4 pt-4"
+      className="xl:w-[360px] xl:max-w-[360px]"
+      contentClassName="overflow-x-hidden px-4 pb-4 pt-8"
       title="Dice Log"
-      kicker="Roll & Results"
+      titleId="dice-log-sidebar-title"
       closeLabel="Close dice log"
+      overlayUntil="desktop"
+      side="right"
+      trapFocus
+      closeOnOutsidePointerDown
     >
       <div className="flex flex-col">
         {rollHistory.length > 0 && (
@@ -226,33 +230,47 @@ export function DiceLogSidebar({
               ))}
 
               <span className="wfrp-list-cell-strong">Difficulty:</span>
-              <span className="wfrp-sidebar-body text-right text-gray-200">
-                {rollState.modifier >= 0 ? "+" : ""}
-                {rollState.modifier}
-              </span>
               {rollState.result === null || rollState.isRolling ? (
-                <div className="flex items-center gap-1 justify-self-start">
-                  <button
-                    disabled={rollState.isRolling}
-                    onClick={() => setRollState((prev) => ({ ...prev, modifier: prev.modifier - 10 }))}
-                    className="wfrp-stepper-btn"
-                  >
-                    <span className="wfrp-stepper-btn__inner">
-                      <Minus size={10} />
+                <>
+                <div className="flex items-center justify-end">
+                  <div className="flex items-center gap-4">
+                    <button
+                      aria-label="Decrease difficulty modifier"
+                      disabled={rollState.isRolling}
+                      onClick={() => setRollState((prev) => ({ ...prev, modifier: prev.modifier - 10 }))}
+                      className="wfrp-stepper-btn !h-5 !w-5 !min-w-5"
+                    >
+                      <span className="wfrp-stepper-btn__inner">
+                        <Minus size={10} />
+                      </span>
+                    </button>
+                    <span className="wfrp-sidebar-body text-right text-gray-200">
+                      {rollState.modifier >= 0 ? "+" : ""}
+                      {rollState.modifier}
                     </span>
-                  </button>
+                  </div>
+                </div>
+                <div className="flex items-center pl-4">
                   <button
+                    aria-label="Increase difficulty modifier"
                     disabled={rollState.isRolling}
                     onClick={() => setRollState((prev) => ({ ...prev, modifier: prev.modifier + 10 }))}
-                    className="wfrp-stepper-btn"
+                    className="wfrp-stepper-btn !h-5 !w-5 !min-w-5"
                   >
                     <span className="wfrp-stepper-btn__inner">
                       <Plus size={10} />
                     </span>
                   </button>
                 </div>
+                </>
               ) : (
-                <div />
+                <>
+                  <span className="wfrp-sidebar-body text-right text-gray-200">
+                    {rollState.modifier >= 0 ? "+" : ""}
+                    {rollState.modifier}
+                  </span>
+                  <div />
+                </>
               )}
 
               <div className="col-span-2 h-px bg-white/8 my-0.5" />
@@ -414,7 +432,6 @@ export function DiceLogSidebar({
                       onClick={handleRollCritical}
                       title="Critical action"
                       aria-label="Critical action: roll critical"
-                      className="w-fit"
                       name="Roll Critical"
                     />
                   </div>
@@ -456,7 +473,7 @@ export function DiceLogSidebar({
           </div>
         )}
       </div>
-    </WfrpSidebar>
+    </AppSidebar>
   );
 }
 
@@ -499,7 +516,7 @@ function DigitReel({
         {repeatedReel.map((num, index) => (
           <div
             key={`${num}-${index}`}
-            className="h-8 w-8 flex items-center justify-center text-lg font-mono font-black text-wfrp-gold/80"
+            className="h-8 w-8 flex items-center justify-center text-lg font-mono font-semibold text-wfrp-gold/80"
           >
             {num}
           </div>

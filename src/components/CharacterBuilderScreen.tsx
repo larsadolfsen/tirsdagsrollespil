@@ -98,12 +98,12 @@ export function CharacterBuilderScreen({
                   <h3 className="wfrp-panel-title text-gray-100">{race.name}</h3>
                   <span className="wfrp-table-label text-wfrp-gold">M {race.movement}</span>
                 </div>
-                <div className="mt-3 grid grid-cols-3 gap-2 text-[11px] text-gray-300">
+                <div className="mt-3 grid grid-cols-3 gap-2 wfrp-text text-gray-300">
                   <span>Fate {race.fate}</span>
                   <span>Res {race.resilience}</span>
                   <span>Extra {race.extraPoints}</span>
                 </div>
-                <p className="mt-3 text-xs text-wfrp-muted-text">Wounds: {race.woundsFormula}</p>
+                <p className="mt-3 wfrp-text text-wfrp-muted-text">Wounds: {race.woundsFormula}</p>
               </button>
             ))}
           </div>
@@ -123,7 +123,7 @@ export function CharacterBuilderScreen({
                       : "border-white/10 bg-black/20 text-gray-200 hover:border-white/20"
                   }`}
                 >
-                  <div className="text-sm font-bold">{career.name}</div>
+                  <div className="wfrp-text-strong">{career.name}</div>
                   <div className="wfrp-table-label text-wfrp-muted-text">{career.tier}</div>
                 </button>
               ))}
@@ -132,7 +132,7 @@ export function CharacterBuilderScreen({
               <div className="rounded border border-white/10 bg-black/20 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-lg font-bold font-serif">{selectedCareer.name}</h3>
+                    <h3 className="text-lg font-semibold font-serif">{selectedCareer.name}</h3>
                     <p className="wfrp-section-meta">{selectedCareer.tier}</p>
                   </div>
                   <span className="wfrp-table-label text-wfrp-gold">{selectedCareer.ranks[0]?.status}</span>
@@ -142,7 +142,7 @@ export function CharacterBuilderScreen({
                     <p className="wfrp-panel-title text-wfrp-muted-text">Career Skills</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {selectedCareerSkills.map((skill) => (
-                        <span key={skill} className="rounded border border-white/10 bg-black/30 px-2 py-1 text-xs text-gray-300">
+                        <span key={skill} className="rounded border border-white/10 bg-black/30 px-2 py-1 wfrp-text text-gray-300">
                           {skill}
                         </span>
                       ))}
@@ -152,7 +152,7 @@ export function CharacterBuilderScreen({
                     <p className="wfrp-panel-title text-wfrp-muted-text">Talent Options</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {selectedCareerTalents.map((talent) => (
-                        <span key={talent} className="rounded border border-white/10 bg-black/30 px-2 py-1 text-xs text-gray-300">
+                        <span key={talent} className="rounded border border-white/10 bg-black/30 px-2 py-1 wfrp-text text-gray-300">
                           {talent}
                         </span>
                       ))}
@@ -169,8 +169,8 @@ export function CharacterBuilderScreen({
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
               {UI_LABELS.CHARACTERISTICS.map((characteristic) => (
                 <div key={characteristic.key} className="rounded border border-white/10 bg-black/25 p-3">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-wfrp-muted-text">{characteristic.label}</p>
-                  <p className="mt-1 text-lg font-black text-wfrp-gold">
+                  <p className="wfrp-label text-wfrp-muted-text">{characteristic.label}</p>
+                  <p className="mt-1 text-lg font-semibold text-wfrp-gold">
                     {selectedSpecies?.attributeRolls[characteristic.key] ?? "-"}
                   </p>
                 </div>
@@ -186,7 +186,7 @@ export function CharacterBuilderScreen({
               <div className="mt-3 flex flex-col gap-2">
                 {selectedCareerSkills.map((skill) => (
                   <div key={skill} className="flex items-center justify-between rounded border border-white/10 bg-black/25 px-3 py-2">
-                    <span className="text-sm text-gray-200">{skill}</span>
+                    <span className="wfrp-text text-gray-200">{skill}</span>
                     <span className="wfrp-table-label text-wfrp-muted-text">Career</span>
                   </div>
                 ))}
@@ -196,7 +196,7 @@ export function CharacterBuilderScreen({
               <h3 className="wfrp-panel-title text-gray-300">Talent Pool</h3>
               <div className="mt-3 flex flex-col gap-2">
                 {selectedCareerTalents.map((talent) => (
-                  <div key={talent} className="rounded border border-white/10 bg-black/25 px-3 py-2 text-sm text-gray-200">
+                  <div key={talent} className="rounded border border-white/10 bg-black/25 px-3 py-2 wfrp-text text-gray-200">
                     {talent}
                   </div>
                 ))}
@@ -210,10 +210,10 @@ export function CharacterBuilderScreen({
             {ruleset.items.slice(0, 12).map((item) => (
               <div key={item.id} className="rounded border border-white/10 bg-black/20 p-3">
                 <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-sm font-bold text-gray-100">{item.name}</h3>
+                  <h3 className="wfrp-text-strong text-gray-100">{item.name}</h3>
                   <span className="wfrp-table-label text-wfrp-muted-text">{item.type}</span>
                 </div>
-                <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-wfrp-muted-text">{item.description}</p>
+                <p className="mt-2 line-clamp-2 wfrp-text text-wfrp-muted-text">{item.description}</p>
               </div>
             ))}
           </div>
@@ -257,10 +257,10 @@ export function CharacterBuilderScreen({
             <section className="rounded border border-white/10 bg-black/20 p-4">
               <h3 className="wfrp-panel-title text-gray-300">Character Draft</h3>
               <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div><dt className="wfrp-table-label text-wfrp-muted-text">Name</dt><dd className="text-sm text-gray-100">{characterName || "Unnamed"}</dd></div>
-                <div><dt className="wfrp-table-label text-wfrp-muted-text">Species</dt><dd className="text-sm text-gray-100">{selectedSpecies?.name ?? "-"}</dd></div>
-                <div><dt className="wfrp-table-label text-wfrp-muted-text">Career</dt><dd className="text-sm text-gray-100">{selectedCareer?.name ?? "-"}</dd></div>
-                <div><dt className="wfrp-table-label text-wfrp-muted-text">Tier</dt><dd className="text-sm text-gray-100">{selectedCareer?.tier ?? "-"}</dd></div>
+                <div><dt className="wfrp-table-label text-wfrp-muted-text">Name</dt><dd className="wfrp-text text-gray-100">{characterName || "Unnamed"}</dd></div>
+                <div><dt className="wfrp-table-label text-wfrp-muted-text">Species</dt><dd className="wfrp-text text-gray-100">{selectedSpecies?.name ?? "-"}</dd></div>
+                <div><dt className="wfrp-table-label text-wfrp-muted-text">Career</dt><dd className="wfrp-text text-gray-100">{selectedCareer?.name ?? "-"}</dd></div>
+                <div><dt className="wfrp-table-label text-wfrp-muted-text">Tier</dt><dd className="wfrp-text text-gray-100">{selectedCareer?.tier ?? "-"}</dd></div>
               </dl>
             </section>
             <section className="rounded border border-white/10 bg-black/20 p-4">
@@ -268,8 +268,8 @@ export function CharacterBuilderScreen({
               <div className="mt-3 flex flex-col gap-2">
                 {validationItems.map((item) => (
                   <div key={item.label} className="flex items-center justify-between rounded border border-white/10 bg-black/25 px-3 py-2">
-                    <span className="text-sm text-gray-200">{item.label}</span>
-                    <span className={item.isComplete ? "text-xs font-bold text-emerald-400" : "text-xs font-bold text-wfrp-red"}>
+                    <span className="wfrp-text text-gray-200">{item.label}</span>
+                    <span className={item.isComplete ? "wfrp-text-strong text-emerald-400" : "wfrp-text-strong text-wfrp-red"}>
                       {item.isComplete ? "Ready" : "Missing"}
                     </span>
                   </div>
@@ -281,10 +281,10 @@ export function CharacterBuilderScreen({
       case "finish":
         return (
           <div className="rounded border border-white/10 bg-black/20 p-6 text-center">
-            <h3 className="text-xl font-bold font-serif text-gray-100">
+            <h3 className="text-xl font-semibold font-serif text-gray-100">
               {missingItems.length === 0 ? "Ready to Create Sheet" : "Draft Needs Review"}
             </h3>
-            <p className="mt-3 text-sm text-wfrp-muted-text">
+            <p className="mt-3 wfrp-text text-wfrp-muted-text">
               {missingItems.length === 0
                 ? `${characterName} is ready as a ${selectedSpecies?.name ?? "character"} ${selectedCareer?.tier ?? ""}.`
                 : `${missingItems.length} required ${missingItems.length === 1 ? "field is" : "fields are"} still missing.`}
@@ -303,11 +303,11 @@ export function CharacterBuilderScreen({
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-t-4 border-wfrp-border border-t-wfrp-red px-4 py-3">
             <div>
               <p className="wfrp-sidebar-kicker">Character Builder</p>
-              <h1 className="text-xl font-bold font-serif tracking-tight">New Character</h1>
+              <h1 className="text-xl font-semibold font-serif tracking-tight">New Character</h1>
             </div>
             <Button
               onClick={onClose}
-              className="flex items-center gap-2 font-black tracking-[0.12em]"
+              className="flex items-center gap-2 font-semibold tracking-[0.12em]"
             >
               <X size={14} />
               Sheet
@@ -332,8 +332,8 @@ export function CharacterBuilderScreen({
                           : "text-gray-300 hover:bg-wfrp-surface-raised"
                       }`}
                     >
-                      <span className="truncate text-[12px] font-bold">{step.label}</span>
-                      <span className="ml-3 text-[10px] font-black text-wfrp-muted-text">
+                      <span className="truncate wfrp-text-strong">{step.label}</span>
+                      <span className="ml-3 text-[10px] font-semibold text-wfrp-muted-text">
                         {isComplete ? "Done" : index + 1}
                       </span>
                     </button>
@@ -348,14 +348,14 @@ export function CharacterBuilderScreen({
                   <p className="wfrp-section-meta">
                     Step {currentStepIndex + 1} of {builderSteps.length}
                   </p>
-                  <h2 className="mt-1 text-2xl font-bold font-serif">{currentStep.label}</h2>
+                  <h2 className="mt-1 text-2xl font-semibold font-serif">{currentStep.label}</h2>
                   <p className="mt-2 max-w-2xl text-sm leading-relaxed text-wfrp-muted-text">
                     {currentStep.summary}
                   </p>
                 </div>
                 <div className="min-w-36 text-right">
                   <p className="wfrp-sidebar-kicker">Progress</p>
-                  <p className="text-lg font-black text-wfrp-gold">
+                  <p className="text-lg font-semibold text-wfrp-gold">
                     {completedCount}/{builderSteps.length - 1}
                   </p>
                 </div>
@@ -369,14 +369,14 @@ export function CharacterBuilderScreen({
                 <Button
                   onClick={goToPreviousStep}
                   disabled={isFirstStep}
-                  className="flex items-center gap-2 px-4 py-2 font-black tracking-[0.12em]"
+                  className="flex items-center gap-2 px-4 py-2 font-semibold tracking-[0.12em]"
                 >
                   <ChevronLeft size={14} />
                   <span>Back</span>
                 </Button>
                 <Button
                   onClick={goToNextStep}
-                  className="flex items-center gap-2 px-4 py-2 font-black tracking-[0.12em] text-gray-100"
+                  className="flex items-center gap-2 px-4 py-2 font-semibold tracking-[0.12em] text-gray-100"
                 >
                   <span>{isLastStep ? "Finish" : "Next"}</span>
                   {!isLastStep && <ChevronRight size={14} />}

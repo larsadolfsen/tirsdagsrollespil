@@ -15,7 +15,7 @@ export function WfrpSection({ eyebrow, title, actions, className, children, ...p
     <section className={cn("space-y-3", className)} {...props}>
       <div className="flex items-center justify-between gap-4">
         <div>
-          {eyebrow && <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{eyebrow}</p>}
+          {eyebrow && <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">{eyebrow}</p>}
           <h2 className="font-display text-lg font-semibold tracking-wide text-foreground">{title}</h2>
         </div>
         {actions && <div className="shrink-0">{actions}</div>}

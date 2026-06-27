@@ -11,11 +11,6 @@ import {
   isWornInventoryItem,
   sortEquipmentByName,
 } from "../tabs/inventory/inventoryUtils";
-import {
-  formatSpellDuration as formatSpellDurationValue,
-  formatSpellRange as formatSpellRangeValue,
-  formatSpellTarget as formatSpellTargetValue,
-} from "../tabs/spells/spellUtils";
 import type { ArmourDefinition, ArmourLocation, Ruleset } from "../types";
 
 type EquippedArmour = {
@@ -42,7 +37,6 @@ export function useCharacterDerivedStats({
   const wpb = Math.floor((attributes.WP || 0) / 10);
   const sb = Math.floor((attributes.S || 0) / 10);
   const maxCorruption = tb + wpb;
-  const wp = attributes.WP || 0;
 
   const formattedCoins = useMemo(
     () => formatCharacterCoins(characterData.coins),
@@ -52,11 +46,6 @@ export function useCharacterDerivedStats({
     () => new Set(equipmentState.map((item) => item.itemId)),
     [equipmentState],
   );
-  const knownSpellIds = useMemo(
-    () => new Set(characterData.spells.map((spell) => spell.id)),
-    [characterData.spells],
-  );
-
   const coinEncumbrance = getCoinEncumbrance(characterData.coins);
   const totalEncumbrance = equipmentState.reduce((sum, item) => {
     if (item.containerId) return sum;
@@ -177,10 +166,6 @@ export function useCharacterDerivedStats({
       coinContainerId === containerId ? coinEncumbrance : 0,
     );
 
-  const formatSpellRange = (range: string) => formatSpellRangeValue(range, wp, wpb);
-  const formatSpellTarget = (target: string) => formatSpellTargetValue(target, wp, wpb);
-  const formatSpellDuration = (duration: string) => formatSpellDurationValue(duration, wp, wpb);
-
   return {
     attributes,
     carryCapacity,
@@ -188,22 +173,16 @@ export function useCharacterDerivedStats({
     containers,
     encumbrancePercent,
     equippedArmourNames,
-    formatSpellDuration,
-    formatSpellRange,
-    formatSpellTarget,
     formattedCoins,
     getArmourFitConflicts,
     getContainerContents,
     getContainerUsedEncumbrance,
-    knownSpellIds,
     maxCorruption,
     ownedShopItemIds,
     sb,
     tb,
     totalEncumbrance,
     wornItems,
-    wp,
-    wpb,
     armourTotals,
   };
 }

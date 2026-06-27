@@ -37,18 +37,18 @@ export function ArmourCard({
               key={label}
               className={`flex flex-col items-center justify-center border border-white/5 bg-black/30 px-3 py-2.5 text-center ${className}`}
             >
-              <div className="text-[8px] font-bold uppercase leading-tight tracking-widest text-wfrp-muted-text">
+              <div className="wfrp-label leading-tight text-wfrp-muted-text">
                 {label}
               </div>
-              <div className="mt-1 text-lg font-bold text-gray-100">{value}</div>
+              <div className="mt-1 text-lg font-semibold text-gray-100">{value}</div>
             </div>
           ))}
         </div>
         <div className="flex flex-col items-center gap-1 text-center">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-wfrp-muted-text">
+          <span className="wfrp-label text-wfrp-muted-text">
             Equipped
           </span>
-          <span className="text-xs font-semibold leading-relaxed text-gray-300">
+          <span className="wfrp-text-strong leading-relaxed text-gray-300">
             {equippedArmourNames.length > 0 ? equippedArmourNames.join(", ") : "None"}
           </span>
         </div>

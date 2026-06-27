@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { Button, InlineSubtabs, SubtabContentFrame } from "../components/ui";
 import {
   SheetDataAccordionDetails,
@@ -7,10 +9,18 @@ import {
   SheetDataRollCell,
   SheetDataSection,
 } from "../components/wfrp";
-import type { SpellListRow } from "./spells/useSpellsViewModel";
+import { useSpellsViewModel } from "./spells/useSpellsViewModel";
+import type { ResolvedCharacterRecord, ResolvedCharacterSkill } from "../data/characters/resolved";
 import type { Characteristic } from "../types";
 import type { SpellSubtab } from "./tabTypes";
-import { formatPrayerSchoolLabel, isPrayerDefinition } from "./spells/spellUtils";
+import {
+  filterSpellDefinitionsForMode,
+  formatPrayerSchoolLabel,
+  formatSpellDuration as formatSpellDurationValue,
+  formatSpellRange as formatSpellRangeValue,
+  formatSpellTarget as formatSpellTargetValue,
+  isPrayerDefinition,
+} from "./spells/spellUtils";
 
 type RollOptions = {
   testType?: "dramatic" | "attack" | "channeling";
@@ -21,34 +31,64 @@ const desktopSpellGridClass = "md:grid-cols-[56px_minmax(0,1.4fr)_52px_minmax(0,
 const mobileSpellGridClass = "grid-cols-[40px_minmax(0,1fr)_52px_64px_48px]";
 
 export function SpellsTab({
-  spellSubtabOptions,
   activeSpellSubtab,
+  attributes,
+  characterData,
+  characterSkills,
   setActiveSpellSubtab,
-  spellRows,
   handleRoll,
-  openSpellShop,
   onRemoveSpell,
+  setIsSpellShopOpen,
   isPrayerMode = false,
 }: {
-  spellSubtabOptions: Array<{ id: SpellSubtab; label: string }>;
   activeSpellSubtab: SpellSubtab;
+  attributes: Record<string, number>;
+  characterData: ResolvedCharacterRecord;
+  characterSkills: ResolvedCharacterSkill[];
   setActiveSpellSubtab: (subtab: SpellSubtab) => void;
-  spellRows: SpellListRow[];
   handleRoll: (
     characteristic: Characteristic,
     damage?: number,
     options?: RollOptions,
   ) => void;
-  openSpellShop: () => void;
   onRemoveSpell: (spellId: string) => void;
+  setIsSpellShopOpen: Dispatch<SetStateAction<boolean>>;
   isPrayerMode?: boolean;
 }) {
   const entryLabel = isPrayerMode ? "Prayer" : "Spell";
   const entryPluralLabel = isPrayerMode ? "Prayers" : "Spells";
   const actionLabel = isPrayerMode ? "Pray" : "Channel";
+  const willpower = attributes.WP || 0;
+  const willpowerBonus = Math.floor(willpower / 10);
+  const availableCharacterSpells = filterSpellDefinitionsForMode(characterData.spells, isPrayerMode);
+  const {
+    openSpellShop,
+    spellRows,
+    spellSubtabOptions,
+  } = useSpellsViewModel({
+    activeSpellSubtab,
+    attributes,
+    characterSkills,
+    formatSpellDuration: (duration) =>
+      formatSpellDurationValue(duration, willpower, willpowerBonus),
+    formatSpellRange: (range) =>
+      formatSpellRangeValue(range, willpower, willpowerBonus),
+    formatSpellTarget: (target) =>
+      formatSpellTargetValue(target, willpower, willpowerBonus),
+    isPrayerMode,
+    setIsSpellShopOpen,
+    spells: availableCharacterSpells,
+  });
+
+  useEffect(() => {
+    if (!spellSubtabOptions.some((option) => option.id === activeSpellSubtab)) {
+      setActiveSpellSubtab("all");
+    }
+  }, [activeSpellSubtab, setActiveSpellSubtab, spellSubtabOptions]);
 
   return (
     <SubtabContentFrame
+      contentClassName="max-xl:pb-24"
       subtabBar={(
         <InlineSubtabs
           options={spellSubtabOptions}

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { hydrateCharacterProgress, loadCharacterProgress } from "../data/persistence";
 import { loadResolvedCharacter, type CharacterSummary } from "../data/repository";
-import { Button } from "./ui";
 
 type LandingPageProps = {
   characters: CharacterSummary[];
@@ -50,7 +49,13 @@ export function LandingPage({ characters, onSelectCharacter }: LandingPageProps)
             .slice(0, 2);
 
           return (
-            <article key={character.id} className="wfrp-landing-character-card">
+            <button
+              key={character.id}
+              type="button"
+              onClick={() => onSelectCharacter(character.id)}
+              className="wfrp-landing-character-card"
+              aria-label={`Open ${character.name}`}
+            >
               <div className="wfrp-landing-portrait">
                 {portraitDataUrls[character.id] ? (
                   <img
@@ -71,15 +76,8 @@ export function LandingPage({ characters, onSelectCharacter }: LandingPageProps)
                 <p className="wfrp-landing-card-copy">
                   {character.tier}
                 </p>
-                <Button variant="subtabAction"
-                  onClick={() => onSelectCharacter(character.id)}
-                  isActive
-                  className="wfrp-landing-card-action"
-                >
-                  Open sheet
-                </Button>
               </div>
-            </article>
+            </button>
           );
         })}
       </main>

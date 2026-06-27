@@ -34,7 +34,7 @@ export function MobileMenuSidebar({
         <button
           type="button"
           onClick={onOpenCharacterSheet}
-          className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left text-[11px] font-black uppercase tracking-widest text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
+          className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left wfrp-label text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
         >
           <FileText size={16} aria-hidden="true" />
           Character Sheet
@@ -42,7 +42,7 @@ export function MobileMenuSidebar({
         <button
           type="button"
           onClick={onOpenEditCharacter}
-          className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left text-[11px] font-black uppercase tracking-widest text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
+          className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left wfrp-label text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
         >
           <Pencil size={16} aria-hidden="true" />
           Edit Character
@@ -50,7 +50,7 @@ export function MobileMenuSidebar({
         <button
           type="button"
           onClick={onOpenGainExperience}
-          className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left text-[11px] font-black uppercase tracking-widest text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
+          className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left wfrp-label text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
         >
           <ArrowUpFromLine size={16} aria-hidden="true" />
           Gain Experience
@@ -58,7 +58,7 @@ export function MobileMenuSidebar({
         <button
           type="button"
           onClick={onOpenDiceLog}
-          className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left text-[11px] font-black uppercase tracking-widest text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
+          className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left wfrp-label text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
         >
           <Dice5 size={16} aria-hidden="true" />
           Dice Log

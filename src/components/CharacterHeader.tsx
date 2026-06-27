@@ -223,7 +223,7 @@ export function CharacterHeader({
                     cancelEditingName();
                   }
                 }}
-                className="min-w-0 flex-1 rounded border border-wfrp-border bg-black/40 px-2 py-0.5 font-serif text-base font-bold leading-tight tracking-tight text-gray-100 outline-none focus:border-wfrp-gold/60 sm:text-xl"
+                className="min-w-0 flex-1 rounded border border-wfrp-border bg-black/40 px-2 py-0.5 font-serif text-base font-semibold leading-tight tracking-tight text-gray-100 outline-none focus:border-wfrp-gold/60 sm:text-xl"
                 aria-label="Edit character name"
               />
               <WfrpStandardIcon
@@ -241,17 +241,17 @@ export function CharacterHeader({
             <button
               type="button"
               onClick={startEditingName}
-              className="min-w-0 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-left font-serif text-base font-bold leading-tight tracking-tight transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:text-xl"
+              className="min-w-0 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-left font-serif text-base font-semibold leading-tight tracking-tight transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:text-xl"
               aria-label="Edit character name"
             >
               {characterData.name}
             </button>
           )}
-          <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[9px] font-bold uppercase text-wfrp-muted-text sm:text-[10px]">
+          <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[9px] font-semibold uppercase text-wfrp-muted-text sm:text-[10px]">
             XP {xpCurrent}/{characterData.xpTotal}
           </div>
           {portraitError ? (
-            <div className="hidden truncate text-[9px] font-bold text-wfrp-red sm:block">
+            <div className="hidden truncate text-[9px] font-semibold text-wfrp-red sm:block">
               {portraitError}
             </div>
           ) : null}

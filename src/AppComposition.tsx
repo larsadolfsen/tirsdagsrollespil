@@ -29,6 +29,7 @@ import { CharacterResourcesCards } from "./components/CharacterResourcesCards";
 import {
   InlineSubtabs,
   MainTabMenu,
+  BottomSheetPaper,
   Button,
   PanelSectionHeader,
   ResourceCounterBar,
@@ -41,7 +42,6 @@ import {
   isBackpackContainerItem,
 } from "./tabs/inventory/inventoryUtils";
 import { filterSpellDefinitionsForMode } from "./tabs/spells/spellUtils";
-import { useSpellsViewModel } from "./tabs/spells/useSpellsViewModel";
 import {
   getCharacterTalentRows,
   getTalentMaxDisplay as getTalentMaxDisplayValue,
@@ -400,9 +400,6 @@ export function AppComposition() {
     containers,
     encumbrancePercent,
     equippedArmourNames,
-    formatSpellDuration,
-    formatSpellRange,
-    formatSpellTarget,
     formattedCoins,
     getArmourFitConflicts,
     getContainerContents,
@@ -471,27 +468,6 @@ export function AppComposition() {
     () => new Set(availableCharacterSpells.map((spell) => spell.id)),
     [availableCharacterSpells],
   );
-  const {
-    openSpellShop,
-    spellRows,
-    spellSubtabOptions,
-  } = useSpellsViewModel({
-    activeSpellSubtab,
-    attributes,
-    characterSkills,
-    formatSpellDuration,
-    formatSpellRange,
-    formatSpellTarget,
-    isPrayerMode: isPrayerCaster,
-    setIsSpellShopOpen,
-    spells: availableCharacterSpells,
-  });
-
-  useEffect(() => {
-    if (!spellSubtabOptions.some((option) => option.id === activeSpellSubtab)) {
-      setActiveSpellSubtab("all");
-    }
-  }, [activeSpellSubtab, setActiveSpellSubtab, spellSubtabOptions]);
 
   const {
     restoreRouteForCharacter,
@@ -1563,11 +1539,11 @@ export function AppComposition() {
           ) : activeMainTab === "career" ? (
             <>
               <div className="hidden items-center justify-between gap-3 md:flex">
-                <h1 className="min-w-0 truncate font-serif text-2xl font-bold leading-tight tracking-tight text-gray-100">
+                <h1 className="min-w-0 truncate font-serif text-2xl font-semibold leading-tight tracking-tight text-gray-100">
                   Edit Character
                 </h1>
               </div>
-              <section className="min-h-[500px] overflow-hidden rounded-lg border border-wfrp-border bg-card shadow-lg">
+              <section className="min-h-[500px] overflow-visible rounded-lg border border-wfrp-border bg-card pb-32 shadow-lg md:overflow-hidden md:pb-0">
                 <ScrollableTabStrip className="flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">
                   <div className="flex w-full min-w-max items-center justify-between gap-4">
                     <div className="flex min-w-max items-center gap-4 lg:gap-6">
@@ -1589,7 +1565,7 @@ export function AppComposition() {
                         </Button>
                       ))}
                     </div>
-                    <div className="flex shrink-0 items-center gap-2">
+                    <div className="hidden shrink-0 items-center gap-2 md:flex">
                       <Button
                         type="button"
                         name="Cancel"
@@ -1609,6 +1585,23 @@ export function AppComposition() {
                   </div>
                 </ScrollableTabStrip>
                 {advancePageContent}
+                <BottomSheetPaper className="md:hidden">
+                  <Button
+                    type="button"
+                    name="Cancel"
+                    onClick={cancelEditCharacterPage}
+                    isDeactivated={!hasUnsavedCareerEdits}
+                    aria-label="Cancel edit character changes"
+                  />
+                  <Button
+                    type="button"
+                    name="Save"
+                    onClick={handleEditCharacterSave}
+                    isDeactivated={!hasUnsavedCareerEdits}
+                    isGolden={hasUnsavedCareerEdits}
+                    aria-label="Save edit character changes"
+                  />
+                </BottomSheetPaper>
               </section>
             </>
           ) : (
@@ -1720,14 +1713,15 @@ export function AppComposition() {
 
                       {activeMainTab === 'spells' && (
                         <SpellsTab
-                        spellSubtabOptions={spellSubtabOptions}
                         activeSpellSubtab={activeSpellSubtab}
+                        attributes={attributes}
+                        characterData={characterData}
+                        characterSkills={characterSkills}
                         setActiveSpellSubtab={setActiveSpellSubtab}
-                        spellRows={spellRows}
                         handleRoll={handleRoll}
                         isPrayerMode={isPrayerCaster}
                         onRemoveSpell={removeSpell}
-                        openSpellShop={openSpellShop}
+                        setIsSpellShopOpen={setIsSpellShopOpen}
                       />
                       )}
                       {activeMainTab === 'inventory' && (
