@@ -16,6 +16,7 @@ import { CharacterSheetHeader } from "./components/CharacterSheetHeader";
 import { GainExperiencePage } from "./components/GainExperiencePage";
 import { CharacteristicsView } from "./components/CharacteristicsView";
 import { LandingPage } from "./components/LandingPage";
+import { GameMasterPage } from "./components/GameMasterPage";
 import { MobileMainViewSwipeProvider } from "./components/MobileMainViewSwipeContext";
 import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "./lib/advanceCosts";
 import { useAppShellState } from "./hooks/useAppShellState";
@@ -52,6 +53,12 @@ import type {
   ResolvedCharacterTalent,
 } from "./data/characters/resolved";
 import { listCharacters } from "./data/repository";
+import {
+  loadCampaignSessions,
+  saveCampaignSession,
+  deleteCampaignSession,
+  type GMSession,
+} from "./data/gmSessions";
 import {
   formatItemValue,
   getCharacterSkillKey,
@@ -208,8 +215,211 @@ export function AppComposition() {
       return false;
     }
 
-    return parseCampaignCharacterPath(window.location.pathname) === null;
+    return parseCampaignCharacterPath(window.location.pathname) === null && !window.location.pathname.endsWith("/game-master");
   });
+  const [isGameMasterOpen, setIsGameMasterOpen] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.location.pathname.endsWith("/game-master");
+  });
+
+  // GM Sessions States
+  const [gmSessions, setGmSessions] = useState<GMSession[]>([]);
+  const [selectedGmSessionId, setSelectedGmSessionId] = useState<string | null>(null);
+  const [isLoadingGmSessions, setIsLoadingGmSessions] = useState(false);
+  const [isSessionsSidebarOpen, setIsSessionsSidebarOpen] = useState(true);
+
+  const handleSelectSessionOnMobile = (sessionId: string) => {
+    setSelectedGmSessionId(sessionId);
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSessionsSidebarOpen(false);
+    }
+  };
+
+  const [editingSessionName, setEditingSessionName] = useState("");
+  const [editingSessionNumber, setEditingSessionNumber] = useState<number | "">("");
+  const [editingSessionDate, setEditingSessionDate] = useState("");
+  const [editingSessionNotes, setEditingSessionNotes] = useState("");
+
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync editing state with the selected session when selection changes
+  const activeGmSession = useMemo(() => {
+    return gmSessions.find((s) => s.id === selectedGmSessionId) || null;
+  }, [gmSessions, selectedGmSessionId]);
+
+  useEffect(() => {
+    if (activeGmSession) {
+      setEditingSessionName(activeGmSession.name);
+      setEditingSessionNumber(activeGmSession.sessionNumber);
+      setEditingSessionDate(activeGmSession.date);
+      setEditingSessionNotes(activeGmSession.notes);
+    } else {
+      setEditingSessionName("");
+      setEditingSessionNumber("");
+      setEditingSessionDate("");
+      setEditingSessionNotes("");
+    }
+  }, [selectedGmSessionId, activeGmSession]);
+
+  // Fetch sessions when GM page is open
+  useEffect(() => {
+    if (!isGameMasterOpen) return;
+
+    let isCancelled = false;
+    async function fetchSessions() {
+      setIsLoadingGmSessions(true);
+      try {
+        const data = await loadCampaignSessions(characterData.campaignId);
+        if (isCancelled) return;
+        // Sort sessions by session number descending, then by date descending
+        const sorted = [...data].sort((a, b) => {
+          if (b.sessionNumber !== a.sessionNumber) {
+            return b.sessionNumber - a.sessionNumber;
+          }
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
+        setGmSessions(sorted);
+        if (sorted.length > 0 && !selectedGmSessionId) {
+          setSelectedGmSessionId(sorted[0].id);
+        }
+      } catch (err) {
+        console.error("Failed to load GM sessions", err);
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingGmSessions(false);
+        }
+      }
+    }
+
+    void fetchSessions();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isGameMasterOpen, characterData.campaignId]);
+
+  // Debounced Network Save
+  const triggerSave = useCallback((updatedSession: GMSession) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        await saveCampaignSession(characterData.campaignId, updatedSession);
+      } catch (err) {
+        console.error("Failed to save GM session to database:", err);
+      }
+    }, 500);
+  }, [characterData.campaignId]);
+
+  const handleUpdateActiveSession = (
+    field: "name" | "sessionNumber" | "date" | "notes",
+    value: any
+  ) => {
+    if (!activeGmSession) return;
+
+    let updatedSession = { ...activeGmSession };
+
+    if (field === "name") {
+      setEditingSessionName(value);
+      updatedSession.name = value;
+    } else if (field === "sessionNumber") {
+      const parsed = parseInt(value, 10);
+      const safeNum = isNaN(parsed) ? 0 : parsed;
+      setEditingSessionNumber(value === "" ? "" : safeNum);
+      updatedSession.sessionNumber = safeNum;
+    } else if (field === "date") {
+      setEditingSessionDate(value);
+      updatedSession.date = value;
+    } else if (field === "notes") {
+      setEditingSessionNotes(value);
+      updatedSession.notes = value;
+    }
+
+    // Update in-memory sessions list immediately so the sidebar reflects changes
+    const updatedSessions = gmSessions.map((s) =>
+      s.id === activeGmSession.id ? updatedSession : s
+    );
+    // Sort if sessionNumber changes
+    if (field === "sessionNumber") {
+      updatedSessions.sort((a, b) => {
+        if (b.sessionNumber !== a.sessionNumber) {
+          return b.sessionNumber - a.sessionNumber;
+        }
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
+    }
+    setGmSessions(updatedSessions);
+
+    // Trigger debounced network save
+    triggerSave(updatedSession);
+  };
+
+  const handleCreateGmSession = async () => {
+    // Find next session number: starting with session 0.
+    // If no sessions, next session number is 0.
+    // Otherwise, max(sessionNumber) + 1.
+    const maxNum = gmSessions.length > 0
+      ? Math.max(...gmSessions.map((s) => s.sessionNumber))
+      : -1;
+    const nextNum = maxNum + 1;
+
+    const newSession: GMSession = {
+      id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+      campaignId: characterData.campaignId,
+      sessionNumber: nextNum,
+      name: `Session ${nextNum}`,
+      date: new Date().toISOString().split("T")[0],
+      notes: "",
+    };
+
+    // Prepend/insert and sort
+    const updated = [newSession, ...gmSessions].sort((a, b) => {
+      if (b.sessionNumber !== a.sessionNumber) {
+        return b.sessionNumber - a.sessionNumber;
+      }
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+
+    setGmSessions(updated);
+    setSelectedGmSessionId(newSession.id);
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSessionsSidebarOpen(false);
+    }
+
+    try {
+      await saveCampaignSession(characterData.campaignId, newSession);
+    } catch (err) {
+      console.error("Failed to create session on server", err);
+    }
+  };
+
+  const handleDeleteGmSession = async (id: string) => {
+    const updated = gmSessions.filter((s) => s.id !== id);
+    setGmSessions(updated);
+    if (selectedGmSessionId === id) {
+      setSelectedGmSessionId(updated.length > 0 ? updated[0].id : null);
+    }
+
+    try {
+      await deleteCampaignSession(characterData.campaignId, id);
+    } catch (err) {
+      console.error("Failed to delete session on server", err);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const isDesktopLayout = useIsDesktopLayout();
   const availableCharacters = useMemo(() => listCharacters(), []);
   const {
@@ -395,10 +605,14 @@ export function AppComposition() {
   ]);
 
   useEffect(() => {
-    document.title = isLandingPageOpen
-      ? `${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`
-      : `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
-  }, [characterData.name, isLandingPageOpen]);
+    if (isLandingPageOpen) {
+      document.title = `${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
+    } else if (isGameMasterOpen) {
+      document.title = `Game Master - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
+    } else {
+      document.title = `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
+    }
+  }, [characterData.name, isLandingPageOpen, isGameMasterOpen]);
 
   type ResolvedSkillOption = (typeof rulesIndex.resolvedSkillOptions)[number];
   const skillDefinitionById = new Map<string, SkillDefinition>(
@@ -533,7 +747,7 @@ export function AppComposition() {
     activeMobileMainView,
     availableCharacters,
     handleMobileMainViewSelect,
-    routeSyncEnabled: !isLandingPageOpen,
+    routeSyncEnabled: !isLandingPageOpen && !isGameMasterOpen,
     selectedCharacterId,
     setActiveMainTab,
     setActiveMobileMainView,
@@ -542,7 +756,10 @@ export function AppComposition() {
 
   useEffect(() => {
     const handlePopState = () => {
-      setIsLandingPageOpen(parseCampaignCharacterPath(window.location.pathname) === null);
+      const isGM = window.location.pathname.endsWith("/game-master");
+      const isLanding = parseCampaignCharacterPath(window.location.pathname) === null && !isGM;
+      setIsLandingPageOpen(isLanding);
+      setIsGameMasterOpen(isGM);
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -564,8 +781,18 @@ export function AppComposition() {
 
     window.history.pushState(null, "", nextUrl);
     setIsLandingPageOpen(false);
+    setIsGameMasterOpen(false);
     setSelectedCharacterId(characterId);
   }, [availableCharacters, setSelectedCharacterId]);
+
+  const openGameMasterFromLanding = useCallback(() => {
+    const nextPath = `/${characterData.campaignId}/game-master`;
+    const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
+
+    window.history.pushState(null, "", nextUrl);
+    setIsLandingPageOpen(false);
+    setIsGameMasterOpen(true);
+  }, [characterData.campaignId]);
 
   useEffect(() => {
     resetAppShellState();
@@ -1387,6 +1614,7 @@ export function AppComposition() {
       onClick: () => {
         window.history.pushState(null, "", "/");
         setIsLandingPageOpen(true);
+        setIsGameMasterOpen(false);
       },
     },
     {
@@ -1445,8 +1673,46 @@ export function AppComposition() {
   if (isLandingPageOpen) {
     return (
       <LandingPage
+        campaignName={campaignName}
         characters={availableCharacters}
         onSelectCharacter={openCharacterFromLanding}
+        onSelectGameMaster={openGameMasterFromLanding}
+      />
+    );
+  }
+
+  if (isGameMasterOpen) {
+    const gmBreadcrumbs = [
+      {
+        label: campaignName,
+        href: "/",
+        onClick: () => {
+          window.history.pushState(null, "", "/");
+          setIsLandingPageOpen(true);
+          setIsGameMasterOpen(false);
+        },
+      },
+      { label: "Game Master" },
+    ];
+
+    return (
+      <GameMasterPage
+        activeSession={activeGmSession}
+        breadcrumbs={gmBreadcrumbs}
+        characters={availableCharacters}
+        editingSessionDate={editingSessionDate}
+        editingSessionName={editingSessionName}
+        editingSessionNotes={editingSessionNotes}
+        editingSessionNumber={editingSessionNumber}
+        isLoadingSessions={isLoadingGmSessions}
+        isSessionsSidebarOpen={isSessionsSidebarOpen}
+        onCreateSession={handleCreateGmSession}
+        onDeleteSession={handleDeleteGmSession}
+        onSelectSession={handleSelectSessionOnMobile}
+        onSessionsSidebarOpenChange={setIsSessionsSidebarOpen}
+        onUpdateSession={handleUpdateActiveSession}
+        selectedSessionId={selectedGmSessionId}
+        sessions={gmSessions}
       />
     );
   }

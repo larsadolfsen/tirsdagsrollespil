@@ -93,6 +93,20 @@ database.exec(`
 
   CREATE INDEX IF NOT EXISTS dice_rolls_campaign_date
     ON dice_rolls (campaign_id, roll_date, rolled_at DESC);
+
+  CREATE TABLE IF NOT EXISTS gm_sessions (
+    id TEXT PRIMARY KEY,
+    campaign_id TEXT NOT NULL,
+    session_number INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    session_date TEXT NOT NULL,
+    notes TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS gm_sessions_campaign_number
+    ON gm_sessions (campaign_id, session_number DESC);
 `);
 
 const selectCharacterProgress = database.prepare(`
@@ -165,6 +179,34 @@ const insertDiceRoll = database.prepare(`
 const deleteOlderDiceRolls = database.prepare(`
   DELETE FROM dice_rolls
   WHERE roll_date < ?
+`);
+
+const selectCampaignSessions = database.prepare(`
+  SELECT id, campaign_id, session_number, name, session_date, notes, created_at, updated_at
+  FROM gm_sessions
+  WHERE campaign_id = ?
+  ORDER BY session_number DESC, created_at DESC
+`);
+const upsertGmSession = database.prepare(`
+  INSERT INTO gm_sessions (
+    id,
+    campaign_id,
+    session_number,
+    name,
+    session_date,
+    notes,
+    updated_at
+  ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  ON CONFLICT(id) DO UPDATE SET
+    session_number = excluded.session_number,
+    name = excluded.name,
+    session_date = excluded.session_date,
+    notes = excluded.notes,
+    updated_at = CURRENT_TIMESTAMP
+`);
+const deleteGmSession = database.prepare(`
+  DELETE FROM gm_sessions
+  WHERE id = ?
 `);
 
 let legacyMigrationPromise = null;
@@ -246,6 +288,27 @@ function rowToDiceRoll(row) {
     characterName: row.character_name,
     rolledAt: row.rolled_at,
   };
+}
+
+function rowToGmSession(row) {
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    sessionNumber: row.session_number,
+    name: row.name,
+    date: row.session_date,
+    notes: row.notes,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function isSafeSessionNumber(value) {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= 100_000;
+}
+
+function isSafeSessionId(sessionId) {
+  return typeof sessionId === "string" && /^[a-zA-Z0-9_-]{1,100}$/.test(sessionId);
 }
 
 pruneOlderDiceRolls();
@@ -933,6 +996,90 @@ app.post("/api/dice-rolls/:campaignId", (req, res, next) => {
       characterName,
       rolledAt,
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/api/gm-sessions/:campaignId", (req, res, next) => {
+  try {
+    const { campaignId } = req.params;
+    if (!isSafeCampaignId(campaignId)) {
+      res.status(400).json({ error: "Invalid campaign id" });
+      return;
+    }
+
+    const sessions = selectCampaignSessions
+      .all(campaignId)
+      .map(rowToGmSession);
+
+    res.json(sessions);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put("/api/gm-sessions/:campaignId", (req, res, next) => {
+  try {
+    const { campaignId } = req.params;
+    const { id, sessionNumber, name, date, notes } = req.body ?? {};
+
+    if (!isSafeCampaignId(campaignId)) {
+      res.status(400).json({ error: "Invalid campaign id" });
+      return;
+    }
+    if (!isSafeSessionId(id)) {
+      res.status(400).json({ error: "Invalid session id" });
+      return;
+    }
+    if (!isSafeSessionNumber(sessionNumber)) {
+      res.status(400).json({ error: "Invalid session number" });
+      return;
+    }
+    if (typeof name !== "string" || name.length > 200) {
+      res.status(400).json({ error: "Invalid session name" });
+      return;
+    }
+    if (typeof date !== "string" || date.length > 50) {
+      res.status(400).json({ error: "Invalid session date" });
+      return;
+    }
+    if (typeof notes !== "string" || notes.length > 10_000_000) {
+      res.status(400).json({ error: "Invalid session notes" });
+      return;
+    }
+
+    upsertGmSession.run(
+      id,
+      campaignId,
+      sessionNumber,
+      name,
+      date,
+      notes
+    );
+
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete("/api/gm-sessions/:campaignId/:sessionId", (req, res, next) => {
+  try {
+    const { campaignId, sessionId } = req.params;
+
+    if (!isSafeCampaignId(campaignId)) {
+      res.status(400).json({ error: "Invalid campaign id" });
+      return;
+    }
+    if (!isSafeSessionId(sessionId)) {
+      res.status(400).json({ error: "Invalid session id" });
+      return;
+    }
+
+    deleteGmSession.run(sessionId);
+
+    res.status(204).end();
   } catch (error) {
     next(error);
   }
