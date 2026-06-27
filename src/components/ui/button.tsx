@@ -9,7 +9,7 @@ type ButtonVariant = StandardButtonVariant | WfrpButtonVariant;
 
 const standardVariantClasses: Record<StandardButtonVariant, string> = {
   default: "text-wfrp-dice-text before:bg-wfrp-dice-bg hover:before:bg-wfrp-dice-hover-bg hover:text-wfrp-dice-text",
-  destructive: "text-destructive-foreground before:bg-destructive hover:before:bg-destructive/90",
+  destructive: "text-white/80 before:bg-destructive hover:before:bg-destructive/90 hover:text-white",
   secondary: "text-wfrp-muted-text before:bg-wfrp-tab-active hover:text-white hover:before:bg-wfrp-control-hover",
   ghost: "hover:before:bg-accent hover:text-accent-foreground",
   link: "text-primary underline-offset-4 hover:underline",

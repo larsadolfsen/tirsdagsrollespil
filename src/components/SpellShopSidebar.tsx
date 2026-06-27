@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { AppSidebar, SidebarFilterList, SidebarItemList } from "./sidebar";
-import { WfrpSearchField } from "./ui";
+import { AppSidebar, SidebarItemList } from "./sidebar";
+import { WfrpFilterChips, WfrpSearchField } from "./ui";
 import {
   formatPrayerSchoolLabel,
   formatSpellSchoolLabel,
@@ -9,8 +9,7 @@ import {
 } from "../tabs/spells/spellUtils";
 import type { SpellDefinition } from "../types";
 
-const spellCategoryOrder: SpellDefinition["category"][] = ["petty", "arcane", "school"];
-type SpellFilter = "All" | SpellDefinition["category"] | `school:${string}`;
+type SpellFilter = SpellDefinition["category"] | `school:${string}`;
 
 function formatSpellCategoryLabel(category: SpellDefinition["category"]) {
   if (category === "petty") {
@@ -74,37 +73,26 @@ export function SpellShopSidebar({
   isPrayerMode?: boolean;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState<SpellFilter>("All");
+  const [selectedFilters, setSelectedFilters] = useState<SpellFilter[]>([]);
 
   const shopStock = useMemo(
-    () =>
-      [...spells].sort((firstSpell, secondSpell) => {
-        const firstCategoryIndex = spellCategoryOrder.indexOf(firstSpell.category);
-        const secondCategoryIndex = spellCategoryOrder.indexOf(secondSpell.category);
-        const categoryComparison = firstCategoryIndex - secondCategoryIndex;
-        const groupComparison = getSpellGroupLabel(firstSpell).localeCompare(
-          getSpellGroupLabel(secondSpell),
-          undefined,
-          { sensitivity: "base" },
-        );
-
-        return categoryComparison || groupComparison || firstSpell.name.localeCompare(secondSpell.name);
-      }),
+    () => [...spells].sort((firstSpell, secondSpell) => firstSpell.name.localeCompare(secondSpell.name)),
     [spells],
   );
 
   const filteredStock = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
     const categoryFilteredStock =
-      selectedFilter === "All"
+      selectedFilters.length === 0
         ? shopStock
-        : selectedFilter.startsWith("school:")
-          ? shopStock.filter(
-              (spell) =>
-                spell.category === "school" &&
-                getSpellSchools(spell).includes(selectedFilter.replace(/^school:/, "")),
-            )
-          : shopStock.filter((spell) => spell.category === selectedFilter);
+        : shopStock.filter((spell) =>
+            selectedFilters.some((filter) =>
+              filter.startsWith("school:")
+                ? spell.category === "school" &&
+                  getSpellSchools(spell).includes(filter.replace(/^school:/, ""))
+                : spell.category === filter,
+            ),
+          );
 
     if (!normalizedSearchTerm) {
       return categoryFilteredStock;
@@ -115,7 +103,7 @@ export function SpellShopSidebar({
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearchTerm)),
     );
-  }, [searchTerm, selectedFilter, shopStock]);
+  }, [searchTerm, selectedFilters, shopStock]);
 
   const entryLabel = isPrayerMode ? "Prayer" : "Spell";
   const entryPluralLabel = isPrayerMode ? "Prayers" : "Spells";
@@ -124,26 +112,21 @@ export function SpellShopSidebar({
   const lowercaseEntryPluralLabel = entryPluralLabel.toLowerCase();
 
   const categoryOptions = useMemo<Array<{ id: SpellFilter; label: string }>>(() => {
-    const schoolOptions = Array.from(new Set<string>(shopStock.flatMap(getSpellSchools)))
-      .sort((firstSchool, secondSchool) =>
-        formatSpellSchoolShortLabel(firstSchool).localeCompare(formatSpellSchoolShortLabel(secondSchool)),
-      )
-      .map((school) => ({
+    const allOptions: Array<{ id: SpellFilter; label: string }> = [];
+
+    if (!isPrayerMode) {
+      allOptions.push({ id: "petty", label: "Petty" });
+      allOptions.push({ id: "arcane", label: "Arcane" });
+    }
+
+    Array.from(new Set<string>(shopStock.flatMap(getSpellSchools))).forEach((school) => {
+      allOptions.push({
         label: isPrayerMode ? formatPrayerSchoolLabel(school) : formatSpellSchoolShortLabel(school),
         id: getSpellSchoolFilterValue(school),
-      }));
+      });
+    });
 
-    return isPrayerMode
-      ? [
-          { id: "All", label: "All" },
-          ...schoolOptions,
-        ]
-      : [
-          { id: "All", label: "All" },
-          { id: "petty", label: "Petty" },
-          { id: "arcane", label: "Arcane" },
-          ...schoolOptions,
-        ];
+    return allOptions.sort((a, b) => a.label.localeCompare(b.label));
   }, [isPrayerMode, shopStock]);
 
   const spellItems = filteredStock.map((spell) => {
@@ -181,9 +164,9 @@ export function SpellShopSidebar({
   });
 
   const listTitle =
-    selectedFilter === "All"
-      ? `All ${entryPluralLabel}`
-      : categoryOptions.find((option) => option.id === selectedFilter)?.label ?? entryPluralLabel;
+    selectedFilters.length === 1
+      ? categoryOptions.find((option) => option.id === selectedFilters[0])?.label ?? entryPluralLabel
+      : `All ${entryPluralLabel}`;
 
   return (
     <AppSidebar
@@ -208,13 +191,15 @@ export function SpellShopSidebar({
         onValueChange={setSearchTerm}
       />
       <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
-        <SidebarFilterList
-          ariaLabel={`${entryPluralLabel} filters`}
-          label="Type"
-          options={categoryOptions}
-          value={selectedFilter}
-          onChange={setSelectedFilter}
-        />
+        <div className="space-y-1.5">
+          <div className="wfrp-label text-wfrp-muted-text">Type</div>
+          <WfrpFilterChips
+            ariaLabel={`${entryPluralLabel} filters`}
+            options={categoryOptions}
+            selectedIds={selectedFilters}
+            onChange={setSelectedFilters}
+          />
+        </div>
       </div>
       <SidebarItemList
         className="!rounded-none !border-0"

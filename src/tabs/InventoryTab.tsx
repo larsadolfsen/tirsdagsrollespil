@@ -186,21 +186,16 @@ export function InventoryTab({
     </div>
   );
 
-  const renderActionLabel = (label: string) => (
-    <span className="block whitespace-nowrap font-mono text-[10px] font-semibold leading-none">{label}</span>
-  );
-
   const renderItemDropAction = (item: ResolvedCharacterEquipment) => (
-    <SheetRowActionButton
-      variant="danger"
+    <Button
+      variant="destructive"
       onClick={(event) => {
         event.preventDefault();
         handleToggleInventoryMenu(item.id, event, "drop");
       }}
       aria-label={`Drop ${item.name}`}
-    >
-      {renderActionLabel("Drop")}
-    </SheetRowActionButton>
+      name="Drop"
+    />
   );
 
   const renderItemMoveActions = (item: ResolvedCharacterEquipment) => {
@@ -228,18 +223,19 @@ export function InventoryTab({
     return (
       <>
         {canMoveToWorn && (
-          <SheetRowActionButton
+          <Button
+            variant="secondary"
             onClick={(event) => {
               event.preventDefault();
               handleWearItem(item.id);
             }}
             aria-label={`Move ${item.name} to worn`}
-          >
-            {renderActionLabel("Wear")}
-          </SheetRowActionButton>
+            name="Wear"
+          />
         )}
         {canMoveToCarried && (
-          <SheetRowActionButton
+          <Button
+            variant="secondary"
             onClick={(event) => {
               event.preventDefault();
               if (isWornInventoryItem(item)) {
@@ -249,21 +245,20 @@ export function InventoryTab({
               }
             }}
             aria-label={`Move ${item.name} to carried`}
-          >
-            {renderActionLabel("Carried")}
-          </SheetRowActionButton>
+            name="Carried"
+          />
         )}
         {stowableContainers.map((container) => (
-          <SheetRowActionButton
+          <Button
             key={container.id}
+            variant="secondary"
             onClick={(event) => {
               event.preventDefault();
               handleStoreItem(item.id, container.id);
             }}
             aria-label={`Move ${item.name} to ${container.name}`}
-          >
-            {renderActionLabel(container.name)}
-          </SheetRowActionButton>
+            name={container.name}
+          />
         ))}
       </>
     );
@@ -290,27 +285,27 @@ export function InventoryTab({
     return (
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         {canMoveCoinsToCarried && (
-          <SheetRowActionButton
+          <Button
+            variant="secondary"
             onClick={(event) => {
               event.preventDefault();
               handleMoveCoins(null);
             }}
             aria-label="Move coins to carried"
-          >
-            {renderActionLabel("Carried")}
-          </SheetRowActionButton>
+            name="Carried"
+          />
         )}
         {stowableCoinContainers.map((container) => (
-          <SheetRowActionButton
+          <Button
             key={container.id}
+            variant="secondary"
             onClick={(event) => {
               event.preventDefault();
               handleMoveCoins(container.id);
             }}
             aria-label={`Move coins to ${container.name}`}
-          >
-            {renderActionLabel(container.name)}
-          </SheetRowActionButton>
+            name={container.name}
+          />
         ))}
       </div>
     );
@@ -522,7 +517,7 @@ export function InventoryTab({
                       >
                         <div className="pt-2">
                           <div className="mb-1 wfrp-label text-wfrp-muted-text">
-                            Move
+                            Move to
                           </div>
                           {renderCoinMoveActions()}
                         </div>
@@ -581,7 +576,7 @@ export function InventoryTab({
                         >
                           <div className="pt-2">
                             <div className="mb-1 wfrp-label text-wfrp-muted-text">
-                              Move
+                              Move to
                             </div>
                             <div className="flex min-w-0 flex-wrap items-center justify-start gap-2">
                               {renderItemMoveActions(item)}

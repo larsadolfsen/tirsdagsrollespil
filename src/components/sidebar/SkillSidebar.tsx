@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { AppSidebar } from "./AppSidebar";
-import { SidebarFilterList } from "./SidebarFilterList";
-import type { SidebarFilterOption } from "./SidebarFilterList";
 import { SidebarItemList } from "./SidebarItemList";
-import { WfrpSearchField } from "../ui";
+import { WfrpFilterChips, WfrpSearchField } from "../ui";
 import type { SkillSubtab } from "../../tabs/tabTypes";
 
-type SkillFilterType = "all" | "career" | "trained" | "basic" | "advanced";
+type SkillFilterType = "career" | "trained" | "basic" | "advanced";
 
 type SkillSidebarItem = {
   baseAdvances: number;
@@ -24,12 +22,11 @@ type SkillSidebarItem = {
   skillName: string;
 };
 
-const SKILL_FILTERS: Array<SidebarFilterOption<SkillFilterType>> = [
-  { id: "all", label: "All" },
+const SKILL_FILTERS: Array<{ id: SkillFilterType; label: string }> = [
+  { id: "advanced", label: "Advanced" },
+  { id: "basic", label: "Basic" },
   { id: "career", label: "Career" },
   { id: "trained", label: "Trained" },
-  { id: "basic", label: "Basic" },
-  { id: "advanced", label: "Advanced", shortLabel: "Adv." },
 ];
 
 const characteristicNames: Record<string, string> = {
@@ -62,24 +59,28 @@ export function SkillSidebar({
   removePendingSkillAdvance: (skillName: string) => void;
   skills: SkillSidebarItem[];
 }) {
-  const [selectedFilter, setSelectedFilter] = useState<SkillFilterType>(initialFilter);
+  const initialSelectedFilters: SkillFilterType[] = initialFilter === "all" ? [] : [initialFilter as SkillFilterType];
+  const [selectedFilters, setSelectedFilters] = useState<SkillFilterType[]>(initialSelectedFilters);
   const [searchQuery, setSearchQuery] = useState("");
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
 
   useEffect(() => {
     if (isOpen) {
-      setSelectedFilter(initialFilter);
+      setSelectedFilters(initialFilter === "all" ? [] : [initialFilter as SkillFilterType]);
     }
   }, [initialFilter, isOpen]);
 
   const skillItems = useMemo(() => {
     return skills
       .filter((skill) => {
-        if (selectedFilter === "career") return skill.isSidebarCareerSkill ?? skill.isCareerSkill;
-        if (selectedFilter === "trained") return skill.isTrained;
-        if (selectedFilter === "basic") return skill.isBasicSkill;
-        if (selectedFilter === "advanced") return !skill.isBasicSkill;
-        return true;
+        if (selectedFilters.length === 0) return true;
+        return selectedFilters.some((filter) => {
+          if (filter === "career") return skill.isSidebarCareerSkill ?? skill.isCareerSkill;
+          if (filter === "trained") return skill.isTrained;
+          if (filter === "basic") return skill.isBasicSkill;
+          if (filter === "advanced") return !skill.isBasicSkill;
+          return false;
+        });
       })
       .filter((skill) => {
         if (!normalizedSearchQuery) return true;
@@ -140,7 +141,7 @@ export function SkillSidebar({
     pendingAvailableXp,
     purchaseSkillAdvance,
     removePendingSkillAdvance,
-    selectedFilter,
+    selectedFilters,
     skills,
   ]);
 
@@ -167,13 +168,15 @@ export function SkillSidebar({
         onValueChange={setSearchQuery}
       />
       <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
-        <SidebarFilterList
-          ariaLabel="Skill filters"
-          label="Type"
-          options={SKILL_FILTERS}
-          value={selectedFilter}
-          onChange={setSelectedFilter}
-        />
+        <div className="space-y-1.5">
+          <div className="wfrp-label text-wfrp-muted-text">Type</div>
+          <WfrpFilterChips
+            ariaLabel="Skill filters"
+            options={SKILL_FILTERS}
+            selectedIds={selectedFilters}
+            onChange={setSelectedFilters}
+          />
+        </div>
       </div>
       <SidebarItemList
         className="!rounded-none !border-0"

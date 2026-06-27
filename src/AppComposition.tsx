@@ -344,6 +344,56 @@ export function AppComposition() {
 
     careerTabRef.current?.saveChanges();
   }, [hasUnsavedCareerEdits]);
+
+  const prevOpenSidebarRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const openSidebars: string[] = [];
+    if (isCharacteristicSidebarOpen) openSidebars.push("characteristic");
+    if (isTalentSidebarOpen) openSidebars.push("talent");
+    if (isSkillSidebarOpen) openSidebars.push("skill");
+    if (isMobileMenuSidebarOpen) openSidebars.push("mobileMenu");
+    if (isMobileGainExperienceOpen) openSidebars.push("mobileGainExperience");
+    if (activeInfo) openSidebars.push("info");
+    if (isShopOpen) openSidebars.push("shop");
+    if (isSpellShopOpen) openSidebars.push("spellShop");
+    if (rollState.characteristic) openSidebars.push("diceRoller");
+
+    if (openSidebars.length > 1) {
+      const newlyOpened = openSidebars.find((name) => name !== prevOpenSidebarRef.current) || openSidebars[0];
+
+      if (newlyOpened !== "characteristic") setIsCharacteristicSidebarOpen(false);
+      if (newlyOpened !== "talent") setIsTalentSidebarOpen(false);
+      if (newlyOpened !== "skill") setIsSkillSidebarOpen(false);
+      if (newlyOpened !== "mobileMenu") setIsMobileMenuSidebarOpen(false);
+      if (newlyOpened !== "mobileGainExperience") setIsMobileGainExperienceOpen(false);
+      if (newlyOpened !== "info") setActiveInfo(null);
+      if (newlyOpened !== "shop") setIsShopOpen(false);
+      if (newlyOpened !== "spellShop") setIsSpellShopOpen(false);
+      if (newlyOpened !== "diceRoller") {
+        setRollState((prev) => (prev.characteristic ? { ...prev, characteristic: null } : prev));
+      }
+
+      prevOpenSidebarRef.current = newlyOpened;
+    } else {
+      prevOpenSidebarRef.current = openSidebars[0] || null;
+    }
+  }, [
+    isCharacteristicSidebarOpen,
+    isTalentSidebarOpen,
+    isSkillSidebarOpen,
+    isMobileMenuSidebarOpen,
+    isMobileGainExperienceOpen,
+    activeInfo,
+    isShopOpen,
+    isSpellShopOpen,
+    rollState.characteristic,
+    setActiveInfo,
+    setIsShopOpen,
+    setIsSpellShopOpen,
+    setRollState,
+  ]);
+
   useEffect(() => {
     document.title = isLandingPageOpen
       ? `${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`

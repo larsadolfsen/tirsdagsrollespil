@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { AppSidebar, SidebarFilterList, SidebarItemList } from "./sidebar";
-import { WfrpSearchField } from "./ui";
+import { AppSidebar, SidebarItemList } from "./sidebar";
+import { WfrpFilterChips, WfrpSearchField } from "./ui";
 import { allItemDefinitions, wfrp4eRuleset } from "../data/rules/wfrp4e";
 import { formatItemValue } from "../lib/gameSession";
 import { cn } from "../lib/utils";
@@ -13,12 +13,11 @@ const armourAvailabilityById = new Map(
   wfrp4eRuleset.armours.map((armour) => [armour.id, armour.availability]),
 );
 
-const inventoryStock = [...allItemDefinitions].sort((firstItem, secondItem) => {
-  const typeOrder = firstItem.type.localeCompare(secondItem.type);
-  return typeOrder || firstItem.name.localeCompare(secondItem.name);
-});
+const inventoryStock = [...allItemDefinitions].sort((firstItem, secondItem) =>
+  firstItem.name.localeCompare(secondItem.name),
+);
 
-const availabilityOrder = ["common", "average", "scarce", "rare", "exotic", "n/a"];
+
 const coinRows = [
   ["gc", "Gold Crowns", "bg-wfrp-gold"],
   ["s", "Silver Shillings", "bg-wfrp-silver"],
@@ -32,8 +31,18 @@ function formatFilterLabel(value: string) {
     .join(" ");
 }
 
+const itemTypePluralLabels: Record<string, string> = {
+  "armor": "Armors",
+  "consumable": "Consumables",
+  "melee weapon": "Melee Weapons",
+  "packs and containers": "Containers",
+  "ranged weapon": "Ranged Weapons",
+  "tool": "Tools",
+  "travel gear": "Travel Gear",
+};
+
 function formatItemTypeLabel(type: string) {
-  return type.toLowerCase() === "packs and containers" ? "Containers" : formatFilterLabel(type);
+  return itemTypePluralLabels[type.toLowerCase()] ?? formatFilterLabel(type);
 }
 
 function formatItemTypeShortLabel(type: string) {
@@ -74,50 +83,43 @@ export function ShopSidebar({
   onClose: () => void;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedItemType, setSelectedItemType] = useState("All");
-  const [selectedRarity, setSelectedRarity] = useState("All");
+  const [selectedItemTypes, setSelectedItemTypes] = useState<string[]>([]);
+  const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
 
   const itemTypes = useMemo(() => Array.from(new Set(inventoryStock.map((item) => item.type))), []);
   const itemTypeOptions = useMemo(
-    () => [
-      { id: "All", label: "All" },
-      ...itemTypes.map((itemType) => ({
-        id: itemType,
-        label: formatItemTypeLabel(itemType),
-        shortLabel: formatItemTypeShortLabel(itemType),
-      })),
-    ],
+    () =>
+      itemTypes
+        .map((itemType) => ({
+          id: itemType,
+          label: formatItemTypeLabel(itemType),
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
     [itemTypes],
   );
-  const itemRarities = useMemo(() => {
-    return Array.from(new Set(inventoryStock.map((item) => getItemRarity(item)))).sort(
-      (firstRarity, secondRarity) => {
-        const firstIndex = availabilityOrder.indexOf(firstRarity);
-        const secondIndex = availabilityOrder.indexOf(secondRarity);
-
-        if (firstIndex !== -1 || secondIndex !== -1) {
-          return (firstIndex === -1 ? Number.MAX_SAFE_INTEGER : firstIndex) -
-            (secondIndex === -1 ? Number.MAX_SAFE_INTEGER : secondIndex);
-        }
-
-        return firstRarity.localeCompare(secondRarity);
-      },
-    );
-  }, []);
   const rarityOptions = useMemo(
-    () => [
-      { id: "All", label: "All" },
-      ...itemRarities.map((rarity) => ({ id: rarity, label: formatFilterLabel(rarity) })),
-    ],
-    [itemRarities],
+    () => {
+      const rarityOrder = ["common", "average", "scarce", "rare", "exotic", "n/a"];
+      return Array.from(new Set(inventoryStock.map((item) => getItemRarity(item))))
+        .map((rarity) => ({ id: rarity, label: rarity === "n/a" ? "None" : formatFilterLabel(rarity) }))
+        .sort((a, b) => {
+          const aIndex = rarityOrder.indexOf(a.id);
+          const bIndex = rarityOrder.indexOf(b.id);
+          if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+          if (aIndex !== -1) return -1;
+          if (bIndex !== -1) return 1;
+          return a.label.localeCompare(b.label);
+        });
+    },
+    [],
   );
 
   const filteredStock = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLowerCase();
 
     return inventoryStock.filter((item) => {
-      if (selectedItemType !== "All" && item.type !== selectedItemType) return false;
-      if (selectedRarity !== "All" && getItemRarity(item) !== selectedRarity) return false;
+      if (selectedItemTypes.length > 0 && !selectedItemTypes.includes(item.type)) return false;
+      if (selectedRarities.length > 0 && !selectedRarities.includes(getItemRarity(item))) return false;
 
       if (!normalizedSearchTerm) return true;
 
@@ -125,7 +127,7 @@ export function ShopSidebar({
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(normalizedSearchTerm));
     });
-  }, [searchTerm, selectedItemType, selectedRarity]);
+  }, [searchTerm, selectedItemTypes, selectedRarities]);
 
   const inventoryItems = filteredStock.map((item) => {
     const rarity = getItemRarity(item);
@@ -157,7 +159,9 @@ export function ShopSidebar({
     };
   });
 
-  const listTitle = selectedItemType === "All" ? "All Items" : formatItemTypeLabel(selectedItemType);
+  const listTitle = selectedItemTypes.length === 1
+    ? formatItemTypeLabel(selectedItemTypes[0])
+    : "All Items";
 
   return (
     <AppSidebar
@@ -202,21 +206,25 @@ export function ShopSidebar({
       />
 
       <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
-        <div className="space-y-2">
-          <SidebarFilterList
-            ariaLabel="Inventory type filters"
-            label="Type"
-            options={itemTypeOptions}
-            value={selectedItemType}
-            onChange={setSelectedItemType}
-          />
-          <SidebarFilterList
-            ariaLabel="Inventory rarity filters"
-            label="Rarity"
-            options={rarityOptions}
-            value={selectedRarity}
-            onChange={setSelectedRarity}
-          />
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <div className="wfrp-label text-wfrp-muted-text">Type</div>
+            <WfrpFilterChips
+              ariaLabel="Inventory type filters"
+              options={itemTypeOptions}
+              selectedIds={selectedItemTypes}
+              onChange={setSelectedItemTypes}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <div className="wfrp-label text-wfrp-muted-text">Rarity</div>
+            <WfrpFilterChips
+              ariaLabel="Inventory rarity filters"
+              options={rarityOptions}
+              selectedIds={selectedRarities}
+              onChange={setSelectedRarities}
+            />
+          </div>
         </div>
       </div>
 

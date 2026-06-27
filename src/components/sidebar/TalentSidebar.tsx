@@ -1,16 +1,15 @@
 import { useMemo, useState } from "react";
 import { AppSidebar } from "./AppSidebar";
-import { SidebarFilterList } from "./SidebarFilterList";
 import { SidebarItemList } from "./SidebarItemList";
-import { WfrpSearchField } from "../ui";
+import { WfrpFilterChips, WfrpSearchField } from "../ui";
 import type { ResolvedCharacterTalent } from "../../data/characters/resolved";
 import type { TalentDefinition } from "../../types";
 
-type TalentFilterType = "All" | "career";
+type TalentFilterType = "career" | "other";
 
 const TALENT_FILTERS: Array<{ id: TalentFilterType; label: string }> = [
-  { id: "All", label: "All" },
   { id: "career", label: "Career" },
+  { id: "other", label: "Non Career" },
 ];
 
 export function TalentSidebar({
@@ -38,7 +37,7 @@ export function TalentSidebar({
   purchaseTalent: (talentName: string) => void;
   talents: TalentDefinition[];
 }) {
-  const [selectedFilter, setSelectedFilter] = useState<TalentFilterType>("career");
+  const [selectedFilters, setSelectedFilters] = useState<TalentFilterType[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const ownedTalentNames = useMemo(() => new Set(characterTalents.map((talent) => talent.name)), [characterTalents]);
   const careerTalentNameSet = useMemo(() => new Set(careerTalentNames), [careerTalentNames]);
@@ -65,9 +64,12 @@ export function TalentSidebar({
   };
   const talentItems = talents
     .filter((talent) => {
-      if (selectedFilter === "All") return true;
-      if (selectedFilter === "career") return careerTalentNameSet.has(talent.name);
-      return false;
+      if (selectedFilters.length === 0) return true;
+      return selectedFilters.some((filter) => {
+        if (filter === "career") return careerTalentNameSet.has(talent.name);
+        if (filter === "other") return !careerTalentNameSet.has(talent.name);
+        return false;
+      });
     })
     .filter((talent) => {
       if (!normalizedSearchQuery) return true;
@@ -137,13 +139,15 @@ export function TalentSidebar({
         onValueChange={setSearchQuery}
       />
       <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
-        <SidebarFilterList
-          ariaLabel="Talent filters"
-          label="Type"
-          options={TALENT_FILTERS}
-          value={selectedFilter}
-          onChange={setSelectedFilter}
-        />
+        <div className="space-y-1.5">
+          <div className="wfrp-label text-wfrp-muted-text">Type</div>
+          <WfrpFilterChips
+            ariaLabel="Talent filters"
+            options={TALENT_FILTERS}
+            selectedIds={selectedFilters}
+            onChange={setSelectedFilters}
+          />
+        </div>
       </div>
       <SidebarItemList
         className="!rounded-none !border-0"
