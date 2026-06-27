@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useHorizontalSwipePager } from "../hooks/useHorizontalSwipePager";
-import { WfrpArrowButton } from "./ui";
+import { Heading, WfrpArrowButton } from "./ui";
 
 interface CharacterSheetFrameProps {
   breadcrumbs: ReactNode;
@@ -32,9 +32,9 @@ function MobileTitlePager({
   if (hideNavigation) {
     return (
       <div className="md:hidden">
-        <h1 className="min-w-0 text-center font-serif text-2xl font-semibold leading-tight tracking-tight text-gray-100">
+        <Heading level={1} variant="page" align="center">
           {title}
-        </h1>
+        </Heading>
       </div>
     );
   }
@@ -49,9 +49,11 @@ function MobileTitlePager({
         onClick={onPrevious}
         label="Show previous character sheet tab"
       />
-      <h1 className="min-w-0 text-center font-serif text-2xl font-semibold leading-tight tracking-tight text-gray-100">
-        {title}
-      </h1>
+      <div className="min-w-0">
+        <Heading level={1} variant="page" align="center">
+          {title}
+        </Heading>
+      </div>
       {action ?? (
         <WfrpArrowButton
           direction="right"

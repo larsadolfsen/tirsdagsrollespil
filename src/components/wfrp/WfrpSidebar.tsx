@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/src/lib/utils";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
-import { WfrpStandardIcon } from "../ui";
+import { Heading, WfrpStandardIcon } from "../ui";
 
 type WfrpSidebarProps = {
   ariaLabelledBy?: string;
@@ -102,9 +102,9 @@ export function WfrpSidebar({
                 </div>
               ) : null}
               <div className="flex flex-col">
-                <h2 id={titleId} className="wfrp-sidebar-title text-sm uppercase tracking-widest text-wfrp-gold">
+                <Heading id={titleId} level={2} variant="sidebarLabel">
                   {title}
-                </h2>
+                </Heading>
                 {kicker ? <span className="wfrp-sidebar-kicker">{kicker}</span> : null}
               </div>
             </div>

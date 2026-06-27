@@ -1,8 +1,8 @@
 export { AppSidebar, AppSidebarSection } from "./AppSidebar";
 export { SidebarFilterList } from "./SidebarFilterList";
 export type { SidebarFilterOption } from "./SidebarFilterList";
-export { SidebarItemList } from "./SidebarItemList";
-export type { SidebarListItem } from "./SidebarItemList";
+export { SidebarItem, SidebarItemList } from "./SidebarItemList";
+export type { SidebarItemProps, SidebarListItem } from "./SidebarItemList";
 export { MobileMenuSidebar } from "./MobileMenuSidebar";
 export { CharacteristicSidebar } from "./CharacteristicSidebar";
 export { SkillSidebar } from "./SkillSidebar";

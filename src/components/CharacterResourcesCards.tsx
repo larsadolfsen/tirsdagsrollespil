@@ -3,6 +3,7 @@ import { WoundsCorruptionCard } from "./WoundsCorruptionCard";
 import type { CoinKey } from "../tabs/tabTypes";
 import type { Characteristic } from "../types";
 import type { Key } from "react";
+import { Heading } from "./ui";
 
 type ResourceAdjuster = (delta: number) => void;
 type CoinAdjuster = (coinKey: CoinKey, amount: number) => void;
@@ -90,7 +91,7 @@ export function CharacterResourcesCards({
 
       <section className="wfrp-card overflow-hidden p-0!">
         <div className="wfrp-card-tab-header">
-          <h3 className="wfrp-panel-title">COINS</h3>
+          <Heading level={3} variant="panel">COINS</Heading>
         </div>
         <div className="wfrp-card-tab-body space-y-3 px-4 py-4">
           {coinRows.map(([coinKey, coinName, coinClassName]) => (

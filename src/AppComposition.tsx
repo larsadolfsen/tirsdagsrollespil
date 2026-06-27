@@ -33,6 +33,7 @@ import {
   Breadcrumbs,
   BottomSheetPaper,
   Button,
+  Heading,
   PanelSectionHeader,
   ResourceCounterBar,
   ScrollableTabStrip,
@@ -1700,14 +1701,10 @@ export function AppComposition() {
         activeSession={activeGmSession}
         breadcrumbs={gmBreadcrumbs}
         characters={availableCharacters}
-        editingSessionDate={editingSessionDate}
         editingSessionName={editingSessionName}
-        editingSessionNotes={editingSessionNotes}
-        editingSessionNumber={editingSessionNumber}
         isLoadingSessions={isLoadingGmSessions}
         isSessionsSidebarOpen={isSessionsSidebarOpen}
         onCreateSession={handleCreateGmSession}
-        onDeleteSession={handleDeleteGmSession}
         onSelectSession={handleSelectSessionOnMobile}
         onSessionsSidebarOpenChange={setIsSessionsSidebarOpen}
         onUpdateSession={handleUpdateActiveSession}
@@ -1935,9 +1932,11 @@ export function AppComposition() {
           ) : activeMainTab === "career" ? (
             <>
               <div className="hidden items-center justify-between gap-3 md:flex">
-                <h1 className="min-w-0 truncate font-serif text-2xl font-semibold leading-tight tracking-tight text-gray-100">
-                  Edit Character
-                </h1>
+                <div className="min-w-0">
+                  <Heading level={1} variant="page" truncate>
+                    Edit Character
+                  </Heading>
+                </div>
               </div>
               <section className="min-h-[500px] overflow-visible rounded-lg border border-wfrp-border bg-card pb-32 shadow-lg md:overflow-hidden md:pb-0">
                 <ScrollableTabStrip className="flex rounded-t-lg px-4 sm:!pl-4 sm:!pr-4 md:!pl-4 md:!pr-4 lg:!pr-12 bg-wfrp-surface-subtle border-b border-wfrp-border overflow-x-auto no-scrollbar">

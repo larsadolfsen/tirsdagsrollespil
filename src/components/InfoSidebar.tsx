@@ -2,6 +2,7 @@ import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { WfrpSidebar } from "./wfrp";
 import type { Characteristic } from "../types";
 import type { ActiveInfoState } from "./appTypes";
+import { Heading } from "./ui";
 
 type InfoSidebarProps = {
   activeInfo: ActiveInfoState | null;
@@ -48,7 +49,7 @@ function RuleSummaryPanel({
   return (
     <div className="wfrp-subpanel flex flex-col gap-5 rounded-lg p-5">
       <div className="flex flex-col gap-1">
-        <h3 className="wfrp-sidebar-title text-xl">{title}</h3>
+        <Heading level={3} variant="sidebarLarge">{title}</Heading>
         <span className="wfrp-sidebar-section border-white/5 text-wfrp-muted-text">{subtitle}</span>
       </div>
 

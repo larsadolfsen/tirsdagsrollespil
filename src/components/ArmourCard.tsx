@@ -1,3 +1,5 @@
+import { Heading } from "./ui";
+
 type ArmourTotals = {
   body: number;
   head: number;
@@ -28,7 +30,7 @@ export function ArmourCard({
   return (
     <section className="wfrp-card overflow-hidden p-0!">
       <div className="wfrp-card-tab-header">
-        <h3 className="wfrp-panel-title">ARMOUR</h3>
+        <Heading level={3} variant="panel">ARMOUR</Heading>
       </div>
       <div className="wfrp-card-tab-body space-y-3 px-4 py-4">
         <div className="mx-auto grid w-[86%] grid-cols-10 gap-1">

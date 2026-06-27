@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { HeaderResourceSlider } from "./ui";
+import { HeaderResourceSlider, Heading } from "./ui";
 import { useGameSessionContext } from "../context/GameSessionContext";
 import type { Characteristic } from "../types";
 
@@ -87,7 +87,7 @@ export function WoundsCorruptionCard({
   return (
     <section className="wfrp-card overflow-hidden p-0!">
       <div className="wfrp-card-tab-header">
-        <h3 className="wfrp-panel-title">WOUNDS & CORRUPTION</h3>
+        <Heading level={3} variant="panel">WOUNDS & CORRUPTION</Heading>
       </div>
       <div className="wfrp-card-tab-body px-4 py-4">
         <div className="grid grid-cols-1 gap-3">

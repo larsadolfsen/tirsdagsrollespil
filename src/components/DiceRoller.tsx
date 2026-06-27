@@ -9,7 +9,7 @@ import {
   getWeaponTraitNotes,
 } from "../lib/rollMechanics";
 import { DigitReel } from "./DigitReel";
-import { Button, WfrpStandardIcon } from "./ui";
+import { Button, Heading, WfrpStandardIcon } from "./ui";
 import type { RollHistoryItem, RollState } from "./appTypes";
 
 export function DiceRoller({
@@ -57,7 +57,7 @@ export function DiceRoller({
             <div className="wfrp-sidebar-header p-3 shrink-0 sticky top-0 z-20">
               <div className="flex items-center gap-3">
                 <div>
-                  <h2 className="font-semibold text-base leading-none text-gray-100">Dice Log</h2>
+                  <Heading level={2} variant="section">Dice Log</Heading>
                   <p className="wfrp-label text-wfrp-muted-text mt-1">
                     Roll & Results
                   </p>
@@ -104,9 +104,9 @@ export function DiceRoller({
                     animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col gap-1 px-1"
                   >
-                    <h3 className="wfrp-text-strong font-serif uppercase tracking-tight text-white/50">
+                    <Heading level={3} variant="rollMuted">
                       {item.label} Roll
-                    </h3>
+                    </Heading>
                     <div className="wfrp-text-strong text-wfrp-muted-text">
                       Difficulty {item.modifier >= 0 ? "+" : ""}
                       {item.modifier}
@@ -168,9 +168,11 @@ export function DiceRoller({
                   ref={activeRollerRef}
                   className="flex flex-col gap-1 px-1 scroll-mt-20 mb-[80vh] min-h-[200px] transition-all"
                 >
-                  <h3 className="wfrp-text-strong font-serif uppercase tracking-tight text-white mb-1">
-                    {rollState.characteristic.label} Roll
-                  </h3>
+                  <div className="mb-1">
+                    <Heading level={3} variant="roll">
+                      {rollState.characteristic.label} Roll
+                    </Heading>
+                  </div>
 
                   {(rollState.targetBonusSources ?? []).map((bonus) => (
                     <div key={bonus.label} className="wfrp-text-strong text-wfrp-muted-text">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { hydrateCharacterProgress, loadCharacterProgress } from "../data/persistence";
 import { loadResolvedCharacter, type CharacterSummary } from "../data/repository";
+import { Heading, SectionHeading } from "./ui";
 
 type PlayerCardsRowProps = {
   characters: CharacterSummary[];
@@ -39,7 +40,15 @@ export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
   }, [characters]);
 
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mb-4 select-none">
+    <section
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mb-4 select-none"
+      aria-labelledby="player-characters-heading"
+    >
+      <div className="col-span-full">
+        <SectionHeading id="player-characters-heading">
+          Characters
+        </SectionHeading>
+      </div>
       {resolvedCharacters.map((character) => {
         const initials = character.name
           .split(" ")
@@ -77,9 +86,11 @@ export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
                 )}
               </div>
               <div className="wfrp-landing-card-body flex flex-col justify-center min-w-0 pr-6">
-                <h2 className="wfrp-landing-card-title truncate pr-2">
-                  {character.name}
-                </h2>
+                <div className="pr-2">
+                  <Heading level={2} variant="card" truncate>
+                    {character.name}
+                  </Heading>
+                </div>
                 <p className="wfrp-landing-card-copy truncate mb-1">
                   {character.tier}
                 </p>

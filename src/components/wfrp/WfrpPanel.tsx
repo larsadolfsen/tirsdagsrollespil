@@ -16,7 +16,7 @@ export function WfrpPanel({ title, description, actions, className, children, ..
       {(title || description || actions) && (
         <CardHeader className="flex-row items-start justify-between gap-4 border-b border-border bg-wfrp-surface-subtle">
           <div className="space-y-1">
-            {title && <CardTitle className="text-base text-wfrp-gold">{title}</CardTitle>}
+            {title && <CardTitle>{title}</CardTitle>}
             {description && <CardDescription>{description}</CardDescription>}
           </div>
           {actions && <div className="shrink-0">{actions}</div>}

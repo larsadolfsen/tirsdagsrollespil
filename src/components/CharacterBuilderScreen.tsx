@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { Button, Card, Input, Textarea } from "./ui";
+import { Button, Card, Heading, Input, Textarea } from "./ui";
 import { UI_LABELS } from "../labels";
 import type { Ruleset } from "../types";
 
@@ -95,7 +95,7 @@ export function CharacterBuilderScreen({
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="wfrp-panel-title text-gray-100">{race.name}</h3>
+                  <Heading level={3} variant="panelStrong">{race.name}</Heading>
                   <span className="wfrp-table-label text-wfrp-gold">M {race.movement}</span>
                 </div>
                 <div className="mt-3 grid grid-cols-3 gap-2 wfrp-text text-gray-300">
@@ -132,7 +132,7 @@ export function CharacterBuilderScreen({
               <div className="rounded border border-white/10 bg-black/20 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h3 className="text-lg font-semibold font-serif">{selectedCareer.name}</h3>
+                    <Heading level={3} variant="subsection">{selectedCareer.name}</Heading>
                     <p className="wfrp-section-meta">{selectedCareer.tier}</p>
                   </div>
                   <span className="wfrp-table-label text-wfrp-gold">{selectedCareer.ranks[0]?.status}</span>
@@ -182,7 +182,7 @@ export function CharacterBuilderScreen({
         return (
           <div className="grid gap-4 md:grid-cols-2">
             <section className="rounded border border-white/10 bg-black/20 p-4">
-              <h3 className="wfrp-panel-title text-gray-300">Skill Choices</h3>
+              <Heading level={3} variant="panel">Skill Choices</Heading>
               <div className="mt-3 flex flex-col gap-2">
                 {selectedCareerSkills.map((skill) => (
                   <div key={skill} className="flex items-center justify-between rounded border border-white/10 bg-black/25 px-3 py-2">
@@ -193,7 +193,7 @@ export function CharacterBuilderScreen({
               </div>
             </section>
             <section className="rounded border border-white/10 bg-black/20 p-4">
-              <h3 className="wfrp-panel-title text-gray-300">Talent Pool</h3>
+              <Heading level={3} variant="panel">Talent Pool</Heading>
               <div className="mt-3 flex flex-col gap-2">
                 {selectedCareerTalents.map((talent) => (
                   <div key={talent} className="rounded border border-white/10 bg-black/25 px-3 py-2 wfrp-text text-gray-200">
@@ -210,7 +210,7 @@ export function CharacterBuilderScreen({
             {ruleset.items.slice(0, 12).map((item) => (
               <div key={item.id} className="rounded border border-white/10 bg-black/20 p-3">
                 <div className="flex items-start justify-between gap-3">
-                  <h3 className="wfrp-text-strong text-gray-100">{item.name}</h3>
+                  <Heading level={3} variant="item">{item.name}</Heading>
                   <span className="wfrp-table-label text-wfrp-muted-text">{item.type}</span>
                 </div>
                 <p className="mt-2 line-clamp-2 wfrp-text text-wfrp-muted-text">{item.description}</p>
@@ -255,7 +255,7 @@ export function CharacterBuilderScreen({
         return (
           <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
             <section className="rounded border border-white/10 bg-black/20 p-4">
-              <h3 className="wfrp-panel-title text-gray-300">Character Draft</h3>
+              <Heading level={3} variant="panel">Character Draft</Heading>
               <dl className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div><dt className="wfrp-table-label text-wfrp-muted-text">Name</dt><dd className="wfrp-text text-gray-100">{characterName || "Unnamed"}</dd></div>
                 <div><dt className="wfrp-table-label text-wfrp-muted-text">Species</dt><dd className="wfrp-text text-gray-100">{selectedSpecies?.name ?? "-"}</dd></div>
@@ -264,7 +264,7 @@ export function CharacterBuilderScreen({
               </dl>
             </section>
             <section className="rounded border border-white/10 bg-black/20 p-4">
-              <h3 className="wfrp-panel-title text-gray-300">Validation</h3>
+              <Heading level={3} variant="panel">Validation</Heading>
               <div className="mt-3 flex flex-col gap-2">
                 {validationItems.map((item) => (
                   <div key={item.label} className="flex items-center justify-between rounded border border-white/10 bg-black/25 px-3 py-2">
@@ -281,9 +281,9 @@ export function CharacterBuilderScreen({
       case "finish":
         return (
           <div className="rounded border border-white/10 bg-black/20 p-6 text-center">
-            <h3 className="text-xl font-semibold font-serif text-gray-100">
+            <Heading level={3} variant="pageSmall">
               {missingItems.length === 0 ? "Ready to Create Sheet" : "Draft Needs Review"}
-            </h3>
+            </Heading>
             <p className="mt-3 wfrp-text text-wfrp-muted-text">
               {missingItems.length === 0
                 ? `${characterName} is ready as a ${selectedSpecies?.name ?? "character"} ${selectedCareer?.tier ?? ""}.`
@@ -303,7 +303,7 @@ export function CharacterBuilderScreen({
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-t-4 border-wfrp-border border-t-wfrp-red px-4 py-3">
             <div>
               <p className="wfrp-sidebar-kicker">Character Builder</p>
-              <h1 className="text-xl font-semibold font-serif tracking-tight">New Character</h1>
+              <Heading level={1} variant="pageSmall">New Character</Heading>
             </div>
             <Button
               onClick={onClose}
@@ -348,7 +348,9 @@ export function CharacterBuilderScreen({
                   <p className="wfrp-section-meta">
                     Step {currentStepIndex + 1} of {builderSteps.length}
                   </p>
-                  <h2 className="mt-1 text-2xl font-semibold font-serif">{currentStep.label}</h2>
+                  <div className="mt-1">
+                    <Heading level={2} variant="sectionProminent">{currentStep.label}</Heading>
+                  </div>
                   <p className="mt-2 max-w-2xl text-sm leading-relaxed text-wfrp-muted-text">
                     {currentStep.summary}
                   </p>

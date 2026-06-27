@@ -1,3 +1,5 @@
+import { Heading } from "./Heading";
+
 export function PanelSectionHeader({
   title,
   meta,
@@ -7,7 +9,7 @@ export function PanelSectionHeader({
 }) {
   return (
     <div className="wfrp-section-head">
-      <h3 className="wfrp-panel-title">{title}</h3>
+      <Heading level={3} variant="panel">{title}</Heading>
       {meta ? <span className="wfrp-section-meta">{meta}</span> : null}
     </div>
   );

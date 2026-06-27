@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { hydrateCharacterProgress, loadCharacterProgress } from "../data/persistence";
 import { loadResolvedCharacter, type CharacterSummary } from "../data/repository";
+import { Heading } from "./ui";
 
 type LandingPageProps = {
   campaignName: string;
@@ -46,9 +47,11 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
         <span className="wfrp-label text-wfrp-muted-text text-[11px] font-semibold uppercase tracking-widest">
           Campaign
         </span>
-        <h1 className="wfrp-heading font-serif text-3xl text-gray-100 mt-1">
-          {campaignName}
-        </h1>
+        <div className="mt-1">
+          <Heading level={1} variant="pageDisplay">
+            {campaignName}
+          </Heading>
+        </div>
       </header>
 
       <main className="wfrp-landing-list">
@@ -65,9 +68,9 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
             </span>
           </div>
           <div className="wfrp-landing-card-body">
-            <h2 className="wfrp-landing-card-title">
+            <Heading level={2} variant="card">
               Game Master
-            </h2>
+            </Heading>
           </div>
         </button>
 
@@ -101,9 +104,9 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
                 )}
               </div>
               <div className="wfrp-landing-card-body">
-                <h2 className="wfrp-landing-card-title">
+                <Heading level={2} variant="card">
                   {character.name}
-                </h2>
+                </Heading>
                 <p className="wfrp-landing-card-copy">
                   {character.tier}
                 </p>

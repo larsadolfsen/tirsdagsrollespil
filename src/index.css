@@ -355,11 +355,11 @@ button:disabled {
 }
 
 @utility wfrp-standard-icon {
-  @apply inline-flex w-12 min-w-12 shrink-0 items-center justify-center rounded p-0 text-wfrp-muted-text transition-all cursor-pointer hover:text-white active:scale-95 disabled:cursor-default disabled:opacity-40 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
+  @apply inline-flex h-12 w-12 min-w-12 shrink-0 items-center justify-center rounded-full p-0 text-wfrp-muted-text transition-all cursor-pointer hover:text-white active:scale-95 disabled:cursor-default disabled:opacity-40 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50;
 }
 
 .wfrp-standard-icon__glyph {
-  @apply flex h-6 w-8 items-center justify-center rounded transition-colors;
+  @apply flex h-9 w-9 items-center justify-center rounded-full transition-colors;
 }
 
 .wfrp-standard-icon:hover .wfrp-standard-icon__glyph {

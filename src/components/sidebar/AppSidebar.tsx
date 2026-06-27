@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/src/lib/utils";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
-import { WfrpStandardIcon } from "../ui";
+import { Heading, WfrpStandardIcon } from "../ui";
 
 type AppSidebarProps = {
   ariaLabelledBy?: string;
@@ -20,6 +20,7 @@ type AppSidebarProps = {
   motionKey: string;
   onClose: () => void;
   overlayUntil?: "mobile" | "desktop";
+  showHeader?: boolean;
   side?: "left" | "right";
   sidebarRef?: RefObject<HTMLElement | null>;
   title: ReactNode;
@@ -47,6 +48,7 @@ export function AppSidebar({
   motionKey,
   onClose,
   overlayUntil = "mobile",
+  showHeader = true,
   side = "right",
   sidebarRef,
   title,
@@ -66,8 +68,8 @@ export function AppSidebar({
       : "right-0 border-l";
   const closedOffset = side === "left" ? "-100%" : "100%";
   const shellClassName = usesDesktopOverlay
-    ? "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[var(--color-sidebar)] shadow-2xl shadow-black/60 xl:relative xl:left-auto xl:right-auto xl:top-auto xl:z-auto xl:h-auto xl:min-h-[calc(100vh-0.25rem)] xl:shrink-0 xl:self-stretch"
-    : "fixed top-0 z-50 flex h-screen min-h-screen w-[min(400px,calc(100vw-48px))] max-w-[400px] flex-col overflow-hidden border-wfrp-border bg-[var(--color-sidebar)] shadow-2xl shadow-black/60 md:relative md:left-auto md:right-auto md:top-auto md:z-auto md:h-auto md:min-h-[calc(100vh-0.25rem)] md:shrink-0 md:self-stretch";
+    ? "fixed top-0 z-50 flex h-dvh max-h-dvh min-h-0 w-[min(360px,calc(100vw-72px))] max-w-[360px] flex-col overflow-hidden border-wfrp-border bg-[var(--color-sidebar)] shadow-2xl shadow-black/60 xl:relative xl:left-auto xl:right-auto xl:top-auto xl:z-auto xl:h-auto xl:max-h-dvh xl:min-h-0 xl:shrink-0 xl:self-stretch"
+    : "fixed top-0 z-50 flex h-dvh max-h-dvh min-h-0 w-[min(360px,calc(100vw-72px))] max-w-[360px] flex-col overflow-hidden border-wfrp-border bg-[var(--color-sidebar)] shadow-2xl shadow-black/60 md:relative md:left-auto md:right-auto md:top-auto md:z-auto md:h-auto md:max-h-dvh md:min-h-0 md:shrink-0 md:self-stretch";
   const overlayClassName = usesDesktopOverlay
     ? "fixed inset-0 z-40 cursor-default bg-black/50 xl:hidden"
     : "fixed inset-0 z-40 cursor-default bg-black/50 md:hidden";
@@ -140,23 +142,27 @@ export function AppSidebar({
             aria-modal={usesModalBehavior}
             aria-labelledby={ariaLabelledBy ?? titleId}
           >
-            <header className="flex h-14 max-h-14 shrink-0 items-center justify-between gap-4 border-b border-wfrp-border bg-[#242424] px-4 py-1">
-              <div className="max-h-12 min-w-0">
-                {eyebrow ? (
-                  <div className="mb-1 wfrp-label text-wfrp-gold/70">
-                    {eyebrow}
-                  </div>
-                ) : null}
-                <h2 id={titleId} className="truncate font-serif text-xl font-semibold leading-tight tracking-tight text-gray-100">
-                  {title}
-                </h2>
-              </div>
-              <WfrpStandardIcon
-                onClick={onClose}
-                label={closeLabel}
-                icon={<X />}
-              />
-            </header>
+            {showHeader ? (
+              <header className="flex h-14 max-h-14 shrink-0 items-center justify-between gap-4 border-b border-wfrp-border bg-[#242424] px-4 py-1">
+                <div className="max-h-12 min-w-0">
+                  {eyebrow ? (
+                    <div className="mb-1 wfrp-label text-wfrp-gold/70">
+                      {eyebrow}
+                    </div>
+                  ) : null}
+                  <Heading id={titleId} level={2} variant="sidebarPage" truncate>
+                    {title}
+                  </Heading>
+                </div>
+                <WfrpStandardIcon
+                  onClick={onClose}
+                  label={closeLabel}
+                  icon={<X />}
+                />
+              </header>
+            ) : titleId ? (
+              <Heading id={titleId} level={2} variant="visuallyHidden">{title}</Heading>
+            ) : null}
 
             <div
               ref={contentRef}
@@ -185,9 +191,9 @@ export function AppSidebarSection({
   return (
     <section className={cn("rounded border border-wfrp-border bg-card p-4", className)}>
       {heading ? (
-        <h3 className="mb-3 wfrp-label text-wfrp-muted-text">
-          {heading}
-        </h3>
+        <div className="mb-3">
+          <Heading level={3} variant="panel">{heading}</Heading>
+        </div>
       ) : null}
       {children}
     </section>

@@ -3,7 +3,7 @@ import type { Dispatch, RefObject, SetStateAction } from "react";
 import { Minus, Plus } from "lucide-react";
 import { motion } from "motion/react";
 import { AppSidebar } from "../../components/sidebar";
-import { Button, WfrpFilterChips } from "../../components/ui";
+import { Button, Heading, WfrpFilterChips } from "../../components/ui";
 import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/dice";
 
 interface DicePanelProps {
@@ -94,9 +94,9 @@ function DicePanel({
                 className="flex flex-col gap-3 px-1"
               >
               <div>
-                <h3 className="wfrp-sidebar-title text-[11px] uppercase tracking-tight text-white/60">
+                <Heading level={3} variant="sidebarItem">
                   {item.characterName ?? item.title ?? getTestTypeTitle(item.testType)}
-                </h3>
+                </Heading>
                 {(item.characterName || item.rolledAt) && (
                   <p className="mt-1 wfrp-sidebar-body text-xs text-wfrp-muted-text">
                     {item.characterName
@@ -229,9 +229,9 @@ function DicePanel({
             ref={activeRollerRef}
             className="flex flex-col gap-3 px-1 scroll-mt-20 mb-[80vh] min-h-[200px] transition-all"
           >
-            <h3 className="wfrp-sidebar-title text-[11px] uppercase tracking-tight text-white">
+            <Heading level={3} variant="sidebarItemActive">
               {rollState.title ?? getTestTypeTitle(rollState.testType)}
-            </h3>
+            </Heading>
 
             <div className="grid grid-cols-[minmax(72px,1fr)_56px_minmax(0,1fr)] items-center gap-1">
               <span className="wfrp-list-cell-strong">{rollState.characteristic.label}:</span>
@@ -523,9 +523,9 @@ function DicePanel({
       className="min-h-[500px] overflow-hidden"
     >
       <header className="max-w-2xl px-6 pt-4">
-        <h1 id="dice-log-page-title" className="font-serif text-2xl font-semibold leading-tight tracking-tight text-gray-100">
+        <Heading id="dice-log-page-title" level={1} variant="page">
           Dice Log
-        </h1>
+        </Heading>
         <div className="mt-3">
           <WfrpFilterChips
             options={characterFilterOptions}

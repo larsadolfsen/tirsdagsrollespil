@@ -34,6 +34,20 @@ database.exec(`
 
   CREATE INDEX IF NOT EXISTS dice_rolls_campaign_date
     ON dice_rolls (campaign_id, roll_date, rolled_at DESC);
+
+  CREATE TABLE IF NOT EXISTS gm_sessions (
+    id TEXT PRIMARY KEY,
+    campaign_id TEXT NOT NULL,
+    session_number INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    session_date TEXT NOT NULL,
+    notes TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS gm_sessions_campaign_number
+    ON gm_sessions (campaign_id, session_number DESC);
 `);
 const selectCampaignDiceRolls = database.prepare(`
   SELECT id, campaign_id, character_id, character_name, roll_json, rolled_at
@@ -47,11 +61,46 @@ const insertDiceRoll = database.prepare(`
   ) VALUES (?, ?, ?, ?, ?, ?, ?)
 `);
 const deleteOlderDiceRolls = database.prepare('DELETE FROM dice_rolls WHERE roll_date < ?');
+const selectCampaignSessions = database.prepare(`
+  SELECT id, campaign_id, session_number, name, session_date, notes, created_at, updated_at
+  FROM gm_sessions
+  WHERE campaign_id = ?
+  ORDER BY session_number DESC, created_at DESC
+`);
+const upsertGmSession = database.prepare(`
+  INSERT INTO gm_sessions (
+    id,
+    campaign_id,
+    session_number,
+    name,
+    session_date,
+    notes,
+    updated_at
+  ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  ON CONFLICT(id) DO UPDATE SET
+    session_number = excluded.session_number,
+    name = excluded.name,
+    session_date = excluded.session_date,
+    notes = excluded.notes,
+    updated_at = CURRENT_TIMESTAMP
+`);
+const deleteGmSession = database.prepare('DELETE FROM gm_sessions WHERE id = ?');
 
 type CharacterProgressMap = Record<string, Record<string, unknown>>;
 
 function isSafeCharacterId(characterId: string) {
   return /^[a-zA-Z0-9_-]+$/.test(characterId);
+}
+
+function isSafeSessionId(sessionId: unknown): sessionId is string {
+  return typeof sessionId === 'string' && /^[a-zA-Z0-9_-]{1,100}$/.test(sessionId);
+}
+
+function isSafeSessionNumber(sessionNumber: unknown): sessionNumber is number {
+  return typeof sessionNumber === 'number' &&
+    Number.isInteger(sessionNumber) &&
+    sessionNumber >= 0 &&
+    sessionNumber <= 100_000;
 }
 
 function currentCampaignDate() {
@@ -342,6 +391,88 @@ function campaignDiceRollsPlugin(): Plugin {
   };
 }
 
+function campaignGmSessionsPlugin(): Plugin {
+  return {
+    name: 'wfrp-campaign-gm-sessions',
+    configureServer(server) {
+      server.middlewares.use('/api/gm-sessions', async (req, res) => {
+        const pathIds = (req.url ?? '')
+          .split('?')[0]
+          .split('/')
+          .filter(Boolean)
+          .map((part) => decodeURIComponent(part));
+        const [campaignId, sessionId] = pathIds;
+
+        res.setHeader('Content-Type', 'application/json');
+
+        if (!campaignId || !isSafeCharacterId(campaignId)) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({error: 'Invalid campaign id'}));
+          return;
+        }
+
+        if (req.method === 'GET' && !sessionId) {
+          const sessions = selectCampaignSessions.all(campaignId).map((row) => {
+            const typedRow = row as Record<string, string | number>;
+            return {
+              id: typedRow.id,
+              campaignId: typedRow.campaign_id,
+              sessionNumber: typedRow.session_number,
+              name: typedRow.name,
+              date: typedRow.session_date,
+              notes: typedRow.notes,
+              createdAt: typedRow.created_at,
+              updatedAt: typedRow.updated_at,
+            };
+          });
+          res.end(JSON.stringify(sessions));
+          return;
+        }
+
+        if (req.method === 'PUT' && !sessionId) {
+          try {
+            const body = await readRequestJson(req) as Record<string, unknown>;
+            const {id, sessionNumber, name, date, notes} = body;
+
+            if (
+              !isSafeSessionId(id) ||
+              !isSafeSessionNumber(sessionNumber) ||
+              typeof name !== 'string' ||
+              name.length > 200 ||
+              typeof date !== 'string' ||
+              date.length > 50 ||
+              typeof notes !== 'string' ||
+              notes.length > 10_000_000
+            ) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({error: 'Invalid session'}));
+              return;
+            }
+
+            upsertGmSession.run(id, campaignId, sessionNumber, name, date, notes);
+            res.statusCode = 204;
+            res.end();
+          } catch {
+            res.statusCode = 400;
+            res.end(JSON.stringify({error: 'Invalid session JSON'}));
+          }
+          return;
+        }
+
+        if (req.method === 'DELETE' && isSafeSessionId(sessionId)) {
+          deleteGmSession.run(sessionId);
+          res.statusCode = 204;
+          res.end();
+          return;
+        }
+
+        res.statusCode = 405;
+        res.end(JSON.stringify({error: 'Method not allowed'}));
+      });
+    },
+  };
+}
+
 function nonBlockingStylesheetPlugin(): Plugin {
   return {
     name: 'wfrp-non-blocking-stylesheets',
@@ -371,6 +502,7 @@ export default defineConfig(() => {
       tailwindcss(),
       characterProgressFilePlugin(),
       campaignDiceRollsPlugin(),
+      campaignGmSessionsPlugin(),
       nonBlockingStylesheetPlugin(),
     ],
     resolve: {

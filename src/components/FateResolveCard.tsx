@@ -1,4 +1,4 @@
-import { HeaderResourceSlider } from "./ui";
+import { HeaderResourceSlider, Heading } from "./ui";
 
 type ResourceAdjuster = (delta: number) => void;
 
@@ -31,7 +31,7 @@ export function FateResolveCard({
   return (
     <section className="wfrp-card overflow-hidden p-0!">
       <div className="wfrp-card-tab-header">
-        <h3 className="wfrp-panel-title">FATE & FORTUNE</h3>
+        <Heading level={3} variant="panel">FATE & FORTUNE</Heading>
       </div>
       <div className="wfrp-card-tab-body px-4 py-4">
         <div className="grid grid-cols-1 gap-3">
@@ -69,7 +69,7 @@ export function ResilienceResolveCard({
   return (
     <section className="wfrp-card overflow-hidden p-0!">
       <div className="wfrp-card-tab-header">
-        <h3 className="wfrp-panel-title">RESILIENCE & RESOLVE</h3>
+        <Heading level={3} variant="panel">RESILIENCE & RESOLVE</Heading>
       </div>
       <div className="wfrp-card-tab-body px-4 py-4">
         <div className="grid grid-cols-1 gap-3">

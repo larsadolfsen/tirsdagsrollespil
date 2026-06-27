@@ -12,6 +12,7 @@ import {
 } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { Heading } from "./Heading";
 import { WfrpStandardIcon } from "./WfrpStandardIcon";
 
 interface DialogContextValue {
@@ -137,10 +138,10 @@ export function DialogFooter({ className, ...props }: HTMLAttributes<HTMLDivElem
   return <div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)} {...props} />;
 }
 
-export function DialogTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+export function DialogTitle(props: Omit<HTMLAttributes<HTMLHeadingElement>, "className" | "style">) {
   const context = useDialogContext("DialogTitle");
 
-  return <h2 id={context.titleId} className={cn("wfrp-heading font-display tracking-wide text-foreground", className)} {...props} />;
+  return <Heading id={context.titleId} level={2} variant="component" {...props} />;
 }
 
 export function DialogDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {

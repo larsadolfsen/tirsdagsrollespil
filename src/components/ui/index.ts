@@ -1,7 +1,11 @@
 export { AdvancementSection } from "./AdvancementSection";
 export { HeaderResourceSlider, ResourceCounterBar } from "./ResourceCounterBar";
+export { Heading } from "./Heading";
+export type { HeadingLevel, HeadingProps, HeadingVariant } from "./Heading";
 export { InlineSubtabs } from "./InlineSubtabs";
 export { PanelSectionHeader } from "./PanelSectionHeader";
+export { SectionHeading } from "./SectionHeading";
+export type { SectionHeadingProps } from "./SectionHeading";
 export { ScrollableTabStrip } from "./ScrollableTabStrip";
 export { MainTabMenu } from "./MainTabMenu";
 export { BottomSheetPaper } from "./BottomSheetPaper";
