@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { hydrateCharacterProgress, loadCharacterProgress } from "../data/persistence";
+import {
+  hydrateCharacterProgress,
+  loadCharacterProgress,
+  subscribeToProgressUpdates,
+} from "../data/persistence";
 import { loadResolvedCharacter, type CharacterSummary } from "../data/repository";
 import { Heading, SectionHeading } from "./ui";
+
+type WoundsMap = Record<string, { current: number; max: number }>;
 
 type PlayerCardsRowProps = {
   characters: CharacterSummary[];
@@ -11,16 +17,28 @@ type PlayerCardsRowProps = {
 export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
   const resolvedCharacters = characters.map((character) => loadResolvedCharacter(character.id));
   const [portraitDataUrls, setPortraitDataUrls] = useState<Record<string, string>>({});
+  const [woundsMap, setWoundsMap] = useState<WoundsMap>({});
+
+  /** Reads the latest wounds values from the in-memory progress cache into state. */
+  function refreshWoundsFromCache() {
+    setWoundsMap(
+      Object.fromEntries(
+        resolvedCharacters.map((character) => {
+          const progress = loadCharacterProgress(character.id);
+          const current = progress?.woundsCurrent ?? character.wounds.current;
+          return [character.id, { current, max: character.wounds.max }];
+        }),
+      ),
+    );
+  }
 
   useEffect(() => {
     let isCancelled = false;
 
-    async function hydratePortraits() {
+    async function hydrateAll() {
       await Promise.all(characters.map((character) => hydrateCharacterProgress(character.id)));
 
-      if (isCancelled) {
-        return;
-      }
+      if (isCancelled) return;
 
       setPortraitDataUrls(
         Object.fromEntries(
@@ -30,21 +48,58 @@ export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
           ]),
         ),
       );
+
+      refreshWoundsFromCache();
     }
 
-    void hydratePortraits();
+    void hydrateAll();
+
+    // Subscribe to cross-tab broadcasts so the GM view updates instantly
+    // whenever a player sheet saves new wounds — no polling or server
+    // round-trips needed.
+    const unsubscribe = subscribeToProgressUpdates((msg) => {
+      if (isCancelled) return;
+
+      if (msg.type === "save") {
+        // Merge the incoming progress into the local cache so
+        // refreshWoundsFromCache reads the latest value.
+        const character = resolvedCharacters.find((c) => c.id === msg.characterId);
+        if (!character) return;
+        // Write into the in-memory cache directly via hydrateCharacterProgress
+        // semantics — but since the data is already in the message we can
+        // update state directly without an extra fetch.
+        const current = msg.progress.woundsCurrent ?? character.wounds.current;
+        setWoundsMap((prev) => ({
+          ...prev,
+          [msg.characterId]: { current, max: character.wounds.max },
+        }));
+      } else if (msg.type === "clear") {
+        // Cleared progress → fall back to static character defaults.
+        const character = resolvedCharacters.find((c) => c.id === msg.characterId);
+        if (!character) return;
+        setWoundsMap((prev) => ({
+          ...prev,
+          [msg.characterId]: {
+            current: character.wounds.current,
+            max: character.wounds.max,
+          },
+        }));
+      }
+    });
 
     return () => {
       isCancelled = true;
+      unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characters]);
 
   return (
     <section
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mb-4 select-none"
+      className="flex flex-wrap gap-4 w-full mb-4 select-none"
       aria-labelledby="player-characters-heading"
     >
-      <div className="col-span-full">
+      <div className="w-full">
         <SectionHeading id="player-characters-heading">
           Characters
         </SectionHeading>
@@ -56,10 +111,11 @@ export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
           .join("")
           .slice(0, 2);
 
-        // Fetch current and max wounds for the character card
-        const progress = loadCharacterProgress(character.id);
-        const woundsCurrent = progress?.woundsCurrent ?? character.wounds.current;
-        const woundsMax = character.wounds.max;
+        // Read wounds from reactive state (updated instantly via BroadcastChannel
+        // when another tab saves progress, or populated after the initial fetch).
+        const woundsEntry = woundsMap[character.id];
+        const woundsCurrent = woundsEntry?.current ?? character.wounds.current;
+        const woundsMax = woundsEntry?.max ?? character.wounds.max;
         const safeWoundsCurrent = Math.min(Math.max(0, woundsCurrent), woundsMax);
         const woundsPercent = woundsMax > 0 ? (safeWoundsCurrent / woundsMax) * 100 : 0;
 
@@ -112,7 +168,7 @@ export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
               </div>
               
               {/* External link icon in top right corner */}
-              <div className="absolute top-2.5 right-2.5 text-wfrp-muted-text/50 group-hover:text-wfrp-gold transition-colors duration-200">
+              <div className="absolute top-2.5 right-2.5 text-wfrp-muted-text/50 group-hover:text-white transition-colors duration-200">
                 <ExternalLink size={12} />
               </div>
             </a>

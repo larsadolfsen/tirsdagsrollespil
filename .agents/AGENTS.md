@@ -20,6 +20,7 @@ Dette dokument definerer udviklingsregler, retningslinjer og arbejdsgange for **
   - Brug kun WFRP-specifikke tokens til navngivne accenter: `text-wfrp-gold`, `bg-wfrp-gold-surface`, `border-wfrp-gold/40`, `bg-wfrp-surface-subtle`.
   - Undgå hårdkodede hex/RGB-værdier. Hvis en ny farve tilføjes til designsystemet, skal den tilføjes som token i `src/index.css`.
   - Udvid ikke legacy CSS til ny UI; foretræk altid Tailwind utilities og semantiske tokens.
+  - **Undgå `!important`**: Brug aldrig Tailwinds `!`-modifier (f.eks. `!bg-red-500`) eller CSS `!important`. Hvis du har brug for at overstyre en komponents standardstile, skal du i stedet tilføje en prop til komponenten eller refaktorere den relevante CSS-klasse.
 
 ## 2. Kode- og Komponentstruktur
 

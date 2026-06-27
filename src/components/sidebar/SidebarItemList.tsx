@@ -29,6 +29,7 @@ export type SidebarItemProps = {
   isOpen?: boolean;
   isSelected?: boolean;
   item: SidebarListItem;
+  itemClassName?: string;
   onClick: (item: SidebarListItem) => void;
   variant?: "disclosure" | "select";
 };
@@ -38,6 +39,7 @@ export function SidebarItem({
   isOpen = false,
   isSelected = false,
   item,
+  itemClassName,
   onClick,
   variant = "disclosure",
 }: SidebarItemProps) {
@@ -48,7 +50,7 @@ export function SidebarItem({
     <div
       className={cn(
         "cursor-pointer border-b border-wfrp-border last:border-b-0",
-        index % 2 === 0 ? "bg-card" : "bg-wfrp-table",
+        index % 2 === 0 ? "bg-card" : "bg-background",
       )}
     >
       <button
@@ -57,6 +59,7 @@ export function SidebarItem({
           "flex w-full cursor-pointer justify-between gap-3 px-4 text-left wfrp-text-strong leading-6 text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
           isOpen ? "min-h-10 items-start pb-1 pt-3" : "min-h-12 items-center py-2",
           isSelected && "text-wfrp-gold",
+          itemClassName,
         )}
         aria-current={isSelected ? "page" : undefined}
         aria-expanded={isDisclosure ? isOpen : undefined}
@@ -139,6 +142,7 @@ type SidebarItemListProps = {
   className?: string;
   emptyMessage?: ReactNode;
   headerMeta?: ReactNode;
+  itemClassName?: string;
   items: SidebarListItem[];
   onItemSelect?: (item: SidebarListItem) => void;
   selectedItemId?: string | null;
@@ -149,6 +153,7 @@ export function SidebarItemList({
   className,
   emptyMessage = "No items available.",
   headerMeta,
+  itemClassName,
   items,
   onItemSelect,
   selectedItemId,
@@ -184,6 +189,7 @@ export function SidebarItemList({
             key={item.id}
             index={index}
             item={item}
+            itemClassName={itemClassName}
             variant={isSelectable ? "select" : "disclosure"}
             isOpen={!isSelectable && openItemId === item.id}
             isSelected={isSelectable && selectedItemId === item.id}

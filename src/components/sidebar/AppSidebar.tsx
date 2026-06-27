@@ -7,10 +7,17 @@ import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { Heading, WfrpStandardIcon } from "../ui";
 
 type AppSidebarProps = {
+  /**
+   * When true, the sidebar is always a fixed overlay at every breakpoint.
+   * It never becomes a relative/inline element that takes up space in the
+   * document flow. Use this when the caller reserves space via padding.
+   */
+  alwaysOverlay?: boolean;
   ariaLabelledBy?: string;
   children: ReactNode;
   className?: string;
   contentClassName?: string;
+  footerClassName?: string;
   closeLabel?: string;
   closeOnOutsidePointerDown?: boolean;
   contentRef?: RefObject<HTMLDivElement | null>;
@@ -35,6 +42,7 @@ type AppSidebarSectionProps = {
 };
 
 export function AppSidebar({
+  alwaysOverlay = false,
   ariaLabelledBy,
   children,
   className,
@@ -44,6 +52,7 @@ export function AppSidebar({
   contentRef,
   eyebrow,
   footer,
+  footerClassName,
   isOpen,
   motionKey,
   onClose,
@@ -59,18 +68,33 @@ export function AppSidebar({
   const resolvedSidebarRef = sidebarRef ?? internalSidebarRef;
   const [usesModalBehavior, setUsesModalBehavior] = useState(false);
   const usesDesktopOverlay = overlayUntil === "desktop";
-  const overlayMaxWidth = usesDesktopOverlay ? 1279 : 767;
+
+  // When alwaysOverlay, the sidebar never becomes inline so we treat every
+  // viewport as a modal viewport (scroll-lock always applies when open).
+  const overlayMaxWidth = alwaysOverlay ? Infinity : usesDesktopOverlay ? 1279 : 767;
+
   const sideClassName =
     side === "left"
-      ? usesDesktopOverlay
+      ? alwaysOverlay
+        ? "left-0 border-r"
+        : usesDesktopOverlay
         ? "left-0 border-r xl:order-first"
         : "left-0 border-r md:order-first"
       : "right-0 border-l";
+
   const closedOffset = side === "left" ? "-100%" : "100%";
-  const shellClassName = usesDesktopOverlay
+
+  // alwaysOverlay: no breakpoint-based relative resets — stays fixed forever.
+  const shellClassName = alwaysOverlay
+    ? "fixed top-0 z-50 flex h-dvh max-h-dvh min-h-0 w-[min(360px,calc(100vw-72px))] max-w-[360px] flex-col overflow-hidden border-wfrp-border bg-[var(--color-sidebar)] shadow-2xl shadow-black/60"
+    : usesDesktopOverlay
     ? "fixed top-0 z-50 flex h-dvh max-h-dvh min-h-0 w-[min(360px,calc(100vw-72px))] max-w-[360px] flex-col overflow-hidden border-wfrp-border bg-[var(--color-sidebar)] shadow-2xl shadow-black/60 xl:relative xl:left-auto xl:right-auto xl:top-auto xl:z-auto xl:h-auto xl:max-h-dvh xl:min-h-0 xl:shrink-0 xl:self-stretch"
     : "fixed top-0 z-50 flex h-dvh max-h-dvh min-h-0 w-[min(360px,calc(100vw-72px))] max-w-[360px] flex-col overflow-hidden border-wfrp-border bg-[var(--color-sidebar)] shadow-2xl shadow-black/60 md:relative md:left-auto md:right-auto md:top-auto md:z-auto md:h-auto md:max-h-dvh md:min-h-0 md:shrink-0 md:self-stretch";
-  const overlayClassName = usesDesktopOverlay
+
+  // alwaysOverlay: backdrop is always rendered (never hidden at a breakpoint).
+  const overlayClassName = alwaysOverlay
+    ? "fixed inset-0 z-40 cursor-default bg-black/50"
+    : usesDesktopOverlay
     ? "fixed inset-0 z-40 cursor-default bg-black/50 xl:hidden"
     : "fixed inset-0 z-40 cursor-default bg-black/50 md:hidden";
 
@@ -172,7 +196,7 @@ export function AppSidebar({
             </div>
 
             {footer ? (
-              <footer className="shrink-0 border-t border-wfrp-border bg-[#242424] p-4">
+              <footer className={cn("shrink-0 border-t border-wfrp-border bg-[#242424] p-4", footerClassName)}>
                 {footer}
               </footer>
             ) : null}

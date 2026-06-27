@@ -104,11 +104,12 @@ export function GameMasterPage({
       motionKey="gm-sessions-sidebar"
       title="Sessions"
       titleId="gm-sessions-title"
-      overlayUntil="mobile"
+      overlayUntil="desktop"
       showHeader={false}
       closeLabel="Close sessions sidebar"
-      className="max-md:!top-14 max-md:!h-[calc(100dvh-3.5rem)] max-md:!max-h-[calc(100dvh-3.5rem)] md:h-auto md:max-h-[calc(100dvh-3.5rem)] md:min-h-0 md:w-72 md:min-w-[288px] md:max-w-[288px]"
-      contentClassName="!p-0"
+      className="!fixed !top-14 !h-[calc(100dvh-3.5rem)] !max-h-[calc(100dvh-3.5rem)] md:!w-72 md:!min-w-[288px] md:!max-w-[288px] xl:!fixed xl:!left-0 xl:!top-14 xl:!z-50 xl:!h-[calc(100dvh-3.5rem)] xl:!max-h-[calc(100dvh-3.5rem)] !bg-background"
+      contentClassName="!p-0 !bg-background"
+      footerClassName="!bg-background"
       footer={(
         <Button
           variant="secondary"
@@ -123,13 +124,14 @@ export function GameMasterPage({
       {sessions.length > 0 ? (
         <SidebarItemList
           className="!rounded-none !border-0"
+          itemClassName="!min-h-0 !py-0 h-[72px]"
           title="Session"
           items={sessions.map((session) => ({
             id: session.id,
             name: (
-              <span className="block min-w-0">
-                <span className="block truncate text-base text-white">{session.name}</span>
-                <span className="mt-0.5 block text-sm text-wfrp-muted-text">{session.date}</span>
+              <span className="flex min-w-0 flex-col gap-1">
+                <span className="block truncate leading-none text-base text-white">{session.name}</span>
+                <span className="block leading-none text-sm text-wfrp-muted-text">Session {session.sessionNumber + 1}</span>
               </span>
             ),
           }))}
@@ -145,62 +147,63 @@ export function GameMasterPage({
   );
 
   return (
-    <AppShell mobileAddAction={null} sidebars={null}>
+    <AppShell mobileAddAction={null} sidebars={sessionSidebar}>
       <GameMasterHeader
         isSessionsSidebarOpen={isSessionsSidebarOpen}
         onToggleSessions={() => onSessionsSidebarOpenChange(!isSessionsSidebarOpen)}
       />
 
-      <div className="flex min-h-[calc(100dvh-3.5rem)] w-full flex-row items-stretch">
-        {sessionSidebar}
+      <div className="relative min-h-[calc(100dvh-3.5rem)] w-full">
 
-        <div className="flex min-w-0 flex-1 flex-col gap-4 px-4 py-4 md:gap-6 md:px-8 md:py-6">
-          <Breadcrumbs items={breadcrumbs} />
-          <PlayerCardsRow characters={characters} />
+        <div className="flex flex-col gap-4 px-4 py-4 md:gap-6 md:px-72 md:py-6">
+          <div className="mx-auto w-full max-w-[1200px] flex flex-col gap-4 md:gap-6">
+            <Breadcrumbs items={breadcrumbs} />
+            <PlayerCardsRow characters={characters} />
 
-          <section className="flex min-h-[450px] flex-1 flex-col">
-            {activeSession ? (
-              <div>
-                <span className="wfrp-label block text-wfrp-muted-text">
-                  Session {activeSession.sessionNumber + 1}
-                </span>
-                {isRenamingSession ? (
-                  <input
-                    autoFocus
-                    value={sessionTitleDraft}
-                    onChange={(event) => setSessionTitleDraft(event.target.value)}
-                    onBlur={finishRenamingSession}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        event.currentTarget.blur();
-                      }
-                    }}
-                    aria-label="Session title"
-                    className="mt-2 w-full border-0 border-b border-wfrp-gold/50 bg-transparent p-0 pb-1 font-serif text-3xl font-semibold text-gray-100 outline-none"
-                  />
-                ) : (
-                  <div className="mt-2">
-                    <Heading level={2} variant="sectionDisplay">
-                    <button
-                      type="button"
-                      onClick={() => setIsRenamingSession(true)}
-                      className="cursor-text text-left transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                      aria-label="Rename session"
-                    >
-                      {editingSessionName || "Untitled Session"}
-                    </button>
-                    </Heading>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <SheetEmptyState title="No session selected" className="min-h-[400px] flex-1">
-                {sessions.length > 0
-                  ? "Select a session from the sidebar to view or edit its notes."
-                  : "Create a session to start planning."}
-              </SheetEmptyState>
-            )}
-          </section>
+            <section className="flex min-h-[450px] flex-1 flex-col">
+              {activeSession ? (
+                <div>
+                  <span className="wfrp-label block text-wfrp-muted-text">
+                    Session {activeSession.sessionNumber + 1}
+                  </span>
+                  {isRenamingSession ? (
+                    <input
+                      autoFocus
+                      value={sessionTitleDraft}
+                      onChange={(event) => setSessionTitleDraft(event.target.value)}
+                      onBlur={finishRenamingSession}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.currentTarget.blur();
+                        }
+                      }}
+                      aria-label="Session title"
+                      className="w-full border-0 border-b border-wfrp-gold/50 bg-transparent p-0 pb-1 font-serif text-3xl font-semibold text-gray-100 outline-none"
+                    />
+                  ) : (
+                    <div>
+                      <Heading level={2} variant="sectionDisplay">
+                        <button
+                          type="button"
+                          onClick={() => setIsRenamingSession(true)}
+                          className="cursor-text text-left transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                          aria-label="Rename session"
+                        >
+                          {editingSessionName || "Untitled Session"}
+                        </button>
+                      </Heading>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <SheetEmptyState title="No session selected" className="min-h-[400px] flex-1">
+                  {sessions.length > 0
+                    ? "Select a session from the sidebar to view or edit its notes."
+                    : "Create a session to start planning."}
+                </SheetEmptyState>
+              )}
+            </section>
+          </div>
         </div>
       </div>
     </AppShell>

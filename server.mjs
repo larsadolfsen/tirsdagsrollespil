@@ -10,6 +10,29 @@ import zlib from "node:zlib";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
+
+// ---------------------------------------------------------------------------
+// Server-Sent Events: push character-progress changes to all connected clients
+// so every GM view (on any machine) updates instantly.
+// ---------------------------------------------------------------------------
+/** @type {Set<import('express').Response>} */
+const sseClients = new Set();
+
+/**
+ * Broadcast a character-progress event to all connected SSE clients.
+ * @param {'save'|'clear'} type
+ * @param {string} characterId
+ * @param {unknown} [progress]
+ */
+function broadcastProgressEvent(type, characterId, progress) {
+  const payload = JSON.stringify(
+    progress !== undefined ? { type, characterId, progress } : { type, characterId },
+  );
+  for (const client of sseClients) {
+    client.write(`data: ${payload}\n\n`);
+  }
+}
+// ---------------------------------------------------------------------------
 const isRailwayDeployment = Boolean(
   process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_SERVICE_ID,
 );
@@ -882,6 +905,27 @@ app.use(
 );
 app.use(express.json({ limit: "1mb" }));
 
+// SSE stream — clients subscribe here to receive real-time progress updates.
+app.get("/api/character-progress/events", (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
+
+  // Send an initial comment so the browser knows the stream is alive.
+  res.write(": connected\n\n");
+
+  sseClients.add(res);
+
+  // Keep-alive ping every 25 s to prevent proxies from closing idle connections.
+  const keepAlive = setInterval(() => res.write(": ping\n\n"), 25_000);
+
+  req.on("close", () => {
+    clearInterval(keepAlive);
+    sseClients.delete(res);
+  });
+});
+
 app.get("/api/character-progress/:characterId", async (req, res, next) => {
   try {
     const characterProgress = await readCharacterProgress(req.params.characterId);
@@ -900,7 +944,9 @@ app.get("/api/character-progress/:characterId", async (req, res, next) => {
 app.put("/api/character-progress/:characterId", async (req, res, next) => {
   try {
     await ensureLegacyMigration();
-    writeCharacterProgress(req.params.characterId, req.body ?? {});
+    const progress = req.body ?? {};
+    writeCharacterProgress(req.params.characterId, progress);
+    broadcastProgressEvent("save", req.params.characterId, progress);
     res.status(204).end();
   } catch (error) {
     next(error);
@@ -911,6 +957,7 @@ app.delete("/api/character-progress/:characterId", async (req, res, next) => {
   try {
     await ensureLegacyMigration();
     deleteCharacterProgressStatement.run(req.params.characterId);
+    broadcastProgressEvent("clear", req.params.characterId);
     res.status(204).end();
   } catch (error) {
     next(error);
