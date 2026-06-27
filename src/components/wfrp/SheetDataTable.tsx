@@ -176,7 +176,7 @@ export function SheetDataAccordionRow({
   summary,
   summaryClassName,
   ...props
-}: DetailsHTMLAttributes<HTMLDetailsElement> & {
+}: DivProps & {
   contentClassName?: string;
   contentGridClassName?: string;
   detailsClassName?: string;

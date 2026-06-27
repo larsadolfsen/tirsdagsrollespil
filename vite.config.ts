@@ -81,8 +81,9 @@ function readTextFile(filePath: string, fallback = '') {
 function isCharacterProgressMap(value: unknown): value is CharacterProgressMap {
   return Boolean(value) &&
     typeof value === 'object' &&
+    value !== null &&
     !Array.isArray(value) &&
-    Object.values(value).every((entry) =>
+    Object.values(value as Record<string, unknown>).every((entry) =>
       Boolean(entry) && typeof entry === 'object' && !Array.isArray(entry),
     );
 }

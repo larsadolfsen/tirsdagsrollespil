@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/src/lib/utils";
 import { Separator } from "@/src/components/ui/separator";
 
-export interface WfrpSectionProps extends HTMLAttributes<HTMLElement> {
+export interface WfrpSectionProps extends Omit<HTMLAttributes<HTMLElement>, "title"> {
   eyebrow?: ReactNode;
   title: ReactNode;
   actions?: ReactNode;

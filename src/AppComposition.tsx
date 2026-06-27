@@ -1142,7 +1142,7 @@ export function AppComposition() {
         characteristicKey
           ? (attributes[characteristicKey] ?? 0)
           : 0;
-      const isBasicSkill =
+      const isBasicSkill = Boolean(
         skillOption
           ? isBasicSkillOption(skillOption)
           : skill
@@ -1152,7 +1152,8 @@ export function AppComposition() {
                 specialisationId: skill.specialisationId,
                 name: skill.displayName,
               })
-            : skillDefinition?.type === "basic";
+            : skillDefinition?.type === "basic",
+      );
 
       return {
         skillName,

@@ -115,7 +115,7 @@ export function useDiceRoller({
 
   const getRollBaseValue = (state: Pick<RollState, "characteristic"> & { baseValueOverride?: number | null }) => {
     if (!state.characteristic) return 0;
-    if ("baseValueOverride" in state && state.baseValueOverride !== null) return state.baseValueOverride;
+    if (state.baseValueOverride !== undefined && state.baseValueOverride !== null) return state.baseValueOverride;
 
     const baseValue = (characterData.attributes[state.characteristic.key] || 0);
     const skill = characterSkills.find((entry) => entry.displayName === state.characteristic?.label);
