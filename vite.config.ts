@@ -10,13 +10,17 @@ import type {Plugin} from 'vite';
 const progressFilePath = path.resolve(__dirname, 'data', 'character-progress.json');
 const characterDataDirectory = path.resolve(__dirname, 'data', 'characters');
 const databaseFilePath = path.resolve(__dirname, 'data', 'tirsdagsrollespil.sqlite');
+const dataDir = path.dirname(databaseFilePath);
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+const database = new DatabaseSync(databaseFilePath);
 const campaignDateFormatter = new Intl.DateTimeFormat('en-CA', {
   timeZone: process.env.WFRP_CAMPAIGN_TIME_ZONE ?? 'Europe/Copenhagen',
   year: 'numeric',
   month: '2-digit',
   day: '2-digit',
 });
-const database = new DatabaseSync(databaseFilePath);
 database.exec(`
   CREATE TABLE IF NOT EXISTS dice_rolls (
     id TEXT PRIMARY KEY,
