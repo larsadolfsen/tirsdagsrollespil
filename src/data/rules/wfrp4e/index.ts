@@ -124,3 +124,11 @@ export {
   meleeWeaponGroups,
   rangedWeaponGroups,
 };
+export {
+  creatureTraitDefinitions,
+  creatureTraitDefinitionsById,
+  type CreatureTraitDefinition,
+  type CreatureTraitId,
+  type CreatureTraitModifier,
+  type CreatureTraitModifierType,
+} from "./creatureTraits";
