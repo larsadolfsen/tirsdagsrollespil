@@ -373,7 +373,7 @@ export function AppComposition() {
       id: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
       campaignId: characterData.campaignId,
       sessionNumber: nextNum,
-      name: `Session ${nextNum}`,
+      name: "Name this session",
       date: new Date().toISOString().split("T")[0],
       notes: "",
     };
