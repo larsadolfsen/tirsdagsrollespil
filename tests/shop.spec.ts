@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("shop includes complete equipment and filterable weapon rarities", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/enemy_within/thano_voss");
 
   await page.getByRole("button", { name: "Inventory" }).click();
   await page.getByRole("button", { name: "Add item" }).click();
@@ -34,7 +34,7 @@ test("coins can be moved into a newly added pouch", async ({ page }) => {
 
     await route.fulfill({ status: 204 });
   });
-  await page.goto("/");
+  await page.goto("/enemy_within/thano_voss");
 
   await page.getByRole("button", { name: "Inventory" }).click();
   await page.getByRole("button", { name: "Add item" }).click();

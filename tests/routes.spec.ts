@@ -15,7 +15,7 @@ test("landing character cards open the selected sheet", async ({ page }) => {
   await page.goto("/");
 
   const karlCard = page.locator(".wfrp-landing-character-card").filter({ hasText: "Karl Müller" });
-  await karlCard.getByRole("button", { name: "Open sheet" }).click();
+  await karlCard.click();
 
   await expect(page).toHaveURL(/\/enemy_within\/karl_muller$/);
   await expect(page.getByText("Karl Müller").first()).toBeVisible();
@@ -49,12 +49,12 @@ test("breadcrumbs reflect the current sheet section and navigate up the hierarch
 
   await breadcrumbs.getByRole("link", { name: "Enemy Within" }).click();
   await expect(page).toHaveURL("/");
-  await expect(page.locator(".wfrp-landing-character-card")).toHaveCount(3);
+  await expect(page.locator(".wfrp-landing-character-card")).toHaveCount(4);
 });
 
 test("unknown character urls show the character picker instead of the default sheet", async ({ page }) => {
   await page.goto("/enemy_within/not_a_character/skills");
 
-  await expect(page.locator(".wfrp-landing-character-card")).toHaveCount(3);
+  await expect(page.locator(".wfrp-landing-character-card")).toHaveCount(4);
   await expect(page).toHaveTitle("Enemy Within WFRP 4E");
 });

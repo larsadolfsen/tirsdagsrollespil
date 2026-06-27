@@ -3,7 +3,7 @@ import { talentDefinitions } from "../src/data/rules/wfrp4e/talents";
 
 async function openAdvanceTab(page: Page) {
   await page.goto("/");
-  await page.getByRole("button", { name: "Open sheet" }).first().click();
+  await page.locator(".wfrp-landing-character-card").filter({ hasNotText: "Game Master" }).first().click();
   await page.getByRole("button", { name: "Settings" }).click();
   await page.getByRole("menuitem", { name: "Edit Character" }).click();
   await expect(page.getByRole("heading", { name: "Edit Character" })).toBeVisible();

@@ -64,12 +64,12 @@ export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
         const woundsPercent = woundsMax > 0 ? (safeWoundsCurrent / woundsMax) * 100 : 0;
 
         return (
-          <div key={character.id} className="w-full">
+          <div key={character.id} className="w-full max-w-[288px]">
             <a
               href={`/${character.campaignId}/${character.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="wfrp-landing-character-card no-underline relative group"
+              className="wfrp-landing-character-card no-underline relative group max-w-[288px]"
               aria-label={`Open ${character.name} in a new tab`}
             >
               <div className="wfrp-landing-portrait">

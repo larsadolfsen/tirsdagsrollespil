@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("skills rows expand with accessible detail controls", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/enemy_within/thano_voss");
   await page.getByRole("button", { name: "Skills" }).click();
 
   const firstSkillRow = page.locator(".wfrp-data-accordion-row").first();
