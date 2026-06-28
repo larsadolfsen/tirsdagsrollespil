@@ -13,6 +13,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
 } from "./ui";
 import { WfrpPlayerCard } from "./wfrp";
 import type { CharacterSummary } from "../data/repository";
@@ -344,49 +348,45 @@ export function SceneComponentsList({
                   {/* Right Column: Characteristics / Placeholder */}
                   <div className="flex flex-col items-center justify-center p-4">
                     {selectedChar && attributes ? (
-                      <div className="w-full flex flex-col items-center">
-                        <div className="mb-4 text-center">
-                          <span className="wfrp-label text-[10px] uppercase tracking-widest text-wfrp-muted-text/70 block mb-1">
-                            Characteristics
-                          </span>
-                          <span className="font-serif text-lg font-bold text-wfrp-gold">
-                            {selectedChar.name}
-                          </span>
-                          <span className="text-[11px] text-wfrp-muted-text block italic leading-none mt-1">
+                      <Card className="w-full max-w-sm">
+                        <CardHeader className="text-center">
+                          <CardTitle>{selectedChar.name}</CardTitle>
+                          <span className="wfrp-label text-[10px] uppercase tracking-widest text-wfrp-muted-text/70 block">
                             {selectedChar.tier}
                           </span>
-                        </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-5 gap-3 justify-center w-full">
+                            {UI_LABELS.CHARACTERISTICS.map((characteristic) => {
+                              const value = attributes[characteristic.key] || 0;
+                              const bonus = Math.floor(value / 10);
 
-                        <div className="grid grid-cols-5 gap-3 justify-center w-full max-w-sm">
-                          {UI_LABELS.CHARACTERISTICS.map((characteristic) => {
-                            const value = attributes[characteristic.key] || 0;
-                            const bonus = Math.floor(value / 10);
-
-                            return (
-                              <div
-                                key={characteristic.key}
-                                className="flex flex-col items-center"
-                              >
-                                <span className="mb-1 text-[10px] font-semibold uppercase tracking-tight text-wfrp-muted-text leading-none text-center block w-full truncate">
-                                  {characteristic.key}
-                                </span>
-                                <div className="relative">
-                                  <div className="flex h-12 w-10 flex-col items-center justify-center rounded border border-wfrp-border bg-wfrp-surface shadow">
-                                    <span className="text-sm font-bold text-gray-100">
-                                      {value}
-                                    </span>
-                                    <div className="absolute -bottom-1 left-1/2 z-10 flex h-4.5 w-4.5 -translate-x-1/2 items-center justify-center rounded-full border border-wfrp-border bg-wfrp-surface">
-                                      <span className="text-[8px] font-semibold text-wfrp-muted-text">
-                                        {bonus}
+                              return (
+                                <div
+                                  key={characteristic.key}
+                                  className="flex flex-col items-center"
+                                >
+                                  <span className="mb-1 text-[10px] font-semibold uppercase tracking-tight text-wfrp-muted-text leading-none text-center block w-full truncate">
+                                    {characteristic.key}
+                                  </span>
+                                  <div className="relative">
+                                    <div className="flex h-12 w-10 flex-col items-center justify-center rounded border border-wfrp-border bg-wfrp-surface shadow">
+                                      <span className="text-sm font-bold text-gray-100">
+                                        {value}
                                       </span>
+                                      <div className="absolute -bottom-1 left-1/2 z-10 flex h-4.5 w-4.5 -translate-x-1/2 items-center justify-center rounded-full border border-wfrp-border bg-wfrp-surface">
+                                        <span className="text-[8px] font-semibold text-wfrp-muted-text">
+                                          {bonus}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
+                              );
+                            })}
+                          </div>
+                        </CardContent>
+                      </Card>
                     ) : (
                       <div className="flex flex-col items-center justify-center py-8 text-center">
                         <Swords size={24} className="text-wfrp-muted-text/40 mb-2" />
