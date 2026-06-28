@@ -23,6 +23,7 @@ const wfrpVariantClasses: Record<WfrpButtonVariant, string | undefined> = {
 };
 
 export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children" | "name"> {
+  autoHeight?: boolean;
   children?: ReactNode;
   desktopLabel?: ReactNode;
   hideOnMobile?: boolean;
@@ -56,6 +57,7 @@ export function buttonVariants({ variant = "default", className }: { variant?: B
 }
 
 export function Button({
+  autoHeight = false,
   children,
   className,
   desktopLabel,
@@ -97,7 +99,7 @@ export function Button({
         standard && isGolden && !isDeactivated && "!text-primary-foreground before:!bg-wfrp-gold hover:before:!bg-[#d1ad65] hover:!text-primary-foreground",
         standard && isDeactivated && "cursor-default opacity-20 before:!bg-[#3f3f3f] !text-[#d0d0d0] active:before:scale-100",
         className,
-        variant !== "fab" && "!h-12",
+        variant !== "fab" && !autoHeight && "!h-12",
       )}
       {...props}
     >
