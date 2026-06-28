@@ -140,16 +140,18 @@ export function buildCampaignCharacterPath({
   characterId,
   view,
   omitDefaultView = false,
+  characterName,
 }: {
   campaignId?: string;
   characterId: string;
   view: MobileMainView;
   omitDefaultView?: boolean;
+  characterName?: string;
 }) {
   const progress = loadCharacterProgress(characterId);
   const character = characterRecords.find((c) => c.id === characterId);
-  const characterName = progress?.characterName?.trim() || character?.name || characterId;
-  const characterSlug = slugifyPathSegment(characterName);
+  const resolvedName = characterName || progress?.characterName?.trim() || character?.name || characterId;
+  const characterSlug = slugifyPathSegment(resolvedName);
 
   const characterPath = `/${encodePathSegment(campaignId)}/${encodePathSegment(characterSlug)}`;
 

@@ -1602,6 +1602,7 @@ export function AppComposition() {
     characterId: characterData.id,
     view: "characteristics",
     omitDefaultView: true,
+    characterName: characterData.name,
   });
   const currentSectionLabel = showMobileGainExperiencePage
     ? "Gain Experience"

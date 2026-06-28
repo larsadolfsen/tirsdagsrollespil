@@ -84,6 +84,7 @@ export function WfrpPlayerCard({ characterSummary, className }: WfrpPlayerCardPr
         characterId: character.id,
         view: "characteristics",
         omitDefaultView: true,
+        characterName,
       })}
       target="_blank"
       rel="noopener noreferrer"

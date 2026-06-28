@@ -1,6 +1,6 @@
+import { SectionHeading } from "./ui/SectionHeading";
+import { WfrpPlayerCard } from "./wfrp/WfrpPlayerCard";
 import type { CharacterSummary } from "../data/repository";
-import { SectionHeading } from "./ui";
-import { WfrpPlayerCard } from "./wfrp";
 
 type PlayerCardsRowProps = {
   characters: CharacterSummary[];
@@ -9,20 +9,19 @@ type PlayerCardsRowProps = {
 export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
   return (
     <section
-      className="flex flex-wrap gap-4 w-full mb-4 select-none"
+      className="grid w-full grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 mb-4 select-none"
       aria-labelledby="player-characters-heading"
     >
-      <div className="w-full">
+      <div className="col-span-full w-full">
         <SectionHeading id="player-characters-heading">
           Characters
         </SectionHeading>
       </div>
       {characters.map((character) => (
-        <div key={character.id} className="w-full max-w-[288px]">
-          <WfrpPlayerCard characterSummary={character} className="max-w-[288px]" />
+        <div key={character.id} className="min-w-0 w-full">
+          <WfrpPlayerCard characterSummary={character} />
         </div>
       ))}
     </section>
   );
 }
-
