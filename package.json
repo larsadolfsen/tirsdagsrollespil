@@ -7,7 +7,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "vite --port=3000 --host=0.0.0.0",
+    "dev": "vite --host=0.0.0.0",
     "build": "vite build",
     "build:analyze": "vite build --sourcemap",
     "check:no-character-data": "node scripts/check-no-character-data.mjs",

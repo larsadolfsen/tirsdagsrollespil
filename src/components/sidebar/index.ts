@@ -7,3 +7,4 @@ export { MobileMenuSidebar } from "./MobileMenuSidebar";
 export { CharacteristicSidebar } from "./CharacteristicSidebar";
 export { SkillSidebar } from "./SkillSidebar";
 export { TalentSidebar } from "./TalentSidebar";
+export { MonsterSidebar } from "./MonsterSidebar";

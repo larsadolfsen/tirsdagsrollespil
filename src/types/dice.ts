@@ -1,6 +1,6 @@
 import type { Characteristic } from "./index";
 
-export type RollTestType = "dramatic" | "attack" | "channeling" | "corruption";
+export type RollTestType = "dramatic" | "attack" | "channeling" | "corruption" | "initiative";
 
 export interface RollBonusSource {
   label: string;

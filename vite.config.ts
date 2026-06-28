@@ -42,6 +42,7 @@ database.exec(`
     name TEXT NOT NULL,
     session_date TEXT NOT NULL,
     notes TEXT NOT NULL DEFAULT '',
+    scenes_json TEXT NOT NULL DEFAULT '[]',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
@@ -49,6 +50,11 @@ database.exec(`
   CREATE INDEX IF NOT EXISTS gm_sessions_campaign_number
     ON gm_sessions (campaign_id, session_number DESC);
 `);
+try {
+  database.exec("ALTER TABLE gm_sessions ADD COLUMN scenes_json TEXT NOT NULL DEFAULT '[]'");
+} catch {
+  // Column already exists.
+}
 const selectCampaignDiceRolls = database.prepare(`
   SELECT id, campaign_id, character_id, character_name, roll_json, rolled_at
   FROM dice_rolls
@@ -62,7 +68,7 @@ const insertDiceRoll = database.prepare(`
 `);
 const deleteOlderDiceRolls = database.prepare('DELETE FROM dice_rolls WHERE roll_date < ?');
 const selectCampaignSessions = database.prepare(`
-  SELECT id, campaign_id, session_number, name, session_date, notes, created_at, updated_at
+  SELECT id, campaign_id, session_number, name, session_date, notes, scenes_json, created_at, updated_at
   FROM gm_sessions
   WHERE campaign_id = ?
   ORDER BY session_number DESC, created_at DESC
@@ -75,13 +81,15 @@ const upsertGmSession = database.prepare(`
     name,
     session_date,
     notes,
+    scenes_json,
     updated_at
-  ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
   ON CONFLICT(id) DO UPDATE SET
     session_number = excluded.session_number,
     name = excluded.name,
     session_date = excluded.session_date,
     notes = excluded.notes,
+    scenes_json = excluded.scenes_json,
     updated_at = CURRENT_TIMESTAMP
 `);
 const deleteGmSession = database.prepare('DELETE FROM gm_sessions WHERE id = ?');
@@ -414,6 +422,11 @@ function campaignGmSessionsPlugin(): Plugin {
         if (req.method === 'GET' && !sessionId) {
           const sessions = selectCampaignSessions.all(campaignId).map((row) => {
             const typedRow = row as Record<string, string | number>;
+            let scenes = [];
+            try {
+              const parsed = JSON.parse(typedRow.scenes_json as string ?? '[]');
+              scenes = Array.isArray(parsed) ? parsed : [];
+            } catch { scenes = []; }
             return {
               id: typedRow.id,
               campaignId: typedRow.campaign_id,
@@ -421,6 +434,7 @@ function campaignGmSessionsPlugin(): Plugin {
               name: typedRow.name,
               date: typedRow.session_date,
               notes: typedRow.notes,
+              scenes,
               createdAt: typedRow.created_at,
               updatedAt: typedRow.updated_at,
             };
@@ -432,7 +446,7 @@ function campaignGmSessionsPlugin(): Plugin {
         if (req.method === 'PUT' && !sessionId) {
           try {
             const body = await readRequestJson(req) as Record<string, unknown>;
-            const {id, sessionNumber, name, date, notes} = body;
+            const {id, sessionNumber, name, date, notes, scenes} = body;
 
             if (
               !isSafeSessionId(id) ||
@@ -449,7 +463,8 @@ function campaignGmSessionsPlugin(): Plugin {
               return;
             }
 
-            upsertGmSession.run(id, campaignId, sessionNumber, name, date, notes);
+            const scenesJson = Array.isArray(scenes) ? JSON.stringify(scenes) : '[]';
+            upsertGmSession.run(id, campaignId, sessionNumber, name, date, notes, scenesJson);
             res.statusCode = 204;
             res.end();
           } catch {
@@ -511,6 +526,7 @@ export default defineConfig(() => {
       },
     },
     server: {
+      port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
       headers: {
         'Cache-Control': 'no-store, max-age=0',
         'Pragma': 'no-cache',

@@ -112,7 +112,7 @@ export function WfrpPlayerCard({
         rel="noopener noreferrer"
         onClick={handleLinkClick}
         className={`flex items-center justify-between w-full p-2 hover:bg-wfrp-control-hover rounded transition-all duration-200 group relative no-underline ${
-          isSelected ? "bg-wfrp-gold/10 border border-wfrp-gold/50" : "border border-transparent"
+          isSelected ? "bg-wfrp-control-hover border border-wfrp-accent/50" : "border border-transparent"
         } ${className ?? ""}`}
         aria-label={`Open ${characterName} in a new tab`}
       >

@@ -1,3 +1,30 @@
+export interface EncounterMonsterGroup {
+  id: string;
+  templateId: string;
+  name: string;
+  count: number;
+  wounds: number[];
+}
+
+export interface EncounterData {
+  monsterGroups: EncounterMonsterGroup[];
+  playerOrder: string[];
+  manualOrder?: string[];
+}
+
+export interface GMSceneComponent {
+  id: string;
+  type: "text" | "encounter";
+  text: string;
+  title?: string;
+  encounterData?: EncounterData;
+}
+
+export interface GMScene {
+  id: string;
+  components: GMSceneComponent[];
+}
+
 export interface GMSession {
   id: string;
   campaignId: string;
@@ -5,6 +32,7 @@ export interface GMSession {
   name: string;
   date: string;
   notes: string;
+  scenes?: GMScene[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -44,10 +72,15 @@ export async function saveCampaignSession(
 
   const response = await fetch(gmSessionsEndpoint(campaignId), {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(session),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id: session.id,
+      sessionNumber: session.sessionNumber,
+      name: session.name,
+      date: session.date,
+      notes: session.notes,
+      scenes: session.scenes ?? [],
+    }),
   });
 
   if (!response.ok) {

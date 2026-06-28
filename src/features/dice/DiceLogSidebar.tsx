@@ -9,7 +9,7 @@ import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/di
 interface DicePanelProps {
   activeRollerRef: RefObject<HTMLDivElement | null>;
   archiveRoll: (state: RollState, labelSuffix?: string) => void;
-  campaignCharacters?: Array<{ id: string; name: string }>;
+  campaignCharacters?: Array<{ id: string; name: string; portraitDataUrl?: string }>;
   canRollCritical: boolean;
   canUseFortuneActions: boolean;
   canUseResilienceAction: boolean;
@@ -77,6 +77,7 @@ function DicePanel({
   const characterFilterOptions = campaignCharacters.map((character) => ({
       id: character.id,
       label: character.name,
+      imageUrl: character.portraitDataUrl,
     }));
 
   const content = (
@@ -224,7 +225,62 @@ function DicePanel({
           </p>
         )}
 
-        {mode === "roller" && rollState.characteristic && (
+        {mode === "roller" && rollState.characteristic && rollState.testType === "initiative" && (
+          <div ref={activeRollerRef} className="flex flex-col gap-3 px-1 scroll-mt-20 mb-[80vh] min-h-[200px] transition-all">
+            <Heading level={3} variant="sidebarItemActive">
+              {rollState.characteristic.label}
+            </Heading>
+            <div className="grid grid-cols-[minmax(72px,1fr)_56px_minmax(0,1fr)] items-center gap-1">
+              <span className="wfrp-list-cell-strong">Initiative Bonus:</span>
+              <span className="wfrp-sidebar-body text-right text-gray-200">{rollState.baseValueOverride ?? 0}</span>
+              <div />
+              <div className="col-span-2 h-px bg-white/8 my-0.5" /><div />
+
+              {(rollState.isRolling || rollState.result !== null) && (
+                <>
+                  <span className="wfrp-list-cell-strong mt-1">
+                    Rolling d10 <RollingDots isRolling={rollState.isRolling} />
+                  </span>
+                  <div /><div />
+                  <div className="col-span-3 flex min-h-8 items-center justify-start overflow-visible">
+                    <div className="flex gap-1">
+                      <DigitReel
+                        targetDigit={Math.floor((rollState.result ?? 0) / 10)}
+                        reel={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
+                        duration={2.5}
+                        delay={0.4}
+                        isStatic={!rollState.isRolling && rollState.result !== null}
+                      />
+                      <DigitReel
+                        targetDigit={(rollState.result ?? 0) % 10}
+                        reel={[0, 9, 8, 7, 6, 5, 4, 3, 2, 1]}
+                        duration={1.2}
+                        delay={0}
+                        isStatic={!rollState.isRolling && rollState.result !== null}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {!rollState.isRolling && rollState.result !== null && (
+                <>
+                  <div className="col-span-2 h-px bg-white/8 my-0.5" /><div />
+                  <div className="col-span-2 grid grid-cols-subgrid items-center border-y border-white/10 py-1">
+                    <span className="wfrp-list-cell-strong text-gray-100">Total:</span>
+                    <span className="wfrp-sidebar-body text-right font-semibold text-gray-100">{rollState.sl}</span>
+                  </div>
+                  <div />
+                </>
+              )}
+            </div>
+            {!rollState.isRolling && rollState.result === null && (
+              <Button onClick={executeRoll} className="w-max" name="Roll" />
+            )}
+          </div>
+        )}
+
+        {mode === "roller" && rollState.characteristic && rollState.testType !== "initiative" && (
           <div
             ref={activeRollerRef}
             className="flex flex-col gap-3 px-1 scroll-mt-20 mb-[80vh] min-h-[200px] transition-all"

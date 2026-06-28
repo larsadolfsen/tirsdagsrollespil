@@ -164,6 +164,7 @@ export function useDiceRoller({
     if (testType === "attack") return "Attack Test";
     if (testType === "channeling") return "Magic Test";
     if (testType === "corruption") return "Corruption Test";
+    if (testType === "initiative") return "Initiative Roll";
     return "Dramatic Test";
   };
 
@@ -298,6 +299,23 @@ export function useDiceRoller({
 
   const executeRoll = () => {
     if (!rollState.characteristic) return;
+
+    if (rollState.testType === "initiative") {
+      const bonus = rollState.baseValueOverride ?? 0;
+      const d10 = Math.floor(Math.random() * 10) + 1;
+      setRollState((prev) => ({
+        ...prev,
+        isRolling: true,
+        result: d10,
+        isSuccess: true,
+        rawSl: d10,
+        sl: d10 + bonus,
+      }));
+      setTimeout(() => {
+        setRollState((prev) => ({ ...prev, isRolling: false }));
+      }, 2200);
+      return;
+    }
 
     const baseValue = characterData.attributes[rollState.characteristic.key] || 0;
     const skill = characterSkills.find((skillEntry) => skillEntry.displayName === rollState.characteristic?.label);

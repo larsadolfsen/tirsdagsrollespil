@@ -53,11 +53,12 @@ import type {
   ResolvedCharacterSkill,
   ResolvedCharacterTalent,
 } from "./data/characters/resolved";
-import { listCharacters } from "./data/repository";
+import { listCharacters, loadCharacterProgress } from "./data/repository";
 import {
   loadCampaignSessions,
   saveCampaignSession,
   deleteCampaignSession,
+  type GMScene,
   type GMSession,
 } from "./data/gmSessions";
 import {
@@ -157,6 +158,23 @@ function useIsDesktopLayout() {
   return isDesktopLayout;
 }
 
+function toSessionSlug(sessionNumber: number, name: string): string {
+  const normalized = name
+    .replace(/ä/gi, "ae")
+    .replace(/ö/gi, "oe")
+    .replace(/ü/gi, "ue")
+    .replace(/å/gi, "aa")
+    .replace(/æ/gi, "ae")
+    .replace(/ø/gi, "oe")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `session-${sessionNumber + 1}-${normalized}`;
+}
+
 export function AppComposition() {
   const {
     selectedCharacterId,
@@ -217,25 +235,29 @@ export function AppComposition() {
       return false;
     }
 
-    return parseCampaignCharacterPath(window.location.pathname) === null && !window.location.pathname.endsWith("/game-master");
+    return parseCampaignCharacterPath(window.location.pathname) === null && !window.location.pathname.includes("/game-master");
   });
   const [isGameMasterOpen, setIsGameMasterOpen] = useState(() => {
     if (typeof window === "undefined") {
       return false;
     }
 
-    return window.location.pathname.endsWith("/game-master");
+    return window.location.pathname.includes("/game-master");
   });
 
   // GM Sessions States
   const [gmSessions, setGmSessions] = useState<GMSession[]>([]);
   const [selectedGmSessionId, setSelectedGmSessionId] = useState<string | null>(null);
   const [isLoadingGmSessions, setIsLoadingGmSessions] = useState(false);
-  const [isSessionsSidebarOpen, setIsSessionsSidebarOpen] = useState(true);
+  const [isSessionsSidebarOpen, setIsSessionsSidebarOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth >= 1920;
+  });
 
   const handleSelectSessionOnMobile = (sessionId: string) => {
+    latestScenesRef.current = [];
     setSelectedGmSessionId(sessionId);
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
+    if (typeof window !== "undefined" && window.innerWidth < 1920) {
       setIsSessionsSidebarOpen(false);
     }
   };
@@ -246,11 +268,14 @@ export function AppComposition() {
   const [editingSessionNotes, setEditingSessionNotes] = useState("");
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const latestScenesRef = useRef<GMScene[]>([]);
+  const activeGmSessionRef = useRef<GMSession | null>(null);
 
   // Sync editing state with the selected session when selection changes
   const activeGmSession = useMemo(() => {
     return gmSessions.find((s) => s.id === selectedGmSessionId) || null;
   }, [gmSessions, selectedGmSessionId]);
+  useEffect(() => { activeGmSessionRef.current = activeGmSession; }, [activeGmSession]);
 
   useEffect(() => {
     if (activeGmSession) {
@@ -285,7 +310,13 @@ export function AppComposition() {
         });
         setGmSessions(sorted);
         if (sorted.length > 0 && !selectedGmSessionId) {
-          setSelectedGmSessionId(sorted[0].id);
+          const pathParts = window.location.pathname.split("/");
+          const gmIndex = pathParts.findIndex((p) => p === "game-master");
+          const urlSlug = gmIndex >= 0 ? pathParts[gmIndex + 1] : undefined;
+          const matched = urlSlug
+            ? sorted.find((s) => toSessionSlug(s.sessionNumber, s.name) === urlSlug)
+            : null;
+          setSelectedGmSessionId(matched ? matched.id : sorted[0].id);
         }
       } catch (err) {
         console.error("Failed to load GM sessions", err);
@@ -311,12 +342,22 @@ export function AppComposition() {
 
     saveTimeoutRef.current = setTimeout(async () => {
       try {
-        await saveCampaignSession(characterData.campaignId, updatedSession);
+        await saveCampaignSession(characterData.campaignId, {
+          ...updatedSession,
+          scenes: latestScenesRef.current,
+        });
       } catch (err) {
         console.error("Failed to save GM session to database:", err);
       }
     }, 500);
   }, [characterData.campaignId]);
+
+  const handleScenesChange = useCallback((scenes: GMScene[]) => {
+    latestScenesRef.current = scenes;
+    const session = activeGmSessionRef.current;
+    if (!session) return;
+    triggerSave({ ...session, scenes });
+  }, [triggerSave]);
 
   const handleUpdateActiveSession = (
     field: "name" | "sessionNumber" | "date" | "notes",
@@ -389,7 +430,7 @@ export function AppComposition() {
 
     setGmSessions(updated);
     setSelectedGmSessionId(newSession.id);
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
+    if (typeof window !== "undefined" && window.innerWidth < 1920) {
       setIsSessionsSidebarOpen(false);
     }
 
@@ -610,11 +651,23 @@ export function AppComposition() {
     if (isLandingPageOpen) {
       document.title = `${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
     } else if (isGameMasterOpen) {
-      document.title = `Game Master - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
+      const sessionPrefix = activeGmSession ? `${activeGmSession.name} - ` : "";
+      document.title = `${sessionPrefix}Game Master - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
     } else {
       document.title = `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
     }
-  }, [characterData.name, isLandingPageOpen, isGameMasterOpen]);
+  }, [characterData.name, isLandingPageOpen, isGameMasterOpen, activeGmSession?.name]);
+
+  // Sync URL to selected session slug when GM page is open.
+  useEffect(() => {
+    if (!isGameMasterOpen || !activeGmSession) return;
+    const slug = toSessionSlug(activeGmSession.sessionNumber, activeGmSession.name);
+    const basePath = `/${characterData.campaignId}/game-master`;
+    const newPath = slug ? `${basePath}/${slug}` : basePath;
+    if (window.location.pathname !== newPath) {
+      window.history.replaceState(null, "", newPath);
+    }
+  }, [isGameMasterOpen, selectedGmSessionId, activeGmSession?.name, characterData.campaignId]);
 
   type ResolvedSkillOption = (typeof rulesIndex.resolvedSkillOptions)[number];
   const skillDefinitionById = new Map<string, SkillDefinition>(
@@ -760,7 +813,7 @@ export function AppComposition() {
 
   useEffect(() => {
     const handlePopState = () => {
-      const isGM = window.location.pathname.endsWith("/game-master");
+      const isGM = window.location.pathname.includes("/game-master");
       const isLanding = parseCampaignCharacterPath(window.location.pathname) === null && !isGM;
       setIsLandingPageOpen(isLanding);
       setIsGameMasterOpen(isGM);
@@ -1709,6 +1762,7 @@ export function AppComposition() {
         isLoadingSessions={isLoadingGmSessions}
         isSessionsSidebarOpen={isSessionsSidebarOpen}
         onCreateSession={handleCreateGmSession}
+        onScenesChange={handleScenesChange}
         onSelectSession={handleSelectSessionOnMobile}
         onSessionsSidebarOpenChange={setIsSessionsSidebarOpen}
         onUpdateSession={handleUpdateActiveSession}
@@ -1909,7 +1963,11 @@ export function AppComposition() {
               archiveRoll={archiveRoll}
               campaignCharacters={availableCharacters
                 .filter((character) => character.campaignId === characterData.campaignId)
-                .map((character) => ({ id: character.id, name: character.name }))}
+                .map((character) => ({
+                  id: character.id,
+                  name: character.name,
+                  portraitDataUrl: loadCharacterProgress(character.id)?.portraitDataUrl,
+                }))}
               canRollCritical={canRollCritical}
               canUseFortuneActions={canUseFortuneActions}
               canUseResilienceAction={canUseResilienceAction}

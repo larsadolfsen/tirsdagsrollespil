@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  BookOpenText,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
-  Swords,
 } from "lucide-react";
 import type { CharacterSummary } from "../data/repository";
-import type { GMSession } from "../data/gmSessions";
+import type { EncounterData, GMScene, GMSession } from "../data/gmSessions";
 import { AppShell } from "./AppShell";
 import { PlayerCardsRow } from "./PlayerCardsRow";
 import { SceneActionsMenu } from "./SceneActionsMenu";
-import { AppSidebar, SidebarItemList } from "./sidebar";
+import { AppSidebar, SidebarItemList, MonsterSidebar } from "./sidebar";
+import type { CreatureTemplate } from "../data/rules/wfrp4e";
 import {
   Breadcrumbs,
   Button,
@@ -31,19 +30,14 @@ type GameMasterPageProps = {
   isLoadingSessions: boolean;
   isSessionsSidebarOpen: boolean;
   onCreateSession: () => void;
+  onScenesChange?: (scenes: GMScene[]) => void;
   onSelectSession: (sessionId: string) => void;
+  onUpdateComponentEncounterData?: (sceneId: string, componentId: string, data: EncounterData) => void;
   onSessionsSidebarOpenChange: (isOpen: boolean) => void;
   onUpdateSession: (field: "name", value: string) => void;
   selectedSessionId: string | null;
   sessions: GMSession[];
 };
-
-type SceneState = {
-  id: string;
-  components: SceneComponent[];
-};
-
-let nextComponentId = 1;
 
 export function createSceneComponent(
   type: "text" | "encounter",
@@ -51,20 +45,18 @@ export function createSceneComponent(
   title?: string,
 ): SceneComponent {
   return {
-    id: `comp-${nextComponentId++}`,
+    id: `comp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     type,
     text,
     title,
   };
 }
 
-let nextSceneId = 1;
-
 function createScene(
   components: SceneComponent[] = [],
-): SceneState {
+): GMScene {
   return {
-    id: `scene-${nextSceneId++}`,
+    id: `scene-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     components,
   };
 }
@@ -105,21 +97,39 @@ export function GameMasterPage({
   isLoadingSessions,
   isSessionsSidebarOpen,
   onCreateSession,
+  onScenesChange,
   onSelectSession,
   onSessionsSidebarOpenChange,
   onUpdateSession,
+  onUpdateComponentEncounterData,
   selectedSessionId,
   sessions,
 }: GameMasterPageProps) {
   const [isRenamingSession, setIsRenamingSession] = useState(false);
   const [sessionTitleDraft, setSessionTitleDraft] = useState(editingSessionName);
-  const [scenes, setScenes] = useState<SceneState[]>(() => [createScene()]);
+  const [scenes, setScenes] = useState<GMScene[]>(() => [createScene()]);
+  const onScenesChangeRef = useRef(onScenesChange);
+  useEffect(() => { onScenesChangeRef.current = onScenesChange; });
+
+  const [isMonsterSidebarOpen, setIsMonsterSidebarOpen] = useState(false);
+  const monsterSidebarOnAddRef = useRef<((template: CreatureTemplate, count: number) => void) | null>(null);
+
+  const openMonsterSidebar = (onAdd: (template: CreatureTemplate, count: number) => void) => {
+    monsterSidebarOnAddRef.current = onAdd;
+    setIsMonsterSidebarOpen(true);
+  };
 
   useEffect(() => {
+    const loaded = activeSession?.scenes;
+    const initial = loaded && loaded.length > 0 ? loaded : [createScene()];
     setIsRenamingSession(false);
     setSessionTitleDraft(editingSessionName);
-    setScenes([createScene()]);
+    setScenes(initial);
   }, [activeSession?.id]);
+
+  useEffect(() => {
+    onScenesChangeRef.current?.(scenes);
+  }, [scenes]);
 
   useEffect(() => {
     if (!isRenamingSession) {
@@ -227,6 +237,21 @@ export function GameMasterPage({
     }));
   };
 
+  const updateComponentEncounterData = (sceneId: string, componentId: string, data: EncounterData) => {
+    setScenes((currentScenes) => currentScenes.map((scene) => {
+      if (scene.id === sceneId) {
+        return {
+          ...scene,
+          components: scene.components.map((comp) => (
+            comp.id === componentId ? { ...comp, encounterData: data } : comp
+          )),
+        };
+      }
+      return scene;
+    }));
+    onUpdateComponentEncounterData?.(sceneId, componentId, data);
+  };
+
   const sessionSidebar = (
     <AppSidebar
       isOpen={isSessionsSidebarOpen}
@@ -278,16 +303,33 @@ export function GameMasterPage({
   );
 
   return (
-    <AppShell mobileAddAction={null} sidebars={sessionSidebar}>
-      <GameMasterHeader
-        isSessionsSidebarOpen={isSessionsSidebarOpen}
-        onToggleSessions={() => onSessionsSidebarOpenChange(!isSessionsSidebarOpen)}
-      />
-
+    <AppShell
+      mobileAddAction={null}
+      header={(
+        <GameMasterHeader
+          isSessionsSidebarOpen={isSessionsSidebarOpen}
+          onToggleSessions={() => onSessionsSidebarOpenChange(!isSessionsSidebarOpen)}
+        />
+      )}
+      sidebars={(
+        <>
+          {sessionSidebar}
+          <MonsterSidebar
+            isOpen={isMonsterSidebarOpen}
+            onClose={() => setIsMonsterSidebarOpen(false)}
+            onAddMonster={(template, count) => {
+              monsterSidebarOnAddRef.current?.(template, count);
+              setIsMonsterSidebarOpen(false);
+            }}
+            className="!top-14 !h-[calc(100dvh-3.5rem)] !max-h-[calc(100dvh-3.5rem)]"
+          />
+        </>
+      )}
+    >
       <div className="relative min-h-[calc(100dvh-3.5rem)] w-full">
 
-        <div className="flex flex-col gap-4 px-4 py-4 md:gap-6 md:px-72 md:py-6">
-          <div className="mx-auto w-full max-w-[1200px] flex flex-col gap-4 md:gap-6">
+        <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-4 py-4 md:gap-6 xl:px-8 xl:py-6">
+          <div className="w-full flex flex-col gap-4 md:gap-6">
             <Breadcrumbs items={breadcrumbs} />
             <PlayerCardsRow characters={characters} />
 
@@ -349,14 +391,12 @@ export function GameMasterPage({
                             <div className="flex flex-wrap gap-2">
                               <Button
                                 variant="secondary"
-                                leadingIcon={<BookOpenText />}
                                 onClick={() => addComponentToScene(scene.id, "text")}
                               >
                                 Text field
                               </Button>
                               <Button
                                 variant="secondary"
-                                leadingIcon={<Swords />}
                                 onClick={() => addComponentToScene(scene.id, "encounter")}
                               >
                                 Encounter
@@ -373,6 +413,8 @@ export function GameMasterPage({
                             onRemoveComponent={(componentId) => removeComponentFromScene(scene.id, componentId)}
                             onUpdateComponentText={(componentId, text) => updateComponentText(scene.id, componentId, text)}
                             onUpdateComponentTitle={(componentId, title) => updateComponentTitle(scene.id, componentId, title)}
+                            onUpdateComponentEncounterData={(componentId, data) => updateComponentEncounterData(scene.id, componentId, data)}
+                            onOpenMonsterSidebar={openMonsterSidebar}
                           />
                         </section>
                       ))}

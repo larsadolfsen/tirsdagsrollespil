@@ -124,6 +124,7 @@ database.exec(`
     name TEXT NOT NULL,
     session_date TEXT NOT NULL,
     notes TEXT NOT NULL DEFAULT '',
+    scenes_json TEXT NOT NULL DEFAULT '[]',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
@@ -131,6 +132,13 @@ database.exec(`
   CREATE INDEX IF NOT EXISTS gm_sessions_campaign_number
     ON gm_sessions (campaign_id, session_number DESC);
 `);
+
+// Migration: add scenes_json to existing databases that predate this column.
+try {
+  database.exec("ALTER TABLE gm_sessions ADD COLUMN scenes_json TEXT NOT NULL DEFAULT '[]'");
+} catch {
+  // Column already exists — no action needed.
+}
 
 const selectCharacterProgress = database.prepare(`
   SELECT character_id, sheet_json, notes_json, background_text
@@ -205,7 +213,7 @@ const deleteOlderDiceRolls = database.prepare(`
 `);
 
 const selectCampaignSessions = database.prepare(`
-  SELECT id, campaign_id, session_number, name, session_date, notes, created_at, updated_at
+  SELECT id, campaign_id, session_number, name, session_date, notes, scenes_json, created_at, updated_at
   FROM gm_sessions
   WHERE campaign_id = ?
   ORDER BY session_number DESC, created_at DESC
@@ -218,13 +226,15 @@ const upsertGmSession = database.prepare(`
     name,
     session_date,
     notes,
+    scenes_json,
     updated_at
-  ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
   ON CONFLICT(id) DO UPDATE SET
     session_number = excluded.session_number,
     name = excluded.name,
     session_date = excluded.session_date,
     notes = excluded.notes,
+    scenes_json = excluded.scenes_json,
     updated_at = CURRENT_TIMESTAMP
 `);
 const deleteGmSession = database.prepare(`
@@ -314,6 +324,14 @@ function rowToDiceRoll(row) {
 }
 
 function rowToGmSession(row) {
+  let scenes = [];
+  try {
+    const parsed = JSON.parse(row.scenes_json ?? "[]");
+    scenes = Array.isArray(parsed) ? parsed : [];
+  } catch {
+    scenes = [];
+  }
+
   return {
     id: row.id,
     campaignId: row.campaign_id,
@@ -321,6 +339,7 @@ function rowToGmSession(row) {
     name: row.name,
     date: row.session_date,
     notes: row.notes,
+    scenes,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -1069,7 +1088,7 @@ app.get("/api/gm-sessions/:campaignId", (req, res, next) => {
 app.put("/api/gm-sessions/:campaignId", (req, res, next) => {
   try {
     const { campaignId } = req.params;
-    const { id, sessionNumber, name, date, notes } = req.body ?? {};
+    const { id, sessionNumber, name, date, notes, scenes } = req.body ?? {};
 
     if (!isSafeCampaignId(campaignId)) {
       res.status(400).json({ error: "Invalid campaign id" });
@@ -1096,13 +1115,16 @@ app.put("/api/gm-sessions/:campaignId", (req, res, next) => {
       return;
     }
 
+    const scenesJson = Array.isArray(scenes) ? JSON.stringify(scenes) : "[]";
+
     upsertGmSession.run(
       id,
       campaignId,
       sessionNumber,
       name,
       date,
-      notes
+      notes,
+      scenesJson
     );
 
     res.status(204).end();

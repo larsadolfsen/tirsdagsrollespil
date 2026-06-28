@@ -1,0 +1,23 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]: Campaign
+    - heading "Enemy Within" [level=1] [ref=e7]
+  - main [ref=e8]:
+    - button "Open Game Master" [ref=e9] [cursor=pointer]:
+      - generic [ref=e11]: GM
+      - heading "Game Master" [level=2] [ref=e13]
+    - button "Open Thano Voss" [ref=e14] [cursor=pointer]:
+      - generic [ref=e16]: TV
+      - generic [ref=e17]:
+        - heading "Thano Voss" [level=2] [ref=e18]
+        - paragraph [ref=e19]: Apprentice Wizard
+    - button "Open Karl Müller" [ref=e20] [cursor=pointer]:
+      - generic [ref=e22]: KM
+      - generic [ref=e23]:
+        - heading "Karl Müller" [level=2] [ref=e24]
+        - paragraph [ref=e25]: Novitiate
+    - button "Open Gerhard Lehrmann" [ref=e26] [cursor=pointer]:
+      - generic [ref=e28]: GL
+      - generic [ref=e29]:
+        - heading "Gerhard Lehrmann" [level=2] [ref=e30]
+        - paragraph [ref=e31]: Engineer

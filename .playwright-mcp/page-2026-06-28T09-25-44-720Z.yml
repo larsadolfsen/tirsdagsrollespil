@@ -1,0 +1,189 @@
+- generic [ref=e4]:
+  - main [ref=e5]:
+    - generic [ref=e7]:
+      - button "Close sessions menu" [expanded] [ref=e8] [cursor=pointer]:
+        - img [ref=e10]
+      - heading "Game Master" [level=1] [ref=e14]
+    - generic [ref=e17]:
+      - navigation "Breadcrumb" [ref=e18]:
+        - list [ref=e19]:
+          - listitem [ref=e20]:
+            - link "Enemy Within" [ref=e21] [cursor=pointer]:
+              - /url: /
+          - listitem [ref=e22]:
+            - img [ref=e23]
+            - generic [ref=e25]: Game Master
+      - region "Characters" [ref=e26]:
+        - heading "Characters" [level=2] [ref=e28]
+        - link "Open Thomas Voss in a new tab" [ref=e30] [cursor=pointer]:
+          - /url: /enemy_within/thomas-voss
+          - generic [ref=e32]:
+            - heading "Thomas Voss" [level=2] [ref=e34]
+            - paragraph [ref=e35]: Apprentice Wizard
+            - generic [ref=e36]:
+              - generic [ref=e37]:
+                - progressbar
+              - generic [ref=e38]: 0/14
+          - img [ref=e40]
+        - link "Open Karl Müller in a new tab" [ref=e45] [cursor=pointer]:
+          - /url: /enemy_within/karl-muller
+          - generic [ref=e47]: KM
+          - generic [ref=e48]:
+            - heading "Karl Müller" [level=2] [ref=e50]
+            - paragraph [ref=e51]: Novitiate
+            - generic [ref=e52]:
+              - progressbar [ref=e54]
+              - generic [ref=e55]: 13/13
+          - img [ref=e57]
+        - link "Open Gerhard Lehrmann in a new tab" [ref=e62] [cursor=pointer]:
+          - /url: /enemy_within/gerhard-lehrmann
+          - generic [ref=e64]:
+            - heading "Gerhard Lehrmann" [level=2] [ref=e66]
+            - paragraph [ref=e67]: Engineer
+            - generic [ref=e68]:
+              - progressbar [ref=e70]
+              - generic [ref=e71]: 17/17
+          - img [ref=e73]
+      - generic [ref=e78]:
+        - generic [ref=e79]: Session 2
+        - heading "Rename session" [level=2] [ref=e81]:
+          - button "Rename session" [ref=e82]: On the River
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - heading "Scene 1" [level=3] [ref=e86]
+            - button "Scene 1 menu" [ref=e88] [cursor=pointer]:
+              - img [ref=e90]
+          - generic [ref=e94]:
+            - generic [ref=e95]: Add component
+            - generic [ref=e96]:
+              - button "Text field" [ref=e97] [cursor=pointer]:
+                - generic [ref=e98]:
+                  - img
+                - text: Text field
+              - button "Encounter" [ref=e99] [cursor=pointer]:
+                - generic [ref=e100]:
+                  - img
+                - text: Encounter
+          - generic [ref=e102]:
+            - generic [ref=e103]:
+              - generic [ref=e104]:
+                - generic "Drag to reorder" [ref=e105]:
+                  - img [ref=e106]
+                - generic [ref=e113]:
+                  - generic [ref=e114]: "1:"
+                  - generic "Click to rename" [ref=e115] [cursor=pointer]: Encounter
+              - generic [ref=e116]:
+                - button "Move component up" [disabled] [ref=e117]:
+                  - img [ref=e118]
+                - button "Move component down" [disabled] [ref=e120]:
+                  - img [ref=e121]
+                - button "Encounter actions" [ref=e124] [cursor=pointer]:
+                  - img [ref=e125]
+            - generic [ref=e129]:
+              - generic [ref=e130]:
+                - generic [ref=e131]: Initiative (6)
+                - button "Add Monster" [ref=e132] [cursor=pointer]:
+                  - generic [ref=e133]:
+                    - img
+                  - text: Add Monster
+              - generic [ref=e134]:
+                - generic [ref=e135]:
+                  - button "I 55 Stormvermin (1) skaven 11 / 11" [ref=e136]:
+                    - generic [ref=e137]:
+                      - generic [ref=e138]: I
+                      - generic [ref=e139]: "55"
+                    - img [ref=e141]
+                    - generic [ref=e146]:
+                      - generic [ref=e147]: Stormvermin (1)
+                      - generic [ref=e148]: skaven
+                    - generic [ref=e149]:
+                      - generic [ref=e150]: "11"
+                      - generic [ref=e151]: /
+                      - generic [ref=e152]: "11"
+                  - button "I 55 Stormvermin (2) skaven 11 / 11" [ref=e153]:
+                    - generic [ref=e154]:
+                      - generic [ref=e155]: I
+                      - generic [ref=e156]: "55"
+                    - img [ref=e158]
+                    - generic [ref=e163]:
+                      - generic [ref=e164]: Stormvermin (2)
+                      - generic [ref=e165]: skaven
+                    - generic [ref=e166]:
+                      - generic [ref=e167]: "11"
+                      - generic [ref=e168]: /
+                      - generic [ref=e169]: "11"
+                  - button "I 35 Rat Ogre skaven 30 / 30" [ref=e170]:
+                    - generic [ref=e171]:
+                      - generic [ref=e172]: I
+                      - generic [ref=e173]: "35"
+                    - img [ref=e175]
+                    - generic [ref=e180]:
+                      - generic [ref=e181]: Rat Ogre
+                      - generic [ref=e182]: skaven
+                    - generic [ref=e183]:
+                      - generic [ref=e184]: "30"
+                      - generic [ref=e185]: /
+                      - generic [ref=e186]: "30"
+                  - generic [ref=e187]:
+                    - generic [ref=e188]:
+                      - generic [ref=e189]: I
+                      - generic [ref=e190]: "34"
+                    - link "Open Gerhard Lehrmann in a new tab" [ref=e192] [cursor=pointer]:
+                      - /url: /enemy_within/gerhard-lehrmann
+                      - generic [ref=e195]:
+                        - generic [ref=e196]: Gerhard Lehrmann
+                        - generic [ref=e197]: Engineer
+                      - generic [ref=e198]:
+                        - progressbar [ref=e200]
+                        - generic [ref=e201]: 17/17
+                      - img [ref=e203]
+                  - generic [ref=e207]:
+                    - generic [ref=e208]:
+                      - generic [ref=e209]: I
+                      - generic [ref=e210]: "33"
+                    - link "Open Thomas Voss in a new tab" [ref=e212] [cursor=pointer]:
+                      - /url: /enemy_within/thomas-voss
+                      - generic [ref=e215]:
+                        - generic [ref=e216]: Thomas Voss
+                        - generic [ref=e217]: Apprentice Wizard
+                      - generic [ref=e218]:
+                        - generic [ref=e219]:
+                          - progressbar
+                        - generic [ref=e220]: 0/14
+                      - img [ref=e222]
+                  - generic [ref=e226]:
+                    - generic [ref=e227]:
+                      - generic [ref=e228]: I
+                      - generic [ref=e229]: "33"
+                    - link "Open Karl Müller in a new tab" [ref=e231] [cursor=pointer]:
+                      - /url: /enemy_within/karl-muller
+                      - generic [ref=e232]:
+                        - generic [ref=e234]: KM
+                        - generic [ref=e235]:
+                          - generic [ref=e236]: Karl Müller
+                          - generic [ref=e237]: Novitiate
+                      - generic [ref=e238]:
+                        - progressbar [ref=e240]
+                        - generic [ref=e241]: 13/13
+                      - img [ref=e243]
+                - generic [ref=e249]:
+                  - img [ref=e250]
+                  - generic [ref=e259]: Select a participant to view details
+  - button "Close sessions sidebar" [ref=e260]
+  - dialog "Sessions" [ref=e261]:
+    - heading "Sessions" [level=2] [ref=e262]
+    - generic [ref=e264]:
+      - generic [ref=e266]: Session
+      - button "On the River Session 2" [ref=e268] [cursor=pointer]:
+        - generic [ref=e271]:
+          - generic [ref=e272]: On the River
+          - generic [ref=e273]: Session 2
+      - button "Escape from Böegenhafen Session 1" [ref=e275] [cursor=pointer]:
+        - generic [ref=e278]:
+          - generic [ref=e279]: Escape from Böegenhafen
+          - generic [ref=e280]: Session 1
+    - contentinfo [ref=e281]:
+      - button "Create session" [ref=e282] [cursor=pointer]:
+        - generic [ref=e283]:
+          - img
+        - text: Create session
