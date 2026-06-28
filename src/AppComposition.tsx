@@ -201,6 +201,7 @@ export function AppComposition() {
     setBackgroundText,
     notes,
     setNotes,
+    isAllProgressHydrated,
   } = useGameSessionContext();
   const [pendingXpAdjustment, setPendingXpAdjustment] = useState(0);
   const [pendingTotalXpAdjustment, setPendingTotalXpAdjustment] = useState(0);
@@ -753,6 +754,8 @@ export function AppComposition() {
     setActiveMainTab,
     setActiveMobileMainView,
     setSelectedCharacterId,
+    isAllProgressHydrated,
+    characterName: characterData.name,
   });
 
   useEffect(() => {

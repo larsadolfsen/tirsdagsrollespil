@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { hydrateCharacterProgress, loadCharacterProgress } from "../data/persistence";
+import {
+  hydrateCharacterProgress,
+  loadCharacterProgress,
+  subscribeToProgressUpdates,
+} from "../data/persistence";
 import { loadResolvedCharacter, type CharacterSummary } from "../data/repository";
 import { Heading } from "./ui";
 
@@ -13,11 +17,12 @@ type LandingPageProps = {
 export function LandingPage({ campaignName, characters, onSelectCharacter, onSelectGameMaster }: LandingPageProps) {
   const resolvedCharacters = characters.map((character) => loadResolvedCharacter(character.id));
   const [portraitDataUrls, setPortraitDataUrls] = useState<Record<string, string>>({});
+  const [characterNames, setCharacterNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let isCancelled = false;
 
-    async function hydratePortraits() {
+    async function hydrateAll() {
       await Promise.all(characters.map((character) => hydrateCharacterProgress(character.id)));
 
       if (isCancelled) {
@@ -32,12 +37,54 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
           ]),
         ),
       );
+
+      setCharacterNames(
+        Object.fromEntries(
+          characters.map((character) => [
+            character.id,
+            loadCharacterProgress(character.id)?.characterName?.trim() || loadResolvedCharacter(character.id).name,
+          ]),
+        ),
+      );
     }
 
-    void hydratePortraits();
+    void hydrateAll();
+
+    const unsubscribe = subscribeToProgressUpdates((msg) => {
+      if (isCancelled) return;
+
+      if (msg.type === "save") {
+        const nextName = msg.progress.characterName?.trim();
+        if (nextName) {
+          setCharacterNames((prev) => ({
+            ...prev,
+            [msg.characterId]: nextName,
+          }));
+        }
+        if (msg.progress.portraitDataUrl !== undefined) {
+          setPortraitDataUrls((prev) => ({
+            ...prev,
+            [msg.characterId]: msg.progress.portraitDataUrl ?? "",
+          }));
+        }
+      } else if (msg.type === "clear") {
+        const defaultChar = resolvedCharacters.find((c) => c.id === msg.characterId);
+        if (defaultChar) {
+          setCharacterNames((prev) => ({
+            ...prev,
+            [msg.characterId]: defaultChar.name,
+          }));
+          setPortraitDataUrls((prev) => ({
+            ...prev,
+            [msg.characterId]: "",
+          }));
+        }
+      }
+    });
 
     return () => {
       isCancelled = true;
+      unsubscribe();
     };
   }, [characters]);
 
@@ -76,7 +123,8 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
 
         {/* Character Cards */}
         {resolvedCharacters.map((character) => {
-          const initials = character.name
+          const name = characterNames[character.id] || character.name;
+          const initials = name
             .split(" ")
             .map((part) => part.charAt(0))
             .join("")
@@ -88,7 +136,7 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
               type="button"
               onClick={() => onSelectCharacter(character.id)}
               className="wfrp-landing-character-card"
-              aria-label={`Open ${character.name}`}
+              aria-label={`Open ${name}`}
             >
               <div className="wfrp-landing-portrait">
                 {portraitDataUrls[character.id] ? (
@@ -105,7 +153,7 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
               </div>
               <div className="wfrp-landing-card-body">
                 <Heading level={2} variant="card">
-                  {character.name}
+                  {name}
                 </Heading>
                 <p className="wfrp-landing-card-copy">
                   {character.tier}

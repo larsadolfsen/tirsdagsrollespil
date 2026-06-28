@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { SetStateAction } from "react";
-import { hydrateCharacterProgress } from "../data/persistence";
+import { hydrateAllCharacterProgress, hydrateCharacterProgress } from "../data/persistence";
 import { characterRecordById } from "../data/characters";
 import { defaultCharacterId } from "../data/repository";
 import {
@@ -151,6 +151,7 @@ const getInitialSelectedCharacterId = () => {
 
 export function useGameSession() {
   const [selectedCharacterId, setSelectedCharacterId] = useState(getInitialSelectedCharacterId);
+  const [isAllProgressHydrated, setIsAllProgressHydrated] = useState(false);
   const [isProgressHydrated, setIsProgressHydrated] = useState(false);
   const [isSessionStateReadyToSave, setIsSessionStateReadyToSave] = useState(false);
   const [hydratedCharacterId, setHydratedCharacterId] = useState<string | null>(null);
@@ -301,7 +302,29 @@ export function useGameSession() {
   useEffect(() => {
     let isCancelled = false;
 
+    async function hydrateAll() {
+      await hydrateAllCharacterProgress();
+      if (!isCancelled) {
+        setIsAllProgressHydrated(true);
+        setIsProgressHydrated(true);
+        setHydratedCharacterId(selectedCharacterId);
+        setProgressHydrationVersion((version) => version + 1);
+      }
+    }
+
+    void hydrateAll();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isCancelled = false;
+
     async function hydrateProgress() {
+      if (!isAllProgressHydrated) return;
+
       await hydrateCharacterProgress(selectedCharacterId);
 
       if (!isCancelled) {
@@ -311,15 +334,17 @@ export function useGameSession() {
       }
     }
 
-    setIsProgressHydrated(false);
-    setIsSessionStateReadyToSave(false);
-    setHydratedCharacterId(null);
-    void hydrateProgress();
+    if (isAllProgressHydrated) {
+      setIsProgressHydrated(false);
+      setIsSessionStateReadyToSave(false);
+      setHydratedCharacterId(null);
+      void hydrateProgress();
+    }
 
     return () => {
       isCancelled = true;
     };
-  }, [selectedCharacterId]);
+  }, [selectedCharacterId, isAllProgressHydrated]);
 
   useEffect(() => {
     setWoundsCurrent(character.wounds.current);
@@ -560,6 +585,7 @@ export function useGameSession() {
     setBackgroundText,
     notes,
     setNotes,
+    isAllProgressHydrated,
   };
 }
 

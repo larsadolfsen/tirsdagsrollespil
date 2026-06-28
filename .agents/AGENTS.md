@@ -83,6 +83,7 @@ Her er den komplette liste over fælles komponenter i projektet. Alle nye fælle
 - `SheetDataList` (Standardliste til WFRP data)
 - `SheetDataTable` (WFRP data-tabel med specifik formattering)
 - `WfrpPanel` (Standard border-panel med header/actions)
+- `WfrpPlayerCard` (Horisontalt spillerkort til GM- og landingssider)
 - `WfrpSection` (Sektioner med overskrift og separatorlinje)
 - `WfrpSidebar` (Sidebjælke layout til kampagne/karakter)
 - `WfrpStatusBadge` (WFRP-specifikke status badges)

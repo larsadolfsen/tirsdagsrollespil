@@ -1,6 +1,7 @@
 import type { MainTab, MobileMainView } from "../tabs/tabTypes";
 import { campaignById, defaultCampaignId } from "../data/campaigns";
 import { characterRecords } from "../data/characters";
+import { loadCharacterProgress } from "../data/persistence";
 
 export { defaultCampaignId } from "../data/campaigns";
 
@@ -91,10 +92,13 @@ function resolveRouteCharacterId(campaignId: string, characterId: string) {
   const matchingCharacters = characterRecords.filter((character) => {
     if (character.campaignId !== campaignId) return false;
 
+    const progress = loadCharacterProgress(character.id);
+    const currentName = progress?.characterName?.trim() || character.name;
+
     const aliases = [
       character.id,
       character.id.replace(/_/g, "-"),
-      character.name,
+      currentName,
       ...(character.aka ?? []),
     ].map(slugifyPathSegment);
 
@@ -142,7 +146,12 @@ export function buildCampaignCharacterPath({
   view: MobileMainView;
   omitDefaultView?: boolean;
 }) {
-  const characterPath = `/${encodePathSegment(campaignId)}/${encodePathSegment(characterId)}`;
+  const progress = loadCharacterProgress(characterId);
+  const character = characterRecords.find((c) => c.id === characterId);
+  const characterName = progress?.characterName?.trim() || character?.name || characterId;
+  const characterSlug = slugifyPathSegment(characterName);
+
+  const characterPath = `/${encodePathSegment(campaignId)}/${encodePathSegment(characterSlug)}`;
 
   if (omitDefaultView && view === defaultCampaignCharacterTab) {
     return characterPath;

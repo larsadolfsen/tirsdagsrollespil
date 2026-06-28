@@ -48,11 +48,13 @@ let nextComponentId = 1;
 export function createSceneComponent(
   type: "text" | "encounter",
   text = "",
+  title?: string,
 ): SceneComponent {
   return {
     id: `comp-${nextComponentId++}`,
     type,
     text,
+    title,
   };
 }
 
@@ -152,7 +154,7 @@ export function GameMasterPage({
 
       const nextScenes = [...currentScenes];
       const copiedComponents = sourceScene.components.map((comp) =>
-        createSceneComponent(comp.type, comp.text),
+        createSceneComponent(comp.type, comp.text, comp.title),
       );
       nextScenes.splice(
         sceneIndex + 1,
@@ -204,6 +206,20 @@ export function GameMasterPage({
           ...scene,
           components: scene.components.map((comp) => (
             comp.id === componentId ? { ...comp, text } : comp
+          )),
+        };
+      }
+      return scene;
+    }));
+  };
+
+  const updateComponentTitle = (sceneId: string, componentId: string, title: string) => {
+    setScenes((currentScenes) => currentScenes.map((scene) => {
+      if (scene.id === sceneId) {
+        return {
+          ...scene,
+          components: scene.components.map((comp) => (
+            comp.id === componentId ? { ...comp, title } : comp
           )),
         };
       }
@@ -352,9 +368,11 @@ export function GameMasterPage({
                             sceneId={scene.id}
                             sceneNumber={sceneIndex + 1}
                             components={scene.components}
+                            characters={characters}
                             onReorderComponents={(components) => updateSceneComponents(scene.id, components)}
                             onRemoveComponent={(componentId) => removeComponentFromScene(scene.id, componentId)}
                             onUpdateComponentText={(componentId, text) => updateComponentText(scene.id, componentId, text)}
+                            onUpdateComponentTitle={(componentId, title) => updateComponentTitle(scene.id, componentId, title)}
                           />
                         </section>
                       ))}

@@ -28,3 +28,5 @@ export { WfrpPanel } from "./WfrpPanel";
 export { WfrpSection } from "./WfrpSection";
 export { WfrpSidebar } from "./WfrpSidebar";
 export { WfrpStatusBadge } from "./WfrpStatusBadge";
+export { WfrpPlayerCard } from "./WfrpPlayerCard";
+

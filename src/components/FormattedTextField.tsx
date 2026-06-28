@@ -23,6 +23,15 @@ const formatActions: Array<{
   { command: "insertUnorderedList", icon: List, label: "Bulleted list" },
 ];
 
+const isHtmlEmpty = (html: string) => {
+  if (!html) return true;
+  const clean = html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+  return clean === "";
+};
+
 export function FormattedTextField({
   ariaLabel,
   className,
@@ -32,7 +41,7 @@ export function FormattedTextField({
 }: FormattedTextFieldProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [draftValue, setDraftValue] = useState(value);
-  const [isEditing, setIsEditing] = useState(() => !value.trim());
+  const [isEditing, setIsEditing] = useState(() => isHtmlEmpty(value));
 
   useEffect(() => {
     if (!isEditing) {
@@ -68,25 +77,29 @@ export function FormattedTextField({
     setIsEditing(true);
   };
 
+  const isEmpty = isHtmlEmpty(value);
+
   if (!isEditing) {
     return (
       <div className={className}>
         <div
-          className="wfrp-text text-gray-200 [&_b]:font-bold [&_i]:italic [&_li]:my-1 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5"
-          dangerouslySetInnerHTML={{ __html: value }}
+          onClick={edit}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              edit();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label={`Edit ${ariaLabel}`}
+          title="Click to edit"
+          className={cn(
+            "wfrp-text cursor-pointer hover:text-white transition-colors outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 rounded [&_b]:font-bold [&_i]:italic [&_li]:my-1 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5",
+            isEmpty ? "text-wfrp-muted-text/60 italic font-sans" : "text-gray-200"
+          )}
+          dangerouslySetInnerHTML={{ __html: isEmpty ? placeholder : value }}
         />
-        <div className="mt-2 flex justify-start">
-          <Button
-            variant="unstyled"
-            autoHeight
-            onClick={edit}
-            aria-label={`Edit ${ariaLabel}`}
-            title="Edit"
-            className="text-wfrp-muted-text hover:text-white transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 rounded p-1 -ml-1 mt-1 cursor-pointer"
-          >
-            <Pencil size={18} />
-          </Button>
-        </div>
       </div>
     );
   }

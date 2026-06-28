@@ -151,6 +151,25 @@ export async function hydrateCharacterProgress(characterId: string) {
   }
 }
 
+export async function hydrateAllCharacterProgress() {
+  if (typeof fetch === "undefined") return;
+
+  try {
+    const response = await fetch("/api/character-progress");
+    if (!response.ok) return;
+
+    const progressMap = (await response.json()) as CharacterProgressMap | null;
+    if (progressMap) {
+      writeProgressMap({
+        ...readProgressMap(),
+        ...progressMap,
+      });
+    }
+  } catch {
+    // Keep the current in-memory values if the server cannot be read.
+  }
+}
+
 export function loadCharacterProgress(characterId: string): CharacterProgressData | null {
   return readProgressMap()[characterId] ?? null;
 }

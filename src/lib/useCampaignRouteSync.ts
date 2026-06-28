@@ -21,6 +21,8 @@ type UseCampaignRouteSyncOptions = {
   setActiveMainTab: (tab: MainTab) => void;
   setActiveMobileMainView: (target: MobileMainView) => void;
   setSelectedCharacterId: (characterId: string) => void;
+  isAllProgressHydrated?: boolean;
+  characterName?: string;
 };
 
 type SyncRouteOptions = {
@@ -43,6 +45,8 @@ export function useCampaignRouteSync({
   setActiveMainTab,
   setActiveMobileMainView,
   setSelectedCharacterId,
+  isAllProgressHydrated = false,
+  characterName = "",
 }: UseCampaignRouteSyncOptions) {
   const [hasAppliedInitialRoute, setHasAppliedInitialRoute] = useState(false);
   const currentCampaignRoute = useRef<CampaignCharacterRoute | null>(
@@ -81,7 +85,7 @@ export function useCampaignRouteSync({
     }
 
     window.history.replaceState(null, "", nextUrl);
-  }, [activeMobileMainView, routeSyncEnabled, selectedCharacterId]);
+  }, [activeMobileMainView, routeSyncEnabled, selectedCharacterId, characterName]);
 
   useEffect(() => {
     if (!routeSyncEnabled) {
@@ -119,6 +123,7 @@ export function useCampaignRouteSync({
     setActiveMainTab,
     setActiveMobileMainView,
     setSelectedCharacterId,
+    isAllProgressHydrated,
   ]);
 
   useEffect(() => {
