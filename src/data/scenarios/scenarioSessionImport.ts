@@ -79,7 +79,6 @@ export function buildScenarioSessionScenes(scenario: ScenarioSessionImportDefini
     components: scene.components.map((component): GMSceneComponent => {
       const base = {
         id: component.id,
-        type: component.type,
         title: component.title,
         text: component.text,
       };
