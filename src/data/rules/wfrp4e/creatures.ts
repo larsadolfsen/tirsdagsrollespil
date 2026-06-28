@@ -4,7 +4,6 @@ import {
   type CreatureTraitDefinition,
   type CreatureTraitId,
 } from "./creatureTraits";
-import { threeFeathersNpcTemplates } from "./threeFeathersNpcs";
 
 export type CreatureSize =
   | "tiny"
@@ -52,11 +51,6 @@ export interface CreatureTemplate {
   statBlock: CreatureStatBlock;
   traits: CreatureTraitInstance[];
   optionalTraits?: CreatureTraitInstance[];
-  skills?: string[];
-  talents?: string[];
-  tags?: string[];
-  trappings?: string[];
-  notes?: string[];
   defaultCount?: number;
 }
 
@@ -209,7 +203,6 @@ export const skavenCreatureTemplates: CreatureTemplate[] = [
 
 export const creatureTemplates: CreatureTemplate[] = [
   ...skavenCreatureTemplates,
-  ...threeFeathersNpcTemplates,
 ];
 
 export type CreatureTemplateId = typeof creatureTemplates[number]["id"];
