@@ -16,6 +16,8 @@ import {
 } from "./ui";
 import { WfrpPlayerCard } from "./wfrp";
 import type { CharacterSummary } from "../data/repository";
+import { loadResolvedCharacter, loadCharacterProgress } from "../data/repository";
+import { UI_LABELS } from "../labels";
 
 export type SceneComponent = {
   id: string;
@@ -50,6 +52,7 @@ export function SceneComponentsList({
   const [titleDraft, setTitleDraft] = useState("");
   const [draggedPlayerIndex, setDraggedPlayerIndex] = useState<number | null>(null);
   const [draggedPlayerComponentId, setDraggedPlayerComponentId] = useState<string | null>(null);
+  const [selectedEncounterCharacterIds, setSelectedEncounterCharacterIds] = useState<Record<string, string | null>>({});
 
   const handlePlayerDragStart = (compId: string, index: number, event: React.DragEvent) => {
     event.stopPropagation();
@@ -258,6 +261,22 @@ export function SceneComponentsList({
                 return indexA - indexB;
               });
 
+              const selectedCharId = selectedEncounterCharacterIds[component.id];
+              const selectedChar = selectedCharId ? loadResolvedCharacter(selectedCharId) : null;
+              const progress = selectedCharId ? loadCharacterProgress(selectedCharId) : null;
+
+              const attributes = selectedChar && (() => {
+                const baseCharacteristicAdvances = selectedChar.characteristicAdvances ?? {};
+                const currentCharacteristicAdvances = progress?.characteristicAdvances ?? baseCharacteristicAdvances;
+                return Object.fromEntries(
+                  Object.entries(selectedChar.attributes).map(([key, value]) => {
+                    const baseAdvances = baseCharacteristicAdvances[key] ?? 0;
+                    const currentAdvances = currentCharacteristicAdvances[key] ?? baseAdvances;
+                    return [key, value + (currentAdvances - baseAdvances)];
+                  }),
+                );
+              })();
+
               return (
                 <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] divide-y md:divide-y-0 md:divide-x divide-wfrp-border">
                   {/* Left Column: Player Cards */}
@@ -302,6 +321,13 @@ export function SceneComponentsList({
                                 <WfrpPlayerCard
                                   characterSummary={character}
                                   variant="row"
+                                  isSelected={selectedCharId === character.id}
+                                  onClick={() => {
+                                    setSelectedEncounterCharacterIds((prev) => ({
+                                      ...prev,
+                                      [component.id]: selectedCharId === character.id ? null : character.id,
+                                    }));
+                                  }}
                                 />
                               </div>
                             </div>
@@ -315,12 +341,60 @@ export function SceneComponentsList({
                     )}
                   </div>
 
-                  {/* Right Column: Encounter Actions/Placeholder */}
-                  <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-                    <Swords size={24} className="text-wfrp-muted-text/40 mb-2" />
-                    <span className="text-sm text-wfrp-muted-text font-sans">
-                      Encounter component added to scene.
-                    </span>
+                  {/* Right Column: Characteristics / Placeholder */}
+                  <div className="flex flex-col items-center justify-center p-4">
+                    {selectedChar && attributes ? (
+                      <div className="w-full flex flex-col items-center">
+                        <div className="mb-4 text-center">
+                          <span className="wfrp-label text-[10px] uppercase tracking-widest text-wfrp-muted-text/70 block mb-1">
+                            Characteristics
+                          </span>
+                          <span className="font-serif text-lg font-bold text-wfrp-gold">
+                            {selectedChar.name}
+                          </span>
+                          <span className="text-[11px] text-wfrp-muted-text block italic leading-none mt-1">
+                            {selectedChar.tier}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-5 gap-3 justify-center w-full max-w-sm">
+                          {UI_LABELS.CHARACTERISTICS.map((characteristic) => {
+                            const value = attributes[characteristic.key] || 0;
+                            const bonus = Math.floor(value / 10);
+
+                            return (
+                              <div
+                                key={characteristic.key}
+                                className="flex flex-col items-center"
+                              >
+                                <span className="mb-1 text-[10px] font-semibold uppercase tracking-tight text-wfrp-muted-text leading-none text-center block w-full truncate">
+                                  {characteristic.key}
+                                </span>
+                                <div className="relative">
+                                  <div className="flex h-12 w-10 flex-col items-center justify-center rounded border border-wfrp-border bg-wfrp-surface shadow">
+                                    <span className="text-sm font-bold text-gray-100">
+                                      {value}
+                                    </span>
+                                    <div className="absolute -bottom-1 left-1/2 z-10 flex h-4.5 w-4.5 -translate-x-1/2 items-center justify-center rounded-full border border-wfrp-border bg-wfrp-surface">
+                                      <span className="text-[8px] font-semibold text-wfrp-muted-text">
+                                        {bonus}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <Swords size={24} className="text-wfrp-muted-text/40 mb-2" />
+                        <span className="text-sm text-wfrp-muted-text font-sans">
+                          Click a character to inspect their characteristics.
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

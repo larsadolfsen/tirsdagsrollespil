@@ -13,12 +13,16 @@ type WfrpPlayerCardProps = {
   characterSummary: CharacterSummary;
   className?: string;
   variant?: "card" | "row";
+  isSelected?: boolean;
+  onClick?: (event: React.MouseEvent) => void;
 };
 
 export function WfrpPlayerCard({
   characterSummary,
   className,
   variant = "card",
+  isSelected = false,
+  onClick,
 }: WfrpPlayerCardProps) {
   const character = loadResolvedCharacter(characterSummary.id);
   const [portraitDataUrl, setPortraitDataUrl] = useState<string>("");
@@ -27,6 +31,18 @@ export function WfrpPlayerCard({
     current: character.wounds.current,
     max: character.wounds.max,
   });
+
+  const handleLinkClick = (event: React.MouseEvent) => {
+    const target = event.target as HTMLElement;
+    const isExternalClick = !!target.closest(".external-link-icon");
+
+    if (onClick) {
+      if (!isExternalClick) {
+        event.preventDefault();
+        onClick(event);
+      }
+    }
+  };
 
   useEffect(() => {
     let isCancelled = false;
@@ -94,7 +110,10 @@ export function WfrpPlayerCard({
         })}
         target="_blank"
         rel="noopener noreferrer"
-        className={`flex items-center justify-between w-full p-2 hover:bg-wfrp-control-hover transition-all duration-200 group relative no-underline ${className ?? ""}`}
+        onClick={handleLinkClick}
+        className={`flex items-center justify-between w-full p-2 hover:bg-wfrp-control-hover rounded transition-all duration-200 group relative no-underline ${
+          isSelected ? "bg-wfrp-gold/10 border border-wfrp-gold/50" : "border border-transparent"
+        } ${className ?? ""}`}
         aria-label={`Open ${characterName} in a new tab`}
       >
         <div className="flex items-center min-w-0">
@@ -142,7 +161,7 @@ export function WfrpPlayerCard({
         </div>
 
         {/* External Link Icon */}
-        <div className="absolute top-1/2 -translate-y-1/2 right-2 text-wfrp-muted-text/30 group-hover:text-wfrp-muted-text/70 transition-colors">
+        <div className="absolute top-1/2 -translate-y-1/2 right-2 text-wfrp-muted-text/30 group-hover:text-wfrp-muted-text/70 transition-colors external-link-icon">
           <ExternalLink size={10} />
         </div>
       </a>
@@ -160,6 +179,7 @@ export function WfrpPlayerCard({
       })}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleLinkClick}
       className={`wfrp-landing-character-card no-underline relative group ${className ?? ""}`}
       aria-label={`Open ${characterName} in a new tab`}
     >
@@ -203,7 +223,7 @@ export function WfrpPlayerCard({
       </div>
 
       {/* External link icon in top right corner */}
-      <div className="absolute top-2.5 right-2.5 text-wfrp-muted-text/50 group-hover:text-white transition-colors duration-200">
+      <div className="absolute top-2.5 right-2.5 text-wfrp-muted-text/50 group-hover:text-white transition-colors duration-200 external-link-icon">
         <ExternalLink size={12} />
       </div>
     </a>

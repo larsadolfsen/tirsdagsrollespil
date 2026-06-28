@@ -103,7 +103,7 @@ export function DropdownMenuContent({
       onKeyDown={handleKeyDown}
       className={cn(
         "absolute z-50 min-w-40 overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-wfrp-popover",
-        offset === "default" && "mt-2",
+        offset === "default" && "-mt-2",
         offset === "overlap" && "-mt-1",
         align === "end" && "right-0",
         align === "center" && "left-1/2 -translate-x-1/2",
