@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
-import { PanelLeftClose, PanelLeftOpen, Plus } from "lucide-react";
+import {
+  BookOpenText,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Plus,
+  Swords,
+} from "lucide-react";
 import type { CharacterSummary } from "../data/repository";
 import type { GMSession } from "../data/gmSessions";
 import { AppShell } from "./AppShell";
 import { PlayerCardsRow } from "./PlayerCardsRow";
+import { SceneActionsMenu } from "./SceneActionsMenu";
 import { AppSidebar, SidebarItemList } from "./sidebar";
 import {
   Breadcrumbs,
@@ -14,6 +21,7 @@ import {
 import {
   SheetEmptyState,
 } from "./wfrp";
+import { SceneComponentsList, type SceneComponent } from "./SceneComponentsList";
 
 type GameMasterPageProps = {
   activeSession: GMSession | null;
@@ -29,6 +37,35 @@ type GameMasterPageProps = {
   selectedSessionId: string | null;
   sessions: GMSession[];
 };
+
+type SceneState = {
+  id: string;
+  components: SceneComponent[];
+};
+
+let nextComponentId = 1;
+
+export function createSceneComponent(
+  type: "text" | "encounter",
+  text = "",
+): SceneComponent {
+  return {
+    id: `comp-${nextComponentId++}`,
+    type,
+    text,
+  };
+}
+
+let nextSceneId = 1;
+
+function createScene(
+  components: SceneComponent[] = [],
+): SceneState {
+  return {
+    id: `scene-${nextSceneId++}`,
+    components,
+  };
+}
 
 function GameMasterHeader({
   isSessionsSidebarOpen,
@@ -74,10 +111,12 @@ export function GameMasterPage({
 }: GameMasterPageProps) {
   const [isRenamingSession, setIsRenamingSession] = useState(false);
   const [sessionTitleDraft, setSessionTitleDraft] = useState(editingSessionName);
+  const [scenes, setScenes] = useState<SceneState[]>(() => [createScene()]);
 
   useEffect(() => {
     setIsRenamingSession(false);
     setSessionTitleDraft(editingSessionName);
+    setScenes([createScene()]);
   }, [activeSession?.id]);
 
   useEffect(() => {
@@ -94,6 +133,82 @@ export function GameMasterPage({
       setSessionTitleDraft(editingSessionName);
     }
     setIsRenamingSession(false);
+  };
+
+  const addScene = (sceneIndex: number, placement: "before" | "after") => {
+    setScenes((currentScenes) => {
+      const nextScenes = [...currentScenes];
+      nextScenes.splice(sceneIndex + (placement === "after" ? 1 : 0), 0, createScene());
+      return nextScenes;
+    });
+  };
+
+  const copyScene = (sceneIndex: number) => {
+    setScenes((currentScenes) => {
+      const sourceScene = currentScenes[sceneIndex];
+      if (!sourceScene) {
+        return currentScenes;
+      }
+
+      const nextScenes = [...currentScenes];
+      const copiedComponents = sourceScene.components.map((comp) =>
+        createSceneComponent(comp.type, comp.text),
+      );
+      nextScenes.splice(
+        sceneIndex + 1,
+        0,
+        createScene(copiedComponents),
+      );
+      return nextScenes;
+    });
+  };
+
+  const deleteScene = (sceneId: string) => {
+    setScenes((currentScenes) => currentScenes.filter((scene) => scene.id !== sceneId));
+  };
+
+  const updateSceneComponents = (sceneId: string, components: SceneComponent[]) => {
+    setScenes((currentScenes) => currentScenes.map((scene) => (
+      scene.id === sceneId ? { ...scene, components } : scene
+    )));
+  };
+
+  const addComponentToScene = (sceneId: string, type: "text" | "encounter") => {
+    setScenes((currentScenes) => currentScenes.map((scene) => {
+      if (scene.id === sceneId) {
+        return {
+          ...scene,
+          components: [...scene.components, createSceneComponent(type)],
+        };
+      }
+      return scene;
+    }));
+  };
+
+  const removeComponentFromScene = (sceneId: string, componentId: string) => {
+    setScenes((currentScenes) => currentScenes.map((scene) => {
+      if (scene.id === sceneId) {
+        return {
+          ...scene,
+          components: scene.components.filter((comp) => comp.id !== componentId),
+        };
+      }
+      return scene;
+    }));
+  };
+
+  const updateComponentText = (sceneId: string, componentId: string, text: string) => {
+    setScenes((currentScenes) => currentScenes.map((scene) => {
+      if (scene.id === sceneId) {
+        return {
+          ...scene,
+          components: scene.components.map((comp) => (
+            comp.id === componentId ? { ...comp, text } : comp
+          )),
+        };
+      }
+      return scene;
+    }));
   };
 
   const sessionSidebar = (
@@ -193,6 +308,66 @@ export function GameMasterPage({
                         </button>
                       </Heading>
                     </div>
+                  )}
+
+                  {scenes.length > 0 ? (
+                    <div className="flex flex-col gap-8">
+                      {scenes.map((scene, sceneIndex) => (
+                        <section key={scene.id}>
+                          <div className="mt-4 flex min-h-12 items-center justify-between gap-4">
+                            <Heading level={3} variant="subsection">
+                              Scene {sceneIndex + 1}
+                            </Heading>
+                            <SceneActionsMenu
+                              sceneNumber={sceneIndex + 1}
+                              onAddBefore={() => addScene(sceneIndex, "before")}
+                              onAddAfter={() => addScene(sceneIndex, "after")}
+                              onCopy={() => copyScene(sceneIndex)}
+                              onDelete={() => deleteScene(scene.id)}
+                            />
+                          </div>
+                          <div className="mt-2">
+                            <span className="wfrp-label mb-2 block text-wfrp-muted-text">
+                              Add component
+                            </span>
+                            <div className="flex flex-wrap gap-2">
+                              <Button
+                                variant="secondary"
+                                leadingIcon={<BookOpenText />}
+                                onClick={() => addComponentToScene(scene.id, "text")}
+                              >
+                                Text field
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                leadingIcon={<Swords />}
+                                onClick={() => addComponentToScene(scene.id, "encounter")}
+                              >
+                                Encounter
+                              </Button>
+                            </div>
+                          </div>
+
+                          <SceneComponentsList
+                            sceneId={scene.id}
+                            sceneNumber={sceneIndex + 1}
+                            components={scene.components}
+                            onReorderComponents={(components) => updateSceneComponents(scene.id, components)}
+                            onRemoveComponent={(componentId) => removeComponentFromScene(scene.id, componentId)}
+                            onUpdateComponentText={(componentId, text) => updateComponentText(scene.id, componentId, text)}
+                          />
+                        </section>
+                      ))}
+                    </div>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => setScenes([createScene()])}
+                      leadingIcon={<Plus />}
+                      className="mt-4"
+                    >
+                      Add scene
+                    </Button>
                   )}
                 </div>
               ) : (
