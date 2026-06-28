@@ -67,7 +67,7 @@ export function useCampaignRouteSync({
       characterId,
       view,
       omitDefaultView,
-      characterName: characterId === selectedCharacterId ? characterName : undefined,
+      characterName,
     });
     const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
     const route = parseCampaignCharacterPath(nextPath);

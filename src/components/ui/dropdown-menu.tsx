@@ -4,6 +4,8 @@ import {
   useContext,
   useMemo,
   useState,
+  useRef,
+  useEffect,
   type ButtonHTMLAttributes,
   type HTMLAttributes,
   type KeyboardEvent,
@@ -31,11 +33,27 @@ function useDropdownContext(componentName: string) {
 
 export function DropdownMenu({ children }: { children?: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const context = useMemo(() => ({ open, setOpen }), [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [open]);
 
   return (
     <DropdownContext.Provider value={context}>
-      <div className="relative inline-block">{children}</div>
+      <div ref={containerRef} className="relative inline-block">{children}</div>
     </DropdownContext.Provider>
   );
 }

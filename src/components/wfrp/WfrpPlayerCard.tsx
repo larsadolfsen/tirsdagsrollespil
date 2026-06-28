@@ -12,9 +12,14 @@ import { buildCampaignCharacterPath } from "../../lib/campaignRoutes";
 type WfrpPlayerCardProps = {
   characterSummary: CharacterSummary;
   className?: string;
+  variant?: "card" | "row";
 };
 
-export function WfrpPlayerCard({ characterSummary, className }: WfrpPlayerCardProps) {
+export function WfrpPlayerCard({
+  characterSummary,
+  className,
+  variant = "card",
+}: WfrpPlayerCardProps) {
   const character = loadResolvedCharacter(characterSummary.id);
   const [portraitDataUrl, setPortraitDataUrl] = useState<string>("");
   const [characterName, setCharacterName] = useState<string>(character.name);
@@ -76,6 +81,73 @@ export function WfrpPlayerCard({ characterSummary, className }: WfrpPlayerCardPr
 
   const safeWoundsCurrent = Math.min(Math.max(0, wounds.current), wounds.max);
   const woundsPercent = wounds.max > 0 ? (safeWoundsCurrent / wounds.max) * 100 : 0;
+
+  if (variant === "row") {
+    return (
+      <a
+        href={buildCampaignCharacterPath({
+          campaignId: character.campaignId,
+          characterId: character.id,
+          view: "characteristics",
+          omitDefaultView: true,
+          characterName,
+        })}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`flex items-center justify-between w-full p-2 hover:bg-wfrp-control-hover transition-all duration-200 group relative no-underline ${className ?? ""}`}
+        aria-label={`Open ${characterName} in a new tab`}
+      >
+        <div className="flex items-center min-w-0">
+          {/* Portrait/Initials */}
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded bg-wfrp-dark border border-wfrp-border/30">
+            {portraitDataUrl ? (
+              <img
+                src={portraitDataUrl}
+                alt=""
+                className="h-full w-full object-cover brightness-95 group-hover:scale-105 transition-transform duration-200"
+              />
+            ) : (
+              <span className="font-serif text-sm text-wfrp-muted-text">
+                {initials}
+              </span>
+            )}
+          </div>
+
+          {/* Name & Tier */}
+          <div className="ml-3 min-w-0 flex flex-col justify-center">
+            <span className="font-serif text-sm font-semibold text-gray-100 group-hover:text-white transition-colors truncate">
+              {characterName}
+            </span>
+            <span className="text-[10px] text-wfrp-muted-text truncate leading-none mt-0.5">
+              {character.tier}
+            </span>
+          </div>
+        </div>
+
+        {/* Wounds bar & values */}
+        <div className="flex items-center gap-3 shrink-0 mr-4">
+          <div className="h-1.5 w-24 overflow-hidden rounded-full bg-wfrp-border/60 shadow-inner hidden sm:block">
+            <div
+              className="h-full rounded-full bg-wfrp-red transition-all duration-500 ease-out"
+              style={{ width: `${woundsPercent}%` }}
+              role="progressbar"
+              aria-valuenow={wounds.current}
+              aria-valuemin={0}
+              aria-valuemax={wounds.max}
+            />
+          </div>
+          <span className="text-[10px] font-semibold text-wfrp-muted-text leading-none">
+            {wounds.current}/{wounds.max}
+          </span>
+        </div>
+
+        {/* External Link Icon */}
+        <div className="absolute top-1/2 -translate-y-1/2 right-2 text-wfrp-muted-text/30 group-hover:text-wfrp-muted-text/70 transition-colors">
+          <ExternalLink size={10} />
+        </div>
+      </a>
+    );
+  }
 
   return (
     <a

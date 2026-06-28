@@ -54,3 +54,37 @@ test("Game Master page scene components workflow", async ({ page }) => {
   // 12. Verify the component is deleted
   await expect(page.getByText("Introduction Text")).not.toBeVisible();
 });
+
+test("Dropdown menus close other open menus when opened", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open Game Master" }).click();
+
+  // 1. Add a component so we have both the scene menu and the component menu
+  await page.getByRole("button", { name: "Text field", exact: true }).click();
+
+  // 2. Click the Scene 1 menu trigger
+  const sceneMenuTrigger = page.getByRole("button", { name: "Scene 1 menu" });
+  await sceneMenuTrigger.click();
+
+  // Verify Scene 1 menu content is visible
+  const sceneMenuItem = page.getByRole("menuitem", { name: "Add scene before" });
+  await expect(sceneMenuItem).toBeVisible();
+
+  // 3. Click the Component actions menu trigger
+  const componentMenuTrigger = page.getByRole("button", { name: "Text field actions" });
+  await componentMenuTrigger.click();
+
+  // Verify Scene 1 menu content is now hidden
+  await expect(sceneMenuItem).not.toBeVisible();
+
+  // Verify Component menu content is visible
+  const componentMenuItem = page.getByRole("menuitem", { name: "Delete" });
+  await expect(componentMenuItem).toBeVisible();
+
+  // 4. Click outside (e.g., somewhere in the heading or main area)
+  await page.getByRole("heading", { name: "Scene 1", exact: true }).click();
+
+  // Verify Component menu content is now hidden
+  await expect(componentMenuItem).not.toBeVisible();
+});
+

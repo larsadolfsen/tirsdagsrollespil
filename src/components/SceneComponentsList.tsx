@@ -48,6 +48,44 @@ export function SceneComponentsList({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [titleDraft, setTitleDraft] = useState("");
+  const [draggedPlayerIndex, setDraggedPlayerIndex] = useState<number | null>(null);
+  const [draggedPlayerComponentId, setDraggedPlayerComponentId] = useState<string | null>(null);
+
+  const handlePlayerDragStart = (compId: string, index: number, event: React.DragEvent) => {
+    event.stopPropagation();
+    setDraggedPlayerIndex(index);
+    setDraggedPlayerComponentId(compId);
+    event.dataTransfer.effectAllowed = "move";
+  };
+
+  const handlePlayerDragEnter = (
+    compId: string,
+    targetIndex: number,
+    event: React.DragEvent,
+    sortedCharacters: CharacterSummary[],
+  ) => {
+    event.stopPropagation();
+    if (
+      draggedPlayerIndex === null ||
+      draggedPlayerComponentId !== compId ||
+      draggedPlayerIndex === targetIndex
+    ) {
+      return;
+    }
+
+    const nextPlayerIds = [...sortedCharacters.map((c) => c.id)];
+    const [draggedId] = nextPlayerIds.splice(draggedPlayerIndex, 1);
+    nextPlayerIds.splice(targetIndex, 0, draggedId);
+
+    onUpdateComponentText(compId, nextPlayerIds.join(","));
+    setDraggedPlayerIndex(targetIndex);
+  };
+
+  const handlePlayerDragEnd = (event: React.DragEvent) => {
+    event.stopPropagation();
+    setDraggedPlayerIndex(null);
+    setDraggedPlayerComponentId(null);
+  };
 
   const handleDragStart = (index: number, event: React.DragEvent) => {
     setDraggedIndex(index);
@@ -115,38 +153,41 @@ export function SceneComponentsList({
                   <GripVertical size={16} aria-hidden="true" />
                 </div>
                 {/* Title */}
-                {editingTitleId === component.id ? (
-                  <input
-                    type="text"
-                    value={titleDraft}
-                    onChange={(e) => setTitleDraft(e.target.value)}
-                    onBlur={() => {
-                      onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
-                      setEditingTitleId(null);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
+                <div className="flex items-center font-serif text-base text-gray-200">
+                  <span className="mr-1 text-wfrp-muted-text/60 select-none">{index + 1}:</span>
+                  {editingTitleId === component.id ? (
+                    <input
+                      type="text"
+                      value={titleDraft}
+                      onChange={(e) => setTitleDraft(e.target.value)}
+                      onBlur={() => {
                         onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
                         setEditingTitleId(null);
-                      } else if (e.key === "Escape") {
-                        setEditingTitleId(null);
-                      }
-                    }}
-                    autoFocus
-                    className="font-serif text-base text-gray-200 bg-transparent border-0 border-b border-wfrp-gold/50 outline-none w-48 p-0"
-                  />
-                ) : (
-                  <span
-                    onClick={() => {
-                      setTitleDraft(title);
-                      setEditingTitleId(component.id);
-                    }}
-                    className="cursor-pointer font-serif text-base text-gray-200 hover:text-white transition-colors border-b border-dashed border-transparent hover:border-wfrp-muted-text/50"
-                    title="Click to rename"
-                  >
-                    {title}
-                  </span>
-                )}
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
+                          setEditingTitleId(null);
+                        } else if (e.key === "Escape") {
+                          setEditingTitleId(null);
+                        }
+                      }}
+                      autoFocus
+                      className="font-serif text-base text-gray-200 bg-transparent border-0 border-b border-wfrp-gold/50 outline-none w-48 p-0"
+                    />
+                  ) : (
+                    <span
+                      onClick={() => {
+                        setTitleDraft(title);
+                        setEditingTitleId(component.id);
+                      }}
+                      className="cursor-pointer hover:text-white transition-colors border-b border-dashed border-transparent hover:border-wfrp-muted-text/50"
+                      title="Click to rename"
+                    >
+                      {title}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Actions: Reorder and Delete */}
@@ -206,38 +247,84 @@ export function SceneComponentsList({
                 />
               </div>
             )}
-            {component.type === "encounter" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-wfrp-border bg-black/5">
-                {/* Left Column: Player Cards */}
-                <div className="flex flex-col gap-2 p-4">
-                  <span className="wfrp-label text-[11px] uppercase tracking-wider text-wfrp-muted-text/80 mb-2">
-                    Players
-                  </span>
-                  {characters && characters.length > 0 ? (
-                    <div className="flex flex-col gap-2 max-w-md w-full">
-                      {characters.map((character) => (
-                        <WfrpPlayerCard
-                          key={character.id}
-                          characterSummary={character}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="text-sm text-wfrp-muted-text font-sans italic">
-                      No players available
-                    </span>
-                  )}
-                </div>
+            {component.type === "encounter" && (() => {
+              const orderedCharacterIds = component.text ? component.text.split(",") : [];
+              const sortedCharacters = [...characters].sort((a, b) => {
+                const indexA = orderedCharacterIds.indexOf(a.id);
+                const indexB = orderedCharacterIds.indexOf(b.id);
+                if (indexA === -1 && indexB === -1) return 0;
+                if (indexA === -1) return 1;
+                if (indexB === -1) return -1;
+                return indexA - indexB;
+              });
 
-                {/* Right Column: Encounter Actions/Placeholder */}
-                <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-                  <Swords size={24} className="text-wfrp-muted-text/40 mb-2" />
-                  <span className="text-sm text-wfrp-muted-text font-sans">
-                    Encounter component added to scene.
-                  </span>
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] divide-y md:divide-y-0 md:divide-x divide-wfrp-border">
+                  {/* Left Column: Player Cards */}
+                  <div className="flex flex-col gap-2 p-4">
+                    {sortedCharacters.length > 0 ? (
+                      <div className="flex flex-col max-w-md w-full divide-y divide-wfrp-border/30">
+                        {sortedCharacters.map((character, pIndex) => {
+                          const isPlayerDragging =
+                            draggedPlayerComponentId === component.id &&
+                            draggedPlayerIndex === pIndex;
+
+                          return (
+                            <div
+                              key={character.id}
+                              draggable
+                              onDragStart={(event) =>
+                                handlePlayerDragStart(component.id, pIndex, event)
+                              }
+                              onDragEnter={(event) =>
+                                handlePlayerDragEnter(
+                                  component.id,
+                                  pIndex,
+                                  event,
+                                  sortedCharacters,
+                                )
+                              }
+                              onDragEnd={handlePlayerDragEnd}
+                              onDragOver={(event) => event.preventDefault()}
+                              className={`flex items-center gap-1 py-1 transition-all duration-200 ${
+                                isPlayerDragging ? "opacity-30 scale-[0.98]" : ""
+                              }`}
+                            >
+                              {/* Grab Handle */}
+                              <div
+                                className="flex h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-colors active:cursor-grabbing shrink-0"
+                                title="Drag to reorder"
+                              >
+                                <GripVertical size={14} aria-hidden="true" />
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <WfrpPlayerCard
+                                  characterSummary={character}
+                                  variant="row"
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <span className="text-sm text-wfrp-muted-text font-sans italic">
+                        No players available
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Right Column: Encounter Actions/Placeholder */}
+                  <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+                    <Swords size={24} className="text-wfrp-muted-text/40 mb-2" />
+                    <span className="text-sm text-wfrp-muted-text font-sans">
+                      Encounter component added to scene.
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         );
       })}
