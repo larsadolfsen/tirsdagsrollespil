@@ -8,33 +8,49 @@ import type {
 } from "./scenarioSessionImport";
 
 const threeFeathersSessionDescription =
-  "The road, river, and weather bring you to the Three Feathers for what should be one quiet night. Warm light leaks from the windows, wet horses stamp in the yard, and the common room hums with smoke, ale, tired travellers, watchful servants, and too many private conversations. As the night wears on, doors close, tempers rise, footsteps cross the upper floor, and every small noise starts to matter.";
-
-const scenarioDescriptionText =
-  "You arrive at the Three Feathers at the end of a long day. Warm light spills from the windows. Smoke hangs under the eaves. The yard smells of wet straw, horse sweat, river mud, and woodsmoke. Inside, voices press together in the common room. You see armed servants, tired travellers, a card table, a loud bare-armed man near the fire, and a landlord who watches the stairs while he pours ale. Nothing here is quiet enough to be private for long.";
+  "The road, river, and weather bring you to the Three Feathers for what should be one quiet night. Warm light leaks from the windows, wet horses stamp in the yard, and the common room hums with smoke, ale, tired travellers, watchful servants, and low conversations held close to the table. As the night wears on, doors close, tempers rise, footsteps cross the upper floor, and every small noise starts to matter.";
 
 const scenarioNotesText =
-  "Use this import as a timed pressure map, not a fixed script. Description components must only contain what the Characters can perceive or reasonably infer. Notes components hold room ids, hidden identities, motives, clocks, and exact GM truth.";
+  "Use this import as a timed pressure map, not a fixed script. Each scene should have one initial Description component that establishes the visible scene state. Additional text components are allowed when something happens or changes in the scene, such as an arrival, interruption, discovery, reveal, noise, confrontation, or environmental change. Description components must only contain what the Characters can perceive or reasonably infer. Notes components hold room ids, hidden identities, motives, clocks, and exact GM truth.";
+
+const sceneDescriptionText: Record<string, string> = {
+  "scene-three-feathers-gm-overview":
+    "You arrive at the Three Feathers at the end of a long day. Warm light spills from the windows. Smoke hangs under the eaves. The yard smells of wet straw, horse sweat, river mud, and woodsmoke. Inside, voices press together in the common room. You see armed servants, tired travellers, a card table, a loud bare-armed man near the fire, and a landlord who watches the stairs while he pours ale. Nothing here is quiet enough to be private for long.",
+  "scene-three-feathers-location-setup":
+    "You stand inside a busy riverside inn built around heat, smoke, stairs, and narrow doors. The barroom smells of smoke, wet wool, spilled ale, roast meat, and river mud. Hans Orf works behind the bar with a practiced smile and tired eyes. Servants move between tables, stairs, yard door, and dormitory with bowls, jugs, blankets, and hurried messages. Upstairs, the corridor is narrow, cool, and close enough that voices, steps, and falling bodies can carry through the floorboards.",
+  "scene-three-feathers-faction-briefs":
+    "You see too many groups for one quiet inn. A noble party claims space without asking. Three plain travellers keep their backs near the wall. A well-dressed couple asks for privacy and avoids attention. Black-robed mourners stay close to a damp coffin. A small gambler smiles over his cards while rougher travellers drink in clusters. The room feels social, but nobody seems fully at ease.",
+};
 
 const gmOnlyComponentIds = new Set([
   "text-overview-database-links",
   "text-overview-clocks",
 ]);
 
+const sceneTextToNotesOnly = new Set([
+  "scene-three-feathers-gm-overview",
+  "scene-three-feathers-location-setup",
+  "scene-three-feathers-faction-briefs",
+]);
+
 const titleReplacements: Record<string, string> = {
-  "Core Premise": "Description",
+  "Core Premise": "Notes",
   "Database Links": "Notes",
   "Main Clocks": "Notes",
-  "Upper Floor": "The Upper Corridor",
-  "The Gravin's Party": "The Noble Party",
-  "The Morrians and the Coffin": "Black Robes and a Coffin",
-  "The Schmidts and the Angry Merchant": "A Careful Couple",
+  "Ground Floor": "Notes",
+  "Upper Floor": "Notes",
+  "Exits and Constraints": "Notes",
+  "The Gravin's Party": "Notes",
+  "The Scholars": "Notes",
+  "The Morrians and the Coffin": "Notes",
+  "The Schmidts and the Angry Merchant": "Notes",
+  "Gamblers, Thieves, Boatmen, and Coachmen": "Notes",
   "9:20 p.m. Bruno Is Sent Upstairs": "9:20 p.m. The Bare-Armed Man Leaves",
   "9:25 p.m. The Gravin Retires": "9:25 p.m. The Noble Woman Retires",
   "9:35 p.m. The Morrians Arrive": "9:35 p.m. Black-Robed Mourners Arrive",
   "10:10 p.m. Bruno's Last Drink": "10:10 p.m. Fresh Drinks at the Loud Table",
   "10:25 p.m. Bruno Is Missing": "10:25 p.m. A Servant Returns Pale",
-  "10:40 p.m. Rechtshandler Goes Upstairs": "10:40 p.m. The Lawyer Goes Upstairs",
+  "10:40 p.m. Rechtshandler Goes Upstairs": "10:40 p.m. The Older Man Goes Upstairs",
   "11:05 p.m. The Lawyer Is Killed": "11:05 p.m. Sounds Behind a Door",
   "Noise in Room 9": "Noise Behind a Guest-Room Door",
   "The False Corpse": "The Coffin Opens",
@@ -86,11 +102,7 @@ function cleanPlayerFacingText(text: string): string {
 }
 
 function cleanTitle(title?: string): string | undefined {
-  if (!title) {
-    return title;
-  }
-
-  return titleReplacements[title] ?? title;
+  return title ? titleReplacements[title] ?? title : title;
 }
 
 function toNotesComponent(component: ScenarioSceneComponent): ScenarioSceneComponent[] {
@@ -107,15 +119,27 @@ function toNotesComponent(component: ScenarioSceneComponent): ScenarioSceneCompo
   }];
 }
 
-function splitComponentNotes(component: ScenarioSceneComponent): ScenarioSceneComponent[] {
-  if (gmOnlyComponentIds.has(component.id)) {
-    return [{
-      id: `${component.id}-notes`,
-      type: "notes",
-      title: cleanTitle(component.title) ?? "Notes",
-      text: [component.text, ...(component.gmNotes ?? [])].join("\n\n"),
-      links: component.links,
-    }];
+function toNotesOnlyComponent(component: ScenarioSceneComponent): ScenarioSceneComponent[] {
+  const notesText = [cleanPlayerFacingText(component.text), ...(component.gmNotes ?? [])]
+    .filter(Boolean)
+    .join("\n\n");
+
+  if (!notesText) {
+    return [];
+  }
+
+  return [{
+    id: `${component.id}-notes`,
+    type: "notes",
+    title: cleanTitle(component.title) ?? "Notes",
+    text: notesText,
+    links: component.links,
+  }];
+}
+
+function splitComponentNotes(sceneId: string, component: ScenarioSceneComponent): ScenarioSceneComponent[] {
+  if (gmOnlyComponentIds.has(component.id) || (sceneTextToNotesOnly.has(sceneId) && component.type === "text")) {
+    return toNotesOnlyComponent(component);
   }
 
   const componentWithoutLegacyNotes = {
@@ -137,18 +161,22 @@ function prepareScenarioImport(
       ...scenario.defaultSession,
       notes: threeFeathersSessionDescription,
     },
-    scenes: scenario.scenes.map((scene, sceneIndex) => ({
+    scenes: scenario.scenes.map((scene) => ({
       ...scene,
       components: [
-        ...(sceneIndex === 0
+        ...(sceneDescriptionText[scene.id]
           ? [
               {
-                id: `${scenario.id}-scenario-description`,
+                id: `${scene.id}-description`,
                 type: "text" as const,
                 title: "Description",
-                text: scenarioDescriptionText,
+                text: sceneDescriptionText[scene.id],
                 links: scene.links,
               },
+            ]
+          : []),
+        ...(scene.id === "scene-three-feathers-gm-overview"
+          ? [
               {
                 id: `${scenario.id}-scenario-notes`,
                 type: "notes" as const,
@@ -158,7 +186,7 @@ function prepareScenarioImport(
               },
             ]
           : []),
-        ...scene.components.flatMap(splitComponentNotes),
+        ...scene.components.flatMap((component) => splitComponentNotes(scene.id, component)),
       ],
     })),
   };
