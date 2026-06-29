@@ -1030,6 +1030,121 @@ export function EncounterComponent({
   );
 }
 
+// ── EditableComponentTitle ────────────────────────────────────────────────────
+
+function EditableComponentTitle({
+  title,
+  isEditing,
+  titleDraft,
+  onStart,
+  onChange,
+  onCommit,
+  onCancel,
+}: {
+  title: string;
+  isEditing: boolean;
+  titleDraft: string;
+  onStart: () => void;
+  onChange: (value: string) => void;
+  onCommit: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <Text as="div" variant="serifTitle">
+      {isEditing ? (
+        <input
+          type="text"
+          value={titleDraft}
+          onChange={(e) => onChange(e.target.value)}
+          onBlur={onCommit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") onCommit();
+            else if (e.key === "Escape") onCancel();
+          }}
+          autoFocus
+          className="w-48 border-0 border-b border-wfrp-gold/50 bg-transparent p-0 font-serif font-semibold text-base text-gray-200 outline-none"
+        />
+      ) : (
+        <span
+          onClick={onStart}
+          className="cursor-pointer border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors"
+          title="Click to rename"
+        >
+          {title}
+        </span>
+      )}
+    </Text>
+  );
+}
+
+// ── SceneComponentRow ─────────────────────────────────────────────────────────
+
+type SceneComponentRowProps = {
+  index: number;
+  total: number;
+  component: SceneComponent;
+  title: string;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  onConvertType?: (type: "text" | "notes") => void;
+  onRemove: () => void;
+  children?: React.ReactNode;
+};
+
+function SceneComponentRow({
+  index,
+  total,
+  component,
+  title,
+  onMoveUp,
+  onMoveDown,
+  onConvertType,
+  onRemove,
+  children,
+}: SceneComponentRowProps) {
+  return (
+    <div
+      className={`group/item flex items-start py-3 ${
+        component.type === "encounter" ? "relative border-b border-wfrp-border/40 last:border-b-0" : ""
+      }`}
+    >
+      {/* Content */}
+      <div className="min-w-0 flex-1">
+        {children}
+      </div>
+
+      {/* Icons — no gap */}
+      <div className={`flex h-10 items-center opacity-0 transition-opacity group-hover/item:opacity-100 ${
+        component.type === "encounter" ? "absolute right-0 top-3" : ""
+      }`}>
+        <Button variant="wfrpIcon" onClick={onMoveUp} disabled={index === 0} aria-label="Move component up" leadingIcon={<ChevronUp />} />
+        <Button variant="wfrpIcon" onClick={onMoveDown} disabled={index === total - 1} aria-label="Move component down" leadingIcon={<ChevronDown />} />
+        <DropdownMenu>
+          <DropdownMenuTrigger aria-label={`${title} actions`} className="wfrp-standard-icon cursor-pointer">
+            <span className="wfrp-standard-icon__glyph" aria-hidden="true"><EllipsisVertical /></span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {component.type === "text" && (
+              <DropdownMenuItem onClick={() => onConvertType?.("notes")}>
+                Convert to Notes
+              </DropdownMenuItem>
+            )}
+            {component.type === "notes" && (
+              <DropdownMenuItem onClick={() => onConvertType?.("text")}>
+                Convert to Description
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onClick={onRemove} className="text-red-400 hover:text-red-400 focus:text-red-400">
+              <Trash2 className="mr-2 size-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
+
 // ── SceneComponentsList ───────────────────────────────────────────────────────
 
 export function SceneComponentsList({
@@ -1045,26 +1160,8 @@ export function SceneComponentsList({
   onUpdateComponentEncounterData,
   onOpenMonsterSidebar,
 }: SceneComponentsListProps) {
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [titleDraft, setTitleDraft] = useState("");
-
-  const handleDragStart = (index: number, event: React.DragEvent) => {
-    setDraggedIndex(index);
-    event.dataTransfer.effectAllowed = "move";
-    event.dataTransfer.setData("text/plain", index.toString());
-  };
-
-  const handleDragEnter = (targetIndex: number) => {
-    if (draggedIndex === null || draggedIndex === targetIndex) return;
-    const nextComponents = [...components];
-    const [draggedItem] = nextComponents.splice(draggedIndex, 1);
-    nextComponents.splice(targetIndex, 0, draggedItem);
-    onReorderComponents(nextComponents);
-    setDraggedIndex(targetIndex);
-  };
-
-  const handleDragEnd = () => setDraggedIndex(null);
 
   const moveComponent = (index: number, direction: "up" | "down") => {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
@@ -1078,68 +1175,41 @@ export function SceneComponentsList({
   if (components.length === 0) return null;
 
   return (
-    <div className="mt-3 flex flex-col gap-1">
+    <div className="mt-3 flex flex-col">
       {components.map((component, index) => {
-        const isDragging = draggedIndex === index;
         const defaultTitle = component.type === "text" ? "Description" : component.type === "notes" ? "Notes" : "Encounter";
         const title = component.title || defaultTitle;
+        const isEditing = editingTitleId === component.id;
+        const titleProps = {
+          title,
+          isEditing,
+          titleDraft,
+          onStart: () => { setTitleDraft(title); setEditingTitleId(component.id); },
+          onChange: setTitleDraft,
+          onCommit: () => { onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle); setEditingTitleId(null); },
+          onCancel: () => setEditingTitleId(null),
+        };
 
         return (
-          <div
+          <SceneComponentRow
             key={component.id}
-            draggable
-            onDragStart={(event) => handleDragStart(index, event)}
-            onDragEnter={() => handleDragEnter(index)}
-            onDragEnd={handleDragEnd}
-            onDragOver={(event) => event.preventDefault()}
-            className={`group/item relative -ml-7 pl-7 flex flex-col rounded hover:bg-white/[0.03] ${component.type === "encounter" ? "border-b border-wfrp-border/40" : ""} py-3 last:border-b-0 transition-all duration-200 ${
-              isDragging ? "opacity-30 scale-[0.98]" : ""
-            }`}
+            index={index}
+            total={components.length}
+            component={component}
+            title={title}
+            onMoveUp={() => moveComponent(index, "up")}
+            onMoveDown={() => moveComponent(index, "down")}
+            onConvertType={(type) => onUpdateComponentType(component.id, type)}
+            onRemove={() => onRemoveComponent(component.id)}
           >
-            {/* Drag handle — floats in the -ml-7 / pl-7 padding zone */}
-            <div
-              className="absolute left-0.5 top-1 flex h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text opacity-0 transition-opacity group-hover/item:opacity-100 hover:text-white active:cursor-grabbing"
-              title="Drag to reorder"
-            >
-              <GripVertical size={16} aria-hidden="true" />
-            </div>
-
-            {component.type === "text" ? (
-              <div className="flex items-start gap-1">
+            {component.type === "text" && (
+              <div className="flex items-start gap-4">
                 <div className="min-w-0 flex-1">
-                  <Card className="max-w-[440px]">
-                    <CardContent className="pt-4">
-                      <Text as="div" variant="serifTitle" className="mb-2">
-                        {editingTitleId === component.id ? (
-                          <input
-                            type="text"
-                            value={titleDraft}
-                            onChange={(e) => setTitleDraft(e.target.value)}
-                            onBlur={() => {
-                              onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
-                              setEditingTitleId(null);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
-                                setEditingTitleId(null);
-                              } else if (e.key === "Escape") {
-                                setEditingTitleId(null);
-                              }
-                            }}
-                            autoFocus
-                            className="w-48 border-0 border-b border-wfrp-gold/50 bg-transparent p-0 font-serif font-semibold text-base text-gray-200 outline-none"
-                          />
-                        ) : (
-                          <span
-                            onClick={() => { setTitleDraft(title); setEditingTitleId(component.id); }}
-                            className="cursor-pointer border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors"
-                            title="Click to rename"
-                          >
-                            {title}
-                          </span>
-                        )}
-                      </Text>
+                  <Card>
+                    <div className="px-4 pt-4 pb-1">
+                      <EditableComponentTitle {...titleProps} />
+                    </div>
+                    <CardContent className="pt-1 pb-4">
                       <FormattedTextField
                         value={component.text}
                         onChange={(text) => onUpdateComponentText(component.id, text)}
@@ -1149,108 +1219,41 @@ export function SceneComponentsList({
                     </CardContent>
                   </Card>
                 </div>
-                <div className="flex items-center gap-1 pt-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
-                  <Button variant="wfrpIcon" onClick={() => moveComponent(index, "up")} disabled={index === 0} aria-label="Move component up" leadingIcon={<ChevronUp />} />
-                  <Button variant="wfrpIcon" onClick={() => moveComponent(index, "down")} disabled={index === components.length - 1} aria-label="Move component down" leadingIcon={<ChevronDown />} />
-                  <DropdownMenu>
-                    <DropdownMenuTrigger aria-label={`${title} actions`} className="wfrp-standard-icon cursor-pointer">
-                      <span className="wfrp-standard-icon__glyph" aria-hidden="true"><EllipsisVertical /></span>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onUpdateComponentType(component.id, "notes")}>
-                        Convert to Notes
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onRemoveComponent(component.id)} className="text-red-400 hover:text-red-400 focus:text-red-400">
-                        <Trash2 className="mr-2 size-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-start gap-1">
-                <div className="min-w-0 flex-1">
-                  {/* Control bar for notes / encounter */}
-                  <div className="flex min-h-10 items-center justify-between">
-                    <Text as="div" variant="serifTitle" className="flex items-center">
-                      {editingTitleId === component.id ? (
-                        <input
-                          type="text"
-                          value={titleDraft}
-                          onChange={(e) => setTitleDraft(e.target.value)}
-                          onBlur={() => {
-                            onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
-                            setEditingTitleId(null);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
-                              setEditingTitleId(null);
-                            } else if (e.key === "Escape") {
-                              setEditingTitleId(null);
-                            }
-                          }}
-                          autoFocus
-                          className="w-48 border-0 border-b border-wfrp-gold/50 bg-transparent p-0 font-serif font-semibold text-base text-gray-200 outline-none"
-                        />
-                      ) : (
-                        <span
-                          onClick={() => { setTitleDraft(title); setEditingTitleId(component.id); }}
-                          className="cursor-pointer border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors"
-                          title="Click to rename"
-                        >
-                          {title}
-                        </span>
-                      )}
-                    </Text>
-                    <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
-                      <Button variant="wfrpIcon" onClick={() => moveComponent(index, "up")} disabled={index === 0} aria-label="Move component up" leadingIcon={<ChevronUp />} />
-                      <Button variant="wfrpIcon" onClick={() => moveComponent(index, "down")} disabled={index === components.length - 1} aria-label="Move component down" leadingIcon={<ChevronDown />} />
-                    </div>
-                  </div>
-                  {/* Body */}
-                  {component.type === "notes" && (
-                    <div className="pb-2">
-                      <FormattedTextField
-                        className="max-w-[440px]"
-                        value={component.text}
-                        onChange={(text) => onUpdateComponentText(component.id, text)}
-                        ariaLabel={`Scene ${sceneNumber} notes`}
-                        placeholder="Add GM notes…"
-                      />
-                    </div>
-                  )}
-                  {component.type === "encounter" && (
-                    <EncounterComponent
-                      encounterData={getEncounterData(component)}
-                      characters={characters}
-                      onUpdateEncounterData={(data) => onUpdateComponentEncounterData(component.id, data)}
-                      onOpenMonsterSidebar={onOpenMonsterSidebar}
-                    />
-                  )}
-                </div>
-                <div className="pt-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger aria-label={`${title} actions`} className="wfrp-standard-icon cursor-pointer">
-                      <span className="wfrp-standard-icon__glyph" aria-hidden="true"><EllipsisVertical /></span>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {component.type === "notes" && (
-                        <DropdownMenuItem onClick={() => onUpdateComponentType(component.id, "text")}>
-                          Convert to Description
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem onClick={() => onRemoveComponent(component.id)} className="text-red-400 hover:text-red-400 focus:text-red-400">
-                        <Trash2 className="mr-2 size-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                <div className="min-w-0 flex-1" />
               </div>
             )}
-          </div>
+
+            {component.type === "notes" && (
+              <div className="flex items-start gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex min-h-10 items-center">
+                    <EditableComponentTitle {...titleProps} />
+                  </div>
+                  <FormattedTextField
+                    value={component.text}
+                    onChange={(text) => onUpdateComponentText(component.id, text)}
+                    ariaLabel={`Scene ${sceneNumber} notes`}
+                    placeholder="Add GM notes…"
+                  />
+                </div>
+                <div className="min-w-0 flex-1" />
+              </div>
+            )}
+
+            {component.type === "encounter" && (
+              <>
+                <div className="flex min-h-10 items-center">
+                  <EditableComponentTitle {...titleProps} />
+                </div>
+                <EncounterComponent
+                  encounterData={getEncounterData(component)}
+                  characters={characters}
+                  onUpdateEncounterData={(data) => onUpdateComponentEncounterData(component.id, data)}
+                  onOpenMonsterSidebar={onOpenMonsterSidebar}
+                />
+              </>
+            )}
+          </SceneComponentRow>
         );
       })}
     </div>

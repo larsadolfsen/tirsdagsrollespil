@@ -11,15 +11,16 @@ import {
   Trash2,
 } from "lucide-react";
 import type { CharacterSummary } from "../data/repository";
-import type { EncounterData, GMScene, GMSession } from "../data/gmSessions";
+import type { EncounterData, EncounterMonsterGroup, GMScene, GMSession } from "../data/gmSessions";
 import {
   availableScenarioImports,
   type ScenarioSessionImportDefinition,
 } from "../data/scenarios";
 import { AppShell } from "./AppShell";
 import { SceneActionsMenu } from "./SceneActionsMenu";
-import { AppSidebar, SidebarItemList, MonsterSidebar } from "./sidebar";
+import { AppSidebar, SidebarItemList, MonsterSidebar, NpcSidebar } from "./sidebar";
 import type { CreatureTemplate } from "../data/rules/wfrp4e";
+import type { NpcTemplate } from "../data/npcs";
 import {
   Breadcrumbs,
   Button,
@@ -43,6 +44,7 @@ import { SceneComponentsList, EncounterComponent, type SceneComponent } from "./
 type GameMasterPageProps = {
   activeSession: GMSession | null;
   breadcrumbs: BreadcrumbItem[];
+  campaignName: string;
   characters: CharacterSummary[];
   editingSessionName: string;
   isLoadingSessions: boolean;
@@ -82,9 +84,11 @@ function createScene(
 }
 
 function GameMasterHeader({
+  campaignName,
   isSessionsSidebarOpen,
   onToggleSessions,
 }: {
+  campaignName: string;
   isSessionsSidebarOpen: boolean;
   onToggleSessions: () => void;
 }) {
@@ -99,9 +103,10 @@ function GameMasterHeader({
           title={isSessionsSidebarOpen ? "Close sessions menu" : "Open sessions menu"}
           leadingIcon={isSessionsSidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
         />
-        <div className="ml-3 min-w-0 flex-1">
+        <div className="ml-3 min-w-0 flex-1 flex flex-col justify-center">
+          <span className="wfrp-label block text-[10px] leading-none text-wfrp-muted-text">Game Master</span>
           <Heading level={1} variant="pageCompact" align="left" truncate>
-            Game Master
+            {campaignName}
           </Heading>
         </div>
       </div>
@@ -112,6 +117,7 @@ function GameMasterHeader({
 export function GameMasterPage({
   activeSession,
   breadcrumbs,
+  campaignName,
   characters,
   editingSessionName,
   isLoadingSessions,
@@ -150,6 +156,18 @@ export function GameMasterPage({
     });
   };
 
+  const [isMonsterSidebarOpen, setIsMonsterSidebarOpen] = useState(false);
+  const monsterSidebarOnAddRef = useRef<((template: CreatureTemplate, count: number) => void) | null>(null);
+
+  const openMonsterSidebar = (onAdd: (template: CreatureTemplate, count: number) => void) => {
+    monsterSidebarOnAddRef.current = onAdd;
+    setIsMonsterSidebarOpen(true);
+  };
+
+  const [isNpcSidebarOpen, setIsNpcSidebarOpen] = useState(false);
+  const [isCharactersCollapsed, setIsCharactersCollapsed] = useState(false);
+  const [isNpcsCollapsed, setIsNpcsCollapsed] = useState(false);
+
   const [topEncounterData, setTopEncounterData] = useState<EncounterData>({ monsterGroups: [], playerOrder: [] });
   const [hiddenCharacterIds, setHiddenCharacterIds] = useState<Set<string>>(new Set());
 
@@ -164,12 +182,21 @@ export function GameMasterPage({
 
   const visibleCharacters = characters.filter((c) => !hiddenCharacterIds.has(c.id));
 
-  const [isMonsterSidebarOpen, setIsMonsterSidebarOpen] = useState(false);
-  const monsterSidebarOnAddRef = useRef<((template: CreatureTemplate, count: number) => void) | null>(null);
+  const [npcEncounterData, setNpcEncounterData] = useState<EncounterData>({ monsterGroups: [], playerOrder: [] });
 
-  const openMonsterSidebar = (onAdd: (template: CreatureTemplate, count: number) => void) => {
-    monsterSidebarOnAddRef.current = onAdd;
-    setIsMonsterSidebarOpen(true);
+  const handleAddNpc = (npc: NpcTemplate, count: number) => {
+    const newGroup: EncounterMonsterGroup = {
+      id: `npc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      templateId: npc.id,
+      name: npc.name,
+      count,
+      wounds: Array(count).fill(npc.statBlock.W),
+      source: "npc",
+    };
+    setNpcEncounterData((prev) => ({
+      ...prev,
+      monsterGroups: [...prev.monsterGroups, newGroup],
+    }));
   };
 
   useEffect(() => {
@@ -180,6 +207,7 @@ export function GameMasterPage({
     setScenes(initial);
     setEditingSceneTitleId(null);
     setEditingSceneLocationId(null);
+    setNpcEncounterData({ monsterGroups: [], playerOrder: [] });
   }, [activeSession?.id]);
 
   useEffect(() => {
@@ -424,6 +452,7 @@ export function GameMasterPage({
       mobileAddAction={null}
       header={(
         <GameMasterHeader
+          campaignName={campaignName}
           isSessionsSidebarOpen={isSessionsSidebarOpen}
           onToggleSessions={() => onSessionsSidebarOpenChange(!isSessionsSidebarOpen)}
         />
@@ -437,6 +466,15 @@ export function GameMasterPage({
             onAddMonster={(template, count) => {
               monsterSidebarOnAddRef.current?.(template, count);
               setIsMonsterSidebarOpen(false);
+            }}
+            className="!top-14 !h-[calc(100dvh-3.5rem)] !max-h-[calc(100dvh-3.5rem)]"
+          />
+          <NpcSidebar
+            isOpen={isNpcSidebarOpen}
+            onClose={() => setIsNpcSidebarOpen(false)}
+            onAddNpc={(npc, count) => {
+              handleAddNpc(npc, count);
+              setIsNpcSidebarOpen(false);
             }}
             className="!top-14 !h-[calc(100dvh-3.5rem)] !max-h-[calc(100dvh-3.5rem)]"
           />
@@ -494,24 +532,9 @@ export function GameMasterPage({
         <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-4 py-4 md:gap-6 xl:px-8 xl:py-6">
           <div className="w-full flex flex-col gap-4 md:gap-6">
             <Breadcrumbs items={breadcrumbs} />
-            <section aria-labelledby="characters-heading">
-              <div className="mb-3">
-                <Heading level={2} variant="sectionDisplay" id="characters-heading">
-                  Characters
-                </Heading>
-              </div>
-              <EncounterComponent
-                encounterData={topEncounterData}
-                characters={characters}
-                onUpdateEncounterData={setTopEncounterData}
-                onOpenMonsterSidebar={openMonsterSidebar}
-                hiddenCharacterIds={hiddenCharacterIds}
-                onToggleCharacterVisibility={toggleCharacterVisibility}
-              />
-            </section>
 
-            <section className="flex min-h-[450px] flex-1 flex-col">
-              {activeSession ? (
+            {activeSession ? (
+              <>
                 <div>
                   <span className="wfrp-label block text-wfrp-muted-text">
                     Session {activeSession.sessionNumber + 1}
@@ -531,21 +554,17 @@ export function GameMasterPage({
                       className="w-full border-0 border-b border-wfrp-gold/50 bg-transparent p-0 pb-1 font-serif text-3xl font-semibold text-gray-100 outline-none"
                     />
                   ) : (
-                    <div>
-                      <Heading level={2} variant="sectionDisplay">
-                        <button
-                          type="button"
-                          onClick={() => setIsRenamingSession(true)}
-                          className="cursor-text text-left transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
-                          aria-label="Rename session"
-                        >
-                          {editingSessionName || "Untitled Session"}
-                        </button>
-                      </Heading>
-                    </div>
+                    <Heading level={1} variant="sectionDisplay">
+                      <button
+                        type="button"
+                        onClick={() => setIsRenamingSession(true)}
+                        className="cursor-text text-left transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                        aria-label="Rename session"
+                      >
+                        {editingSessionName || "Untitled Session"}
+                      </button>
+                    </Heading>
                   )}
-
-                  {/* Session Description */}
                   <div className="mt-2 mb-6 max-w-3xl">
                     <FormattedTextField
                       ariaLabel="Session description"
@@ -554,14 +573,86 @@ export function GameMasterPage({
                       placeholder="Add a session description…"
                     />
                   </div>
+                </div>
 
+                <section aria-labelledby="characters-heading" className="group/section">
+                  <Separator className="mb-8" />
+                  <div
+                    className="flex min-h-12 cursor-pointer items-center justify-between gap-4"
+                    onClick={() => setIsCharactersCollapsed((prev) => !prev)}
+                  >
+                    <Heading level={2} variant="subsection" id="characters-heading">
+                      Characters
+                    </Heading>
+                    <button
+                      type="button"
+                      onClick={() => setIsCharactersCollapsed((prev) => !prev)}
+                      aria-label={isCharactersCollapsed ? "Expand characters" : "Collapse characters"}
+                      aria-expanded={!isCharactersCollapsed}
+                      className="shrink-0 text-wfrp-muted-text transition-colors hover:text-white focus-visible:outline-none"
+                    >
+                      {isCharactersCollapsed ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </button>
+                  </div>
+                  {!isCharactersCollapsed && (
+                    <EncounterComponent
+                      encounterData={topEncounterData}
+                      characters={characters}
+                      onUpdateEncounterData={setTopEncounterData}
+                      onOpenMonsterSidebar={openMonsterSidebar}
+                      hiddenCharacterIds={hiddenCharacterIds}
+                      onToggleCharacterVisibility={toggleCharacterVisibility}
+                    />
+                  )}
+                </section>
+
+                <section aria-labelledby="npcs-heading" className="group/section">
+                  <Separator className="my-8" />
+                  <div
+                    className="flex min-h-12 cursor-pointer items-center justify-between gap-4"
+                    onClick={() => setIsNpcsCollapsed((prev) => !prev)}
+                  >
+                    <Heading level={2} variant="subsection" id="npcs-heading">
+                      NPCs
+                    </Heading>
+                    <div className="flex shrink-0 items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        variant="secondary"
+                        onClick={() => setIsNpcSidebarOpen(true)}
+                      >
+                        Add NPC
+                      </Button>
+                      <button
+                        type="button"
+                        onClick={() => setIsNpcsCollapsed((prev) => !prev)}
+                        aria-label={isNpcsCollapsed ? "Expand NPCs" : "Collapse NPCs"}
+                        aria-expanded={!isNpcsCollapsed}
+                        className="shrink-0 text-wfrp-muted-text transition-colors hover:text-white focus-visible:outline-none"
+                      >
+                        {isNpcsCollapsed ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                  {!isNpcsCollapsed && (
+                    <EncounterComponent
+                      encounterData={npcEncounterData}
+                      characters={[]}
+                      onUpdateEncounterData={setNpcEncounterData}
+                      onOpenMonsterSidebar={openMonsterSidebar}
+                    />
+                  )}
+                </section>
+
+                <section className="flex min-h-[450px] flex-1 flex-col">
+                  <Separator className="my-8" />
+                  <Heading level={2} variant="subsection">Scenes</Heading>
                   {scenes.length > 0 ? (
                     <div className="flex flex-col">
                       {scenes.map((scene, sceneIndex) => {
                         const isCollapsed = !expandedScenes.has(scene.id);
                         return (
                         <section key={scene.id} className="group/scene">
-                          <Separator className={sceneIndex === 0 ? "mb-8" : "my-8"} />
+                          <Separator className="my-8" />
                           <span className="wfrp-label block text-wfrp-muted-text">{`Scene ${sceneIndex + 1}`}</span>
                           <div className="flex min-h-12 cursor-pointer items-center justify-between gap-4" onClick={() => toggleSceneCollapsed(scene.id)}>
                             <div className="min-w-0 flex-1 flex items-start gap-2">
@@ -683,43 +774,45 @@ export function GameMasterPage({
                       Add scene
                     </Button>
                   )}
-                </div>
-              ) : (
-                <div className="flex flex-col gap-6">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <Heading level={2} variant="sectionDisplay">
-                        Campaign Sessions
-                      </Heading>
-                      <p className="mt-1 text-sm text-wfrp-muted-text">
-                        Create sessions to organize your campaign notes, scenes, and encounters.
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="secondary"
-                        onClick={() => setIsScenarioDialogOpen(true)}
-                      >
-                        Import scenario
-                      </Button>
-                      <Button
-                        variant="default"
-                        isGolden
-                        onClick={onCreateSession}
-                      >
-                        Create session
-                      </Button>
-                    </div>
+                </section>
+              </>
+            ) : (
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <Heading level={2} variant="sectionDisplay">
+                      Campaign Sessions
+                    </Heading>
+                    <p className="mt-1 text-sm text-wfrp-muted-text">
+                      Create sessions to organize your campaign notes, scenes, and encounters.
+                    </p>
                   </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="secondary"
+                      onClick={() => setIsScenarioDialogOpen(true)}
+                    >
+                      Import scenario
+                    </Button>
+                    <Button
+                      variant="default"
+                      isGolden
+                      onClick={onCreateSession}
+                    >
+                      Create session
+                    </Button>
+                  </div>
+                </div>
 
-                  {sessions.length > 0 ? (
-                    <div className="flex flex-col gap-8">
-                      {sessions.map((session, index) => (
-                        <div key={session.id} className="flex flex-col">
-                          {index > 0 && <Separator className="mb-8" />}
-                          <section>
-                            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                              <div className="min-w-0 flex-1">
+                {sessions.length > 0 ? (
+                  <div className="flex flex-col gap-8">
+                    {sessions.map((session, index) => (
+                      <div key={session.id} className="flex flex-col">
+                        {index > 0 && <Separator className="mb-8" />}
+                        <section>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex min-w-0 flex-col gap-3">
+                              <div className="min-w-0 max-w-[440px]">
                                 <span className="wfrp-label block text-wfrp-muted-text mb-1">
                                   Session {session.sessionNumber + 1}
                                 </span>
@@ -735,48 +828,46 @@ export function GameMasterPage({
                                   </div>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2 shrink-0 max-sm:justify-end">
-                                <Button
-                                  variant="secondary"
-                                  onClick={() => onSelectSession(session.id)}
-                                  className="justify-center"
-                                >
-                                  Open
-                                </Button>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger
-                                    aria-label={`Session ${session.sessionNumber + 1} menu`}
-                                    title={`Session ${session.sessionNumber + 1} menu`}
-                                    className="wfrp-standard-icon cursor-pointer"
-                                  >
-                                    <span className="wfrp-standard-icon__glyph" aria-hidden="true">
-                                      <EllipsisVertical />
-                                    </span>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem
-                                      onClick={() => onDeleteSession(session.id)}
-                                      className="text-red-400 focus:text-red-400"
-                                    >
-                                      <Trash2 className="mr-2 size-4" aria-hidden="true" />
-                                      Delete session
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
+                              <Button
+                                variant="secondary"
+                                onClick={() => onSelectSession(session.id)}
+                                className="justify-center self-start"
+                              >
+                                Open
+                              </Button>
                             </div>
-                          </section>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <SheetEmptyState title="No sessions" className="min-h-[300px]">
-                      Create the first session or import a scenario to start planning campaign notes.
-                    </SheetEmptyState>
-                  )}
-                </div>
-              )}
-            </section>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger
+                                aria-label={`Session ${session.sessionNumber + 1} menu`}
+                                title={`Session ${session.sessionNumber + 1} menu`}
+                                className="wfrp-standard-icon cursor-pointer"
+                              >
+                                <span className="wfrp-standard-icon__glyph" aria-hidden="true">
+                                  <EllipsisVertical />
+                                </span>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => onDeleteSession(session.id)}
+                                  className="text-red-400 focus:text-red-400"
+                                >
+                                  <Trash2 className="mr-2 size-4" aria-hidden="true" />
+                                  Delete session
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </section>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <SheetEmptyState title="No sessions" className="min-h-[300px]">
+                    Create the first session or import a scenario to start planning campaign notes.
+                  </SheetEmptyState>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

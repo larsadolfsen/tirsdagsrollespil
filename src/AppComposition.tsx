@@ -239,14 +239,14 @@ export function AppComposition() {
       return false;
     }
 
-    return parseCampaignCharacterPath(window.location.pathname) === null && !window.location.pathname.includes("/game-master");
+    return parseCampaignCharacterPath(window.location.pathname) === null && !window.location.pathname.includes("/campaign");
   });
   const [isGameMasterOpen, setIsGameMasterOpen] = useState(() => {
     if (typeof window === "undefined") {
       return false;
     }
 
-    return window.location.pathname.includes("/game-master");
+    return window.location.pathname.includes("/campaign");
   });
 
   // GM Sessions States
@@ -268,7 +268,7 @@ export function AppComposition() {
     const session = gmSessions.find((s) => s.id === sessionId);
     if (session) {
       const slug = toSessionSlug(session.sessionNumber, session.name);
-      const newPath = `/${characterData.campaignId}/game-master/${slug}`;
+      const newPath = `/${characterData.campaignId}/campaign/${slug}`;
       if (window.location.pathname !== newPath) {
         window.history.pushState(null, "", newPath);
       }
@@ -324,7 +324,7 @@ export function AppComposition() {
         setGmSessions(sorted);
         if (sorted.length > 0 && !selectedGmSessionId) {
           const pathParts = window.location.pathname.split("/");
-          const gmIndex = pathParts.findIndex((p) => p === "game-master");
+          const gmIndex = pathParts.findIndex((p) => p === "campaign");
           const urlSlug = gmIndex >= 0 ? pathParts[gmIndex + 1] : undefined;
           const matched = urlSlug
             ? sorted.find((s) => toSessionSlug(s.sessionNumber, s.name) === urlSlug)
@@ -697,7 +697,7 @@ export function AppComposition() {
       document.title = `${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
     } else if (isGameMasterOpen) {
       const sessionPrefix = activeGmSession ? `${activeGmSession.name} - ` : "";
-      document.title = `${sessionPrefix}Game Master - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
+      document.title = `${sessionPrefix}Campaign - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
     } else {
       document.title = `${characterData.name} - ${UI_LABELS.CAMPAIGN_NAME} WFRP 4E`;
     }
@@ -706,7 +706,7 @@ export function AppComposition() {
   // Sync URL to selected session slug when GM page is open.
   useEffect(() => {
     if (!isGameMasterOpen) return;
-    const basePath = `/${characterData.campaignId}/game-master`;
+    const basePath = `/${characterData.campaignId}/campaign`;
     const slug = activeGmSession ? toSessionSlug(activeGmSession.sessionNumber, activeGmSession.name) : "";
     const newPath = slug ? `${basePath}/${slug}` : basePath;
     if (window.location.pathname !== newPath) {
@@ -858,14 +858,14 @@ export function AppComposition() {
 
   useEffect(() => {
     const handlePopState = () => {
-      const isGM = window.location.pathname.includes("/game-master");
+      const isGM = window.location.pathname.includes("/campaign");
       const isLanding = parseCampaignCharacterPath(window.location.pathname) === null && !isGM;
       setIsLandingPageOpen(isLanding);
       setIsGameMasterOpen(isGM);
 
       if (isGM) {
         const pathParts = window.location.pathname.split("/");
-        const gmIndex = pathParts.findIndex((p) => p === "game-master");
+        const gmIndex = pathParts.findIndex((p) => p === "campaign");
         const urlSlug = gmIndex >= 0 ? pathParts[gmIndex + 1] : undefined;
         if (urlSlug) {
           const matched = gmSessionsRef.current.find((s) => toSessionSlug(s.sessionNumber, s.name) === urlSlug);
@@ -900,7 +900,7 @@ export function AppComposition() {
   }, [availableCharacters, setSelectedCharacterId]);
 
   const openGameMasterFromLanding = useCallback(() => {
-    const nextPath = `/${characterData.campaignId}/game-master`;
+    const nextPath = `/${characterData.campaignId}/campaign`;
     const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
 
     window.history.pushState(null, "", nextUrl);
@@ -1809,11 +1809,11 @@ export function AppComposition() {
             },
           },
           {
-            label: "Game Master",
-            href: `/${characterData.campaignId}/game-master`,
+            label: "Campaign",
+            href: `/${characterData.campaignId}/campaign`,
             onClick: () => {
               setSelectedGmSessionId(null);
-              const basePath = `/${characterData.campaignId}/game-master`;
+              const basePath = `/${characterData.campaignId}/campaign`;
               window.history.pushState(null, "", basePath);
             },
           },
@@ -1829,13 +1829,14 @@ export function AppComposition() {
               setIsGameMasterOpen(false);
             },
           },
-          { label: "Game Master" },
+          { label: "Campaign" },
         ];
 
     return (
       <GameMasterPage
         activeSession={activeGmSession}
         breadcrumbs={gmBreadcrumbs}
+        campaignName={campaignName}
         characters={availableCharacters}
         editingSessionName={editingSessionName}
         isLoadingSessions={isLoadingGmSessions}

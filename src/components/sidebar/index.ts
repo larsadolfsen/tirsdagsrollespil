@@ -8,3 +8,4 @@ export { CharacteristicSidebar } from "./CharacteristicSidebar";
 export { SkillSidebar } from "./SkillSidebar";
 export { TalentSidebar } from "./TalentSidebar";
 export { MonsterSidebar } from "./MonsterSidebar";
+export { NpcSidebar } from "./NpcSidebar";
