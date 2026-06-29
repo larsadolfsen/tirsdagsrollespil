@@ -111,7 +111,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
     name: "A Rough Night at the Three Feathers",
     sessionNumber: 0,
     notes:
-      "Detailed scenario import. NPCs are linked to the NPC database by id. Encounters use source: npc and templateId. Locations are scenario-local because no shared location database exists yet. Rules, weapons, talents, and skills are referenced by ids or stable labels where the database already exists.",
+      "Detailed scenario import. Player-facing descriptions are kept in normal text components and written in simple second person present tense. GM-only secrets remain in gmNotes. NPCs are linked to the NPC database by id, and encounters use source: npc and templateId.",
   },
   locations: [
     {
@@ -209,10 +209,10 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Core Premise",
           text:
-            "The Characters stop at the Three Feathers expecting food, gossip, and a bed. The inn is already loaded with hidden agendas. By dawn, they may be blamed for murder, asked to solve it, dragged into a family scandal, exposed to cult business, and forced to choose who leaves alive.",
+            "You arrive at the Three Feathers expecting food, gossip, and a bed. The inn is warm, loud, and full of people who already watch each other. By dawn, the doors may be guarded, a champion may be dead, a coffin may not hold a corpse, and every witness may have a reason to lie.",
           gmNotes: [
             "Run the scenario as overlapping clocks, not as a linear script.",
-            "The Characters should see enough suspicious behaviour to choose which thread to pursue.",
+            "The text field is player-facing. Keep secrets in gmNotes.",
             "Do not reveal every plot at once. Let one scene interrupt another.",
           ],
           links: { locations: [LOC.inn, LOC.barroom, LOC.guestRooms] },
@@ -222,10 +222,11 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Database Links",
           text:
-            "All major NPCs in this import link to the NPC database. Encounter blocks reference those NPC ids through templateId and source npc. The inn locations remain scenario-local because no shared location database exists yet.",
+            "You can treat every named person here as a linked NPC. When a fight starts, the encounter already points to the right NPC template. Locations are local to this scenario until a shared location database exists.",
           gmNotes: [
             "Do not duplicate NPC statistics in this file.",
-            "When new location support exists, migrate these location ids into the location database and keep the same ids.",
+            "Encounter blocks use source: npc and templateId.",
+            "When location support exists, migrate these location ids and keep the ids stable.",
           ],
           links: {
             npcs: Object.values(NPC),
@@ -239,10 +240,10 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Main Clocks",
           text:
-            "Track seven active clocks: Dominique removing Bruno, the cultists reaching Rechtshandler, Prahmhandler reaching Hanna and Friedrich, Josef waking in the coffin, Ursula identifying the smugglers, Glimbrin stealing during confusion, and the Gravin losing patience with everyone.",
+            "You see a room where too many people wait for the right moment. Bruno drinks and boasts. The scholars keep to themselves. The lovers stay close. The false mourners guard their coffin. The bounty hunter watches. The small gambler smiles. Every delay gives someone else time to act.",
           gmNotes: [
+            "Track Dominique removing Bruno, the cultists reaching Rechtshandler, Prahmhandler reaching Hanna and Friedrich, Josef waking in the coffin, Ursula identifying the smugglers, Glimbrin stealing during confusion, and the Gravin losing patience.",
             "Advance a clock whenever the Characters spend time on another thread.",
-            "When two clocks collide, use the noisier event to interrupt the current scene.",
           ],
           links: { npcs: [NPC.dominique, NPC.bruno, NPC.cultists, NPC.rechtshandler, NPC.prahmhandler, NPC.hanna, NPC.friedrich, NPC.josef, NPC.ursula, NPC.glimbrin, NPC.gravin] },
         },
@@ -263,8 +264,8 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Ground Floor",
           text:
-            "Use the barroom as the public stage. Hans and the staff move constantly between tables, kitchen, stairs, and yard. The dormitory is less controlled, giving low-status NPCs room to hide, overhear, or steal.",
-          gmNotes: ["Keep the barroom noisy enough that private words require deliberate positioning."],
+            "You stand in the public heart of the inn. The barroom smells of smoke, wet wool, spilled ale, roast meat, and river mud. Hans Orf, the landlord, works behind the bar with a practiced smile and tired eyes. Servants move between the tables with bowls, jugs, and bedding requests. A door leads toward the yard, a stair leads up to the private rooms, and the dormitory sits close enough for poorer travellers to hear the noise.",
+          gmNotes: ["This text should give the players the practical layout and the visible staff without revealing hidden motives."],
           links: { locations: [LOC.barroom, LOC.dormitory, LOC.yard], npcs: [NPC.hans, NPC.staff, NPC.bess] },
         },
         {
@@ -272,10 +273,10 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Upper Floor",
           text:
-            "The upstairs corridor is where the scenario tightens. Doors, room numbers, witnesses, and who has permission to be there should matter. Let the Characters hear movement before they see it.",
+            "You climb into a narrow upper corridor. The air is cooler here, and the boards creak under your boots. Doors stand close together, each with a number or a small mark. You hear muffled voices, a cough, the scrape of a chair, and the soft click of a latch. Rooms 7 and 8 are close to the middle of the trouble, with the Morrians, the Schmidts, Ursula, Bruno, and Rechtshandler all within reach.",
           gmNotes: [
             "Use room proximity to decide who hears screams, arguments, dropped objects, and windows opening.",
-            "Rooms 7 and 8 work well as Character rooms because they put the party near the Morrians, the Schmidts, and Ursula without placing them inside the Gravin's wing.",
+            "This is player-facing layout information, not a secret room key.",
           ],
           links: { locations: [LOC.guestRooms, LOC.rooms7to8, LOC.room3, LOC.room4, LOC.room9, LOC.room11, LOC.room13] },
         },
@@ -284,7 +285,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Exits and Constraints",
           text:
-            "The road, river, yard, roof, and landing stage all look like possible exits, but darkness, guards, suspicion, and the Gravin's authority should make flight costly after Bruno is found dead.",
+            "You feel cold night air whenever the outside door opens. The yard smells of horse sweat, mud, smoke, and river fog. You can see the stables, the smithy, the outhouse, the road gate, and the way down toward the landing stage. The roofline is low enough to tempt a climber. After trouble starts, every exit looks possible, but every step away from the inn looks guilty.",
           gmNotes: [
             "If the Characters try to leave early, decide which NPC clock follows them or gets exposed by their absence.",
             "After lockdown, escaping the inn should feel possible but incriminating.",
@@ -305,17 +306,17 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "The Gravin's Party",
           text:
-            "The Gravin travels with servants, guards, her lawyer Rechtshandler, and Bruno Franke, the champion she needs for an imminent legal matter. Her party has status, money, and force, but not full control of the inn.",
-          gmNotes: ["The Gravin should feel powerful but vulnerable because her plan depends on Bruno."],
+            "You see a noble party that takes up space without asking. The Gravin sits apart in fine clothing, surrounded by servants who answer quickly and armed guards who watch the exits. Bruno Franke is the loud champion at the table. Gustaf Rechtshandler is the lawyer with a severe face and careful hands. One servant, Dominique, stays useful, quiet, and close enough to notice too much.",
+          gmNotes: ["Do not reveal Dominique's role as assassin in player-facing text."],
           links: { npcs: [NPC.gravin, NPC.bruno, NPC.rechtshandler, NPC.bodyguards, NPC.handmaids, NPC.dominique], locations: [LOC.room1, LOC.room2, LOC.room3, LOC.room4, LOC.room6, LOC.room15], weapons: ["rapier", "sword", "zweihander", "dagger"] },
         },
         {
           id: "text-faction-cultists",
           type: "text",
-          title: "The Ordo Ultima",
+          title: "The Scholars",
           text:
-            "The cultists arrive disguised as respectable scholars. They are interested in Rechtshandler's past and will use pressure, fear, and violence if they cannot control him quietly.",
-          gmNotes: ["Their best defence is appearing boring until they suddenly are not."],
+            "You see three travellers who present themselves as scholars. Their clothes are neat enough, their baggage is plain, and their voices stay low. They ask sensible questions, avoid the loudest tables, and choose a room with little fuss. They look forgettable unless you watch how carefully they watch Rechtshandler.",
+          gmNotes: ["These are Ordo Ultima cultists. Keep the cult identity in gmNotes until the Characters earn it."],
           links: { npcs: [NPC.cultists, NPC.rechtshandler], locations: [LOC.room10, LOC.room3], weapons: ["dagger"] },
         },
         {
@@ -323,25 +324,25 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "The Morrians and the Coffin",
           text:
-            "Three smugglers use Morrian clothing, a coffin, and ritual expectations to avoid questions. Josef is drugged inside the coffin. The longer nobody opens it, the more complicated the dawn reveal becomes.",
-          gmNotes: ["Treat the coffin as a moving clue. Every witness has a different reason not to inspect it."],
+            "You see three black-robed mourners with face paint and a coffin. They speak as if grief gives them the right to be left alone. The coffin is heavy, damp from the river air, and handled with more urgency than reverence. People make room for it without being asked.",
+          gmNotes: ["The coffin contains Josef, who is drugged and alive."],
           links: { npcs: [NPC.morrians, NPC.josef, NPC.ursula], locations: [LOC.room9, LOC.landing] },
         },
         {
           id: "text-faction-lovers",
           type: "text",
-          title: "The Lovers and the Wronged Fiance",
+          title: "The Schmidts and the Angry Merchant",
           text:
-            "Friedrich and Hanna travel as the Schmidts to hide their affair. Prahmhandler arrives later with hired muscle. He is drunk, angry, and dangerous enough to derail other investigations.",
-          gmNotes: ["This thread is useful when the table needs a loud interruption or a public accusation."],
+            "You see a well-dressed couple who give the names Schmidt and Schmidt, but they hesitate before using them. Friedrich speaks like a noble trying not to. Hanna keeps close to him and watches the door. Later, Thomas Prahmhandler arrives with drink on his breath, anger in his voice, and hired men at his back.",
+          gmNotes: ["Friedrich and Hanna are lovers travelling under false names. Prahmhandler is Hanna's wronged fiance."],
           links: { npcs: [NPC.friedrich, NPC.hanna, NPC.prahmhandler, NPC.thugs], locations: [LOC.room11, LOC.barroom, LOC.guestRooms], weapons: ["dagger", "whip", "knuckledusters", "improvised_weapon"] },
         },
         {
           id: "text-faction-thieves-and-guests",
           type: "text",
-          title: "Thieves, Gamblers, Boatmen, and Coachmen",
+          title: "Gamblers, Thieves, Boatmen, and Coachmen",
           text:
-            "Seedling provides cards and chatter. Glimbrin uses the crowd and confusion to steal. Boatmen and coachmen are not central villains, but they create noise, prejudice, weapons, and witnesses.",
+            "You see Seedling at a card table with a bright smile and a quick patter. He invites coins, jokes, and gossip. Glimbrin moves near him with quiet feet and eyes that count purses, keys, and cups. Boatmen and coachmen drink in rougher clusters, trade insults, and keep their own weapons close.",
           gmNotes: ["Use theft to move clues, not to punish players randomly."],
           links: { npcs: [NPC.seedling, NPC.glimbrin, NPC.boatmen, NPC.coachmen], locations: [LOC.barroom, LOC.dormitory, LOC.room12, LOC.room14], weapons: ["blunderbuss", "whip", "sword", "dagger"] },
         },
@@ -359,7 +360,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Characters Enter the Inn",
           text:
-            "The Characters enter a crowded barroom. The Gravin's people already occupy the best spaces, Bruno draws attention with drinking and strength games, and staff push through the room trying to keep everyone fed and settled.",
+            "You push into the Three Feathers and the heat hits you first. Smoke hangs below the beams. Wet cloaks steam near the fire. Hans Orf, the landlord, stands behind the bar and keeps one eye on the stairs while he pours ale. Servants squeeze past you with trays and blankets. A noble woman sits with armed retainers in the best part of the room. Bruno Franke laughs too loudly near a table, thick arms bare, and challenges anyone nearby. Seedling, a small gambler with bright eyes, taps a deck of cards and leaves a chair open.",
           gmNotes: [
             "Ask each Character what they do first: eat, drink, gamble, find a room, watch the nobles, inspect the yard, or listen for gossip.",
             "This answer determines who notices later movement.",
@@ -371,7 +372,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "encounter",
           title: "Bruno's Table Challenge",
           text:
-            "Bruno invites challengers to arm-wrestle, drink, boast, or test their courage. It is not meant as a lethal fight, but it establishes his physical presence and makes his later absence obvious.",
+            "You hear Bruno slam his fist onto the table. Cups jump, dice rattle, and the people nearest him cheer. He grins at you with a drunk champion's confidence and offers an arm, a cup, or an insult, depending on who looks bold enough. The guards do not stop him, but one servant watches him with clear irritation.",
           gmNotes: [
             "Resolve as social pressure or opposed Strength before using combat.",
             "If a Character befriends Bruno, Dominique has a reason to watch that Character too.",
@@ -384,7 +385,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Seedling's Card Table",
           text:
-            "Seedling tries to pull travellers into a card game. This is a controlled way to introduce rumours, watch Glimbrin, and let theft or cheating become a clue rather than a random event.",
+            "You see Seedling shuffle a worn deck with quick, soft hands. A few coins sit on the table. He smiles at you as if he already knows your luck. Glimbrin lingers near the game, smaller than most humans, quiet enough to miss, and more interested in belts and bags than cards.",
           gmNotes: ["If the Characters play, attach them to Seedling and Glimbrin early."],
           links: { locations: [LOC.barroom], npcs: [NPC.seedling, NPC.glimbrin], skills: ["Gamble", "Perception", "Sleight of Hand"] },
         },
@@ -402,7 +403,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "9:10 p.m. Scholars Arrive",
           text:
-            "Three travellers presenting themselves as scholars arrive, ask for a room, and avoid unnecessary social contact. Their arrival should be quiet enough that Characters must be paying attention to remember it later.",
+            "You see three travellers enter with dry voices and careful hands. They look like scholars: plain bags, ink-stained fingers, travel-stiff cloaks. They ask Hans for a room and keep their backs close to the wall. Their eyes pass over Bruno, the Gravin's guards, and Rechtshandler before they look away.",
           gmNotes: ["Their cover is mundane. Do not make them obviously sinister unless the Characters press them."],
           links: { locations: [LOC.barroom, LOC.room10], npcs: [NPC.cultists], skills: ["Intuition", "Perception"] },
         },
@@ -411,7 +412,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "9:15 p.m. Glimbrin Joins the Room",
           text:
-            "Glimbrin books cheap lodging and drifts toward Seedling's table. He watches hands, purses, doors, and unattended luggage more than faces.",
+            "You notice Glimbrin slip into the room with an easy smile. He books cheap lodging, then drifts toward Seedling's cards. He looks at purses, keys, coats, and unattended cups. When someone looks back, he looks harmless.",
           gmNotes: ["Use Glimbrin to relocate a clue, not to make progress impossible."],
           links: { locations: [LOC.barroom, LOC.dormitory, LOC.room14], npcs: [NPC.glimbrin, NPC.seedling], skills: ["Perception", "Sleight of Hand", "Stealth (Urban)"] },
         },
@@ -420,7 +421,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "9:20 p.m. Bruno Is Sent Upstairs",
           text:
-            "A liveried servant orders Bruno to stop embarrassing the Gravin. He leaves the barroom for room 4. This removes the champion from public view and sets up his isolation.",
+            "You hear a servant's sharp voice cut through Bruno's laughter. Bruno's grin turns sour. His chair scrapes hard across the floor, and his heavy steps climb the stairs to room 4. The servant watches him go before returning to the Gravin's side.",
           gmNotes: ["Make sure at least one Character can know when Bruno leaves."],
           links: { locations: [LOC.barroom, LOC.room4], npcs: [NPC.bruno, NPC.handmaids, NPC.gravin] },
         },
@@ -429,7 +430,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "9:25 p.m. The Gravin Retires",
           text:
-            "The Gravin retires upstairs with servants and food ordered to her room. Her guards and staff remain active below, keeping the common spaces under noble pressure.",
+            "You see the Gravin rise, and the people around her move at once. Servants gather dishes, cloaks, and candles. Guards clear a path without speaking. She goes upstairs toward room 1, leaving authority behind her like a closed door.",
           gmNotes: ["Her authority should be felt even when she is offstage."],
           links: { locations: [LOC.room1, LOC.room2, LOC.room6, LOC.room15], npcs: [NPC.gravin, NPC.bodyguards, NPC.handmaids] },
         },
@@ -438,7 +439,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "9:30 p.m. The Schmidts Arrive",
           text:
-            "Friedrich and Hanna arrive by boat under false names and take room 11. The boatmen know more than they say, but coin and self-interest keep them quiet.",
+            "You hear river wind before the couple enters. The man gives the name Schmidt a little too quickly. The woman stays close to him and keeps her face half-turned from the room. Two boatmen follow with wet boots and guarded expressions. They know something, but they look paid not to say it.",
           gmNotes: ["If a Character speaks with the boatmen early, reward it with partial suspicion rather than full truth."],
           links: { locations: [LOC.landing, LOC.barroom, LOC.room11, LOC.dormitory], npcs: [NPC.friedrich, NPC.hanna, NPC.boatmen] },
         },
@@ -447,7 +448,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "9:35 p.m. The Morrians Arrive",
           text:
-            "The disguised smugglers arrive in black robes with a coffin and request room 9. They rely on everyone being too polite, superstitious, or busy to inspect the coffin.",
+            "You see three black-robed mourners carry in a coffin. The room quiets around them. Their face paint is thick, their robes smell of river damp, and their hands grip the coffin too tightly. They ask for room 9 and expect everyone to make space.",
           gmNotes: ["The coffin should be memorable but not immediately solved unless the Characters force the issue."],
           links: { locations: [LOC.barroom, LOC.room9], npcs: [NPC.morrians, NPC.josef, NPC.ursula], skills: ["Intuition", "Lore (Morr)", "Perception"] },
         },
@@ -465,7 +466,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "9:50 p.m. Ursula Arrives",
           text:
-            "Ursula arrives after seeing to her horse. She takes a position where she can watch the room without joining it. Her attention stays on the Morrians, the coffin, and anyone asking about them.",
+            "You see a hard-faced woman enter from the yard with cold air behind her. She carries road dust, leather, and iron. A crossbow case sits close to her hand. She chooses a seat where she can see the Morrians, the coffin, the stairs, and the door.",
           gmNotes: ["Ursula is a competent observer. She can become an ally if the Characters are direct and useful."],
           links: { locations: [LOC.barroom, LOC.room13, LOC.stables], npcs: [NPC.ursula, NPC.morrians, NPC.josef], weapons: ["crossbow", "sword"] },
         },
@@ -474,7 +475,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "10:00 p.m. The Gravin's Bedtime Order",
           text:
-            "A servant orders the Gravin's people to bed. The room does not become quiet. Instead, the order creates movement, resentment, and cover for people who need to be elsewhere.",
+            "You hear another servant call the Gravin's people to bed. Some obey. Some pretend not to hear. Guards finish drinks and look toward the stairs. The order creates movement, blocked sightlines, and enough noise for quiet people to go missing.",
           gmNotes: ["Use this as the transition from public social play into surveillance and suspicion."],
           links: { locations: [LOC.barroom, LOC.guestRooms], npcs: [NPC.handmaids, NPC.bodyguards, NPC.friedrich, NPC.hanna] },
         },
@@ -483,7 +484,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "encounter",
           title: "10:10 p.m. Bruno's Last Drink",
           text:
-            "Bruno returns to the barroom long enough to drink, boast, and draw attention. Dominique's plan depends on the drugged drink reaching him. If a Character interferes, the victim, timing, or suspicion can change.",
+            "You see fresh drinks land on Bruno's table. Foam slides down the mugs. Bruno grabs one without checking it, still grinning and still loud. Dominique stands near enough to be useful, but not near enough to seem important. Ursula watches from across the room.",
           gmNotes: [
             "This is an encounter because the Characters can oppose, drink, distract, or protect Bruno.",
             "If Bruno avoids the drug, Dominique must improvise and may become riskier later.",
@@ -496,7 +497,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "10:15 p.m. The Scholars Expect a Boat",
           text:
-            "One scholar asks Hans to be informed if a particular boat arrives. This gives the cultists a public excuse for later movement and a reason to speak with staff.",
+            "You see one scholar lean close to Hans at the bar. The scholar speaks quietly and asks to be told when a particular boat arrives. Hans nods, wipes his hands, and looks toward the landing door.",
           gmNotes: ["Hans may remember the request if questioned after Rechtshandler dies."],
           links: { locations: [LOC.barroom, LOC.landing], npcs: [NPC.cultists, NPC.hans] },
         },
@@ -505,7 +506,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "10:25 p.m. Bruno Is Missing",
           text:
-            "A servant checks Bruno's room and discovers he is not where expected. This is the first clear sign that the Gravin's party is losing control.",
+            "You hear quick steps on the stairs. A servant comes down pale and tense, then goes straight to the Gravin's people. The common room keeps talking, but a cold pause opens around the guards. Bruno is not where he should be.",
           gmNotes: ["Do not announce murder yet. Missing is more useful than dead at this stage."],
           links: { locations: [LOC.room4, LOC.guestRooms], npcs: [NPC.bruno, NPC.handmaids, NPC.gravin] },
         },
@@ -523,7 +524,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "10:40 p.m. Rechtshandler Goes Upstairs",
           text:
-            "Rechtshandler leaves the public room and becomes vulnerable. Anyone following him may hear hints of old cult business, fear, or blackmail before violence starts.",
+            "You see Rechtshandler leave the room with his shoulders tight and a candle in one hand. He does not look drunk. He looks cornered. A scholar waits a breath too long, then follows at a distance toward the upper corridor.",
           gmNotes: ["Use fragments, not exposition. Names, threats, payments, and fear are enough."],
           links: { locations: [LOC.barroom, LOC.room3], npcs: [NPC.rechtshandler, NPC.cultists], skills: ["Perception", "Stealth (Urban)"] },
         },
@@ -532,7 +533,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "encounter",
           title: "11:05 p.m. The Lawyer Is Killed",
           text:
-            "The cultists silence Rechtshandler if he cannot be controlled. The scene may be discovered as a body, interrupted as an attack, or reframed as a blackmail job if the Characters arrive early.",
+            "You stand near room 3 and hear low voices behind the door. Rechtshandler's voice trembles. Another voice stays calm. You hear a scrape, a short gasp, and something heavy hitting the floor. The corridor smells of candle wax and old dust.",
           gmNotes: [
             "If the Characters intervene early, the cultists try threats first and violence second.",
             "If they arrive late, focus on physical traces: disturbed room, window, papers, and who was seen on the corridor.",
@@ -545,7 +546,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "11:15 p.m. The Job Offer",
           text:
-            "If Rechtshandler is alive or the Characters are near enough, he may try to buy their help against the cultists. This creates a morally dirty investigation thread before Bruno's murder makes everything worse.",
+            "You find Rechtshandler shaken, sweating, and desperate enough to talk. He offers money for help and keeps looking at the door. His room smells of ink, fear, and hot candle wax. Papers lie too neatly on the table, as if someone has already searched them.",
           gmNotes: ["A bribe is a hook, not a required path. The Characters can refuse, exploit, report, or misunderstand it."],
           links: { locations: [LOC.room3, LOC.rooms7to8], npcs: [NPC.rechtshandler, NPC.cultists], skills: ["Bribery", "Charm", "Haggle", "Intuition"] },
         },
@@ -563,7 +564,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Angry Arrival",
           text:
-            "Prahmhandler arrives drunk, humiliated, and accompanied by thugs. He demands Friedrich and Hanna. The situation is loud enough to pull attention away from quieter crimes upstairs.",
+            "You hear the door slam before you see him. Rain and cold air rush into the barroom. Thomas Prahmhandler smells of drink, sweat, and road mud. He shouts Hanna's name and demands the man with her. Three hard-faced men stand behind him with heavy hands and no patience.",
           gmNotes: ["This scene is ideal for interrupting a careful investigation."],
           links: { locations: [LOC.barroom, LOC.guestRooms, LOC.room11], npcs: [NPC.prahmhandler, NPC.thugs, NPC.friedrich, NPC.hanna], skills: ["Charm", "Cool", "Intimidate", "Leadership"] },
         },
@@ -572,7 +573,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "encounter",
           title: "Brawl on the Stairs",
           text:
-            "If Prahmhandler is blocked, mocked, or allowed upstairs, the confrontation can become a brawl involving his thugs, the Characters, staff, guards, or frightened guests.",
+            "You stand between Prahmhandler's anger and the stairs. Chairs scrape back. A jug rolls across the floor. Hans shouts for calm, servants back away, and the Gravin's guards turn their heads. The first shove lands before anyone admits this is a fight.",
           gmNotes: [
             "The goal is not necessarily to kill anyone. The danger is noise, delay, injury, and giving other factions freedom to act.",
             "If the Characters prevent him from reaching room 11, award that as meaningful progress.",
@@ -594,7 +595,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Noise in Room 9",
           text:
-            "Josef begins to wake. The Morrians make noise trying to control him and explain it away as ritual business. Suspicious Characters can force the coffin reveal before dawn.",
+            "You hear a thump from room 9. Then another. A low groan leaks through the door, followed by rushed whispers and a hard knock against wood. The false Morrians answer too quickly if anyone asks what happens inside.",
           gmNotes: ["Let the smugglers lie badly if pressured. Their disguise works best at a distance."],
           links: { locations: [LOC.room9, LOC.guestRooms], npcs: [NPC.morrians, NPC.josef], skills: ["Intuition", "Perception", "Lore (Morr)"] },
         },
@@ -603,7 +604,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "encounter",
           title: "The False Corpse",
           text:
-            "If the coffin is opened early, Josef is revealed alive. The smugglers try to recover control through intimidation, escape, or sudden violence. Ursula may intervene if the Characters expose Josef clearly.",
+            "You see the coffin lid shift. The air inside smells sour, stale, and medicinal. A living man blinks up from the dark wood, weak but awake. The black-robed men move at once, no longer slow, holy, or grieving. Ursula steps forward if she sees Josef clearly.",
           gmNotes: [
             "This can solve one mystery while making the murder accusation later more chaotic.",
             "If Josef escapes into the inn, treat it as a chase through rooms and stairs.",
@@ -625,7 +626,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Scream from the Gravin's Wing",
           text:
-            "A scream brings attention to Bruno's room. Bruno is dead, and evidence points too conveniently toward outsiders. If the Characters have been visible, disruptive, or near the room, suspicion turns toward them quickly.",
+            "You hear a scream tear through the upper floor. Doors open. Feet pound in the corridor. In Bruno's room, the air smells of sweat, cold ash, and blood. Bruno lies still. A weapon sits where everyone can see it. Dominique is pale and breathless. The Gravin's servants cluster at the edge of the room, and the guards start looking for someone to blame.",
           gmNotes: [
             "The point is not to trap the party unfairly. The point is to force them into investigation under pressure.",
             "Track who knew where Bruno was, who saw the servant, and who had access to the room.",
@@ -637,7 +638,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "encounter",
           title: "The Gravin Locks Down the Inn",
           text:
-            "The Gravin uses guards and authority to hold everyone until dawn. If the Characters draw weapons or attempt to flee, the bodyguards respond as a combat encounter. Otherwise, treat it as interrogation and containment.",
+            "You face drawn steel and hard eyes. The Gravin's guards close the exits and push guests back from the stairs. The barroom goes tight and quiet, except for one sob, one muttered prayer, and the creak of leather armour. Hans stands behind the bar with both hands visible and says nothing unless spoken to.",
           gmNotes: [
             "The Gravin is not stupid. She wants the truth, but she also wants control.",
             "Make clear that violence against her guards has consequences beyond this room.",
@@ -659,7 +660,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Private Audience",
           text:
-            "The Gravin separates the Characters from the crowd and gives them a limited chance to prove what happened. She needs a truth that preserves her chance at trial, not a public riot.",
+            "You stand under the Gravin's gaze in a room that feels too small for her anger. Her voice stays controlled, but her guards keep their hands near their weapons. She needs answers before dawn. She gives you enough freedom to investigate, but not enough freedom to simply walk away.",
           gmNotes: ["Use this scene to give the party permission to investigate, but only under pressure."],
           links: { locations: [LOC.room1, LOC.room4], npcs: [NPC.gravin, NPC.bodyguards] },
         },
@@ -668,7 +669,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Clues in Bruno's Room",
           text:
-            "Bruno's room should offer physical clues: signs of drugging, moved bedding, a suspicious weapon, chimney access, and evidence that the killer expected to return. Do not give all answers at once. Give enough for next actions.",
+            "You stand in Bruno's room with the door watched from outside. The bed is disturbed. The hearth is dark, but soot marks the chimney stones. The room smells of blood, stale drink, cold ash, and damp wool. Bruno's things are not all where they should be. The window, the bed, the weapon, and the chimney all look like they matter.",
           gmNotes: [
             "Useful questions: how did the killer enter, why frame outsiders, who benefits from Bruno dying, and what still needs retrieving?",
             "If the Characters search well, foreshadow Dominique's return through the chimney.",
@@ -689,7 +690,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "encounter",
           title: "Dominique Retrieves the Evidence",
           text:
-            "A scrape in the chimney announces Dominique's return. She is here to recover or remove evidence, not to duel honourably. If exposed, she fights only long enough to flee.",
+            "You hear a soft scrape inside the chimney. Soot falls into the cold hearth. A hand appears, then a face streaked black with ash. Dominique drops lightly into the room and freezes when she sees you. Her eyes go to the bed, then to the door, then to the chimney above her.",
           gmNotes: [
             "Use vertical movement, soot, darkness, and cramped space to make this feel different from a normal fight.",
             "If captured, Dominique is the cleanest route to Bruno's killer and the motive behind the attack.",
@@ -711,7 +712,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Everyone Is Gathered",
           text:
-            "At dawn, the Gravin tries to force a final accounting. Who is dead, missing, captured, or exposed depends on the Characters' choices. Bring the surviving clocks into the barroom one by one.",
+            "You stand in the barroom as grey dawn leaks through the shutters. The fire is low. Empty cups, spilled ale, and muddy tracks mark the floor. The Gravin's guards keep everyone close. Hans looks older than he did at sunset. Every surviving guest watches the next speaker.",
           gmNotes: ["Do not explain unsolved threads automatically. Let gaps become future hooks if needed."],
           links: { locations: [LOC.barroom], npcs: [NPC.gravin, NPC.bodyguards, NPC.hans, NPC.staff] },
         },
@@ -720,7 +721,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "The Coffin Reveal",
           text:
-            "If Josef has not already been revealed, the missing Morrians or suspicious coffin become unavoidable. Opening the coffin exposes the false corpse plot and gives Ursula a chance to claim her target.",
+            "You see the coffin brought back into the centre of attention. The black robes do not make the room quiet now. If the lid opens, stale air rolls out and Josef's living face gives the lie to every prayer the false Morrians have spoken.",
           gmNotes: ["This reveal should not replace the Bruno investigation, but it can complicate who the Gravin trusts."],
           links: { locations: [LOC.room9, LOC.barroom, LOC.landing], npcs: [NPC.morrians, NPC.josef, NPC.ursula] },
         },
@@ -729,7 +730,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Resolution Questions",
           text:
-            "Resolve the night by answering four questions: who killed Bruno, what happened to Rechtshandler, what is inside or missing from the coffin, and who can prove the Characters' actions? Rewards and consequences should follow those answers.",
+            "You have enough pieces to name what happened, or enough scars to admit what you failed to stop. The room needs answers: who killed Bruno, what happened to Rechtshandler, why the coffin held a living man, and who can prove what you did tonight.",
           gmNotes: [
             "Partial success is valid. The Characters might clear themselves without solving every faction plot.",
             "If they protect the Gravin's legal interests, she can become a patron or future complication.",
@@ -750,7 +751,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Experience Awards",
           text:
-            "Award progress for active investigation, protecting or avenging Bruno, exposing Dominique, dealing with the cultists, preventing Prahmhandler's violence, discovering Josef, helping or outplaying Seedling and Glimbrin, and preserving enough order that the Gravin can continue her journey.",
+            "You leave the Three Feathers with smoke in your clothes, river mud on your boots, and names that may follow you. Award progress for investigation, protection, restraint, clever violence, exposed lies, and hard choices, not only for winning fights.",
           gmNotes: ["Reward solved threads and hard choices, not only combat victories."],
           links: { npcs: [NPC.bruno, NPC.dominique, NPC.cultists, NPC.prahmhandler, NPC.josef, NPC.seedling, NPC.glimbrin, NPC.gravin] },
         },
@@ -759,7 +760,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
           type: "text",
           title: "Campaign Follow-ups",
           text:
-            "The Gravin may hire the Characters, Ursula may remember useful allies, the cult may mark witnesses, Glimbrin may return with stolen complications, and Prahmhandler or the lovers may create social trouble later.",
+            "You see the first boats and carts leave after dawn. The Gravin may remember your service. Ursula may remember your usefulness. The cult may remember your face. Glimbrin may already have something that belongs to you. Prahmhandler, Friedrich, and Hanna may carry the scandal onward.",
           gmNotes: ["Choose one or two follow-ups only. Too many will dilute the result of the night."],
           links: { npcs: [NPC.gravin, NPC.ursula, NPC.cultists, NPC.glimbrin, NPC.prahmhandler, NPC.friedrich, NPC.hanna] },
         },
