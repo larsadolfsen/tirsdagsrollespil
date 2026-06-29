@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Calendar,
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
   EllipsisVertical,
   PanelLeftClose,
   PanelLeftOpen,
@@ -137,6 +140,16 @@ export function GameMasterPage({
   const [sceneTitleDraft, setSceneTitleDraft] = useState("");
   const [editingSceneLocationId, setEditingSceneLocationId] = useState<string | null>(null);
   const [sceneLocationDraft, setSceneLocationDraft] = useState("");
+  const [expandedScenes, setExpandedScenes] = useState<Set<string>>(new Set());
+
+  const toggleSceneCollapsed = (sceneId: string) => {
+    setExpandedScenes((prev) => {
+      const next = new Set(prev);
+      if (next.has(sceneId)) next.delete(sceneId);
+      else next.add(sceneId);
+      return next;
+    });
+  };
 
   const [isMonsterSidebarOpen, setIsMonsterSidebarOpen] = useState(false);
   const monsterSidebarOnAddRef = useRef<((template: CreatureTemplate, count: number) => void) | null>(null);
@@ -503,9 +516,12 @@ export function GameMasterPage({
 
                   {scenes.length > 0 ? (
                     <div className="flex flex-col gap-8">
-                      {scenes.map((scene, sceneIndex) => (
-                        <section key={scene.id}>
+                      {scenes.map((scene, sceneIndex) => {
+                        const isCollapsed = !expandedScenes.has(scene.id);
+                        return (
+                        <section key={scene.id} className="group/scene">
                           <div className="mt-4 flex min-h-12 items-center justify-between gap-4">
+                            <div className="min-w-0 flex-1 flex items-start gap-2">
                             <div className="min-w-0 flex-1">
                                {editingSceneTitleId === scene.id ? (
                                  <Heading level={3} variant="subsection">
@@ -530,7 +546,7 @@ export function GameMasterPage({
                                    />
                                  </Heading>
                                ) : (
-                                 <Heading level={3} variant="subsection"><span onClick={() => { setSceneTitleDraft(scene.title || ""); setEditingSceneTitleId(scene.id); }} className="cursor-text border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors">{`Scene ${sceneIndex + 1}${scene.title ? ` - ${scene.title}` : ""}`}</span></Heading>
+                                 <Heading level={3} variant="subsection"><span onClick={() => { setSceneTitleDraft(scene.title || ""); setEditingSceneTitleId(scene.id); }} className="cursor-text border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors">{scene.title || "Scene"}</span></Heading>
                                )}
                               <div className="mt-1 flex items-center gap-1.5 text-sm text-wfrp-muted-text font-sans">
                                 <span>Location:</span>
@@ -568,31 +584,47 @@ export function GameMasterPage({
                                 )}
                               </div>
                             </div>
-                            <SceneActionsMenu
-                              sceneNumber={sceneIndex + 1}
-                              onAddBefore={() => addScene(sceneIndex, "before")}
-                              onAddAfter={() => addScene(sceneIndex, "after")}
-                              onCopy={() => copyScene(sceneIndex)}
-                              onDelete={() => deleteScene(scene.id)}
-                              onAddTextField={() => addComponentToScene(scene.id, "text")}
-                              onAddEncounter={() => addComponentToScene(scene.id, "encounter")}
-                            />
+                            </div>
+                            <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover/scene:opacity-100 focus-within:opacity-100 transition-opacity">
+                              <SceneActionsMenu
+                                sceneNumber={sceneIndex + 1}
+                                onAddBefore={() => addScene(sceneIndex, "before")}
+                                onAddAfter={() => addScene(sceneIndex, "after")}
+                                onCopy={() => copyScene(sceneIndex)}
+                                onDelete={() => deleteScene(scene.id)}
+                                onAddDescription={() => addComponentToScene(scene.id, "text")}
+                                onAddNotes={() => addComponentToScene(scene.id, "notes")}
+                                onAddEncounter={() => addComponentToScene(scene.id, "encounter")}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => toggleSceneCollapsed(scene.id)}
+                                aria-label={isCollapsed ? "Expand scene" : "Collapse scene"}
+                                aria-expanded={!isCollapsed}
+                                className="shrink-0 text-wfrp-muted-text transition-colors hover:text-white focus-visible:outline-none"
+                              >
+                                {isCollapsed ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                              </button>
+                            </div>
                           </div>
 
-                          <SceneComponentsList
-                            sceneId={scene.id}
-                            sceneNumber={sceneIndex + 1}
-                            components={scene.components}
-                            characters={characters}
-                            onReorderComponents={(components) => updateSceneComponents(scene.id, components)}
-                            onRemoveComponent={(componentId) => removeComponentFromScene(scene.id, componentId)}
-                            onUpdateComponentText={(componentId, text) => updateComponentText(scene.id, componentId, text)}
-                            onUpdateComponentTitle={(componentId, title) => updateComponentTitle(scene.id, componentId, title)}
-                            onUpdateComponentEncounterData={(componentId, data) => updateComponentEncounterData(scene.id, componentId, data)}
-                            onOpenMonsterSidebar={openMonsterSidebar}
-                          />
+                          {!isCollapsed && (
+                            <SceneComponentsList
+                              sceneId={scene.id}
+                              sceneNumber={sceneIndex + 1}
+                              components={scene.components}
+                              characters={characters}
+                              onReorderComponents={(components) => updateSceneComponents(scene.id, components)}
+                              onRemoveComponent={(componentId) => removeComponentFromScene(scene.id, componentId)}
+                              onUpdateComponentText={(componentId, text) => updateComponentText(scene.id, componentId, text)}
+                              onUpdateComponentTitle={(componentId, title) => updateComponentTitle(scene.id, componentId, title)}
+                              onUpdateComponentEncounterData={(componentId, data) => updateComponentEncounterData(scene.id, componentId, data)}
+                              onOpenMonsterSidebar={openMonsterSidebar}
+                            />
+                          )}
                         </section>
-                      ))}
+                        );
+                      })}
                     </div>
                   ) : (
                     <Button

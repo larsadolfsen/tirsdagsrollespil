@@ -17,6 +17,8 @@ import {
 } from "./wfrp";
 import {
   Button,
+  Card,
+  CardContent,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -1101,7 +1103,7 @@ export function SceneComponentsList({
     <div className="mt-6 flex flex-col gap-6">
       {components.map((component, index) => {
         const isDragging = draggedIndex === index;
-        const defaultTitle = component.type === "text" ? "Text field" : "Encounter";
+        const defaultTitle = component.type === "text" ? "Description" : component.type === "notes" ? "Notes" : "Encounter";
         const title = component.title || defaultTitle;
 
         return (
@@ -1121,14 +1123,14 @@ export function SceneComponentsList({
               <div className="relative flex items-center pl-8 md:pl-0">
                 {/* Desktop drag handle (absolute positioned to the left of the container) */}
                 <div
-                  className="absolute right-full mr-2 hidden md:flex h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-colors active:cursor-grabbing"
+                  className="absolute right-full mr-2 hidden md:flex h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-opacity opacity-0 group-hover/item:opacity-100 active:cursor-grabbing"
                   title="Drag to reorder"
                 >
                   <GripVertical size={16} aria-hidden="true" />
                 </div>
                 {/* Mobile drag handle (rendered inline) */}
                 <div
-                  className="flex md:hidden h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-colors active:cursor-grabbing mr-2"
+                  className="flex md:hidden h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-opacity opacity-0 group-hover/item:opacity-100 active:cursor-grabbing mr-2"
                   title="Drag to reorder"
                 >
                   <GripVertical size={16} aria-hidden="true" />
@@ -1168,20 +1170,22 @@ export function SceneComponentsList({
               </div>
 
               <div className="flex items-center gap-1">
-                <Button
-                  variant="wfrpIcon"
-                  onClick={() => moveComponent(index, "up")}
-                  disabled={index === 0}
-                  aria-label="Move component up"
-                  leadingIcon={<ChevronUp />}
-                />
-                <Button
-                  variant="wfrpIcon"
-                  onClick={() => moveComponent(index, "down")}
-                  disabled={index === components.length - 1}
-                  aria-label="Move component down"
-                  leadingIcon={<ChevronDown />}
-                />
+                <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                  <Button
+                    variant="wfrpIcon"
+                    onClick={() => moveComponent(index, "up")}
+                    disabled={index === 0}
+                    aria-label="Move component up"
+                    leadingIcon={<ChevronUp />}
+                  />
+                  <Button
+                    variant="wfrpIcon"
+                    onClick={() => moveComponent(index, "down")}
+                    disabled={index === components.length - 1}
+                    aria-label="Move component down"
+                    leadingIcon={<ChevronDown />}
+                  />
+                </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     aria-label={`${title} actions`}
@@ -1207,12 +1211,26 @@ export function SceneComponentsList({
             {/* Body */}
             {component.type === "text" && (
               <div className="py-2 pl-8 md:pl-0">
+                <Card className="max-w-[440px]">
+                  <CardContent>
+                    <FormattedTextField
+                      value={component.text}
+                      onChange={(text) => onUpdateComponentText(component.id, text)}
+                      ariaLabel={`Scene ${sceneNumber} description`}
+                      placeholder="Write the scene description here…"
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+            {component.type === "notes" && (
+              <div className="py-2 pl-8 md:pl-0">
                 <FormattedTextField
                   className="max-w-[440px]"
                   value={component.text}
                   onChange={(text) => onUpdateComponentText(component.id, text)}
-                  ariaLabel={`Scene ${sceneNumber} text field`}
-                  placeholder="Write the scene text here…"
+                  ariaLabel={`Scene ${sceneNumber} notes`}
+                  placeholder="Add GM notes…"
                 />
               </div>
             )}

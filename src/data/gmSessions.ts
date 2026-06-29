@@ -20,7 +20,7 @@ export interface GMScenarioLinks {
 
 export interface GMSceneComponent {
   id: string;
-  type: "text" | "encounter";
+  type: "text" | "notes" | "encounter";
   text: string;
   title?: string;
   encounterData?: EncounterData;

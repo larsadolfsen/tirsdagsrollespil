@@ -13,7 +13,8 @@ type SceneActionsMenuProps = {
   onAddAfter: () => void;
   onCopy: () => void;
   onDelete: () => void;
-  onAddTextField: () => void;
+  onAddDescription: () => void;
+  onAddNotes: () => void;
   onAddEncounter: () => void;
 };
 
@@ -23,7 +24,8 @@ export function SceneActionsMenu({
   onAddAfter,
   onCopy,
   onDelete,
-  onAddTextField,
+  onAddDescription,
+  onAddNotes,
   onAddEncounter,
 }: SceneActionsMenuProps) {
   const menuLabel = `Scene ${sceneNumber} menu`;
@@ -53,9 +55,13 @@ export function SceneActionsMenu({
           Copy scene
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onAddTextField}>
+        <DropdownMenuItem onClick={onAddDescription}>
           <Plus className="mr-2 size-4" aria-hidden="true" />
-          Add text field
+          Add description
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onAddNotes}>
+          <Plus className="mr-2 size-4" aria-hidden="true" />
+          Add notes
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onAddEncounter}>
           <Plus className="mr-2 size-4" aria-hidden="true" />
