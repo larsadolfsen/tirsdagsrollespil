@@ -92,7 +92,7 @@ test("Dropdown menus close other open menus when opened", async ({ page }) => {
   await expect(componentMenuItem).toBeVisible();
 
   // 4. Click outside (e.g., somewhere in the heading or main area)
-  await page.getByRole("heading", { name: "Scene 1", exact: true }).click();
+  await page.getByRole("heading", { name: /^Scene 1($|\s+-)/ }).click();
 
   // Verify Component menu content is now hidden
   await expect(componentMenuItem).not.toBeVisible();

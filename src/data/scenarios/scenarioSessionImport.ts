@@ -74,33 +74,37 @@ export interface ScenarioSessionImportDefinition {
 }
 
 export function buildScenarioSessionScenes(scenario: ScenarioSessionImportDefinition): GMScene[] {
-  return scenario.scenes.map((scene) => ({
-    id: scene.id,
-    title: scene.title,
-    kind: scene.kind,
-    locationId: scene.locationId,
-    links: scene.links,
-    components: scene.components.map((component): GMSceneComponent => {
-      const base = {
-        id: component.id,
-        title: component.title,
-        text: component.text,
-        links: component.links,
-        gmNotes: component.gmNotes,
-      };
+  return scenario.scenes.map((scene) => {
+    const loc = scenario.locations.find((l) => l.id === scene.locationId);
+    return {
+      id: scene.id,
+      title: scene.title,
+      kind: scene.kind,
+      locationId: scene.locationId,
+      location: loc ? loc.name : undefined,
+      links: scene.links,
+      components: scene.components.map((component): GMSceneComponent => {
+        const base = {
+          id: component.id,
+          title: component.title,
+          text: component.text,
+          links: component.links,
+          gmNotes: component.gmNotes,
+        };
 
-      if (component.type === "encounter") {
+        if (component.type === "encounter") {
+          return {
+            ...base,
+            type: "encounter",
+            encounterData: component.encounterData,
+          };
+        }
+
         return {
           ...base,
-          type: "encounter",
-          encounterData: component.encounterData,
+          type: "text",
         };
-      }
-
-      return {
-        ...base,
-        type: "text",
-      };
-    }),
-  }));
+      }),
+    };
+  });
 }

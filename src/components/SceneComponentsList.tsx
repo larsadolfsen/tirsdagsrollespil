@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   GripVertical,
   Swords,
@@ -45,6 +45,7 @@ import type { CharacterProgressData } from "../types";
 import { UI_LABELS } from "../labels";
 import { loadGameSession } from "../lib/gameSession";
 import { isPrayerDefinition } from "../tabs/spells/spellUtils";
+import { talentDefinitions } from "../data/rules/wfrp4e/talents";
 
 export type SceneComponent = GMSceneComponent;
 
@@ -604,7 +605,19 @@ function NpcInfoPane({
     .sort((a, b) => a.label.localeCompare(b.label));
   const talents = (npc.talents ?? [])
     .map(splitNpcListEntry)
-    .sort((a, b) => a.label.localeCompare(b.label));
+    .sort((a, b) => a.label.localeCompare(b.label))
+    .map((talent) => {
+      const definition = talentDefinitions.find(
+        (t) => t.name.toLowerCase().trim() === talent.label.toLowerCase().trim()
+      );
+      return {
+        label: talent.label,
+        value: definition
+          ? (talent.value ? `${talent.value} — ${definition.description}` : definition.description)
+          : talent.value,
+        hasDefinition: !!definition,
+      };
+    });
   const trappings = [...(npc.trappings ?? [])].sort((a, b) => a.localeCompare(b));
 
   return (
@@ -690,7 +703,7 @@ function NpcInfoPane({
                   label: talent.label,
                   value: talent.value,
                   labelClassName: "text-white",
-                  valueClassName: "tabular-nums",
+                  valueClassName: talent.hasDefinition ? undefined : "tabular-nums",
                 }))}
               />
             ) : (

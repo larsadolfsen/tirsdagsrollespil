@@ -33,6 +33,7 @@ export interface GMScene {
   title?: string;
   kind?: string;
   locationId?: string;
+  location?: string;
   links?: GMScenarioLinks;
   components: GMSceneComponent[];
 }

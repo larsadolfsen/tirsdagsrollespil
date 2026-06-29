@@ -133,6 +133,11 @@ export function GameMasterPage({
   const onScenesChangeRef = useRef(onScenesChange);
   useEffect(() => { onScenesChangeRef.current = onScenesChange; });
 
+  const [editingSceneTitleId, setEditingSceneTitleId] = useState<string | null>(null);
+  const [sceneTitleDraft, setSceneTitleDraft] = useState("");
+  const [editingSceneLocationId, setEditingSceneLocationId] = useState<string | null>(null);
+  const [sceneLocationDraft, setSceneLocationDraft] = useState("");
+
   const [isMonsterSidebarOpen, setIsMonsterSidebarOpen] = useState(false);
   const monsterSidebarOnAddRef = useRef<((template: CreatureTemplate, count: number) => void) | null>(null);
 
@@ -147,6 +152,8 @@ export function GameMasterPage({
     setIsRenamingSession(false);
     setSessionTitleDraft(editingSessionName);
     setScenes(initial);
+    setEditingSceneTitleId(null);
+    setEditingSceneLocationId(null);
   }, [activeSession?.id]);
 
   useEffect(() => {
@@ -232,6 +239,18 @@ export function GameMasterPage({
   const updateSceneComponents = (sceneId: string, components: SceneComponent[]) => {
     setScenes((currentScenes) => currentScenes.map((scene) => (
       scene.id === sceneId ? { ...scene, components } : scene
+    )));
+  };
+
+  const updateSceneTitle = (sceneId: string, title: string) => {
+    setScenes((currentScenes) => currentScenes.map((scene) => (
+      scene.id === sceneId ? { ...scene, title } : scene
+    )));
+  };
+
+  const updateSceneLocation = (sceneId: string, location: string) => {
+    setScenes((currentScenes) => currentScenes.map((scene) => (
+      scene.id === sceneId ? { ...scene, location } : scene
     )));
   };
 
@@ -487,15 +506,67 @@ export function GameMasterPage({
                       {scenes.map((scene, sceneIndex) => (
                         <section key={scene.id}>
                           <div className="mt-4 flex min-h-12 items-center justify-between gap-4">
-                            <div className="min-w-0">
-                              <Heading level={3} variant="subsection">
-                                Scene {sceneIndex + 1}
-                              </Heading>
-                              {scene.title && (
-                                <p className="mt-1 truncate font-serif text-lg text-gray-100">
-                                  {scene.title}
-                                </p>
-                              )}
+                            <div className="min-w-0 flex-1">
+                               {editingSceneTitleId === scene.id ? (
+                                 <Heading level={3} variant="subsection">
+                                   <input
+                                     type="text"
+                                     value={sceneTitleDraft}
+                                     onChange={(e) => setSceneTitleDraft(e.target.value)}
+                                     onBlur={() => {
+                                       updateSceneTitle(scene.id, sceneTitleDraft.trim());
+                                       setEditingSceneTitleId(null);
+                                     }}
+                                     onKeyDown={(e) => {
+                                       if (e.key === "Enter") {
+                                         updateSceneTitle(scene.id, sceneTitleDraft.trim());
+                                         setEditingSceneTitleId(null);
+                                       } else if (e.key === "Escape") {
+                                         setEditingSceneTitleId(null);
+                                       }
+                                     }}
+                                     autoFocus
+                                     className="w-full max-w-md border-0 border-b border-wfrp-gold/50 bg-transparent p-0 font-serif text-lg font-semibold text-gray-200 outline-none"
+                                   />
+                                 </Heading>
+                               ) : (
+                                 <Heading level={3} variant="subsection"><span onClick={() => { setSceneTitleDraft(scene.title || ""); setEditingSceneTitleId(scene.id); }} className="cursor-text border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors">{`Scene ${sceneIndex + 1}${scene.title ? ` - ${scene.title}` : ""}`}</span></Heading>
+                               )}
+                              <div className="mt-1 flex items-center gap-1.5 text-sm text-wfrp-muted-text font-sans">
+                                <span>Location:</span>
+                                {editingSceneLocationId === scene.id ? (
+                                  <input
+                                    type="text"
+                                    value={sceneLocationDraft}
+                                    onChange={(e) => setSceneLocationDraft(e.target.value)}
+                                    onBlur={() => {
+                                      updateSceneLocation(scene.id, sceneLocationDraft.trim());
+                                      setEditingSceneLocationId(null);
+                                    }}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        updateSceneLocation(scene.id, sceneLocationDraft.trim());
+                                        setEditingSceneLocationId(null);
+                                      } else if (e.key === "Escape") {
+                                        setEditingSceneLocationId(null);
+                                      }
+                                    }}
+                                    autoFocus
+                                    className="border-0 border-b border-wfrp-gold/50 bg-transparent p-0 text-sm text-gray-200 outline-none w-48"
+                                  />
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSceneLocationDraft(scene.location || "");
+                                      setEditingSceneLocationId(scene.id);
+                                    }}
+                                    className="cursor-text text-left text-gray-300 transition-colors hover:text-white border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 focus-visible:outline-none"
+                                  >
+                                    {scene.location || "Click to add location"}
+                                  </button>
+                                )}
+                              </div>
                             </div>
                             <SceneActionsMenu
                               sceneNumber={sceneIndex + 1}
