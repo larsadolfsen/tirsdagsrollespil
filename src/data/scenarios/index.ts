@@ -11,7 +11,7 @@ const threeFeathersSessionDescription =
   "The road, river, and weather bring you to the Three Feathers for what should be one quiet night. Warm light leaks from the windows, wet horses stamp in the yard, and the common room hums with smoke, ale, tired travellers, watchful servants, and low conversations held close to the table. As the night wears on, doors close, tempers rise, footsteps cross the upper floor, and every small noise starts to matter.";
 
 const scenarioNotesText =
-  "Use this import as a timed pressure map, not a fixed script. Each scene should have at most one Description component. Add more text components only for events or developments. Description components must only contain what the Characters can perceive or reasonably infer. Notes components hold room ids, hidden identities, motives, clocks, and exact GM truth.";
+  "Use this import as a timed pressure map, not a fixed script. Each scene should have one initial Description component that establishes the visible scene state. Additional text components are allowed when something happens or changes in the scene, such as an arrival, interruption, discovery, reveal, noise, confrontation, or environmental change. Description components must only contain what the Characters can perceive or reasonably infer. Notes components hold room ids, hidden identities, motives, clocks, and exact GM truth.";
 
 const sceneDescriptionText: Record<string, string> = {
   "scene-three-feathers-gm-overview":
