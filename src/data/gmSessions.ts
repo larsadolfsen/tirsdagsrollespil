@@ -11,6 +11,10 @@ export interface EncounterData {
   monsterGroups: EncounterMonsterGroup[];
   playerOrder: string[];
   manualOrder?: string[];
+  combatActive?: boolean;
+  roundCount?: number;
+  activeParticipantId?: string;
+  combatLog?: string[];
 }
 
 export interface GMScenarioLinks {

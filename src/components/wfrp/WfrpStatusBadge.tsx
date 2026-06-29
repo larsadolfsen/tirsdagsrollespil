@@ -5,7 +5,7 @@ import { Badge } from "@/src/components/ui/badge";
 type Tone = "neutral" | "gold" | "danger" | "success";
 const tones: Record<Tone, string> = {
   neutral: "border-border bg-secondary text-secondary-foreground",
-  gold: "border-wfrp-gold/40 bg-wfrp-gold-surface text-wfrp-gold",
+  gold: "border-border bg-secondary text-secondary-foreground",
   danger: "border-destructive/50 bg-destructive/20 text-destructive-foreground",
   success: "border-wfrp-aqua/40 bg-wfrp-aqua/10 text-wfrp-aqua",
 };

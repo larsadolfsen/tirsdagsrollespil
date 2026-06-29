@@ -4,22 +4,25 @@ test("Game Master page scene components workflow", async ({ page }) => {
   // 1. Visit landing page and navigate to GM page
   await page.goto("/");
   await page.getByRole("button", { name: "Open Game Master" }).click();
-  await expect(page).toHaveTitle(/Game Master -/);
+  await expect(page).toHaveTitle(/Campaign -/);
   await page.getByRole("button", { name: "Open", exact: true }).first().click();
+
+  // Expand Scene 1 to make components visible
+  await page.getByRole("button", { name: "Expand scene" }).first().click();
 
   // 2. Add a new Text Field component to the scene
   await page.getByRole("button", { name: "Scene 1 menu" }).click();
-  await page.getByRole("menuitem", { name: "Add text field" }).click();
+  await page.getByRole("menuitem", { name: "Add description" }).click();
 
   // 3. Verify placeholder is shown (since text fields default to saved and closed mode)
-  const placeholderText = page.getByText("Write the scene text here…").last();
+  const placeholderText = page.getByText("Write the scene description here…").last();
   await expect(placeholderText).toBeVisible();
 
   // Click the placeholder to enter edit mode
   await placeholderText.click();
 
   // Verify editor is shown
-  const editor = page.getByRole("textbox", { name: /text field/i });
+  const editor = page.getByRole("textbox", { name: /description/i });
   await expect(editor).toBeVisible();
 
   // 4. Fill text in the contentEditable editor and click Save
@@ -42,9 +45,9 @@ test("Game Master page scene components workflow", async ({ page }) => {
   await expect(placeholderText).toBeVisible();
 
   // 9. Rename the component title from "Text field" to "Introduction Text"
-  const titleSpan = page.getByTitle("Click to rename").filter({ hasText: "Text field" }).last();
+  const titleSpan = page.getByTitle("Click to rename").filter({ hasText: "Description" }).last();
   await expect(titleSpan).toBeVisible();
-  await expect(titleSpan).toHaveText("Text field");
+  await expect(titleSpan).toHaveText("Description");
   await titleSpan.click();
 
   const titleInput = page.locator("input[type='text']");
@@ -68,9 +71,12 @@ test("Dropdown menus close other open menus when opened", async ({ page }) => {
   await page.getByRole("button", { name: "Open Game Master" }).click();
   await page.getByRole("button", { name: "Open", exact: true }).first().click();
 
+  // Expand Scene 1 to make components visible
+  await page.getByRole("button", { name: "Expand scene" }).first().click();
+
   // 1. Add a component so we have both the scene menu and the component menu
   await page.getByRole("button", { name: "Scene 1 menu" }).click();
-  await page.getByRole("menuitem", { name: "Add text field" }).click();
+  await page.getByRole("menuitem", { name: "Add description" }).click();
 
   // 2. Click the Scene 1 menu trigger
   const sceneMenuTrigger = page.getByRole("button", { name: "Scene 1 menu" });
@@ -81,7 +87,7 @@ test("Dropdown menus close other open menus when opened", async ({ page }) => {
   await expect(sceneMenuItem).toBeVisible();
 
   // 3. Click the Component actions menu trigger
-  const componentMenuTrigger = page.getByRole("button", { name: "Text field actions" }).first();
+  const componentMenuTrigger = page.getByRole("button", { name: "Description actions" }).first();
   await componentMenuTrigger.click();
 
   // Verify Scene 1 menu content is now hidden
@@ -92,7 +98,7 @@ test("Dropdown menus close other open menus when opened", async ({ page }) => {
   await expect(componentMenuItem).toBeVisible();
 
   // 4. Click outside (e.g., somewhere in the heading or main area)
-  await page.getByRole("heading", { name: /^Scene 1($|\s+-)/ }).click();
+  await page.getByRole("heading", { name: "Scenes" }).click();
 
   // Verify Component menu content is now hidden
   await expect(componentMenuItem).not.toBeVisible();

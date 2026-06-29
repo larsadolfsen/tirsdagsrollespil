@@ -90,7 +90,7 @@ export function CharacterBuilderScreen({
                 onClick={() => setSelectedSpeciesId(race.id)}
                 className={`rounded border p-4 text-left transition-colors ${
                   race.id === selectedSpeciesId
-                    ? "border-wfrp-gold bg-wfrp-gold-surface"
+                    ? "border-border bg-secondary"
                     : "border-white/10 bg-black/20 hover:border-white/20"
                 }`}
               >
@@ -119,7 +119,7 @@ export function CharacterBuilderScreen({
                   onClick={() => setSelectedCareerId(career.id)}
                   className={`rounded border px-3 py-2 text-left transition-colors ${
                     career.id === selectedCareerId
-                      ? "border-wfrp-gold bg-wfrp-gold-surface text-wfrp-gold"
+                      ? "border-border bg-secondary text-foreground"
                       : "border-white/10 bg-black/20 text-gray-200 hover:border-white/20"
                   }`}
                 >
@@ -328,7 +328,7 @@ export function CharacterBuilderScreen({
                       onClick={() => setCurrentStepIndex(index)}
                       className={`flex items-center justify-between rounded px-3 py-2 text-left transition-colors ${
                         isActive
-                          ? "bg-wfrp-gold-surface text-wfrp-gold"
+                          ? "bg-secondary text-foreground font-semibold"
                           : "text-gray-300 hover:bg-wfrp-surface-raised"
                       }`}
                     >

@@ -10,6 +10,8 @@ import {
   BookOpenText,
   Eye,
   EyeOff,
+  Plus,
+  Play,
 } from "lucide-react";
 import { FormattedTextField } from "./FormattedTextField";
 import {
@@ -17,6 +19,7 @@ import {
   WfrpPanel,
   WfrpSection,
 } from "./wfrp";
+import { AdversarySidebar } from "./sidebar";
 import {
   Button,
   Card,
@@ -36,6 +39,7 @@ import {
   HeaderResourceSlider,
   Label,
   CardDescription,
+  WfrpStandardIcon,
 } from "./ui";
 import type { CharacterSummary } from "../data/repository";
 import { loadResolvedCharacter, loadCharacterProgress, saveCharacterProgress } from "../data/repository";
@@ -92,6 +96,71 @@ function getPlayerCharacteristic(characterId: string, key: string): number {
   const baseAdv = baseAdvances[key] ?? 0;
   const curAdv = curAdvances[key] ?? baseAdv;
   return (attrs[key] ?? 0) + (curAdv - baseAdv);
+}
+
+export type EncounterParticipant =
+  | { kind: "player"; id: string; characterId: string; initiative: number; agility: number }
+  | { kind: "monster"; id: string; groupId: string; instanceIndex: number; initiative: number; agility: number; name: string; category: string; currentWounds: number; maxWounds: number; isNpc?: boolean };
+
+export function getSortedParticipants(
+  encounterData: EncounterData,
+  characters: CharacterSummary[]
+): EncounterParticipant[] {
+  const { monsterGroups = [], manualOrder = [] } = encounterData;
+
+  const allParticipants: EncounterParticipant[] = [
+    ...characters.map((char) => ({
+      kind: "player" as const,
+      id: `player-${char.id}`,
+      characterId: char.id,
+      initiative: getPlayerCharacteristic(char.id, "I"),
+      agility: getPlayerCharacteristic(char.id, "Ag"),
+    })),
+    ...monsterGroups.flatMap((group): EncounterParticipant[] => {
+      const template = creatureTemplatesById[group.templateId as keyof typeof creatureTemplatesById];
+      const npc = group.source === "npc" ? npcTemplatesById[group.templateId] : undefined;
+      return group.wounds.map((currentWounds, i) => ({
+        kind: "monster" as const,
+        id: `monster-${group.id}-${i}`,
+        groupId: group.id,
+        instanceIndex: i,
+        initiative: npc?.statBlock.I ?? template?.statBlock.characteristics.I ?? 0,
+        agility: npc?.statBlock.Ag ?? template?.statBlock.characteristics.Ag ?? 0,
+        name: group.name,
+        category: npc?.category ?? template?.category ?? "",
+        currentWounds,
+        maxWounds: npc?.statBlock.W ?? template?.statBlock.wounds ?? group.wounds[i] ?? 0,
+        isNpc: group.source === "npc",
+      }));
+    }),
+  ];
+
+  const monsterNameCounts = new Map<string, number>();
+  for (const participant of allParticipants) {
+    if (participant.kind !== "monster") continue;
+    monsterNameCounts.set(participant.name, (monsterNameCounts.get(participant.name) ?? 0) + 1);
+  }
+
+  const monsterNameIndexes = new Map<string, number>();
+  const namedParticipants = allParticipants.map((participant): EncounterParticipant => {
+    if (participant.kind !== "monster" || (monsterNameCounts.get(participant.name) ?? 0) < 2) {
+      return participant;
+    }
+    const index = (monsterNameIndexes.get(participant.name) ?? 0) + 1;
+    monsterNameIndexes.set(participant.name, index);
+    return { ...participant, name: `${participant.name} (${index})` };
+  });
+
+  if (manualOrder && manualOrder.length > 0) {
+    const orderMap = new Map(manualOrder.map((id, i) => [id, i]));
+    return [...namedParticipants].sort((a, b) => {
+      const ai = orderMap.has(a.id) ? (orderMap.get(a.id) as number) : Infinity;
+      const bi = orderMap.has(b.id) ? (orderMap.get(b.id) as number) : Infinity;
+      if (ai !== bi) return ai - bi;
+      return b.initiative - a.initiative || b.agility - a.agility;
+    });
+  }
+  return [...namedParticipants].sort((a, b) => b.initiative - a.initiative || b.agility - a.agility);
 }
 
 // ── Monster participant row ──────────────────────────────────────────────────
@@ -276,146 +345,142 @@ function PlayerInfoPane({ characterId }: { characterId: string }) {
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <WfrpPanel className="shadow-none">
-        <article className="flex min-w-0 flex-col gap-5">
-          <header>
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <Heading level={3} variant="sectionProminent">{char.name}</Heading>
-                <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-wfrp-muted-text">
-                  {[char.race, char.tier, char.status].filter(Boolean).join(" • ")}
-                </p>
-              </div>
-              <HeaderResourceSlider
-                label="Wounds"
-                current={woundsCurrent}
-                max={char.wounds.max}
-                onAdjust={handleWoundChange}
-                barClassName="bg-wfrp-red"
-                showSteppers={false}
-                contentClassName="flex w-24 min-w-0 flex-col gap-1"
-              />
+    <article className="flex min-w-0 flex-col gap-5">
+      <header>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <Heading level={3} variant="sectionProminent">{char.name}</Heading>
+            <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-wfrp-muted-text">
+              {[char.race, char.tier, char.status].filter(Boolean).join(" • ")}
+            </p>
+          </div>
+          <HeaderResourceSlider
+            label="Wounds"
+            current={woundsCurrent}
+            max={char.wounds.max}
+            onAdjust={handleWoundChange}
+            barClassName="bg-wfrp-red"
+            showSteppers={false}
+            contentClassName="flex w-24 min-w-0 flex-col gap-1"
+          />
+        </div>
+      </header>
+
+      <WfrpSection
+        title="Characteristics"
+        {...ENCOUNTER_SECTION_DIVIDER}
+        aria-label="Characteristics"
+      >
+        <div className="grid grid-cols-10 gap-x-2">
+          {UI_LABELS.CHARACTERISTICS.map((characteristic) => (
+            <div key={characteristic.key} className="text-center">
+              <Label className="block text-center">{characteristic.key}</Label>
+              <strong className="mt-0.5 block text-sm tabular-nums text-gray-100">
+                {char.attributes[characteristic.key] ?? 0}
+              </strong>
             </div>
-          </header>
+          ))}
+        </div>
+      </WfrpSection>
 
-          <WfrpSection
-            title="Characteristics"
-            {...ENCOUNTER_SECTION_DIVIDER}
-            aria-label="Characteristics"
-          >
-            <div className="grid grid-cols-10 gap-x-2">
-              {UI_LABELS.CHARACTERISTICS.map((characteristic) => (
-                <div key={characteristic.key} className="text-center">
-                  <Label className="block text-center">{characteristic.key}</Label>
-                  <strong className="mt-0.5 block text-sm tabular-nums text-gray-100">
-                    {char.attributes[characteristic.key] ?? 0}
-                  </strong>
-                </div>
-              ))}
-            </div>
-          </WfrpSection>
+      <WfrpSection
+        title="Skills"
+        {...ENCOUNTER_SECTION_DIVIDER}
+        aria-label="Skills"
+      >
+        <SheetDataDefinitionList
+          className="!grid grid-cols-2 gap-x-6 gap-y-1 border-t-0 pt-0"
+          items={trainedSkills.map((skill) => ({
+            label: skill.displayName,
+            value: `${(char.attributes[skill.characteristic] ?? 0) + skill.advances} (${skill.characteristic} +${skill.advances})`,
+            labelClassName: "text-white",
+            valueClassName: "tabular-nums",
+          }))}
+        />
+      </WfrpSection>
 
-          <WfrpSection
-            title="Skills"
-            {...ENCOUNTER_SECTION_DIVIDER}
-            aria-label="Skills"
-          >
-            <SheetDataDefinitionList
-              className="!grid grid-cols-2 gap-x-6 gap-y-1 border-t-0 pt-0"
-              items={trainedSkills.map((skill) => ({
-                label: skill.displayName,
-                value: `${(char.attributes[skill.characteristic] ?? 0) + skill.advances} (${skill.characteristic} +${skill.advances})`,
-                labelClassName: "text-white",
-                valueClassName: "tabular-nums",
-              }))}
-            />
-          </WfrpSection>
+      <WfrpSection
+        title="Talents"
+        {...ENCOUNTER_SECTION_DIVIDER}
+        aria-label="Talents"
+      >
+        <SheetDataDefinitionList
+          className="border-t-0 pt-0"
+          items={sortedTalents.map((talent) => ({
+            label: <span>{talent.name}</span>,
+            value: talent.description,
+            labelClassName: "text-white",
+          }))}
+        />
+      </WfrpSection>
 
-          <WfrpSection
-            title="Talents"
-            {...ENCOUNTER_SECTION_DIVIDER}
-            aria-label="Talents"
-          >
-            <SheetDataDefinitionList
-              className="border-t-0 pt-0"
-              items={sortedTalents.map((talent) => ({
-                label: <span>{talent.name}</span>,
-                value: talent.description,
-                labelClassName: "text-white",
-              }))}
-            />
-          </WfrpSection>
+      <WfrpSection
+        title="Trappings"
+        {...ENCOUNTER_SECTION_DIVIDER}
+        aria-label="Trappings"
+      >
+        {visibleEquipment.length > 0 ? (
+          <SheetDataDefinitionList
+            className="border-t-0 pt-0"
+            items={visibleEquipment.map((item) => ({
+              label: item.quantity && item.quantity > 1 ? `${item.name} ×${item.quantity}` : item.name,
+              value: item.description || item.type,
+              labelClassName: "text-white",
+            }))}
+          />
+        ) : (
+          <p className="text-xs leading-relaxed text-gray-300">None equipped</p>
+        )}
+      </WfrpSection>
 
-          <WfrpSection
-            title="Trappings"
-            {...ENCOUNTER_SECTION_DIVIDER}
-            aria-label="Trappings"
-          >
-            {visibleEquipment.length > 0 ? (
-              <SheetDataDefinitionList
-                className="border-t-0 pt-0"
-                items={visibleEquipment.map((item) => ({
-                  label: item.quantity && item.quantity > 1 ? `${item.name} ×${item.quantity}` : item.name,
-                  value: item.description || item.type,
-                  labelClassName: "text-white",
-                }))}
-              />
-            ) : (
-              <p className="text-xs leading-relaxed text-gray-300">None equipped</p>
-            )}
-          </WfrpSection>
-
-          {spells.length > 0 && (
-            <WfrpSection
-              title="Spells"
-              {...ENCOUNTER_SECTION_DIVIDER}
-              aria-label="Spells"
-            >
-              <div className="divide-y divide-wfrp-border/60">
-                {spells.map((spell) => (
-                  <div key={spell.id} className="py-3 first:pt-0 last:pb-0">
-                    <Heading level={5} variant="item">{spell.name}</Heading>
-                    <p className="mt-1.5 text-xs leading-relaxed text-gray-300">{spell.description}</p>
-                    <SheetDataDefinitionList items={[
-                      { label: "CN", value: spell.cn },
-                      { label: "Range", value: spell.range },
-                      { label: "Target", value: spell.target },
-                      { label: "Duration", value: spell.duration },
-                      ...(spell.damage !== "-" ? [{ label: "Damage", value: spell.damage }] : []),
-                    ]} />
-                  </div>
-                ))}
+      {spells.length > 0 && (
+        <WfrpSection
+          title="Spells"
+          {...ENCOUNTER_SECTION_DIVIDER}
+          aria-label="Spells"
+        >
+          <div className="divide-y divide-wfrp-border/60">
+            {spells.map((spell) => (
+              <div key={spell.id} className="py-3 first:pt-0 last:pb-0">
+                <Heading level={5} variant="item">{spell.name}</Heading>
+                <p className="mt-1.5 text-xs leading-relaxed text-gray-300">{spell.description}</p>
+                <SheetDataDefinitionList items={[
+                  { label: "CN", value: spell.cn },
+                  { label: "Range", value: spell.range },
+                  { label: "Target", value: spell.target },
+                  { label: "Duration", value: spell.duration },
+                  ...(spell.damage !== "-" ? [{ label: "Damage", value: spell.damage }] : []),
+                ]} />
               </div>
-            </WfrpSection>
-          )}
+            ))}
+          </div>
+        </WfrpSection>
+      )}
 
-          {prayers.length > 0 && (
-            <WfrpSection
-              title="Prayers"
-              {...ENCOUNTER_SECTION_DIVIDER}
-              aria-label="Prayers"
-            >
-              <div className="divide-y divide-wfrp-border/60">
-                {prayers.map((prayer) => (
-                  <div key={prayer.id} className="py-3 first:pt-0 last:pb-0">
-                    <Heading level={5} variant="item">{prayer.name}</Heading>
-                    <p className="mt-1.5 text-xs leading-relaxed text-gray-300">{prayer.description}</p>
-                    <SheetDataDefinitionList items={[
-                      { label: "CN", value: prayer.cn },
-                      { label: "Range", value: prayer.range },
-                      { label: "Target", value: prayer.target },
-                      { label: "Duration", value: prayer.duration },
-                      ...(prayer.damage !== "-" ? [{ label: "Damage", value: prayer.damage }] : []),
-                    ]} />
-                  </div>
-                ))}
+      {prayers.length > 0 && (
+        <WfrpSection
+          title="Prayers"
+          {...ENCOUNTER_SECTION_DIVIDER}
+          aria-label="Prayers"
+        >
+          <div className="divide-y divide-wfrp-border/60">
+            {prayers.map((prayer) => (
+              <div key={prayer.id} className="py-3 first:pt-0 last:pb-0">
+                <Heading level={5} variant="item">{prayer.name}</Heading>
+                <p className="mt-1.5 text-xs leading-relaxed text-gray-300">{prayer.description}</p>
+                <SheetDataDefinitionList items={[
+                  { label: "CN", value: prayer.cn },
+                  { label: "Range", value: prayer.range },
+                  { label: "Target", value: prayer.target },
+                  { label: "Duration", value: prayer.duration },
+                  ...(prayer.damage !== "-" ? [{ label: "Damage", value: prayer.damage }] : []),
+                ]} />
               </div>
-            </WfrpSection>
-          )}
-        </article>
-      </WfrpPanel>
-    </div>
+            ))}
+          </div>
+        </WfrpSection>
+      )}
+    </article>
   );
 }
 
@@ -463,7 +528,6 @@ function MonsterInfoPane({
   }) as SpellDefinition[];
 
   return (
-    <WfrpPanel className="shadow-none">
     <article className="flex min-w-0 flex-col gap-5">
       <header>
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -587,7 +651,6 @@ function MonsterInfoPane({
         </WfrpSection>
       )}
     </article>
-    </WfrpPanel>
   );
 }
 
@@ -635,113 +698,109 @@ function NpcInfoPane({
   const trappings = [...(npc.trappings ?? [])].sort((a, b) => a.localeCompare(b));
 
   return (
-    <div className="flex flex-col gap-3">
-      <WfrpPanel className="shadow-none">
-        <article className="flex min-w-0 flex-col gap-5">
-          <header>
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <Heading level={3} variant="sectionProminent">{displayName}</Heading>
-                <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-wfrp-muted-text">
-                  {[category, npc.group].filter(Boolean).join(" • ")}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <HeaderResourceSlider
-                  label="Wounds"
-                  current={currentWounds}
-                  max={npc.statBlock.W}
-                  onAdjust={onWoundChange}
-                  barClassName="bg-wfrp-red"
-                  showSteppers
-                  contentClassName="flex w-24 min-w-0 flex-col gap-1"
-                />
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    aria-label={`${displayName} actions`}
-                    className="wfrp-standard-icon cursor-pointer"
-                  >
-                    <span className="wfrp-standard-icon__glyph" aria-hidden="true">
-                      <EllipsisVertical />
-                    </span>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem variant="destructive" onClick={onRemove}>
-                      <Trash2 className="mr-2 size-4" aria-hidden="true" />
-                      Remove
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+    <article className="flex min-w-0 flex-col gap-5">
+      <header>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <Heading level={3} variant="sectionProminent">{displayName}</Heading>
+            <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-wfrp-muted-text">
+              {[category, npc.group].filter(Boolean).join(" • ")}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <HeaderResourceSlider
+              label="Wounds"
+              current={currentWounds}
+              max={npc.statBlock.W}
+              onAdjust={onWoundChange}
+              barClassName="bg-wfrp-red"
+              showSteppers
+              contentClassName="flex w-24 min-w-0 flex-col gap-1"
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                aria-label={`${displayName} actions`}
+                className="wfrp-standard-icon cursor-pointer"
+              >
+                <span className="wfrp-standard-icon__glyph" aria-hidden="true">
+                  <EllipsisVertical />
+                </span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem variant="destructive" onClick={onRemove}>
+                  <Trash2 className="mr-2 size-4" aria-hidden="true" />
+                  Remove
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </header>
+
+      <WfrpSection
+        title="Characteristics"
+        {...ENCOUNTER_SECTION_DIVIDER}
+        aria-label="Characteristics"
+      >
+        <div className="grid grid-cols-10 gap-x-2">
+          {(["WS", "BS", "S", "T", "I", "Ag", "Dex", "Int", "WP", "Fel"] as const).map((key) => (
+            <div key={key} className="text-center">
+              <Label className="block text-center">{key}</Label>
+              <strong className="mt-0.5 block text-sm tabular-nums text-gray-100">
+                {characteristics[key]}
+              </strong>
             </div>
-          </header>
+          ))}
+        </div>
+      </WfrpSection>
 
-          <WfrpSection
-            title="Characteristics"
-            {...ENCOUNTER_SECTION_DIVIDER}
-            aria-label="Characteristics"
-          >
-            <div className="grid grid-cols-10 gap-x-2">
-              {(["WS", "BS", "S", "T", "I", "Ag", "Dex", "Int", "WP", "Fel"] as const).map((key) => (
-                <div key={key} className="text-center">
-                  <Label className="block text-center">{key}</Label>
-                  <strong className="mt-0.5 block text-sm tabular-nums text-gray-100">
-                    {characteristics[key]}
-                  </strong>
-                </div>
-              ))}
-            </div>
-          </WfrpSection>
+      <WfrpSection title="Skills" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Skills">
+        {skills.length > 0 ? (
+          <SheetDataDefinitionList
+            className="!grid grid-cols-2 gap-x-6 gap-y-1 border-t-0 pt-0"
+            items={skills.map((skill) => ({
+              label: skill.label,
+              value: skill.value,
+              labelClassName: "text-white",
+              valueClassName: "tabular-nums",
+            }))}
+          />
+        ) : (
+          <p className="text-xs leading-relaxed text-gray-300">No trained skills listed</p>
+        )}
+      </WfrpSection>
 
-          <WfrpSection title="Skills" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Skills">
-            {skills.length > 0 ? (
-              <SheetDataDefinitionList
-                className="!grid grid-cols-2 gap-x-6 gap-y-1 border-t-0 pt-0"
-                items={skills.map((skill) => ({
-                  label: skill.label,
-                  value: skill.value,
-                  labelClassName: "text-white",
-                  valueClassName: "tabular-nums",
-                }))}
-              />
-            ) : (
-              <p className="text-xs leading-relaxed text-gray-300">No trained skills listed</p>
-            )}
-          </WfrpSection>
+      <WfrpSection title="Talents" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Talents">
+        {talents.length > 0 ? (
+          <SheetDataDefinitionList
+            className="border-t-0 pt-0"
+            items={talents.map((talent) => ({
+              label: talent.label,
+              value: talent.value,
+              labelClassName: "text-white",
+              valueClassName: talent.hasDefinition ? undefined : "tabular-nums",
+            }))}
+          />
+        ) : (
+          <p className="text-xs leading-relaxed text-gray-300">No talents listed</p>
+        )}
+      </WfrpSection>
 
-          <WfrpSection title="Talents" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Talents">
-            {talents.length > 0 ? (
-              <SheetDataDefinitionList
-                className="border-t-0 pt-0"
-                items={talents.map((talent) => ({
-                  label: talent.label,
-                  value: talent.value,
-                  labelClassName: "text-white",
-                  valueClassName: talent.hasDefinition ? undefined : "tabular-nums",
-                }))}
-              />
-            ) : (
-              <p className="text-xs leading-relaxed text-gray-300">No talents listed</p>
-            )}
-          </WfrpSection>
-
-          <WfrpSection title="Trappings" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Trappings">
-            {trappings.length > 0 ? (
-              <SheetDataDefinitionList
-                className="border-t-0 pt-0"
-                items={trappings.map((trapping) => ({
-                  label: trapping,
-                  value: "",
-                  labelClassName: "text-white",
-                }))}
-              />
-            ) : (
-              <p className="text-xs leading-relaxed text-gray-300">None equipped</p>
-            )}
-          </WfrpSection>
-        </article>
-      </WfrpPanel>
-    </div>
+      <WfrpSection title="Trappings" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Trappings">
+        {trappings.length > 0 ? (
+          <SheetDataDefinitionList
+            className="border-t-0 pt-0"
+            items={trappings.map((trapping) => ({
+              label: trapping,
+              value: "",
+              labelClassName: "text-white",
+            }))}
+          />
+        ) : (
+          <p className="text-xs leading-relaxed text-gray-300">None equipped</p>
+        )}
+      </WfrpSection>
+    </article>
   );
 }
 
@@ -764,70 +823,15 @@ export function EncounterComponent({
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draggedParticipantIndex, setDraggedParticipantIndex] = useState<number | null>(null);
-  const { monsterGroups } = encounterData;
+  const { monsterGroups, combatActive = false, activeParticipantId } = encounterData;
 
-  // Build combined participant list
-  type Participant =
-    | { kind: "player"; id: string; characterId: string; initiative: number; agility: number }
-    | { kind: "monster"; id: string; groupId: string; instanceIndex: number; initiative: number; agility: number; name: string; category: string; currentWounds: number; maxWounds: number; isNpc?: boolean };
+  const participants = getSortedParticipants(encounterData, characters);
 
-  const allParticipants: Participant[] = [
-    ...characters.map((char) => ({
-      kind: "player" as const,
-      id: `player-${char.id}`,
-      characterId: char.id,
-      initiative: getPlayerCharacteristic(char.id, "I"),
-      agility: getPlayerCharacteristic(char.id, "Ag"),
-    })),
-    ...monsterGroups.flatMap((group): Participant[] => {
-      const template = creatureTemplatesById[group.templateId as keyof typeof creatureTemplatesById];
-      const npc = group.source === "npc" ? npcTemplatesById[group.templateId] : undefined;
-      return group.wounds.map((currentWounds, i) => ({
-        kind: "monster" as const,
-        id: `monster-${group.id}-${i}`,
-        groupId: group.id,
-        instanceIndex: i,
-        initiative: npc?.statBlock.I ?? template?.statBlock.characteristics.I ?? 0,
-        agility: npc?.statBlock.Ag ?? template?.statBlock.characteristics.Ag ?? 0,
-        name: group.name,
-        category: npc?.category ?? template?.category ?? "",
-        currentWounds,
-        maxWounds: npc?.statBlock.W ?? template?.statBlock.wounds ?? group.wounds[i] ?? 0,
-        isNpc: group.source === "npc",
-      }));
-    }),
-  ];
-
-  const monsterNameCounts = new Map<string, number>();
-  for (const participant of allParticipants) {
-    if (participant.kind !== "monster") continue;
-    monsterNameCounts.set(participant.name, (monsterNameCounts.get(participant.name) ?? 0) + 1);
-  }
-
-  const monsterNameIndexes = new Map<string, number>();
-  const namedParticipants = allParticipants.map((participant): Participant => {
-    if (participant.kind !== "monster" || (monsterNameCounts.get(participant.name) ?? 0) < 2) {
-      return participant;
+  useEffect(() => {
+    if (combatActive && activeParticipantId) {
+      setSelectedId(activeParticipantId);
     }
-    const index = (monsterNameIndexes.get(participant.name) ?? 0) + 1;
-    monsterNameIndexes.set(participant.name, index);
-    return { ...participant, name: `${participant.name} (${index})` };
-  });
-
-  // Apply manual order if set; new participants fall back to rule sort at end
-  const { manualOrder } = encounterData;
-  const participants: Participant[] = (() => {
-    if (manualOrder && manualOrder.length > 0) {
-      const orderMap = new Map(manualOrder.map((id, i) => [id, i]));
-      return [...namedParticipants].sort((a, b) => {
-        const ai = orderMap.has(a.id) ? (orderMap.get(a.id) as number) : Infinity;
-        const bi = orderMap.has(b.id) ? (orderMap.get(b.id) as number) : Infinity;
-        if (ai !== bi) return ai - bi;
-        return b.initiative - a.initiative || b.agility - a.agility;
-      });
-    }
-    return [...namedParticipants].sort((a, b) => b.initiative - a.initiative || b.agility - a.agility);
-  })();
+  }, [activeParticipantId, combatActive]);
 
   const handleSelect = (id: string) => {
     setSelectedId((prev) => (prev === id ? null : id));
@@ -899,7 +903,7 @@ export function EncounterComponent({
     <div className="mt-3 flex flex-col gap-0 overflow-hidden rounded border border-wfrp-border">
         <div className="grid min-h-0 grid-cols-[412px_minmax(0,1fr)]">
           {/* Participant list */}
-          <div className="min-w-0 border-r border-wfrp-border/40">
+          <div className="min-w-0">
             <Table className="table-fixed">
               <colgroup>
                 <col className="w-12" />
@@ -920,6 +924,7 @@ export function EncounterComponent({
                 {participants.map((participant, index) => {
                   const isSelected = selectedId === participant.id;
                   const isDragging = draggedParticipantIndex === index;
+                  const isActiveTurn = combatActive && activeParticipantId === participant.id;
                   return (
                     <TableRow
                       key={participant.id}
@@ -930,7 +935,9 @@ export function EncounterComponent({
                       onDragEnter={() => handleParticipantDragEnter(index)}
                       onDragEnd={handleParticipantDragEnd}
                       onDragOver={(e) => e.preventDefault()}
-                      className={`cursor-pointer ${isDragging ? "opacity-30" : ""}`}
+                      className={`cursor-pointer ${isDragging ? "opacity-30" : ""} ${
+                        isActiveTurn ? "border-l-4 border-muted-foreground bg-wfrp-stone" : ""
+                      }`}
                     >
                       <TableCell
                         className="cursor-grab p-0 text-center text-wfrp-muted-text active:cursor-grabbing"
@@ -971,13 +978,29 @@ export function EncounterComponent({
           </div>
 
           {/* Info pane */}
-          <div className="flex min-w-0 flex-col justify-start p-4 sm:p-5">
+          <div className={`flex min-w-0 flex-col justify-start p-4 sm:p-5 border-l border-border ${selectedParticipant ? "bg-card" : ""}`}>
             {!selectedParticipant && (
-              <div className="flex flex-col items-center justify-center py-10 text-center">
-                <Swords size={22} className="mb-2 text-wfrp-muted-text/30" />
-                <span className="text-sm italic text-wfrp-muted-text font-sans">
-                  Select a participant to view details
-                </span>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <Swords size={22} className="mb-2 text-wfrp-muted-text/30" />
+                  <Text variant="bodyMuted" className="text-sm italic font-sans">
+                    Select a participant to view details
+                  </Text>
+                </div>
+                {combatActive && encounterData.combatLog && encounterData.combatLog.length > 0 && (
+                  <div className="mt-4 border-t border-border pt-4">
+                    <div className="mb-2">
+                      <Heading level={4} variant="subsection">Combat Log</Heading>
+                    </div>
+                    <div className="flex flex-col gap-1.5 max-h-60 overflow-y-auto pr-1">
+                      {encounterData.combatLog.map((logEntry, i) => (
+                        <Text key={i} variant="bodyMuted" className="text-xs leading-relaxed">
+                          {logEntry}
+                        </Text>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {selectedParticipant?.kind === "player" && (
@@ -1010,18 +1033,16 @@ export function EncounterComponent({
                 );
               }
               return (
-                <div className="flex flex-col gap-3">
-                  <MonsterInfoPane
-                    template={resolved}
-                    displayName={selectedParticipant.name}
-                    currentWounds={selectedParticipant.currentWounds}
-                    maxWounds={selectedParticipant.maxWounds}
-                    onWoundChange={(delta) =>
-                      handleMonsterWoundChange(selectedParticipant.groupId, selectedParticipant.instanceIndex, delta)
-                    }
-                    onRemove={() => handleRemoveMonsterGroup(selectedParticipant.groupId)}
-                  />
-                </div>
+                <MonsterInfoPane
+                  template={resolved}
+                  displayName={selectedParticipant.name}
+                  currentWounds={selectedParticipant.currentWounds}
+                  maxWounds={selectedParticipant.maxWounds}
+                  onWoundChange={(delta) =>
+                    handleMonsterWoundChange(selectedParticipant.groupId, selectedParticipant.instanceIndex, delta)
+                  }
+                  onRemove={() => handleRemoveMonsterGroup(selectedParticipant.groupId)}
+                />
               );
             })()}
           </div>
@@ -1162,6 +1183,8 @@ export function SceneComponentsList({
 }: SceneComponentsListProps) {
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [titleDraft, setTitleDraft] = useState("");
+  const [isAdversarySidebarOpen, setIsAdversarySidebarOpen] = useState(false);
+  const [activeEncounterId, setActiveEncounterId] = useState<string | null>(null);
 
   const moveComponent = (index: number, direction: "up" | "down") => {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
@@ -1240,22 +1263,195 @@ export function SceneComponentsList({
               </div>
             )}
 
-            {component.type === "encounter" && (
-              <>
-                <div className="flex min-h-10 items-center">
-                  <EditableComponentTitle {...titleProps} />
-                </div>
-                <EncounterComponent
-                  encounterData={getEncounterData(component)}
-                  characters={characters}
-                  onUpdateEncounterData={(data) => onUpdateComponentEncounterData(component.id, data)}
-                  onOpenMonsterSidebar={onOpenMonsterSidebar}
-                />
-              </>
-            )}
+            {component.type === "encounter" && (() => {
+              const encounterData = getEncounterData(component);
+              const { combatActive = false, roundCount = 1 } = encounterData;
+
+              return (
+                <>
+                  <div className="flex min-h-10 items-center justify-between pr-28">
+                    <div className="flex items-center gap-3">
+                      <EditableComponentTitle {...titleProps} />
+                      {combatActive && (
+                        <span className="rounded bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground border border-border">
+                          Round {roundCount}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="wfrpIcon"
+                        leadingIcon={<Plus />}
+                        aria-label="Add adversary"
+                        onClick={() => {
+                          setActiveEncounterId(component.id);
+                          setIsAdversarySidebarOpen(true);
+                        }}
+                      />
+                      {!combatActive && (
+                        <Button
+                          variant="wfrpIcon"
+                          leadingIcon={<Play />}
+                          aria-label="Start combat"
+                          isGolden
+                          onClick={() => {
+                            const participants = getSortedParticipants(encounterData, characters);
+                            const startLogEntry = (() => {
+                              const participantNames = participants.map((p) => {
+                                if (p.kind === "player") {
+                                  const char = characters.find((c) => c.id === p.characterId);
+                                  return char?.name ?? "Unknown Player";
+                                }
+                                return p.name ?? "Unknown Adversary";
+                              }).join(", ");
+                              const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                              return `[${timeStr}] Combat started with: ${participantNames}`;
+                            })();
+
+                            onUpdateComponentEncounterData(component.id, {
+                              ...encounterData,
+                              combatActive: true,
+                              roundCount: 1,
+                              activeParticipantId: participants.length > 0 ? participants[0].id : undefined,
+                              combatLog: [startLogEntry],
+                            });
+                          }}
+                        />
+                      )}
+                      {combatActive && (
+                        <>
+                          <Button
+                            variant="default"
+                            onClick={() => {
+                              const participants = getSortedParticipants(encounterData, characters);
+                              if (participants.length === 0) return;
+                              const currentIndex = participants.findIndex(
+                                (p) => p.id === encounterData.activeParticipantId
+                              );
+
+                              const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                              const activeP = participants[currentIndex] ?? null;
+                              let turnLogEntry = "";
+                              if (activeP) {
+                                let activePName = "Unknown";
+                                let woundsStr = "";
+                                if (activeP.kind === "player") {
+                                  const char = loadResolvedCharacter(activeP.characterId);
+                                  if (char) {
+                                    activePName = char.name;
+                                    const progress = loadCharacterProgress(activeP.characterId);
+                                    const woundsCurrent = progress?.woundsCurrent ?? char.wounds.max;
+                                    const woundsMax = char.wounds.max;
+                                    woundsStr = `(Wounds: ${woundsCurrent}/${woundsMax})`;
+                                  } else {
+                                    activePName = "Unknown Player";
+                                  }
+                                } else {
+                                  activePName = activeP.name ?? "Unknown Adversary";
+                                  woundsStr = `(Wounds: ${activeP.currentWounds}/${activeP.maxWounds})`;
+                                }
+                                turnLogEntry = `[${timeStr}] Round ${roundCount}: ${activePName}'s turn ended ${woundsStr}`;
+                              }
+
+                              let nextIndex = 0;
+                              let nextRound = roundCount;
+                              const newLogs = [...(encounterData.combatLog ?? [])];
+                              if (turnLogEntry) {
+                                newLogs.push(turnLogEntry);
+                              }
+
+                              if (currentIndex !== -1 && currentIndex < participants.length - 1) {
+                                nextIndex = currentIndex + 1;
+                              } else {
+                                nextIndex = 0;
+                                nextRound = roundCount + 1;
+                                newLogs.push(`[${timeStr}] Round ${nextRound} started`);
+                              }
+
+                              onUpdateComponentEncounterData(component.id, {
+                                ...encounterData,
+                                activeParticipantId: participants[nextIndex].id,
+                                roundCount: nextRound,
+                                combatLog: newLogs,
+                              });
+                            }}
+                          >
+                            Next turn
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            onClick={() => {
+                              const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                              const endLogEntry = `[${timeStr}] Combat ended`;
+                              onUpdateComponentEncounterData(component.id, {
+                                ...encounterData,
+                                combatActive: false,
+                                activeParticipantId: undefined,
+                                roundCount: undefined,
+                                combatLog: [...(encounterData.combatLog ?? []), endLogEntry],
+                              });
+                            }}
+                          >
+                            End combat
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <EncounterComponent
+                    encounterData={encounterData}
+                    characters={characters}
+                    onUpdateEncounterData={(data) => onUpdateComponentEncounterData(component.id, data)}
+                    onOpenMonsterSidebar={() => {
+                      setActiveEncounterId(component.id);
+                      setIsAdversarySidebarOpen(true);
+                    }}
+                  />
+                </>
+              );
+            })()}
           </SceneComponentRow>
         );
       })}
+
+      {activeEncounterId && (
+        <AdversarySidebar
+          isOpen={isAdversarySidebarOpen}
+          onClose={() => {
+            setIsAdversarySidebarOpen(false);
+            setActiveEncounterId(null);
+          }}
+          onAddAdversary={(template, count, type) => {
+            const component = components.find((c) => c.id === activeEncounterId);
+            if (!component) return;
+            const encounterData = getEncounterData(component);
+            const { monsterGroups = [] } = encounterData;
+
+            const newGroup = {
+              id: `${type}-${template.id}-${Date.now()}`,
+              templateId: template.id,
+              name: template.name,
+              count,
+              source: type,
+              wounds: Array.from({ length: count }, () => {
+                if (type === "npc") {
+                  return (template as NpcTemplate).statBlock.W;
+                } else {
+                  return (template as CreatureTemplate).statBlock.wounds;
+                }
+              }),
+            };
+
+            onUpdateComponentEncounterData(activeEncounterId, {
+              ...encounterData,
+              monsterGroups: [...monsterGroups, newGroup],
+            });
+
+            setIsAdversarySidebarOpen(false);
+            setActiveEncounterId(null);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -79,8 +79,9 @@ test("renaming a character updates the URL and updates the landing page/GM page 
   await expect(page.locator(".wfrp-landing-character-card").filter({ hasText: "Thano Voss The Cool" })).toBeVisible();
 
   // Go to Game Master page
-  await page.getByRole("button", { name: "Game Master" }).click();
+  await page.getByRole("button", { name: "Open Game Master" }).click();
+  await page.getByRole("button", { name: "Open", exact: true }).first().click();
 
   // The player card on the GM page should also say "Thano Voss The Cool"
-  await expect(page.locator(".wfrp-landing-character-card").filter({ hasText: "Thano Voss The Cool" })).toBeVisible();
+  await expect(page.getByText("Thano Voss The Cool")).toBeVisible();
 });

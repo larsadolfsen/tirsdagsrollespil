@@ -4,24 +4,24 @@ test("shop includes complete equipment and filterable weapon rarities", async ({
   await page.goto("/enemy_within/thano_voss");
 
   await page.getByRole("button", { name: "Inventory" }).click();
-  await page.getByRole("button", { name: "Add item" }).click();
+  await page.getByRole("button", { name: "Add Inventory" }).click();
 
-  await expect(page.getByRole("heading", { name: "Shop" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Add Inventory" })).toBeVisible();
 
-  const search = page.getByLabel("Search shop goods");
+  const search = page.getByRole("searchbox", { name: "Search inventory" });
   await search.fill("Repeater Handgun");
-  await expect(page.getByRole("button", { name: /Repeater Handgun/ })).toBeVisible();
+  const repeaterHandgun = page.getByRole("button", { name: /Repeater Handgun/ });
+  await repeaterHandgun.click();
   await expect(page.getByText("10gc")).toBeVisible();
 
   await search.fill("Military Flail");
   await expect(page.getByRole("button", { name: /Military Flail/ })).toBeVisible();
 
   await search.fill("");
-  await page.getByRole("button", { name: "Filter shop goods by item type" }).click();
-  await page.getByRole("button", { name: "Filter by type Ranged Weapon" }).click();
+  await page.getByRole("group", { name: "Inventory type filters" }).getByText("Ranged Weapons", { exact: true }).click();
   await expect(page.getByRole("button", { name: /Repeater Pistol/ })).toBeVisible();
 
-  await page.getByRole("button", { name: "Filter by rarity Average" }).click();
+  await page.getByRole("group", { name: "Inventory rarity filters" }).getByText("Average", { exact: true }).click();
   await expect(page.getByRole("button", { name: /Throwing Axe/ })).toBeVisible();
 });
 
@@ -37,9 +37,9 @@ test("coins can be moved into a newly added pouch", async ({ page }) => {
   await page.goto("/enemy_within/thano_voss");
 
   await page.getByRole("button", { name: "Inventory" }).click();
-  await page.getByRole("button", { name: "Add item" }).click();
+  await page.getByRole("button", { name: "Add Inventory" }).click();
 
-  const search = page.getByLabel("Search shop goods");
+  const search = page.getByRole("searchbox", { name: "Search inventory" });
   await search.fill("Pouch");
   await page.getByRole("button", { name: /^Pouch/ }).click();
   await page.getByRole("button", { name: "Add", exact: true }).click();

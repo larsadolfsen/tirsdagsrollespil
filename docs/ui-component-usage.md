@@ -32,7 +32,7 @@ The UI should keep the grim WFRP identity: dark surfaces, brass/gold accents, pa
 ## Token rules
 
 - Use semantic tokens for component color decisions: `bg-background`, `text-foreground`, `bg-card`, `border-border`, `text-muted-foreground`, `bg-primary`, `text-primary-foreground`, `ring-ring`, and state tokens such as `bg-destructive`.
-- Use WFRP tokens only when the visual identity needs a named accent: `text-wfrp-gold`, `bg-wfrp-gold-surface`, `border-wfrp-gold/40`, `bg-wfrp-surface-subtle`.
+- Use WFRP tokens only when the visual identity needs a named accent: `text-wfrp-gold`, `bg-wfrp-gold/10`, `border-wfrp-gold/40`, `bg-wfrp-surface-subtle`.
 - Avoid hardcoded hex/rgb values in components. Add or reuse a token in `src/index.css` when a color becomes part of the design system.
 
 ## Interaction and accessibility rules
