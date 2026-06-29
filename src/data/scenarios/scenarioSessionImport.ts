@@ -1,0 +1,100 @@
+import type { EncounterData, GMScene, GMSceneComponent } from "../gmSessions";
+
+export type ScenarioSceneKind = "location" | "timeline" | "encounter" | "chase" | "aftermath";
+export type ScenarioLocationKind = "inn" | "room" | "outdoor" | "route" | "region" | "other";
+
+export interface ScenarioLinkTargets {
+  npcs?: string[];
+  locations?: string[];
+}
+
+export interface ScenarioLocationReference {
+  id: string;
+  name: string;
+  kind: ScenarioLocationKind;
+  parentLocationId?: string;
+  description?: string;
+  tags?: string[];
+}
+
+export interface ScenarioNpcReference {
+  id: string;
+  name: string;
+  role?: string;
+  tags?: string[];
+}
+
+interface ScenarioSceneComponentBase {
+  id: string;
+  title?: string;
+  text: string;
+  links?: ScenarioLinkTargets;
+  gmNotes?: string[];
+}
+
+export interface ScenarioTextBlock extends ScenarioSceneComponentBase {
+  type: "text";
+}
+
+export interface ScenarioEncounterBlock extends ScenarioSceneComponentBase {
+  type: "encounter";
+  encounterData: EncounterData;
+}
+
+export type ScenarioSceneComponent = ScenarioTextBlock | ScenarioEncounterBlock;
+
+export interface ScenarioSceneImport {
+  id: string;
+  title: string;
+  kind: ScenarioSceneKind;
+  locationId?: string;
+  links?: ScenarioLinkTargets;
+  components: ScenarioSceneComponent[];
+}
+
+export interface ScenarioSessionDefaults {
+  name: string;
+  notes: string;
+  sessionNumber?: number;
+}
+
+export interface ScenarioSessionImportDefinition {
+  id: string;
+  title: string;
+  source: {
+    book: string;
+    scenario: string;
+  };
+  tags: string[];
+  summary: string;
+  defaultSession: ScenarioSessionDefaults;
+  locations: ScenarioLocationReference[];
+  npcs: ScenarioNpcReference[];
+  scenes: ScenarioSceneImport[];
+}
+
+export function buildScenarioSessionScenes(scenario: ScenarioSessionImportDefinition): GMScene[] {
+  return scenario.scenes.map((scene) => ({
+    id: scene.id,
+    components: scene.components.map((component): GMSceneComponent => {
+      const base = {
+        id: component.id,
+        title: component.title,
+        text: component.text,
+      };
+
+      if (component.type === "encounter") {
+        return {
+          ...base,
+          type: "encounter",
+          encounterData: component.encounterData,
+        };
+      }
+
+      return {
+        ...base,
+        type: "text",
+      };
+    }),
+  }));
+}
