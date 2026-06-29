@@ -7,13 +7,31 @@ export interface WfrpSectionProps extends Omit<HTMLAttributes<HTMLElement>, "tit
   eyebrow?: ReactNode;
   title: ReactNode;
   actions?: ReactNode;
+  showDivider?: boolean;
+  dividerPosition?: "before" | "after";
+  dividerClassName?: string;
   className?: string;
   children?: ReactNode;
 }
 
-export function WfrpSection({ eyebrow, title, actions, className, children, ...props }: WfrpSectionProps) {
+export function WfrpSection({
+  eyebrow,
+  title,
+  actions,
+  showDivider = true,
+  dividerPosition = "after",
+  dividerClassName,
+  className,
+  children,
+  ...props
+}: WfrpSectionProps) {
+  const divider = showDivider
+    ? <Separator className={dividerClassName ?? "bg-wfrp-gold/20"} />
+    : null;
+
   return (
     <section className={cn("space-y-3", className)} {...props}>
+      {dividerPosition === "before" && divider}
       <div className="flex items-center justify-between gap-4">
         <div>
           {eyebrow && <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">{eyebrow}</p>}
@@ -21,7 +39,7 @@ export function WfrpSection({ eyebrow, title, actions, className, children, ...p
         </div>
         {actions && <div className="shrink-0">{actions}</div>}
       </div>
-      <Separator className="bg-wfrp-gold/20" />
+      {dividerPosition === "after" && divider}
       {children}
     </section>
   );

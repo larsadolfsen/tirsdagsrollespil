@@ -19,6 +19,7 @@ function monsterGroup(id: string, templateId: string, name: string, wounds: numb
     name,
     count: wounds.length,
     wounds,
+    source: "npc" as const,
   };
 }
 

@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  BookOpen,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
 } from "lucide-react";
 import type { CharacterSummary } from "../data/repository";
 import type { EncounterData, GMScene, GMSession } from "../data/gmSessions";
+import {
+  availableScenarioImports,
+  type ScenarioSessionImportDefinition,
+} from "../data/scenarios";
 import { AppShell } from "./AppShell";
 import { PlayerCardsRow } from "./PlayerCardsRow";
 import { SceneActionsMenu } from "./SceneActionsMenu";
@@ -14,6 +19,11 @@ import type { CreatureTemplate } from "../data/rules/wfrp4e";
 import {
   Breadcrumbs,
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   Heading,
   type BreadcrumbItem,
 } from "./ui";
@@ -30,6 +40,7 @@ type GameMasterPageProps = {
   isLoadingSessions: boolean;
   isSessionsSidebarOpen: boolean;
   onCreateSession: () => void;
+  onImportScenario: (scenario: ScenarioSessionImportDefinition) => Promise<void>;
   onScenesChange?: (scenes: GMScene[]) => void;
   onSelectSession: (sessionId: string) => void;
   onUpdateComponentEncounterData?: (sceneId: string, componentId: string, data: EncounterData) => void;
@@ -97,6 +108,7 @@ export function GameMasterPage({
   isLoadingSessions,
   isSessionsSidebarOpen,
   onCreateSession,
+  onImportScenario,
   onScenesChange,
   onSelectSession,
   onSessionsSidebarOpenChange,
@@ -106,6 +118,8 @@ export function GameMasterPage({
   sessions,
 }: GameMasterPageProps) {
   const [isRenamingSession, setIsRenamingSession] = useState(false);
+  const [isScenarioDialogOpen, setIsScenarioDialogOpen] = useState(false);
+  const [importingScenarioId, setImportingScenarioId] = useState<string | null>(null);
   const [sessionTitleDraft, setSessionTitleDraft] = useState(editingSessionName);
   const [scenes, setScenes] = useState<GMScene[]>(() => [createScene()]);
   const onScenesChangeRef = useRef(onScenesChange);
@@ -163,16 +177,44 @@ export function GameMasterPage({
       }
 
       const nextScenes = [...currentScenes];
-      const copiedComponents = sourceScene.components.map((comp) =>
-        createSceneComponent(comp.type, comp.text, comp.title),
-      );
+      const copiedComponents = sourceScene.components.map((component) => ({
+        ...component,
+        id: `comp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        encounterData: component.encounterData
+          ? {
+              ...component.encounterData,
+              monsterGroups: component.encounterData.monsterGroups.map((group) => ({
+                ...group,
+                wounds: [...group.wounds],
+              })),
+              playerOrder: [...component.encounterData.playerOrder],
+              manualOrder: component.encounterData.manualOrder
+                ? [...component.encounterData.manualOrder]
+                : undefined,
+            }
+          : undefined,
+      }));
       nextScenes.splice(
         sceneIndex + 1,
         0,
-        createScene(copiedComponents),
+        {
+          ...sourceScene,
+          id: `scene-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          components: copiedComponents,
+        },
       );
       return nextScenes;
     });
+  };
+
+  const importScenario = async (scenario: ScenarioSessionImportDefinition) => {
+    setImportingScenarioId(scenario.id);
+    try {
+      await onImportScenario(scenario);
+      setIsScenarioDialogOpen(false);
+    } finally {
+      setImportingScenarioId(null);
+    }
   };
 
   const deleteScene = (sceneId: string) => {
@@ -267,14 +309,24 @@ export function GameMasterPage({
       contentClassName="!p-0 !bg-background"
       footerClassName="!bg-background"
       footer={(
-        <Button
-          variant="secondary"
-          onClick={onCreateSession}
-          className="w-full justify-center"
-          leadingIcon={<Plus />}
-        >
-          Create session
-        </Button>
+        <div className="grid w-full grid-cols-2 gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setIsScenarioDialogOpen(true)}
+            className="justify-center"
+            leadingIcon={<BookOpen />}
+          >
+            Import scenario
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={onCreateSession}
+            className="justify-center"
+            leadingIcon={<Plus />}
+          >
+            Create session
+          </Button>
+        </div>
       )}
     >
       {sessions.length > 0 ? (
@@ -323,6 +375,52 @@ export function GameMasterPage({
             }}
             className="!top-14 !h-[calc(100dvh-3.5rem)] !max-h-[calc(100dvh-3.5rem)]"
           />
+          <Dialog open={isScenarioDialogOpen} onOpenChange={setIsScenarioDialogOpen}>
+            <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Import scenario</DialogTitle>
+                <DialogDescription>
+                  Create a new session from a prepared scenario. Your current session will not be changed.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col gap-3">
+                {availableScenarioImports.map((scenario) => (
+                  <article
+                    key={scenario.id}
+                    className="rounded border border-wfrp-border bg-wfrp-dark/35 p-4"
+                  >
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
+                        <Heading level={3} variant="component">{scenario.title}</Heading>
+                        <p className="mt-1 text-xs text-wfrp-gold">{scenario.source.book}</p>
+                        <p className="mt-3 text-sm leading-relaxed text-wfrp-muted-text">
+                          {scenario.summary}
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {scenario.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded border border-wfrp-border px-2 py-1 text-[10px] uppercase tracking-wide text-gray-300"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <Button
+                        variant="default"
+                        disabled={importingScenarioId !== null}
+                        onClick={() => void importScenario(scenario)}
+                        className="shrink-0"
+                      >
+                        {importingScenarioId === scenario.id ? "Importing…" : "Import"}
+                      </Button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
         </>
       )}
     >
@@ -373,9 +471,16 @@ export function GameMasterPage({
                       {scenes.map((scene, sceneIndex) => (
                         <section key={scene.id}>
                           <div className="mt-4 flex min-h-12 items-center justify-between gap-4">
-                            <Heading level={3} variant="subsection">
-                              Scene {sceneIndex + 1}
-                            </Heading>
+                            <div className="min-w-0">
+                              <Heading level={3} variant="subsection">
+                                Scene {sceneIndex + 1}
+                              </Heading>
+                              {scene.title && (
+                                <p className="mt-1 truncate font-serif text-lg text-gray-100">
+                                  {scene.title}
+                                </p>
+                              )}
+                            </div>
                             <SceneActionsMenu
                               sceneNumber={sceneIndex + 1}
                               onAddBefore={() => addScene(sceneIndex, "before")}

@@ -50,6 +50,7 @@ export interface CreatureTemplate {
   group?: string;
   statBlock: CreatureStatBlock;
   traits: CreatureTraitInstance[];
+  trappings: string[];
   optionalTraits?: CreatureTraitInstance[];
   defaultCount?: number;
 }
@@ -113,6 +114,7 @@ export const skavenCreatureTemplates: CreatureTemplate[] = [
       { id: "night-vision" },
       { id: "weapon", rating: 7 },
     ],
+    trappings: ["Hand Weapon", "Leather Jack", "Shield"],
     optionalTraits: [
       { id: "disease", value: "Ratte Fever" },
       { id: "mutation" },
@@ -150,6 +152,7 @@ export const skavenCreatureTemplates: CreatureTemplate[] = [
       { id: "night-vision" },
       { id: "weapon", rating: 8 },
     ],
+    trappings: ["Halberd", "Mail Coat", "Leather Jack"],
     optionalTraits: [
       { id: "disease", value: "Ratte Fever" },
       { id: "mutation" },
@@ -187,6 +190,7 @@ export const skavenCreatureTemplates: CreatureTemplate[] = [
       { id: "stupid" },
       { id: "weapon", rating: 9 },
     ],
+    trappings: [],
     optionalTraits: [
       { id: "corrupted", value: "Minor" },
       { id: "dark-vision" },

@@ -274,7 +274,7 @@ export function SheetDataAccordionDetails({
                 )}
               >
                 <span className="wfrp-list-cell-strong text-wfrp-muted-text">{row.label}</span>
-                <span className={cn("wfrp-sidebar-body min-w-0 text-left text-card-foreground", row.valueClassName)}>{row.value}</span>
+                <span className={cn("wfrp-sidebar-body min-w-0 text-left", row.valueClassName)}>{row.value}</span>
               </div>
             ))}
           </div>

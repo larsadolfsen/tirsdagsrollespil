@@ -6,19 +6,14 @@ import {
   ChevronUp,
   ChevronDown,
   EllipsisVertical,
-  Plus,
-  Minus,
   Skull,
-  ArrowDownWideNarrow,
   BookOpenText,
-  Sparkles,
 } from "lucide-react";
 import { FormattedTextField } from "./FormattedTextField";
 import {
   SheetDataDefinitionList,
   WfrpPanel,
   WfrpSection,
-  WfrpStatusBadge,
 } from "./wfrp";
 import {
   Button,
@@ -33,25 +28,25 @@ import {
   TableHeader,
   TableRow,
   Heading,
+  HeaderResourceSlider,
+  Label,
   CardDescription,
 } from "./ui";
 import type { CharacterSummary } from "../data/repository";
-import { loadResolvedCharacter, loadCharacterProgress } from "../data/repository";
+import { loadResolvedCharacter, loadCharacterProgress, saveCharacterProgress } from "../data/repository";
 import { hydrateCharacterProgress, subscribeToProgressUpdates } from "../data/persistence";
-import type { EncounterData, EncounterMonsterGroup } from "../data/gmSessions";
+import type { EncounterData, EncounterMonsterGroup, GMSceneComponent } from "../data/gmSessions";
+import { npcTemplatesById, type NpcTemplate } from "../data/npcs";
 import { allSpellDefinitions, creatureTemplatesById } from "../data/rules/wfrp4e";
 import type { CreatureTemplate, ResolvedCreatureTemplate } from "../data/rules/wfrp4e";
 import { resolvedCreatureTemplatesById } from "../data/rules/wfrp4e";
 import type { SpellDefinition } from "../types";
+import type { CharacterProgressData } from "../types";
 import { UI_LABELS } from "../labels";
+import { loadGameSession } from "../lib/gameSession";
+import { isPrayerDefinition } from "../tabs/spells/spellUtils";
 
-export type SceneComponent = {
-  id: string;
-  type: "text" | "encounter";
-  text: string;
-  title?: string;
-  encounterData?: EncounterData;
-};
+export type SceneComponent = GMSceneComponent;
 
 type SceneComponentsListProps = {
   sceneId: string;
@@ -65,6 +60,11 @@ type SceneComponentsListProps = {
   onUpdateComponentEncounterData: (componentId: string, data: EncounterData) => void;
   onOpenMonsterSidebar: (onAdd: (template: CreatureTemplate, count: number) => void) => void;
   onRollInitiative?: (name: string, bonus: number) => void;
+};
+
+const ENCOUNTER_SECTION_DIVIDER = {
+  dividerPosition: "before" as const,
+  dividerClassName: "bg-wfrp-border",
 };
 
 function getEncounterData(component: SceneComponent): EncounterData {
@@ -198,49 +198,208 @@ function PlayerParticipantRow({
 // ── Player info pane ─────────────────────────────────────────────────────────
 
 function PlayerInfoPane({ characterId }: { characterId: string }) {
-  const char = loadResolvedCharacter(characterId);
-  const progress = loadCharacterProgress(characterId);
-  if (!char) return null;
+  const [, setProgressVersion] = useState(0);
 
-  const baseCharAdvances = char.characteristicAdvances ?? {};
-  const currentAdvances = progress?.characteristicAdvances ?? baseCharAdvances;
-  const attributes = Object.fromEntries(
-    Object.entries(char.attributes).map(([key, value]) => {
-      const baseAdv = baseCharAdvances[key] ?? 0;
-      const curAdv = currentAdvances[key] ?? baseAdv;
-      return [key, value + (curAdv - baseAdv)];
-    }),
+  useEffect(() => {
+    let cancelled = false;
+    void hydrateCharacterProgress(characterId).then(() => {
+      if (!cancelled) setProgressVersion((version) => version + 1);
+    });
+    const unsubscribe = subscribeToProgressUpdates((message) => {
+      if (message.characterId === characterId) {
+        setProgressVersion((version) => version + 1);
+      }
+    });
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
+  }, [characterId]);
+
+  const session = loadGameSession(characterId);
+  const char = session.character;
+  const progress = session.progress;
+  const woundsCurrent = Math.min(Math.max(0, char.wounds.current), char.wounds.max);
+  const trainedSkills = char.skills
+    .filter((skill) => skill.advances > 0)
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
+  const sortedTalents = [...char.talents]
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const visibleEquipment = char.equipment
+    .filter((item) => item.equipped)
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const hasBlessTalent = char.talents.some((talent) => talent.id === "bless" || talent.name === "Bless");
+  const hasInvokeTalent = char.talents.some((talent) => /^Invoke(?:\s|$)/i.test(talent.name));
+  const grantedPrayers = session.ruleset.spells.filter((spell) =>
+    (hasBlessTalent && spell.school?.endsWith("-prayer")) ||
+    (hasInvokeTalent && spell.school?.endsWith("-miracle")),
   );
+  const prayers = Array.from(
+    new Map(
+      [...grantedPrayers, ...char.spells.filter(isPrayerDefinition)]
+        .map((prayer) => [prayer.id, prayer]),
+    ).values(),
+  ).sort((a, b) => a.name.localeCompare(b.name));
+  const spells = char.spells
+    .filter((spell) => !isPrayerDefinition(spell))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const handleWoundChange = (delta: number) => {
+    const fallbackProgress: CharacterProgressData = {
+      woundsCurrent,
+      corruptionCurrent: char.corruption,
+      fortuneCurrent: session.initialFortuneCurrent,
+      xpCurrent: session.initialXpCurrent,
+      skills: {},
+      equipment: {},
+    };
+    saveCharacterProgress(characterId, {
+      ...fallbackProgress,
+      ...progress,
+      woundsCurrent: Math.max(0, Math.min(char.wounds.max, woundsCurrent + delta)),
+    });
+  };
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-center">
-        <span className="font-serif text-base font-semibold text-gray-100">{char.name}</span>
-        <span className="wfrp-label block text-[10px] uppercase tracking-widest text-wfrp-muted-text mt-0.5">
-          {char.tier}
-        </span>
-      </div>
-      <div className="grid grid-cols-5 gap-2">
-        {UI_LABELS.CHARACTERISTICS.map((characteristic) => {
-          const value = attributes[characteristic.key] || 0;
-          const bonus = Math.floor(value / 10);
-          return (
-            <div key={characteristic.key} className="flex flex-col items-center">
-              <span className="mb-1 text-[9px] font-semibold uppercase tracking-tight text-wfrp-muted-text leading-none">
-                {characteristic.key}
-              </span>
-              <div className="relative">
-                <div className="flex h-11 w-9 flex-col items-center justify-center rounded border border-wfrp-border bg-wfrp-surface shadow">
-                  <span className="text-xs font-bold text-gray-100">{value}</span>
-                  <div className="absolute -bottom-1 left-1/2 z-10 flex h-4 w-4 -translate-x-1/2 items-center justify-center rounded-full border border-wfrp-border bg-wfrp-surface">
-                    <span className="text-[7px] font-semibold text-wfrp-muted-text">{bonus}</span>
-                  </div>
-                </div>
+      <WfrpPanel className="shadow-none">
+        <article className="flex min-w-0 flex-col gap-5">
+          <header>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <Heading level={3} variant="sectionProminent">{char.name}</Heading>
+                <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-wfrp-muted-text">
+                  {[char.race, char.tier, char.status].filter(Boolean).join(" • ")}
+                </p>
               </div>
+              <HeaderResourceSlider
+                label="Wounds"
+                current={woundsCurrent}
+                max={char.wounds.max}
+                onAdjust={handleWoundChange}
+                barClassName="bg-wfrp-red"
+                showSteppers={false}
+                contentClassName="flex w-24 min-w-0 flex-col gap-1"
+              />
             </div>
-          );
-        })}
-      </div>
+          </header>
+
+          <WfrpSection
+            title="Characteristics"
+            {...ENCOUNTER_SECTION_DIVIDER}
+            aria-label="Characteristics"
+          >
+            <div className="grid grid-cols-10 gap-x-2">
+              {UI_LABELS.CHARACTERISTICS.map((characteristic) => (
+                <div key={characteristic.key} className="text-center">
+                  <Label className="block text-center">{characteristic.key}</Label>
+                  <strong className="mt-0.5 block text-sm tabular-nums text-gray-100">
+                    {char.attributes[characteristic.key] ?? 0}
+                  </strong>
+                </div>
+              ))}
+            </div>
+          </WfrpSection>
+
+          <WfrpSection
+            title="Skills"
+            {...ENCOUNTER_SECTION_DIVIDER}
+            aria-label="Skills"
+          >
+            <SheetDataDefinitionList
+              className="!grid grid-cols-2 gap-x-6 gap-y-1 border-t-0 pt-0"
+              items={trainedSkills.map((skill) => ({
+                label: skill.displayName,
+                value: `${(char.attributes[skill.characteristic] ?? 0) + skill.advances} (${skill.characteristic} +${skill.advances})`,
+                labelClassName: "text-white",
+                valueClassName: "tabular-nums",
+              }))}
+            />
+          </WfrpSection>
+
+          <WfrpSection
+            title="Talents"
+            {...ENCOUNTER_SECTION_DIVIDER}
+            aria-label="Talents"
+          >
+            <SheetDataDefinitionList
+              className="border-t-0 pt-0"
+              items={sortedTalents.map((talent) => ({
+                label: <span>{talent.name}</span>,
+                value: talent.description,
+                labelClassName: "text-white",
+              }))}
+            />
+          </WfrpSection>
+
+          <WfrpSection
+            title="Trappings"
+            {...ENCOUNTER_SECTION_DIVIDER}
+            aria-label="Trappings"
+          >
+            {visibleEquipment.length > 0 ? (
+              <SheetDataDefinitionList
+                className="border-t-0 pt-0"
+                items={visibleEquipment.map((item) => ({
+                  label: item.quantity && item.quantity > 1 ? `${item.name} ×${item.quantity}` : item.name,
+                  value: item.description || item.type,
+                  labelClassName: "text-white",
+                }))}
+              />
+            ) : (
+              <p className="text-xs leading-relaxed text-gray-300">None equipped</p>
+            )}
+          </WfrpSection>
+
+          {spells.length > 0 && (
+            <WfrpSection
+              title="Spells"
+              {...ENCOUNTER_SECTION_DIVIDER}
+              aria-label="Spells"
+            >
+              <div className="divide-y divide-wfrp-border/60">
+                {spells.map((spell) => (
+                  <div key={spell.id} className="py-3 first:pt-0 last:pb-0">
+                    <Heading level={5} variant="item">{spell.name}</Heading>
+                    <p className="mt-1.5 text-xs leading-relaxed text-gray-300">{spell.description}</p>
+                    <SheetDataDefinitionList items={[
+                      { label: "CN", value: spell.cn },
+                      { label: "Range", value: spell.range },
+                      { label: "Target", value: spell.target },
+                      { label: "Duration", value: spell.duration },
+                      ...(spell.damage !== "-" ? [{ label: "Damage", value: spell.damage }] : []),
+                    ]} />
+                  </div>
+                ))}
+              </div>
+            </WfrpSection>
+          )}
+
+          {prayers.length > 0 && (
+            <WfrpSection
+              title="Prayers"
+              {...ENCOUNTER_SECTION_DIVIDER}
+              aria-label="Prayers"
+            >
+              <div className="divide-y divide-wfrp-border/60">
+                {prayers.map((prayer) => (
+                  <div key={prayer.id} className="py-3 first:pt-0 last:pb-0">
+                    <Heading level={5} variant="item">{prayer.name}</Heading>
+                    <p className="mt-1.5 text-xs leading-relaxed text-gray-300">{prayer.description}</p>
+                    <SheetDataDefinitionList items={[
+                      { label: "CN", value: prayer.cn },
+                      { label: "Range", value: prayer.range },
+                      { label: "Target", value: prayer.target },
+                      { label: "Duration", value: prayer.duration },
+                      ...(prayer.damage !== "-" ? [{ label: "Damage", value: prayer.damage }] : []),
+                    ]} />
+                  </div>
+                ))}
+              </div>
+            </WfrpSection>
+          )}
+        </article>
+      </WfrpPanel>
     </div>
   );
 }
@@ -263,7 +422,6 @@ function MonsterInfoPane({
   onRemove: () => void;
 }) {
   const { characteristics, movement, size } = template.statBlock;
-  const isDead = currentWounds === 0;
   const traitValue = (trait: ResolvedCreatureTemplate["traits"][number]) => {
     const value = trait.value;
     if (Array.isArray(value)) return value.join(", ");
@@ -292,7 +450,7 @@ function MonsterInfoPane({
   return (
     <WfrpPanel className="shadow-none">
     <article className="flex min-w-0 flex-col gap-5">
-      <header className="border-b border-wfrp-gold/35 pb-3">
+      <header>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <Heading level={3} variant="sectionProminent">{displayName}</Heading>
@@ -300,13 +458,15 @@ function MonsterInfoPane({
               {[size, template.category, template.group].filter(Boolean).join(" • ")}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] font-semibold uppercase tracking-widest text-wfrp-muted-text">Move</span>
-              <WfrpStatusBadge tone="gold" className="min-w-8 justify-center text-sm tabular-nums">
-                {movement}
-              </WfrpStatusBadge>
-            </div>
+          <div className="flex items-center gap-3">
+            <HeaderResourceSlider
+              label="Wounds"
+              current={currentWounds}
+              max={maxWounds}
+              onAdjust={onWoundChange}
+              barClassName="bg-wfrp-red"
+              contentClassName="flex w-24 min-w-0 flex-col gap-1"
+            />
             <DropdownMenu>
               <DropdownMenuTrigger
                 aria-label={`${displayName} actions`}
@@ -327,107 +487,71 @@ function MonsterInfoPane({
         </div>
       </header>
 
-      <div className="flex flex-col">
-        <section className="border-t border-wfrp-border/70 py-3" aria-labelledby={`characteristics-${template.id}`}>
-          <Heading id={`characteristics-${template.id}`} level={4} variant="panel">
-            Characteristics
-          </Heading>
+      <WfrpSection
+        title="Characteristics"
+        {...ENCOUNTER_SECTION_DIVIDER}
+        aria-label="Characteristics"
+      >
           <div className="grid grid-cols-10 gap-x-2">
             {(["WS", "BS", "S", "T", "I", "Ag", "Dex", "Int", "WP", "Fel"] as const).map((key) => {
               const value = characteristics[key] ?? 0;
               return (
                 <div key={key} className="text-center">
-                  <span className="block text-[9px] font-semibold uppercase text-wfrp-muted-text">{key}</span>
+                  <Label className="block text-center">{key}</Label>
                   <strong className="mt-0.5 block text-sm tabular-nums text-gray-100">{value}</strong>
                 </div>
               );
             })}
           </div>
-        </section>
+      </WfrpSection>
 
-        {/* Wounds tracker */}
-        <section className="border-y border-wfrp-border/70 py-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <span className="block text-[9px] font-semibold uppercase tracking-[0.18em] text-wfrp-muted-text">Wounds</span>
-              <span className={`mt-1 block text-2xl font-bold leading-none tabular-nums ${isDead ? "text-red-400" : "text-gray-100"}`}>
-                {currentWounds}<span className="text-base font-medium text-wfrp-muted-text"> / {maxWounds}</span>
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Button
-                variant="secondary"
-                onClick={() => onWoundChange(-1)}
-                disabled={isDead}
-                className="h-9 w-9 justify-center p-0"
-                aria-label="Decrease wounds"
-              >
-                <Minus size={15} />
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => onWoundChange(+1)}
-                disabled={currentWounds >= maxWounds}
-                className="h-9 w-9 justify-center p-0"
-                aria-label="Increase wounds"
-              >
-                <Plus size={15} />
-              </Button>
-            </div>
-            {isDead && <span className="sr-only">Incapacitated</span>}
-          </div>
-        </section>
-      </div>
-
-      {template.traits.length > 0 && (
-        <WfrpSection
-          title="Traits"
-          actions={<WfrpStatusBadge>{template.traits.length}</WfrpStatusBadge>}
-          aria-label="Traits"
-        >
-          <div className="divide-y divide-wfrp-border/60">
-            {template.traits.map((trait) => {
+      <WfrpSection
+        title="Traits"
+        {...ENCOUNTER_SECTION_DIVIDER}
+        aria-label="Traits"
+      >
+        <SheetDataDefinitionList
+          className="border-t-0 pt-0"
+          items={[
+            {
+              label: "Movement",
+              value: `Walk ${movement * 2} / Run ${movement * 4}`,
+              labelClassName: "text-white",
+            },
+            ...template.traits.map((trait) => {
               const value = traitValue(trait);
-              const parameter = value
-                ? `${trait.definition.parameter?.label ? `${trait.definition.parameter.label} ` : ""}${value}`
-                : "";
-              return (
-                <div
-                  key={`${trait.id}-${value}`}
-                  className="py-3 first:pt-0 last:pb-0"
-                >
-                  <CardDescription>
-                    <strong>
-                      {trait.label || trait.definition.name}{parameter ? ` (${parameter})` : ""}.
-                    </strong>{" "}
-                    {trait.definition.summary}{" "}
-                    {trait.definition.combatTracker}
-                  </CardDescription>
-                  {trait.notes && (
-                    <CardDescription className="mt-1">{trait.notes}</CardDescription>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </WfrpSection>
-      )}
+              return {
+                label: `${trait.label || trait.definition.name}${value ? ` (${value})` : ""}`,
+                value: `${trait.definition.summary} ${trait.definition.combatTracker}${trait.notes ? ` ${trait.notes}` : ""}`,
+                labelClassName: "text-white",
+              };
+            }),
+          ].sort((left, right) => left.label.localeCompare(right.label))}
+        />
+      </WfrpSection>
+
+      <WfrpSection
+        title="Trappings"
+        {...ENCOUNTER_SECTION_DIVIDER}
+        aria-label="Trappings"
+      >
+        <CardDescription>{template.trappings.join(", ") || "None"}</CardDescription>
+      </WfrpSection>
 
       {spellcasterTraits.length > 0 && (
         <WfrpSection
-          title={<span className="flex items-center gap-2"><Sparkles size={15} className="text-wfrp-gold" /> Spells</span>}
+          title="Spells"
+          {...ENCOUNTER_SECTION_DIVIDER}
           aria-label="Spells"
         >
           {spells.length > 0 ? (
             <div className="divide-y divide-wfrp-border/60">
               {spells.map((spell) => (
                 <div key={spell.id} className="py-3 first:pt-0 last:pb-0">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <Heading level={5} variant="item">{spell.name}</Heading>
-                    <WfrpStatusBadge tone="gold">CN {spell.cn}</WfrpStatusBadge>
-                  </div>
+                  <Heading level={5} variant="item">{spell.name}</Heading>
                   <p className="mt-1.5 text-xs leading-relaxed text-gray-300">{spell.description}</p>
                   <SheetDataDefinitionList items={[
+                    { label: "CN", value: spell.cn },
                     { label: "Range", value: spell.range },
                     { label: "Target", value: spell.target },
                     { label: "Duration", value: spell.duration },
@@ -449,6 +573,148 @@ function MonsterInfoPane({
       )}
     </article>
     </WfrpPanel>
+  );
+}
+
+function splitNpcListEntry(entry: string) {
+  const match = entry.match(/^(.*?)(?:\s+([+-]?\d+))$/);
+  return {
+    label: match?.[1] ?? entry,
+    value: match?.[2] ?? "",
+  };
+}
+
+function NpcInfoPane({
+  npc,
+  displayName,
+  currentWounds,
+  onWoundChange,
+  onRemove,
+}: {
+  npc: NpcTemplate;
+  displayName: string;
+  currentWounds: number;
+  onWoundChange: (delta: number) => void;
+  onRemove: () => void;
+}) {
+  const characteristics = npc.statBlock;
+  const category = npc.category.charAt(0).toUpperCase() + npc.category.slice(1);
+  const skills = (npc.skills ?? [])
+    .map(splitNpcListEntry)
+    .sort((a, b) => a.label.localeCompare(b.label));
+  const talents = (npc.talents ?? [])
+    .map(splitNpcListEntry)
+    .sort((a, b) => a.label.localeCompare(b.label));
+  const trappings = [...(npc.trappings ?? [])].sort((a, b) => a.localeCompare(b));
+
+  return (
+    <div className="flex flex-col gap-3">
+      <WfrpPanel className="shadow-none">
+        <article className="flex min-w-0 flex-col gap-5">
+          <header>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <Heading level={3} variant="sectionProminent">{displayName}</Heading>
+                <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-wfrp-muted-text">
+                  {[category, npc.group].filter(Boolean).join(" • ")}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <HeaderResourceSlider
+                  label="Wounds"
+                  current={currentWounds}
+                  max={npc.statBlock.W}
+                  onAdjust={onWoundChange}
+                  barClassName="bg-wfrp-red"
+                  showSteppers
+                  contentClassName="flex w-24 min-w-0 flex-col gap-1"
+                />
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    aria-label={`${displayName} actions`}
+                    className="wfrp-standard-icon cursor-pointer"
+                  >
+                    <span className="wfrp-standard-icon__glyph" aria-hidden="true">
+                      <EllipsisVertical />
+                    </span>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem variant="destructive" onClick={onRemove}>
+                      <Trash2 className="mr-2 size-4" aria-hidden="true" />
+                      Remove
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </header>
+
+          <WfrpSection
+            title="Characteristics"
+            {...ENCOUNTER_SECTION_DIVIDER}
+            aria-label="Characteristics"
+          >
+            <div className="grid grid-cols-10 gap-x-2">
+              {(["WS", "BS", "S", "T", "I", "Ag", "Dex", "Int", "WP", "Fel"] as const).map((key) => (
+                <div key={key} className="text-center">
+                  <Label className="block text-center">{key}</Label>
+                  <strong className="mt-0.5 block text-sm tabular-nums text-gray-100">
+                    {characteristics[key]}
+                  </strong>
+                </div>
+              ))}
+            </div>
+          </WfrpSection>
+
+          <WfrpSection title="Skills" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Skills">
+            {skills.length > 0 ? (
+              <SheetDataDefinitionList
+                className="!grid grid-cols-2 gap-x-6 gap-y-1 border-t-0 pt-0"
+                items={skills.map((skill) => ({
+                  label: skill.label,
+                  value: skill.value,
+                  labelClassName: "text-white",
+                  valueClassName: "tabular-nums",
+                }))}
+              />
+            ) : (
+              <p className="text-xs leading-relaxed text-gray-300">No trained skills listed</p>
+            )}
+          </WfrpSection>
+
+          <WfrpSection title="Talents" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Talents">
+            {talents.length > 0 ? (
+              <SheetDataDefinitionList
+                className="border-t-0 pt-0"
+                items={talents.map((talent) => ({
+                  label: talent.label,
+                  value: talent.value,
+                  labelClassName: "text-white",
+                  valueClassName: "tabular-nums",
+                }))}
+              />
+            ) : (
+              <p className="text-xs leading-relaxed text-gray-300">No talents listed</p>
+            )}
+          </WfrpSection>
+
+          <WfrpSection title="Trappings" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Trappings">
+            {trappings.length > 0 ? (
+              <SheetDataDefinitionList
+                className="border-t-0 pt-0"
+                items={trappings.map((trapping) => ({
+                  label: trapping,
+                  value: "",
+                  labelClassName: "text-white",
+                }))}
+              />
+            ) : (
+              <p className="text-xs leading-relaxed text-gray-300">None equipped</p>
+            )}
+          </WfrpSection>
+        </article>
+      </WfrpPanel>
+    </div>
   );
 }
 
@@ -486,17 +752,18 @@ function EncounterComponent({
     })),
     ...monsterGroups.flatMap((group): Participant[] => {
       const template = creatureTemplatesById[group.templateId as keyof typeof creatureTemplatesById];
+      const npc = group.source === "npc" ? npcTemplatesById[group.templateId] : undefined;
       return group.wounds.map((currentWounds, i) => ({
         kind: "monster" as const,
         id: `monster-${group.id}-${i}`,
         groupId: group.id,
         instanceIndex: i,
-        initiative: template?.statBlock.characteristics.I ?? 0,
-        agility: template?.statBlock.characteristics.Ag ?? 0,
+        initiative: npc?.statBlock.I ?? template?.statBlock.characteristics.I ?? 0,
+        agility: npc?.statBlock.Ag ?? template?.statBlock.characteristics.Ag ?? 0,
         name: group.name,
-        category: template?.category ?? "",
+        category: npc?.category ?? template?.category ?? "",
         currentWounds,
-        maxWounds: template?.statBlock.wounds ?? group.wounds[i] ?? 0,
+        maxWounds: npc?.statBlock.W ?? template?.statBlock.wounds ?? group.wounds[i] ?? 0,
       }));
     }),
   ];
@@ -532,8 +799,6 @@ function EncounterComponent({
     return [...namedParticipants].sort((a, b) => b.initiative - a.initiative || b.agility - a.agility);
   })();
 
-  const totalCount = participants.length;
-
   const handleSelect = (id: string) => {
     setSelectedId((prev) => (prev === id ? null : id));
   };
@@ -555,11 +820,6 @@ function EncounterComponent({
 
   const handleParticipantDragEnd = () => setDraggedParticipantIndex(null);
 
-  const handleSortByRules = () => {
-    const sorted = [...participants].sort((a, b) => b.initiative - a.initiative || b.agility - a.agility);
-    onUpdateEncounterData({ ...encounterData, manualOrder: sorted.map((p) => p.id) });
-  };
-
   const handleAddMonster = (template: CreatureTemplate, count: number) => {
     const newGroup: EncounterMonsterGroup = {
       id: `monster-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -578,7 +838,8 @@ function EncounterComponent({
     const group = monsterGroups.find((g) => g.id === groupId);
     if (!group) return;
     const template = creatureTemplatesById[group.templateId as keyof typeof creatureTemplatesById];
-    const maxWounds = template?.statBlock.wounds ?? 0;
+    const npc = group.source === "npc" ? npcTemplatesById[group.templateId] : undefined;
+    const maxWounds = npc?.statBlock.W ?? template?.statBlock.wounds ?? group.wounds[instanceIndex] ?? 0;
     onUpdateEncounterData({
       ...encounterData,
       monsterGroups: monsterGroups.map((g) => {
@@ -606,41 +867,49 @@ function EncounterComponent({
 
   return (
     <div className="mt-3 flex flex-col gap-0 overflow-hidden rounded border border-wfrp-border">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-wfrp-border bg-wfrp-surface/60 px-4 py-2.5">
-          <div className="flex items-center gap-2">
-            <span className="wfrp-label text-[11px] uppercase tracking-widest text-wfrp-muted-text">
-              Initiative ({totalCount})
-            </span>
-            <Button
-              variant="wfrpIcon"
-              onClick={handleSortByRules}
-              aria-label="Sort by initiative"
-              title="Sort by Initiative (highest first)"
-              leadingIcon={<ArrowDownWideNarrow />}
-            />
+        {/* Shared action and participant-column header */}
+        <div className="grid h-12 shrink-0 grid-cols-[412px_minmax(0,1fr)] border-b border-wfrp-border bg-wfrp-surface/60">
+          <div className="min-w-0 border-r border-wfrp-border/40">
+            <Table className="h-full table-fixed">
+              <colgroup>
+                <col className="w-12" />
+                <col className="w-14" />
+                <col />
+                <col className="w-[72px]" />
+                <col className="w-16" />
+              </colgroup>
+              <TableHeader>
+                <TableRow className="h-12 border-0 hover:bg-transparent">
+                  <TableHead className="h-12 p-0" />
+                  <TableHead className="h-12 w-14" />
+                  <TableHead className="h-12">Name</TableHead>
+                  <TableHead className="h-12 w-[72px] text-center">Initiative</TableHead>
+                  <TableHead className="h-12 w-16 text-right">Wounds</TableHead>
+                </TableRow>
+              </TableHeader>
+            </Table>
           </div>
-          <Button
-            variant="secondary"
-            onClick={() => onOpenMonsterSidebar(handleAddMonster)}
-          >
-            Add Monster
-          </Button>
+          <div className="flex items-center justify-end px-4">
+            <Button
+              variant="secondary"
+              onClick={() => onOpenMonsterSidebar(handleAddMonster)}
+            >
+              Add Monster
+            </Button>
+          </div>
         </div>
 
-        <div className="grid min-h-0 grid-cols-[340px_minmax(0,1fr)]">
+        <div className="grid min-h-0 grid-cols-[412px_minmax(0,1fr)]">
           {/* Participant list */}
           <div className="min-w-0 border-r border-wfrp-border/40">
             <Table className="table-fixed">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-6 p-0" />
-                  <TableHead className="w-14" />
-                  <TableHead>Name</TableHead>
-                  <TableHead className="w-[72px] text-center">Initiative</TableHead>
-                  <TableHead className="w-16 text-right">Wounds</TableHead>
-                </TableRow>
-              </TableHeader>
+              <colgroup>
+                <col className="w-12" />
+                <col className="w-14" />
+                <col />
+                <col className="w-[72px]" />
+                <col className="w-16" />
+              </colgroup>
               <TableBody>
                 {participants.length === 0 && (
                   <TableRow>
@@ -707,10 +976,31 @@ function EncounterComponent({
               <PlayerInfoPane characterId={selectedParticipant.characterId} />
             )}
             {selectedParticipant?.kind === "monster" && (() => {
+              const group = monsterGroups.find((entry) => entry.id === selectedParticipant.groupId);
+              const npc = group?.source === "npc" ? npcTemplatesById[group.templateId] : undefined;
+              if (npc) {
+                return (
+                  <NpcInfoPane
+                    npc={npc}
+                    displayName={selectedParticipant.name}
+                    currentWounds={selectedParticipant.currentWounds}
+                    onWoundChange={(delta) =>
+                      handleMonsterWoundChange(selectedParticipant.groupId, selectedParticipant.instanceIndex, delta)
+                    }
+                    onRemove={() => handleRemoveMonsterGroup(selectedParticipant.groupId)}
+                  />
+                );
+              }
               const resolved = resolvedCreatureTemplatesById[
-                monsterGroups.find((g) => g.id === selectedParticipant.groupId)?.templateId as keyof typeof resolvedCreatureTemplatesById
+                group?.templateId as keyof typeof resolvedCreatureTemplatesById
               ];
-              if (!resolved) return null;
+              if (!resolved) {
+                return (
+                  <p className="text-sm text-wfrp-muted-text">
+                    No details are available for {selectedParticipant.name}.
+                  </p>
+                );
+              }
               return (
                 <div className="flex flex-col gap-3">
                   <MonsterInfoPane

@@ -1,10 +1,12 @@
+import type { NpcTemplate } from "../../npcTypes";
+
 const sourceTags = [
   "Rough Nights & Hard Days",
   "A Rough Night at the Three Feathers",
   "NPC",
 ] as const;
 
-export const threeFeathersNpcMonsters = [
+const threeFeathersNpcSource = [
   {
     id: "three-feathers-gravin-maria-ulrike-von-liebwitz",
     name: "Gravin Maria-Ulrike von Liebwitz of Ambosstein",
@@ -439,3 +441,7 @@ export const threeFeathersNpcMonsters = [
     talents: ["Prejudice (Dwarfs)", "Weapon (Hammer) +9"],
   },
 ] as const;
+
+export const threeFeathersNpcs: NpcTemplate[] = threeFeathersNpcSource.map(
+  ({ type: _legacyType, ...npc }) => npc,
+);

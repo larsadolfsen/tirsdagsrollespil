@@ -62,6 +62,10 @@ import {
   type GMSession,
 } from "./data/gmSessions";
 import {
+  buildScenarioSessionScenes,
+  type ScenarioSessionImportDefinition,
+} from "./data/scenarios";
+import {
   formatItemValue,
   getCharacterSkillKey,
 } from "./lib/gameSession";
@@ -438,6 +442,38 @@ export function AppComposition() {
       await saveCampaignSession(characterData.campaignId, newSession);
     } catch (err) {
       console.error("Failed to create session on server", err);
+    }
+  };
+
+  const handleImportGmScenario = async (scenario: ScenarioSessionImportDefinition) => {
+    const maxNum = gmSessions.length > 0
+      ? Math.max(...gmSessions.map((session) => session.sessionNumber))
+      : -1;
+    const scenes = buildScenarioSessionScenes(scenario);
+    const newSession: GMSession = {
+      id: `${scenario.id}-${Date.now().toString(36)}`,
+      campaignId: characterData.campaignId,
+      sessionNumber: maxNum + 1,
+      name: scenario.defaultSession.name,
+      date: new Date().toISOString().split("T")[0],
+      notes: scenario.defaultSession.notes,
+      scenes,
+    };
+
+    await saveCampaignSession(characterData.campaignId, newSession);
+
+    latestScenesRef.current = scenes;
+    setGmSessions((currentSessions) => (
+      [newSession, ...currentSessions].sort((a, b) => {
+        if (b.sessionNumber !== a.sessionNumber) {
+          return b.sessionNumber - a.sessionNumber;
+        }
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      })
+    ));
+    setSelectedGmSessionId(newSession.id);
+    if (typeof window !== "undefined" && window.innerWidth < 1920) {
+      setIsSessionsSidebarOpen(false);
     }
   };
 
@@ -1762,6 +1798,7 @@ export function AppComposition() {
         isLoadingSessions={isLoadingGmSessions}
         isSessionsSidebarOpen={isSessionsSidebarOpen}
         onCreateSession={handleCreateGmSession}
+        onImportScenario={handleImportGmScenario}
         onScenesChange={handleScenesChange}
         onSelectSession={handleSelectSessionOnMobile}
         onSessionsSidebarOpenChange={setIsSessionsSidebarOpen}

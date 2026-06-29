@@ -4,6 +4,7 @@ export interface EncounterMonsterGroup {
   name: string;
   count: number;
   wounds: number[];
+  source?: "creature" | "npc";
 }
 
 export interface EncounterData {
@@ -12,16 +13,27 @@ export interface EncounterData {
   manualOrder?: string[];
 }
 
+export interface GMScenarioLinks {
+  npcs?: string[];
+  locations?: string[];
+}
+
 export interface GMSceneComponent {
   id: string;
   type: "text" | "encounter";
   text: string;
   title?: string;
   encounterData?: EncounterData;
+  links?: GMScenarioLinks;
+  gmNotes?: string[];
 }
 
 export interface GMScene {
   id: string;
+  title?: string;
+  kind?: string;
+  locationId?: string;
+  links?: GMScenarioLinks;
   components: GMSceneComponent[];
 }
 

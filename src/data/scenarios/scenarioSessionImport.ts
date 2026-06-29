@@ -76,11 +76,17 @@ export interface ScenarioSessionImportDefinition {
 export function buildScenarioSessionScenes(scenario: ScenarioSessionImportDefinition): GMScene[] {
   return scenario.scenes.map((scene) => ({
     id: scene.id,
+    title: scene.title,
+    kind: scene.kind,
+    locationId: scene.locationId,
+    links: scene.links,
     components: scene.components.map((component): GMSceneComponent => {
       const base = {
         id: component.id,
         title: component.title,
         text: component.text,
+        links: component.links,
+        gmNotes: component.gmNotes,
       };
 
       if (component.type === "encounter") {

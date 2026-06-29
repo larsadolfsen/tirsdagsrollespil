@@ -10,6 +10,7 @@ type ResourceCounterBarProps = {
   minusRingClassName: string;
   plusRingClassName: string;
   canIncreaseBeyondMax?: boolean;
+  showSteppers?: boolean;
   contentClassName?: string;
   className?: string;
 };
@@ -21,6 +22,7 @@ type HeaderResourceSliderProps = {
   onAdjust: (delta: number) => void;
   barClassName: string;
   canIncreaseBeyondMax?: boolean;
+  showSteppers?: boolean;
   contentClassName?: string;
   className?: string;
 };
@@ -35,6 +37,7 @@ export function ResourceCounterBar({
   minusRingClassName,
   plusRingClassName,
   canIncreaseBeyondMax = false,
+  showSteppers = true,
   contentClassName,
   className,
 }: ResourceCounterBarProps) {
@@ -45,16 +48,18 @@ export function ResourceCounterBar({
 
   return (
     <div className={className ?? "flex items-center gap-0"}>
-      <button
-        onClick={() => onAdjust(-1)}
-        className={`wfrp-stepper-btn ${minusRingClassName}`}
-        aria-label={`Decrease current ${label.toLowerCase()}`}
-        disabled={safeCurrent <= 0}
-      >
-        <span className="wfrp-stepper-btn__inner">
-          <Minus size={14} />
-        </span>
-      </button>
+      {showSteppers && (
+        <button
+          onClick={() => onAdjust(-1)}
+          className={`wfrp-stepper-btn ${minusRingClassName}`}
+          aria-label={`Decrease current ${label.toLowerCase()}`}
+          disabled={safeCurrent <= 0}
+        >
+          <span className="wfrp-stepper-btn__inner">
+            <Minus size={14} />
+          </span>
+        </button>
+      )}
 
       <div className={contentClassName ?? "flex w-20 min-w-0 flex-col gap-1 sm:w-24 lg:w-36"}>
         <div className="flex items-end justify-between gap-2 leading-none">
@@ -78,16 +83,18 @@ export function ResourceCounterBar({
         </div>
       </div>
 
-      <button
-        onClick={() => onAdjust(1)}
-        className={`wfrp-stepper-btn ${plusRingClassName}`}
-        aria-label={`Increase current ${label.toLowerCase()}`}
-        disabled={!canIncreaseBeyondMax && safeMax > 0 && safeCurrent >= safeMax}
-      >
-        <span className="wfrp-stepper-btn__inner">
-          <Plus size={14} />
-        </span>
-      </button>
+      {showSteppers && (
+        <button
+          onClick={() => onAdjust(1)}
+          className={`wfrp-stepper-btn ${plusRingClassName}`}
+          aria-label={`Increase current ${label.toLowerCase()}`}
+          disabled={!canIncreaseBeyondMax && safeMax > 0 && safeCurrent >= safeMax}
+        >
+          <span className="wfrp-stepper-btn__inner">
+            <Plus size={14} />
+          </span>
+        </button>
+      )}
     </div>
   );
 }
@@ -99,6 +106,7 @@ export function HeaderResourceSlider({
   onAdjust,
   barClassName,
   canIncreaseBeyondMax,
+  showSteppers,
   contentClassName,
   className,
 }: HeaderResourceSliderProps) {
@@ -113,6 +121,7 @@ export function HeaderResourceSlider({
       minusRingClassName="focus-visible:ring-wfrp-red/50"
       plusRingClassName="focus-visible:ring-green-600/50"
       canIncreaseBeyondMax={canIncreaseBeyondMax}
+      showSteppers={showSteppers}
       contentClassName={contentClassName}
       className={className}
     />
