@@ -6,6 +6,12 @@ export type ScenarioLocationKind = "inn" | "room" | "outdoor" | "route" | "regio
 export interface ScenarioLinkTargets {
   npcs?: string[];
   locations?: string[];
+  items?: string[];
+  weapons?: string[];
+  talents?: string[];
+  skills?: string[];
+  spells?: string[];
+  rules?: string[];
 }
 
 export interface ScenarioLocationReference {
