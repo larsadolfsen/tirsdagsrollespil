@@ -41,7 +41,7 @@ export function FormattedTextField({
 }: FormattedTextFieldProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [draftValue, setDraftValue] = useState(value);
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (!isEditing) {
