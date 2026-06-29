@@ -42,12 +42,16 @@ export interface ScenarioTextBlock extends ScenarioSceneComponentBase {
   type: "text";
 }
 
+export interface ScenarioNotesBlock extends ScenarioSceneComponentBase {
+  type: "notes";
+}
+
 export interface ScenarioEncounterBlock extends ScenarioSceneComponentBase {
   type: "encounter";
   encounterData: EncounterData;
 }
 
-export type ScenarioSceneComponent = ScenarioTextBlock | ScenarioEncounterBlock;
+export type ScenarioSceneComponent = ScenarioTextBlock | ScenarioNotesBlock | ScenarioEncounterBlock;
 
 export interface ScenarioSceneImport {
   id: string;
@@ -103,6 +107,13 @@ export function buildScenarioSessionScenes(scenario: ScenarioSessionImportDefini
             ...base,
             type: "encounter",
             encounterData: component.encounterData,
+          };
+        }
+
+        if (component.type === "notes") {
+          return {
+            ...base,
+            type: "notes",
           };
         }
 
