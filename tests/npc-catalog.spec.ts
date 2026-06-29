@@ -5,21 +5,35 @@ import {
   npcTemplates,
 } from "../src/data/npcs";
 
-test("multi-person NPC records expand into individual NPCs", () => {
-  const groupedNpcs = npcTemplates.filter((npc) => (npc.count ?? 1) > 1);
+test("named NPC records are individual characters", () => {
+  const bundledNamedNpcs = npcTemplates
+    .filter((npc) => npc.isNpc)
+    .filter((npc) => (npc.count ?? 1) > 1 || Boolean(npc.members?.length))
+    .map((npc) => npc.name);
 
-  for (const npc of groupedNpcs) {
-    expect(npc.members, `${npc.name} must list every individual NPC`).toHaveLength(npc.count!);
+  expect(bundledNamedNpcs).toEqual([]);
+});
 
-    const individuals = expandNpcTemplate(npc);
-    expect(individuals).toHaveLength(npc.count!);
-    expect(new Set(individuals.map((individual) => individual.id)).size).toBe(individuals.length);
+test("multi-person adversary records expand into individual records", () => {
+  const groupedAdversaries = adversaryTemplates.filter((adversary) => (adversary.count ?? 1) > 1);
+
+  for (const adversary of groupedAdversaries) {
+    const individuals = expandNpcTemplate(adversary);
+    expect(individuals).toHaveLength(adversary.members?.length ? adversary.count! : 1);
 
     for (const individual of individuals) {
       expect(individual.count, `${individual.name} must be added individually`).toBeUndefined();
       expect(individual.members, `${individual.name} must not remain a bundle`).toBeUndefined();
     }
   }
+});
+
+test("generic adversary records use reusable role names", () => {
+  const removedScenarioSpecificNames = ["Gravin's Servants", "Cleaners", "Menials"];
+  const adversaryNames = adversaryTemplates.map((adversary) => adversary.name);
+
+  expect(adversaryNames).not.toEqual(expect.arrayContaining(removedScenarioSpecificNames));
+  expect(adversaryNames).toEqual(expect.arrayContaining(["Handmaid", "Servant"]));
 });
 
 test("adversary records contain only one role type", () => {
