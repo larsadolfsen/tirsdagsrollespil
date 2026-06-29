@@ -1201,7 +1201,6 @@ export function SceneComponentsList({
               <div className="py-2 pl-8">
                 <FormattedTextField
                   className="max-w-[400px]"
-                  size="base"
                   value={component.text}
                   onChange={(text) => onUpdateComponentText(component.id, text)}
                   ariaLabel={`Scene ${sceneNumber} text field`}
