@@ -17,7 +17,6 @@ import {
   type ScenarioSessionImportDefinition,
 } from "../data/scenarios";
 import { AppShell } from "./AppShell";
-import { PlayerCardsRow } from "./PlayerCardsRow";
 import { SceneActionsMenu } from "./SceneActionsMenu";
 import { AppSidebar, SidebarItemList, MonsterSidebar } from "./sidebar";
 import type { CreatureTemplate } from "../data/rules/wfrp4e";
@@ -39,7 +38,7 @@ import {
 } from "./ui";
 import { SheetEmptyState } from "./wfrp";
 import { FormattedTextField } from "./FormattedTextField";
-import { SceneComponentsList, type SceneComponent } from "./SceneComponentsList";
+import { SceneComponentsList, EncounterComponent, type SceneComponent } from "./SceneComponentsList";
 
 type GameMasterPageProps = {
   activeSession: GMSession | null;
@@ -61,7 +60,7 @@ type GameMasterPageProps = {
 };
 
 export function createSceneComponent(
-  type: "text" | "encounter",
+  type: "text" | "notes" | "encounter",
   text = "",
   title?: string,
 ): SceneComponent {
@@ -150,6 +149,20 @@ export function GameMasterPage({
       return next;
     });
   };
+
+  const [topEncounterData, setTopEncounterData] = useState<EncounterData>({ monsterGroups: [], playerOrder: [] });
+  const [hiddenCharacterIds, setHiddenCharacterIds] = useState<Set<string>>(new Set());
+
+  const toggleCharacterVisibility = (characterId: string) => {
+    setHiddenCharacterIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(characterId)) next.delete(characterId);
+      else next.add(characterId);
+      return next;
+    });
+  };
+
+  const visibleCharacters = characters.filter((c) => !hiddenCharacterIds.has(c.id));
 
   const [isMonsterSidebarOpen, setIsMonsterSidebarOpen] = useState(false);
   const monsterSidebarOnAddRef = useRef<((template: CreatureTemplate, count: number) => void) | null>(null);
@@ -267,7 +280,7 @@ export function GameMasterPage({
     )));
   };
 
-  const addComponentToScene = (sceneId: string, type: "text" | "encounter") => {
+  const addComponentToScene = (sceneId: string, type: "text" | "notes" | "encounter") => {
     setScenes((currentScenes) => currentScenes.map((scene) => {
       if (scene.id === sceneId) {
         return {
@@ -312,6 +325,20 @@ export function GameMasterPage({
           ...scene,
           components: scene.components.map((comp) => (
             comp.id === componentId ? { ...comp, title } : comp
+          )),
+        };
+      }
+      return scene;
+    }));
+  };
+
+  const updateComponentType = (sceneId: string, componentId: string, type: "text" | "notes") => {
+    setScenes((currentScenes) => currentScenes.map((scene) => {
+      if (scene.id === sceneId) {
+        return {
+          ...scene,
+          components: scene.components.map((comp) => (
+            comp.id === componentId ? { ...comp, type } : comp
           )),
         };
       }
@@ -467,7 +494,21 @@ export function GameMasterPage({
         <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-4 py-4 md:gap-6 xl:px-8 xl:py-6">
           <div className="w-full flex flex-col gap-4 md:gap-6">
             <Breadcrumbs items={breadcrumbs} />
-            <PlayerCardsRow characters={characters} />
+            <section aria-labelledby="characters-heading">
+              <div className="mb-3">
+                <Heading level={2} variant="sectionDisplay" id="characters-heading">
+                  Characters
+                </Heading>
+              </div>
+              <EncounterComponent
+                encounterData={topEncounterData}
+                characters={characters}
+                onUpdateEncounterData={setTopEncounterData}
+                onOpenMonsterSidebar={openMonsterSidebar}
+                hiddenCharacterIds={hiddenCharacterIds}
+                onToggleCharacterVisibility={toggleCharacterVisibility}
+              />
+            </section>
 
             <section className="flex min-h-[450px] flex-1 flex-col">
               {activeSession ? (
@@ -515,12 +556,14 @@ export function GameMasterPage({
                   </div>
 
                   {scenes.length > 0 ? (
-                    <div className="flex flex-col gap-8">
+                    <div className="flex flex-col">
                       {scenes.map((scene, sceneIndex) => {
                         const isCollapsed = !expandedScenes.has(scene.id);
                         return (
                         <section key={scene.id} className="group/scene">
-                          <div className="mt-4 flex min-h-12 items-center justify-between gap-4">
+                          <Separator className={sceneIndex === 0 ? "mb-8" : "my-8"} />
+                          <span className="wfrp-label block text-wfrp-muted-text">{`Scene ${sceneIndex + 1}`}</span>
+                          <div className="flex min-h-12 cursor-pointer items-center justify-between gap-4" onClick={() => toggleSceneCollapsed(scene.id)}>
                             <div className="min-w-0 flex-1 flex items-start gap-2">
                             <div className="min-w-0 flex-1">
                                {editingSceneTitleId === scene.id ? (
@@ -528,6 +571,7 @@ export function GameMasterPage({
                                    <input
                                      type="text"
                                      value={sceneTitleDraft}
+                                     onClick={(e) => e.stopPropagation()}
                                      onChange={(e) => setSceneTitleDraft(e.target.value)}
                                      onBlur={() => {
                                        updateSceneTitle(scene.id, sceneTitleDraft.trim());
@@ -546,7 +590,7 @@ export function GameMasterPage({
                                    />
                                  </Heading>
                                ) : (
-                                 <Heading level={3} variant="subsection"><span onClick={() => { setSceneTitleDraft(scene.title || ""); setEditingSceneTitleId(scene.id); }} className="cursor-text border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors">{scene.title || "Scene"}</span></Heading>
+                                 <Heading level={3} variant="subsection"><span onClick={(e) => { e.stopPropagation(); setSceneTitleDraft(scene.title || ""); setEditingSceneTitleId(scene.id); }} className="cursor-text border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors">{scene.title || "Scene"}</span></Heading>
                                )}
                               <div className="mt-1 flex items-center gap-1.5 text-sm text-wfrp-muted-text font-sans">
                                 <span>Location:</span>
@@ -554,6 +598,7 @@ export function GameMasterPage({
                                   <input
                                     type="text"
                                     value={sceneLocationDraft}
+                                    onClick={(e) => e.stopPropagation()}
                                     onChange={(e) => setSceneLocationDraft(e.target.value)}
                                     onBlur={() => {
                                       updateSceneLocation(scene.id, sceneLocationDraft.trim());
@@ -573,7 +618,8 @@ export function GameMasterPage({
                                 ) : (
                                   <button
                                     type="button"
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.stopPropagation();
                                       setSceneLocationDraft(scene.location || "");
                                       setEditingSceneLocationId(scene.id);
                                     }}
@@ -585,7 +631,7 @@ export function GameMasterPage({
                               </div>
                             </div>
                             </div>
-                            <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover/scene:opacity-100 focus-within:opacity-100 transition-opacity">
+                            <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover/scene:opacity-100 focus-within:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                               <SceneActionsMenu
                                 sceneNumber={sceneIndex + 1}
                                 onAddBefore={() => addScene(sceneIndex, "before")}
@@ -613,11 +659,12 @@ export function GameMasterPage({
                               sceneId={scene.id}
                               sceneNumber={sceneIndex + 1}
                               components={scene.components}
-                              characters={characters}
+                              characters={visibleCharacters}
                               onReorderComponents={(components) => updateSceneComponents(scene.id, components)}
                               onRemoveComponent={(componentId) => removeComponentFromScene(scene.id, componentId)}
                               onUpdateComponentText={(componentId, text) => updateComponentText(scene.id, componentId, text)}
                               onUpdateComponentTitle={(componentId, title) => updateComponentTitle(scene.id, componentId, title)}
+                              onUpdateComponentType={(componentId, type) => updateComponentType(scene.id, componentId, type)}
                               onUpdateComponentEncounterData={(componentId, data) => updateComponentEncounterData(scene.id, componentId, data)}
                               onOpenMonsterSidebar={openMonsterSidebar}
                             />

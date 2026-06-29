@@ -8,6 +8,8 @@ import {
   EllipsisVertical,
   Skull,
   BookOpenText,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { FormattedTextField } from "./FormattedTextField";
 import {
@@ -30,6 +32,7 @@ import {
   TableHeader,
   TableRow,
   Heading,
+  Text,
   HeaderResourceSlider,
   Label,
   CardDescription,
@@ -60,6 +63,7 @@ type SceneComponentsListProps = {
   onRemoveComponent: (componentId: string) => void;
   onUpdateComponentText: (componentId: string, text: string) => void;
   onUpdateComponentTitle: (componentId: string, title: string) => void;
+  onUpdateComponentType: (componentId: string, type: "text" | "notes") => void;
   onUpdateComponentEncounterData: (componentId: string, data: EncounterData) => void;
   onOpenMonsterSidebar: (onAdd: (template: CreatureTemplate, count: number) => void) => void;
   onRollInitiative?: (name: string, bonus: number) => void;
@@ -95,14 +99,12 @@ function getPlayerCharacteristic(characterId: string, key: string): number {
 function MonsterParticipantRow({
   name,
   category,
-  initiative,
   currentWounds,
   maxWounds,
   isNpc,
 }: {
   name: string;
   category: string;
-  initiative: number;
   currentWounds: number;
   maxWounds: number;
   isNpc?: boolean;
@@ -135,7 +137,6 @@ function MonsterParticipantRow({
         </span>
         <span className="block truncate capitalize text-wfrp-muted-text">{category}</span>
       </TableCell>
-      <TableCell className="text-center font-semibold tabular-nums">{initiative}</TableCell>
       <TableCell className="text-right tabular-nums">
         <span className={`font-semibold ${isDead ? "text-red-400" : ""}`}>{currentWounds}</span>
         <span className={isDead ? "text-red-400" : "text-wfrp-muted-text"}>/{maxWounds}</span>
@@ -148,10 +149,8 @@ function MonsterParticipantRow({
 
 function PlayerParticipantRow({
   characterSummary,
-  initiative,
 }: {
   characterSummary: CharacterSummary;
-  initiative: number;
 }) {
   const character = loadResolvedCharacter(characterSummary.id);
   const [portraitDataUrl, setPortraitDataUrl] = useState("");
@@ -202,7 +201,6 @@ function PlayerParticipantRow({
         <span className="block truncate font-semibold leading-tight">{characterName}</span>
         <span className="block truncate text-wfrp-muted-text">{character.tier}</span>
       </TableCell>
-      <TableCell className="text-center font-semibold tabular-nums">{initiative}</TableCell>
       <TableCell className="text-right tabular-nums">
         <span className={`font-semibold ${isDead ? "text-red-400" : ""}`}>{safeWoundsCurrent}</span>
         <span className={isDead ? "text-red-400" : "text-wfrp-muted-text"}>/{wounds.max}</span>
@@ -749,21 +747,23 @@ function NpcInfoPane({
 
 // ── Encounter component ───────────────────────────────────────────────────────
 
-function EncounterComponent({
-  component,
+export function EncounterComponent({
+  encounterData,
   characters,
   onUpdateEncounterData,
   onOpenMonsterSidebar,
+  hiddenCharacterIds,
+  onToggleCharacterVisibility,
 }: {
-  component: SceneComponent;
+  encounterData: EncounterData;
   characters: CharacterSummary[];
   onUpdateEncounterData: (data: EncounterData) => void;
   onOpenMonsterSidebar: (onAdd: (template: CreatureTemplate, count: number) => void) => void;
+  hiddenCharacterIds?: Set<string>;
+  onToggleCharacterVisibility?: (characterId: string) => void;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draggedParticipantIndex, setDraggedParticipantIndex] = useState<number | null>(null);
-
-  const encounterData = getEncounterData(component);
   const { monsterGroups } = encounterData;
 
   // Build combined participant list
@@ -897,38 +897,6 @@ function EncounterComponent({
 
   return (
     <div className="mt-3 flex flex-col gap-0 overflow-hidden rounded border border-wfrp-border">
-        {/* Shared action and participant-column header */}
-        <div className="grid h-12 shrink-0 grid-cols-[412px_minmax(0,1fr)] border-b border-wfrp-border bg-wfrp-surface/60">
-          <div className="min-w-0 border-r border-wfrp-border/40">
-            <Table className="h-full table-fixed">
-              <colgroup>
-                <col className="w-12" />
-                <col className="w-14" />
-                <col />
-                <col className="w-[72px]" />
-                <col className="w-16" />
-              </colgroup>
-              <TableHeader>
-                <TableRow className="h-12 border-0 hover:bg-transparent">
-                  <TableHead className="h-12 p-0" />
-                  <TableHead className="h-12 w-14" />
-                  <TableHead className="h-12">Name</TableHead>
-                  <TableHead className="h-12 w-[72px] text-center">Initiative</TableHead>
-                  <TableHead className="h-12 w-16 text-right">Wounds</TableHead>
-                </TableRow>
-              </TableHeader>
-            </Table>
-          </div>
-          <div className="flex items-center justify-end px-4">
-            <Button
-              variant="secondary"
-              onClick={() => onOpenMonsterSidebar(handleAddMonster)}
-            >
-              Add Monster
-            </Button>
-          </div>
-        </div>
-
         <div className="grid min-h-0 grid-cols-[412px_minmax(0,1fr)]">
           {/* Participant list */}
           <div className="min-w-0 border-r border-wfrp-border/40">
@@ -937,8 +905,8 @@ function EncounterComponent({
                 <col className="w-12" />
                 <col className="w-14" />
                 <col />
-                <col className="w-[72px]" />
                 <col className="w-16" />
+                {onToggleCharacterVisibility && <col className="w-10" />}
               </colgroup>
               <TableBody>
                 {participants.length === 0 && (
@@ -973,18 +941,27 @@ function EncounterComponent({
                       {participant.kind === "player" && (
                         <PlayerParticipantRow
                           characterSummary={characters.find((c) => c.id === participant.characterId)!}
-                          initiative={participant.initiative}
                         />
                       )}
                       {participant.kind === "monster" && (
                         <MonsterParticipantRow
                           name={participant.name}
                           category={participant.category}
-                          initiative={participant.initiative}
                           currentWounds={participant.currentWounds}
                           maxWounds={participant.maxWounds}
                           isNpc={participant.isNpc}
                         />
+                      )}
+                      {onToggleCharacterVisibility && participant.kind === "player" && (
+                        <TableCell
+                          className="p-0 text-center"
+                          onClick={(e) => { e.stopPropagation(); onToggleCharacterVisibility(participant.characterId); }}
+                        >
+                          {hiddenCharacterIds?.has(participant.characterId)
+                            ? <EyeOff size={14} className="mx-auto text-wfrp-muted-text/50" />
+                            : <Eye size={14} className="mx-auto text-wfrp-muted-text" />
+                          }
+                        </TableCell>
                       )}
                     </TableRow>
                   );
@@ -1064,6 +1041,7 @@ export function SceneComponentsList({
   onRemoveComponent,
   onUpdateComponentText,
   onUpdateComponentTitle,
+  onUpdateComponentType,
   onUpdateComponentEncounterData,
   onOpenMonsterSidebar,
 }: SceneComponentsListProps) {
@@ -1100,7 +1078,7 @@ export function SceneComponentsList({
   if (components.length === 0) return null;
 
   return (
-    <div className="mt-6 flex flex-col gap-6">
+    <div className="mt-3 flex flex-col gap-1">
       {components.map((component, index) => {
         const isDragging = draggedIndex === index;
         const defaultTitle = component.type === "text" ? "Description" : component.type === "notes" ? "Notes" : "Encounter";
@@ -1114,134 +1092,162 @@ export function SceneComponentsList({
             onDragEnter={() => handleDragEnter(index)}
             onDragEnd={handleDragEnd}
             onDragOver={(event) => event.preventDefault()}
-            className={`group/item flex flex-col border-b border-wfrp-border/40 pb-6 last:border-b-0 last:pb-0 transition-all duration-200 ${
+            className={`group/item relative -ml-7 pl-7 flex flex-col rounded hover:bg-white/[0.03] ${component.type === "encounter" ? "border-b border-wfrp-border/40" : ""} py-3 last:border-b-0 transition-all duration-200 ${
               isDragging ? "opacity-30 scale-[0.98]" : ""
             }`}
           >
-            {/* Control bar */}
-            <div className="flex min-h-10 items-center justify-between">
-              <div className="relative flex items-center pl-8 md:pl-0">
-                {/* Desktop drag handle (absolute positioned to the left of the container) */}
-                <div
-                  className="absolute right-full mr-2 hidden md:flex h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-opacity opacity-0 group-hover/item:opacity-100 active:cursor-grabbing"
-                  title="Drag to reorder"
-                >
-                  <GripVertical size={16} aria-hidden="true" />
-                </div>
-                {/* Mobile drag handle (rendered inline) */}
-                <div
-                  className="flex md:hidden h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-opacity opacity-0 group-hover/item:opacity-100 active:cursor-grabbing mr-2"
-                  title="Drag to reorder"
-                >
-                  <GripVertical size={16} aria-hidden="true" />
-                </div>
-                <div className="flex items-center font-serif text-base text-gray-200">
-                  <span className="mr-1 select-none text-wfrp-muted-text/60">{index + 1}:</span>
-                  {editingTitleId === component.id ? (
-                    <input
-                      type="text"
-                      value={titleDraft}
-                      onChange={(e) => setTitleDraft(e.target.value)}
-                      onBlur={() => {
-                        onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
-                        setEditingTitleId(null);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
-                          setEditingTitleId(null);
-                        } else if (e.key === "Escape") {
-                          setEditingTitleId(null);
-                        }
-                      }}
-                      autoFocus
-                      className="w-48 border-0 border-b border-wfrp-gold/50 bg-transparent p-0 font-serif text-base text-gray-200 outline-none"
-                    />
-                  ) : (
-                    <span
-                      onClick={() => { setTitleDraft(title); setEditingTitleId(component.id); }}
-                      className="cursor-pointer border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors"
-                      title="Click to rename"
-                    >
-                      {title}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1">
-                <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
-                  <Button
-                    variant="wfrpIcon"
-                    onClick={() => moveComponent(index, "up")}
-                    disabled={index === 0}
-                    aria-label="Move component up"
-                    leadingIcon={<ChevronUp />}
-                  />
-                  <Button
-                    variant="wfrpIcon"
-                    onClick={() => moveComponent(index, "down")}
-                    disabled={index === components.length - 1}
-                    aria-label="Move component down"
-                    leadingIcon={<ChevronDown />}
-                  />
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    aria-label={`${title} actions`}
-                    className="wfrp-standard-icon cursor-pointer"
-                  >
-                    <span className="wfrp-standard-icon__glyph" aria-hidden="true">
-                      <EllipsisVertical />
-                    </span>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => onRemoveComponent(component.id)}
-                      className="text-red-400 hover:text-red-400 focus:text-red-400"
-                    >
-                      <Trash2 className="mr-2 size-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+            {/* Drag handle — floats in the -ml-7 / pl-7 padding zone */}
+            <div
+              className="absolute left-0.5 top-1 flex h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text opacity-0 transition-opacity group-hover/item:opacity-100 hover:text-white active:cursor-grabbing"
+              title="Drag to reorder"
+            >
+              <GripVertical size={16} aria-hidden="true" />
             </div>
 
-            {/* Body */}
-            {component.type === "text" && (
-              <div className="py-2 pl-8 md:pl-0">
-                <Card className="max-w-[440px]">
-                  <CardContent>
-                    <FormattedTextField
-                      value={component.text}
-                      onChange={(text) => onUpdateComponentText(component.id, text)}
-                      ariaLabel={`Scene ${sceneNumber} description`}
-                      placeholder="Write the scene description here…"
+            {component.type === "text" ? (
+              <div className="flex items-start gap-1">
+                <div className="min-w-0 flex-1">
+                  <Card className="max-w-[440px]">
+                    <CardContent className="pt-4">
+                      <Text as="div" variant="serifTitle" className="mb-2">
+                        {editingTitleId === component.id ? (
+                          <input
+                            type="text"
+                            value={titleDraft}
+                            onChange={(e) => setTitleDraft(e.target.value)}
+                            onBlur={() => {
+                              onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
+                              setEditingTitleId(null);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
+                                setEditingTitleId(null);
+                              } else if (e.key === "Escape") {
+                                setEditingTitleId(null);
+                              }
+                            }}
+                            autoFocus
+                            className="w-48 border-0 border-b border-wfrp-gold/50 bg-transparent p-0 font-serif font-semibold text-base text-gray-200 outline-none"
+                          />
+                        ) : (
+                          <span
+                            onClick={() => { setTitleDraft(title); setEditingTitleId(component.id); }}
+                            className="cursor-pointer border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors"
+                            title="Click to rename"
+                          >
+                            {title}
+                          </span>
+                        )}
+                      </Text>
+                      <FormattedTextField
+                        value={component.text}
+                        onChange={(text) => onUpdateComponentText(component.id, text)}
+                        ariaLabel={`Scene ${sceneNumber} description`}
+                        placeholder="Write the scene description here…"
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+                <div className="flex items-center gap-1 pt-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                  <Button variant="wfrpIcon" onClick={() => moveComponent(index, "up")} disabled={index === 0} aria-label="Move component up" leadingIcon={<ChevronUp />} />
+                  <Button variant="wfrpIcon" onClick={() => moveComponent(index, "down")} disabled={index === components.length - 1} aria-label="Move component down" leadingIcon={<ChevronDown />} />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger aria-label={`${title} actions`} className="wfrp-standard-icon cursor-pointer">
+                      <span className="wfrp-standard-icon__glyph" aria-hidden="true"><EllipsisVertical /></span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => onUpdateComponentType(component.id, "notes")}>
+                        Convert to Notes
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onRemoveComponent(component.id)} className="text-red-400 hover:text-red-400 focus:text-red-400">
+                        <Trash2 className="mr-2 size-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-1">
+                <div className="min-w-0 flex-1">
+                  {/* Control bar for notes / encounter */}
+                  <div className="flex min-h-10 items-center justify-between">
+                    <Text as="div" variant="serifTitle" className="flex items-center">
+                      {editingTitleId === component.id ? (
+                        <input
+                          type="text"
+                          value={titleDraft}
+                          onChange={(e) => setTitleDraft(e.target.value)}
+                          onBlur={() => {
+                            onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
+                            setEditingTitleId(null);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle);
+                              setEditingTitleId(null);
+                            } else if (e.key === "Escape") {
+                              setEditingTitleId(null);
+                            }
+                          }}
+                          autoFocus
+                          className="w-48 border-0 border-b border-wfrp-gold/50 bg-transparent p-0 font-serif font-semibold text-base text-gray-200 outline-none"
+                        />
+                      ) : (
+                        <span
+                          onClick={() => { setTitleDraft(title); setEditingTitleId(component.id); }}
+                          className="cursor-pointer border-b border-dashed border-transparent hover:border-wfrp-muted-text/50 hover:text-white transition-colors"
+                          title="Click to rename"
+                        >
+                          {title}
+                        </span>
+                      )}
+                    </Text>
+                    <div className="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                      <Button variant="wfrpIcon" onClick={() => moveComponent(index, "up")} disabled={index === 0} aria-label="Move component up" leadingIcon={<ChevronUp />} />
+                      <Button variant="wfrpIcon" onClick={() => moveComponent(index, "down")} disabled={index === components.length - 1} aria-label="Move component down" leadingIcon={<ChevronDown />} />
+                    </div>
+                  </div>
+                  {/* Body */}
+                  {component.type === "notes" && (
+                    <div className="pb-2">
+                      <FormattedTextField
+                        className="max-w-[440px]"
+                        value={component.text}
+                        onChange={(text) => onUpdateComponentText(component.id, text)}
+                        ariaLabel={`Scene ${sceneNumber} notes`}
+                        placeholder="Add GM notes…"
+                      />
+                    </div>
+                  )}
+                  {component.type === "encounter" && (
+                    <EncounterComponent
+                      encounterData={getEncounterData(component)}
+                      characters={characters}
+                      onUpdateEncounterData={(data) => onUpdateComponentEncounterData(component.id, data)}
+                      onOpenMonsterSidebar={onOpenMonsterSidebar}
                     />
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-            {component.type === "notes" && (
-              <div className="py-2 pl-8 md:pl-0">
-                <FormattedTextField
-                  className="max-w-[440px]"
-                  value={component.text}
-                  onChange={(text) => onUpdateComponentText(component.id, text)}
-                  ariaLabel={`Scene ${sceneNumber} notes`}
-                  placeholder="Add GM notes…"
-                />
-              </div>
-            )}
-            {component.type === "encounter" && (
-              <div className="pl-8 md:pl-0">
-                <EncounterComponent
-                  component={component}
-                  characters={characters}
-                  onUpdateEncounterData={(data) => onUpdateComponentEncounterData(component.id, data)}
-                  onOpenMonsterSidebar={onOpenMonsterSidebar}
-                />
+                  )}
+                </div>
+                <div className="pt-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger aria-label={`${title} actions`} className="wfrp-standard-icon cursor-pointer">
+                      <span className="wfrp-standard-icon__glyph" aria-hidden="true"><EllipsisVertical /></span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {component.type === "notes" && (
+                        <DropdownMenuItem onClick={() => onUpdateComponentType(component.id, "text")}>
+                          Convert to Description
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem onClick={() => onRemoveComponent(component.id)} className="text-red-400 hover:text-red-400 focus:text-red-400">
+                        <Trash2 className="mr-2 size-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             )}
           </div>

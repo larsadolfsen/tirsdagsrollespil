@@ -2,6 +2,8 @@ export { AdvancementSection } from "./AdvancementSection";
 export { HeaderResourceSlider, ResourceCounterBar } from "./ResourceCounterBar";
 export { Heading } from "./Heading";
 export type { HeadingLevel, HeadingProps, HeadingVariant } from "./Heading";
+export { Text } from "./Text";
+export type { TextVariant } from "./Text";
 export { InlineSubtabs } from "./InlineSubtabs";
 export { PanelSectionHeader } from "./PanelSectionHeader";
 export { SectionHeading } from "./SectionHeading";

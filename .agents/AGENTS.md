@@ -27,6 +27,7 @@ Dette dokument definerer udviklingsregler, retningslinjer og arbejdsgange for **
 - **Brug fælles UI-komponenter**:
   - Brug altid fælles komponenter fra `src/components/ui/` fremfor rå HTML-elementer (f.eks. `Button`, `Card`, `Input`).
   - **Overskrifter**: Brug ALDRIG rå HTML heading-tags (`<h1>`-`<h6>`). Brug altid `<Heading>` komponenten fra `src/components/ui/Heading` eller `<SectionHeading>` fra `src/components/ui/SectionHeading`.
+  - **Brødtekst**: Opfind ALDRIG inline tekststile (f.eks. `font-serif text-base text-gray-200`). Brug altid `<Text>` komponenten fra `src/components/ui/Text` med en passende variant (`body`, `bodyMuted`, `bodyStrong`, `bodyStrongMuted`, `serifTitle`).
   - **Typografi-kontrol**: Typografikontrollen (`scripts/check-typography.mjs`) blokerer brug af rå headings og specifikke ulovlige farver på overskriftsvarianter (overskrifter må ikke have `text-wfrp-gold` direkte i variant-definitioner i `Heading.tsx`).
 - **Komponent-hierarki**:
   - Fælles shadcn/ui-lignende komponenter placeres i `src/components/ui/`.
@@ -51,6 +52,7 @@ Her er den komplette liste over fælles komponenter i projektet. Alle nye fælle
 - `BottomSheetPaper` (Bundpanel-kontroller)
 - `Breadcrumbs` (Brødkrummenavigation)
 - `Heading` (Generisk overskriftskomponent - skal bruges i stedet for raw `<h1>`-`<h6>`)
+- `Text` (Generisk tekstkomponent med varianter - skal bruges i stedet for rå `<p>`/`<span>`/`<div>` med inline tekststile)
 - `InlineSubtabs` (Horisontale under-tabs)
 - `MainTabMenu` (Hovedmenu til tab-valg)
 - `PanelSectionHeader` (Header til panel-sektioner)
