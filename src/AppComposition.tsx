@@ -257,10 +257,7 @@ export function AppComposition() {
   }, [gmSessions]);
   const [selectedGmSessionId, setSelectedGmSessionId] = useState<string | null>(null);
   const [isLoadingGmSessions, setIsLoadingGmSessions] = useState(false);
-  const [isSessionsSidebarOpen, setIsSessionsSidebarOpen] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.innerWidth >= 1920;
-  });
+  const [isSessionsSidebarOpen, setIsSessionsSidebarOpen] = useState(false);
 
   const handleSelectSessionOnMobile = (sessionId: string) => {
     latestScenesRef.current = [];
