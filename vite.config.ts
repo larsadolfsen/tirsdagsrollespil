@@ -7,9 +7,20 @@ import {DatabaseSync} from 'node:sqlite';
 import {defineConfig} from 'vite';
 import type {Plugin} from 'vite';
 
-const progressFilePath = path.resolve(__dirname, 'data', 'character-progress.json');
-const characterDataDirectory = path.resolve(__dirname, 'data', 'characters');
-const databaseFilePath = path.resolve(__dirname, 'data', 'tirsdagsrollespil.sqlite');
+const stateDataDirectory = path.resolve(
+  process.env.WFRP_DATA_DIR ??
+    process.env.RAILWAY_VOLUME_MOUNT_PATH ??
+    path.join(__dirname, 'data'),
+);
+const progressFilePath = path.resolve(
+  process.env.WFRP_PROGRESS_FILE ?? path.join(stateDataDirectory, 'character-progress.json'),
+);
+const characterDataDirectory = path.resolve(
+  process.env.WFRP_CHARACTERS_DIR ?? path.join(stateDataDirectory, 'characters'),
+);
+const databaseFilePath = path.resolve(
+  process.env.WFRP_DB_FILE ?? path.join(stateDataDirectory, 'tirsdagsrollespil.sqlite'),
+);
 const dataDir = path.dirname(databaseFilePath);
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
