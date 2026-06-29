@@ -28,6 +28,14 @@ test("multi-person adversary records expand into individual records", () => {
   }
 });
 
+test("generic adversary records use reusable role names", () => {
+  const removedScenarioSpecificNames = ["Gravin's Servants", "Cleaners", "Menials"];
+  const adversaryNames = adversaryTemplates.map((adversary) => adversary.name);
+
+  expect(adversaryNames).not.toEqual(expect.arrayContaining(removedScenarioSpecificNames));
+  expect(adversaryNames).toEqual(expect.arrayContaining(["Handmaid", "Servant"]));
+});
+
 test("adversary records contain only one role type", () => {
   const mergedRolePattern = /(?:\s+(?:and|or)\s+|,|\/|&)/i;
   const mergedAdversaries = adversaryTemplates
