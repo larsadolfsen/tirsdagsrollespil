@@ -20,7 +20,7 @@ import { AppShell } from "./AppShell";
 import { SceneActionsMenu } from "./SceneActionsMenu";
 import { AppSidebar, SidebarItemList, MonsterSidebar, NpcSidebar } from "./sidebar";
 import type { CreatureTemplate } from "../data/rules/wfrp4e";
-import type { NpcTemplate } from "../data/npcs";
+import { expandNpcTemplate, isNamedNpc, npcTemplatesById, type NpcTemplate } from "../data/npcs";
 import {
   Breadcrumbs,
   Button,
@@ -83,6 +83,35 @@ function createScene(
   };
 }
 
+function createNpcEncounterGroup(npc: NpcTemplate, count: number): EncounterMonsterGroup {
+  return {
+    id: `npc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    templateId: npc.id,
+    name: npc.name,
+    count,
+    wounds: Array(count).fill(npc.statBlock.W),
+    source: "npc",
+  };
+}
+
+function getSceneNpcIds(scene: GMScene): string[] {
+  return [...new Set((scene.links?.npcs ?? []).flatMap((npcId) => {
+    const npc = npcTemplatesById[npcId];
+    return isNamedNpc(npc) ? expandNpcTemplate(npc).map((member) => member.id) : [];
+  }))];
+}
+
+function buildSceneNpcEncounterData(scenes: GMScene[]): EncounterData {
+  const npcIds = [...new Set(scenes.flatMap(getSceneNpcIds))];
+  return {
+    monsterGroups: npcIds.flatMap((npcId) => {
+      const npc = npcTemplatesById[npcId];
+      return npc ? [createNpcEncounterGroup(npc, 1)] : [];
+    }),
+    playerOrder: [],
+  };
+}
+
 function GameMasterHeader({
   campaignName,
   isSessionsSidebarOpen,
@@ -93,7 +122,10 @@ function GameMasterHeader({
   onToggleSessions: () => void;
 }) {
   return (
-    <section className="relative z-[60] h-14 w-full border-b border-t-4 border-wfrp-border border-t-wfrp-red bg-sidebar py-1 shadow-lg shadow-black/20">
+    <section
+      aria-label="Campaign header"
+      className="sticky top-0 z-[60] h-14 w-full border-b border-t-4 border-wfrp-border border-t-wfrp-red bg-sidebar py-1 shadow-lg shadow-black/20"
+    >
       <div className="flex h-full max-h-12 items-center px-3 md:px-4">
         <Button
           variant="wfrpIcon"
@@ -103,11 +135,17 @@ function GameMasterHeader({
           title={isSessionsSidebarOpen ? "Close sessions menu" : "Open sessions menu"}
           leadingIcon={isSessionsSidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
         />
-        <div className="ml-3 min-w-0 flex-1 flex flex-col justify-center">
-          <span className="wfrp-label block text-[10px] leading-none text-wfrp-muted-text">Game Master</span>
-          <Heading level={1} variant="pageCompact" align="left" truncate>
+        <div
+          role="group"
+          aria-label="Campaign identity"
+          className="ml-3 min-w-0 flex-1 flex flex-col justify-center"
+        >
+          <span className="block truncate text-left font-serif text-base font-semibold leading-tight tracking-tight text-gray-100 sm:text-xl">
             {campaignName}
-          </Heading>
+          </span>
+          <span className="block truncate text-[9px] font-semibold uppercase text-wfrp-muted-text sm:text-[10px]">
+            Campaign View
+          </span>
         </div>
       </div>
     </section>
@@ -165,8 +203,9 @@ export function GameMasterPage({
   };
 
   const [isNpcSidebarOpen, setIsNpcSidebarOpen] = useState(false);
+  const [activeNpcSceneId, setActiveNpcSceneId] = useState<string | null>(null);
   const [isCharactersCollapsed, setIsCharactersCollapsed] = useState(false);
-  const [isNpcsCollapsed, setIsNpcsCollapsed] = useState(false);
+  const [isNpcsCollapsed, setIsNpcsCollapsed] = useState(true);
 
   const [topEncounterData, setTopEncounterData] = useState<EncounterData>({ monsterGroups: [], playerOrder: [] });
   const [hiddenCharacterIds, setHiddenCharacterIds] = useState<Set<string>>(new Set());
@@ -184,18 +223,63 @@ export function GameMasterPage({
 
   const [npcEncounterData, setNpcEncounterData] = useState<EncounterData>({ monsterGroups: [], playerOrder: [] });
 
-  const handleAddNpc = (npc: NpcTemplate, count: number) => {
-    const newGroup: EncounterMonsterGroup = {
-      id: `npc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      templateId: npc.id,
-      name: npc.name,
-      count,
-      wounds: Array(count).fill(npc.statBlock.W),
-      source: "npc",
-    };
+  const handleAddNpc = (npc: NpcTemplate, _count: number) => {
+    const npcGroups = expandNpcTemplate(npc).map((member) => createNpcEncounterGroup(member, 1));
     setNpcEncounterData((prev) => ({
       ...prev,
-      monsterGroups: [...prev.monsterGroups, newGroup],
+      monsterGroups: [...prev.monsterGroups, ...npcGroups],
+    }));
+  };
+
+  const addNpcToScene = (sceneId: string, npc: NpcTemplate) => {
+    const members = expandNpcTemplate(npc);
+    const memberIds = members.map((member) => member.id);
+
+    setScenes((currentScenes) => currentScenes.map((scene) => {
+      if (scene.id !== sceneId || memberIds.every((memberId) => getSceneNpcIds(scene).includes(memberId))) {
+        return scene;
+      }
+
+      const linkedNpcIds = (scene.links?.npcs ?? []).filter((linkedNpcId) => linkedNpcId !== npc.id);
+      return {
+        ...scene,
+        links: {
+          ...scene.links,
+          npcs: [...linkedNpcIds, ...memberIds.filter((memberId) => !linkedNpcIds.includes(memberId))],
+        },
+      };
+    }));
+    setNpcEncounterData((currentData) => {
+      const newGroups = members
+        .filter((member) => !currentData.monsterGroups.some(
+          (group) => group.source === "npc" && group.templateId === member.id,
+        ))
+        .map((member) => createNpcEncounterGroup(member, 1));
+      if (newGroups.length === 0) {
+        return currentData;
+      }
+
+      return {
+        ...currentData,
+        monsterGroups: [...currentData.monsterGroups, ...newGroups],
+      };
+    });
+  };
+
+  const removeNpcFromScene = (sceneId: string, npc: NpcTemplate) => {
+    const npcIds = new Set([npc.id, ...expandNpcTemplate(npc).map((member) => member.id)]);
+    setScenes((currentScenes) => currentScenes.map((scene) => {
+      if (scene.id !== sceneId) {
+        return scene;
+      }
+
+      return {
+        ...scene,
+        links: {
+          ...scene.links,
+          npcs: (scene.links?.npcs ?? []).filter((linkedNpcId) => !npcIds.has(linkedNpcId)),
+        },
+      };
     }));
   };
 
@@ -207,7 +291,8 @@ export function GameMasterPage({
     setScenes(initial);
     setEditingSceneTitleId(null);
     setEditingSceneLocationId(null);
-    setNpcEncounterData({ monsterGroups: [], playerOrder: [] });
+    setActiveNpcSceneId(null);
+    setNpcEncounterData(buildSceneNpcEncounterData(initial));
   }, [activeSession?.id]);
 
   useEffect(() => {
@@ -269,6 +354,13 @@ export function GameMasterPage({
         {
           ...sourceScene,
           id: `scene-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          links: sourceScene.links
+            ? {
+                ...sourceScene.links,
+                npcs: sourceScene.links.npcs ? [...sourceScene.links.npcs] : undefined,
+                locations: sourceScene.links.locations ? [...sourceScene.links.locations] : undefined,
+              }
+            : undefined,
           components: copiedComponents,
         },
       );
@@ -389,6 +481,10 @@ export function GameMasterPage({
     onUpdateComponentEncounterData?.(sceneId, componentId, data);
   };
 
+  const activeNpcScene = activeNpcSceneId
+    ? scenes.find((scene) => scene.id === activeNpcSceneId) ?? null
+    : null;
+
   const sessionSidebar = (
     <AppSidebar
       isOpen={isSessionsSidebarOpen}
@@ -471,10 +567,28 @@ export function GameMasterPage({
           />
           <NpcSidebar
             isOpen={isNpcSidebarOpen}
-            onClose={() => setIsNpcSidebarOpen(false)}
-            onAddNpc={(npc, count) => {
-              handleAddNpc(npc, count);
+            onClose={() => {
               setIsNpcSidebarOpen(false);
+              setActiveNpcSceneId(null);
+            }}
+            title={activeNpcScene ? "Add NPC to Scene" : "Add NPC"}
+            sceneNpcIds={activeNpcScene ? getSceneNpcIds(activeNpcScene) : []}
+            sessionNpcIds={npcEncounterData.monsterGroups
+              .filter((group) => group.source === "npc")
+              .map((group) => group.templateId)}
+            showActiveFilters={Boolean(activeNpcScene)}
+            onAddNpc={(npc, count) => {
+              if (activeNpcScene) {
+                addNpcToScene(activeNpcScene.id, npc);
+              } else {
+                handleAddNpc(npc, count);
+                setIsNpcSidebarOpen(false);
+              }
+            }}
+            onRemoveNpc={(npc) => {
+              if (activeNpcScene) {
+                removeNpcFromScene(activeNpcScene.id, npc);
+              }
             }}
             className="!top-14 !h-[calc(100dvh-3.5rem)] !max-h-[calc(100dvh-3.5rem)]"
           />
@@ -540,19 +654,21 @@ export function GameMasterPage({
                     Session {activeSession.sessionNumber + 1}
                   </span>
                   {isRenamingSession ? (
-                    <input
-                      autoFocus
-                      value={sessionTitleDraft}
-                      onChange={(event) => setSessionTitleDraft(event.target.value)}
-                      onBlur={finishRenamingSession}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          event.currentTarget.blur();
-                        }
-                      }}
-                      aria-label="Session title"
-                      className="w-full border-0 border-b border-wfrp-gold/50 bg-transparent p-0 pb-1 font-serif text-3xl font-semibold text-gray-100 outline-none"
-                    />
+                    <Heading level={1} variant="sectionDisplay">
+                      <input
+                        autoFocus
+                        value={sessionTitleDraft}
+                        onChange={(event) => setSessionTitleDraft(event.target.value)}
+                        onBlur={finishRenamingSession}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.currentTarget.blur();
+                          }
+                        }}
+                        aria-label="Session title"
+                        className="w-full border-0 border-b border-wfrp-gold/50 bg-transparent p-0 pb-1 font-serif text-3xl font-semibold text-gray-100 outline-none"
+                      />
+                    </Heading>
                   ) : (
                     <Heading level={1} variant="sectionDisplay">
                       <button
@@ -617,11 +733,15 @@ export function GameMasterPage({
                     </Heading>
                     <div className="flex shrink-0 items-center gap-2" onClick={(e) => e.stopPropagation()}>
                       <Button
-                        variant="secondary"
-                        onClick={() => setIsNpcSidebarOpen(true)}
-                      >
-                        Add NPC
-                      </Button>
+                        variant="wfrpIcon"
+                        leadingIcon={<Plus />}
+                        aria-label="Add NPC"
+                        title="Add NPC"
+                        onClick={() => {
+                          setActiveNpcSceneId(null);
+                          setIsNpcSidebarOpen(true);
+                        }}
+                      />
                       <button
                         type="button"
                         onClick={() => setIsNpcsCollapsed((prev) => !prev)}
@@ -720,6 +840,24 @@ export function GameMasterPage({
                                   </button>
                                 )}
                               </div>
+                              <div className="mt-1 flex items-start gap-1.5 text-sm text-wfrp-muted-text font-sans">
+                                <span>NPCs:</span>
+                                <button
+                                  type="button"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    setActiveNpcSceneId(scene.id);
+                                    setIsNpcSidebarOpen(true);
+                                  }}
+                                  className="min-w-0 text-left text-gray-300 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+                                >
+                                  {getSceneNpcIds(scene).length > 0
+                                    ? getSceneNpcIds(scene)
+                                        .map((npcId) => npcTemplatesById[npcId]?.name ?? npcId)
+                                        .join(", ")
+                                    : "Click to add NPCs"}
+                                </button>
+                              </div>
                             </div>
                             </div>
                             <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover/scene:opacity-100 focus-within:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
@@ -780,7 +918,7 @@ export function GameMasterPage({
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <Heading level={2} variant="sectionDisplay">
+                    <Heading level={1} variant="sectionDisplay">
                       Campaign Sessions
                     </Heading>
                     <p className="mt-1 text-sm text-wfrp-muted-text">

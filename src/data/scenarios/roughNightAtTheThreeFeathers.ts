@@ -1,4 +1,5 @@
-import { threeFeathersNpcs } from "../rules/wfrp4e/threeFeathersNpcs";
+import { npcCatalog } from "../npcCatalog";
+import { adversaryCatalog } from "../adversaryCatalog";
 import type { ScenarioSessionImportDefinition } from "./scenarioSessionImport";
 
 const sourceTags = [
@@ -59,7 +60,10 @@ const LOC = {
   room15: "three-feathers-room-15-gravins-servants",
 } as const;
 
-const npcById = new Map(threeFeathersNpcs.map((npc) => [npc.id, npc]));
+const scenarioCharacterIds = new Set<string>(Object.values(NPC));
+const scenarioCharacters = [...npcCatalog, ...adversaryCatalog]
+  .filter((character) => scenarioCharacterIds.has(character.id));
+const npcById = new Map(scenarioCharacters.map((npc) => [npc.id, npc]));
 
 const npcRoles: Record<string, string> = {
   [NPC.gravin]: "Travelling noble whose judicial champion is targeted before her trial",
@@ -187,7 +191,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
     { id: LOC.room14, name: "Room 14, Glimbrin", kind: "room", parentLocationId: LOC.guestRooms, tags: [...sourceTags] },
     { id: LOC.room15, name: "Room 15, The Gravin's Servants", kind: "room", parentLocationId: LOC.guestRooms, tags: [...sourceTags] },
   ],
-  npcs: threeFeathersNpcs.map((npc) => ({
+  npcs: scenarioCharacters.map((npc) => ({
     id: npc.id,
     name: npc.name,
     role: npcRoles[npc.id] ?? npc.group,

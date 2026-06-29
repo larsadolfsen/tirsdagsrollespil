@@ -16,6 +16,12 @@ export interface NpcStatBlock {
 export interface NpcTemplate {
   id: string;
   name: string;
+  isNpc: boolean;
+  description?: string;
+  members?: readonly {
+    id: string;
+    name: string;
+  }[];
   category: string;
   group?: string;
   count?: number;

@@ -130,7 +130,7 @@ export function getSortedParticipants(
         category: npc?.category ?? template?.category ?? "",
         currentWounds,
         maxWounds: npc?.statBlock.W ?? template?.statBlock.wounds ?? group.wounds[i] ?? 0,
-        isNpc: group.source === "npc",
+        isNpc: npc?.isNpc ?? false,
       }));
     }),
   ];
@@ -1105,6 +1105,7 @@ type SceneComponentRowProps = {
   total: number;
   component: SceneComponent;
   title: string;
+  actions?: React.ReactNode;
   onMoveUp: () => void;
   onMoveDown: () => void;
   onConvertType?: (type: "text" | "notes") => void;
@@ -1117,6 +1118,7 @@ function SceneComponentRow({
   total,
   component,
   title,
+  actions,
   onMoveUp,
   onMoveDown,
   onConvertType,
@@ -1138,6 +1140,7 @@ function SceneComponentRow({
       <div className={`flex h-10 items-center opacity-0 transition-opacity group-hover/item:opacity-100 ${
         component.type === "encounter" ? "absolute right-0 top-3" : ""
       }`}>
+        {actions}
         <Button variant="wfrpIcon" onClick={onMoveUp} disabled={index === 0} aria-label="Move component up" leadingIcon={<ChevronUp />} />
         <Button variant="wfrpIcon" onClick={onMoveDown} disabled={index === total - 1} aria-label="Move component down" leadingIcon={<ChevronDown />} />
         <DropdownMenu>
@@ -1212,6 +1215,53 @@ export function SceneComponentsList({
           onCommit: () => { onUpdateComponentTitle(component.id, titleDraft.trim() || defaultTitle); setEditingTitleId(null); },
           onCancel: () => setEditingTitleId(null),
         };
+        const encounterData = component.type === "encounter" ? getEncounterData(component) : null;
+        const combatActive = encounterData?.combatActive ?? false;
+        const startCombat = () => {
+          if (!encounterData) return;
+
+          const participants = getSortedParticipants(encounterData, characters);
+          const startLogEntry = (() => {
+            const participantNames = participants.map((p) => {
+              if (p.kind === "player") {
+                const char = characters.find((c) => c.id === p.characterId);
+                return char?.name ?? "Unknown Player";
+              }
+              return p.name ?? "Unknown Adversary";
+            }).join(", ");
+            const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+            return `[${timeStr}] Combat started with: ${participantNames}`;
+          })();
+
+          onUpdateComponentEncounterData(component.id, {
+            ...encounterData,
+            combatActive: true,
+            roundCount: 1,
+            activeParticipantId: participants.length > 0 ? participants[0].id : undefined,
+            combatLog: [startLogEntry],
+          });
+        };
+        const encounterActions = encounterData ? (
+          <>
+            <Button
+              variant="wfrpIcon"
+              leadingIcon={<Plus />}
+              aria-label="Add adversary"
+              onClick={() => {
+                setActiveEncounterId(component.id);
+                setIsAdversarySidebarOpen(true);
+              }}
+            />
+            {!combatActive && (
+              <Button
+                variant="wfrpIcon"
+                leadingIcon={<Play />}
+                aria-label="Start combat"
+                onClick={startCombat}
+              />
+            )}
+          </>
+        ) : null;
 
         return (
           <SceneComponentRow
@@ -1220,56 +1270,51 @@ export function SceneComponentsList({
             total={components.length}
             component={component}
             title={title}
+            actions={encounterActions}
             onMoveUp={() => moveComponent(index, "up")}
             onMoveDown={() => moveComponent(index, "down")}
             onConvertType={(type) => onUpdateComponentType(component.id, type)}
             onRemove={() => onRemoveComponent(component.id)}
           >
             {component.type === "text" && (
-              <div className="flex items-start gap-4">
-                <div className="min-w-0 flex-1">
-                  <Card>
-                    <div className="px-4 pt-4 pb-1">
-                      <EditableComponentTitle {...titleProps} />
-                    </div>
-                    <CardContent className="pt-1 pb-4">
-                      <FormattedTextField
-                        value={component.text}
-                        onChange={(text) => onUpdateComponentText(component.id, text)}
-                        ariaLabel={`Scene ${sceneNumber} description`}
-                        placeholder="Write the scene description here…"
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-                <div className="min-w-0 flex-1" />
+              <div className="min-w-0 max-w-[400px]">
+                <Card>
+                  <div className="px-4 pt-4 pb-1">
+                    <EditableComponentTitle {...titleProps} />
+                  </div>
+                  <CardContent className="pt-1 pb-4">
+                    <FormattedTextField
+                      value={component.text}
+                      onChange={(text) => onUpdateComponentText(component.id, text)}
+                      ariaLabel={`Scene ${sceneNumber} description`}
+                      placeholder="Write the scene description here…"
+                    />
+                  </CardContent>
+                </Card>
               </div>
             )}
 
             {component.type === "notes" && (
-              <div className="flex items-start gap-4">
-                <div className="min-w-0 flex-1">
-                  <div className="flex min-h-10 items-center">
-                    <EditableComponentTitle {...titleProps} />
-                  </div>
-                  <FormattedTextField
-                    value={component.text}
-                    onChange={(text) => onUpdateComponentText(component.id, text)}
-                    ariaLabel={`Scene ${sceneNumber} notes`}
-                    placeholder="Add GM notes…"
-                  />
+              <div className="min-w-0 max-w-[400px]">
+                <div className="flex min-h-10 items-center">
+                  <EditableComponentTitle {...titleProps} />
                 </div>
-                <div className="min-w-0 flex-1" />
+                <FormattedTextField
+                  value={component.text}
+                  onChange={(text) => onUpdateComponentText(component.id, text)}
+                  ariaLabel={`Scene ${sceneNumber} notes`}
+                  placeholder="Add GM notes…"
+                />
               </div>
             )}
 
             {component.type === "encounter" && (() => {
-              const encounterData = getEncounterData(component);
+              if (!encounterData) return null;
               const { combatActive = false, roundCount = 1 } = encounterData;
 
               return (
                 <>
-                  <div className="flex min-h-10 items-center justify-between pr-28">
+                  <div className="flex min-h-10 items-center justify-between pr-60">
                     <div className="flex items-center gap-3">
                       <EditableComponentTitle {...titleProps} />
                       {combatActive && (
@@ -1279,45 +1324,6 @@ export function SceneComponentsList({
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="wfrpIcon"
-                        leadingIcon={<Plus />}
-                        aria-label="Add adversary"
-                        onClick={() => {
-                          setActiveEncounterId(component.id);
-                          setIsAdversarySidebarOpen(true);
-                        }}
-                      />
-                      {!combatActive && (
-                        <Button
-                          variant="wfrpIcon"
-                          leadingIcon={<Play />}
-                          aria-label="Start combat"
-                          isGolden
-                          onClick={() => {
-                            const participants = getSortedParticipants(encounterData, characters);
-                            const startLogEntry = (() => {
-                              const participantNames = participants.map((p) => {
-                                if (p.kind === "player") {
-                                  const char = characters.find((c) => c.id === p.characterId);
-                                  return char?.name ?? "Unknown Player";
-                                }
-                                return p.name ?? "Unknown Adversary";
-                              }).join(", ");
-                              const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-                              return `[${timeStr}] Combat started with: ${participantNames}`;
-                            })();
-
-                            onUpdateComponentEncounterData(component.id, {
-                              ...encounterData,
-                              combatActive: true,
-                              roundCount: 1,
-                              activeParticipantId: participants.length > 0 ? participants[0].id : undefined,
-                              combatLog: [startLogEntry],
-                            });
-                          }}
-                        />
-                      )}
                       {combatActive && (
                         <>
                           <Button

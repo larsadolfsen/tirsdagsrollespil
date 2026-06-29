@@ -2,33 +2,47 @@ import { useMemo, useState } from "react";
 import { AppSidebar } from "./AppSidebar";
 import { SidebarItemList } from "./SidebarItemList";
 import { WfrpFilterChips, WfrpSearchField } from "../ui";
-import { npcTemplates, type NpcTemplate } from "../../data/npcs";
+import { expandNpcTemplate, isNamedNpc, npcTemplates, type NpcTemplate } from "../../data/npcs";
 
 export function NpcSidebar({
   isOpen,
   onClose,
   onAddNpc,
+  onRemoveNpc,
+  sceneNpcIds = [],
+  sessionNpcIds = [],
+  showActiveFilters = false,
+  title = "Add NPC",
   className,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onAddNpc: (template: NpcTemplate, count: number) => void;
+  onRemoveNpc?: (template: NpcTemplate) => void;
+  sceneNpcIds?: string[];
+  sessionNpcIds?: string[];
+  showActiveFilters?: boolean;
+  title?: string;
   className?: string;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [activeFilters, setActiveFilters] = useState<("in-scene" | "in-session")[]>([]);
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
-
-  const activeCategories = useMemo(() => {
-    const present = [...new Set(npcTemplates.map((n) => n.category))].sort();
-    return present.map((c) => ({ id: c, label: c.charAt(0).toUpperCase() + c.slice(1) }));
-  }, []);
+  const sceneNpcIdSet = useMemo(() => new Set(sceneNpcIds), [sceneNpcIds]);
+  const sessionNpcIdSet = useMemo(() => new Set(sessionNpcIds), [sessionNpcIds]);
+  const namedNpcTemplates = useMemo(
+    () => npcTemplates.filter(isNamedNpc).flatMap(expandNpcTemplate),
+    [],
+  );
 
   const items = useMemo(() => {
-    return npcTemplates
+    return namedNpcTemplates
       .filter((npc) => {
-        if (selectedFilters.length > 0 && !selectedFilters.includes(npc.category)) return false;
+        const isInScene = sceneNpcIdSet.has(npc.id);
+        const isInSession = sessionNpcIdSet.has(npc.id);
+        if (activeFilters.includes("in-scene") && !isInScene) return false;
+        if (activeFilters.includes("in-session") && !isInSession) return false;
         if (normalizedQuery) {
           return (
             npc.name.toLowerCase().includes(normalizedQuery) ||
@@ -40,28 +54,43 @@ export function NpcSidebar({
       })
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((npc) => {
-        const count = npc.count ?? 1;
+        const isInScene = sceneNpcIdSet.has(npc.id);
+        const addLabel = showActiveFilters ? "Add to Scene" : "Add";
         return {
           id: npc.id,
+          isMarked: isInScene,
           name: npc.name,
           meta: npc.category,
-          details: [
-            { label: "M", value: npc.statBlock.M },
-            { label: "W", value: npc.statBlock.W },
-            { label: "WS", value: npc.statBlock.WS },
-            { label: "BS", value: npc.statBlock.BS },
-            { label: "I", value: npc.statBlock.I },
-          ],
           actions: [
             {
-              isActive: true,
-              label: count > 1 ? `Add ×${count}` : "Add",
-              onClick: () => onAddNpc(npc, count),
+              isActive: !isInScene,
+              className: showActiveFilters && isInScene
+                ? "text-red-400 hover:text-red-300 focus-visible:text-red-300"
+                : undefined,
+              label: showActiveFilters
+                ? isInScene ? "Remove from Scene" : addLabel
+                : addLabel,
+              onClick: () => {
+                if (showActiveFilters && isInScene && onRemoveNpc) {
+                  onRemoveNpc(npc);
+                  return;
+                }
+                onAddNpc(npc, 1);
+              },
             },
           ],
         };
       });
-  }, [normalizedQuery, onAddNpc, selectedFilters]);
+  }, [
+    namedNpcTemplates,
+    normalizedQuery,
+    onAddNpc,
+    onRemoveNpc,
+    activeFilters,
+    sceneNpcIdSet,
+    sessionNpcIdSet,
+    showActiveFilters,
+  ]);
 
   return (
     <AppSidebar
@@ -69,7 +98,7 @@ export function NpcSidebar({
       motionKey="npc-sidebar"
       onClose={onClose}
       side="right"
-      title="Add NPC"
+      title={title}
       titleId="npc-sidebar-title"
       closeLabel="Close NPC sidebar"
       alwaysOverlay
@@ -86,15 +115,18 @@ export function NpcSidebar({
         onSearch={setSearchQuery}
         onValueChange={setSearchQuery}
       />
-      {activeCategories.length > 0 && (
+      {showActiveFilters && (
         <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
           <div className="space-y-1.5">
-            <div className="wfrp-label text-wfrp-muted-text">Category</div>
+            <div className="wfrp-label text-wfrp-muted-text">Active</div>
             <WfrpFilterChips
-              ariaLabel="NPC category filters"
-              options={activeCategories}
-              selectedIds={selectedFilters}
-              onChange={setSelectedFilters}
+              ariaLabel="Active NPC filters"
+              options={[
+                { id: "in-scene" as const, label: "In Scene" },
+                { id: "in-session" as const, label: "In Session" },
+              ]}
+              selectedIds={activeFilters}
+              onChange={setActiveFilters}
             />
           </div>
         </div>

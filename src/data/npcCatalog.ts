@@ -1,4 +1,4 @@
-import type { NpcTemplate } from "../../npcTypes";
+import type { NpcTemplate } from "./npcTypes";
 
 const sourceTags = [
   "Rough Nights & Hard Days",
@@ -10,6 +10,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-gravin-maria-ulrike-von-liebwitz",
     name: "Gravin Maria-Ulrike von Liebwitz of Ambosstein",
+    isNpc: true,
+    description: "Travelling noble whose judicial champion is targeted before her trial.",
     type: "monster",
     category: "human",
     group: "The Gravin's Party",
@@ -78,6 +80,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-bruno-franke",
     name: "Bruno Franke",
+    isNpc: true,
+    description: "The Gravin's judicial champion and the intended murder victim.",
     type: "monster",
     category: "human",
     group: "The Gravin's Party",
@@ -90,6 +94,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-gustaf-rechtshandler",
     name: "Gustaf Rechtshandler",
+    isNpc: true,
+    description: "The Gravin's lawyer, carrying a dangerous link to the Ordo Ultima.",
     type: "monster",
     category: "human",
     group: "The Gravin's Party",
@@ -127,31 +133,10 @@ const threeFeathersNpcSource = [
     trappings: ["Lawyer's Robes", "Towering Sense of Self-Importance", "Wig"],
   },
   {
-    id: "three-feathers-bodyguards-men-at-arms",
-    name: "Bodyguards and Men-at-Arms",
-    type: "monster",
-    category: "human",
-    group: "The Gravin's Staff",
-    count: 4,
-    tags: [...sourceTags],
-    statBlock: { M: 4, WS: 51, BS: 35, S: 43, T: 62, I: 44, Ag: 46, Dex: 28, Int: 26, WP: 44, Fel: 28, W: 20 },
-    skills: ["Dodge 54", "Melee (Basic) 61"],
-    talents: ["Armour (Leathers and Plates) 3", "Prejudice (Ambosstein Enemies)", "Strike to Stun", "Tough", "Weapon (Sword) +8"],
-  },
-  {
-    id: "three-feathers-handmaids-servants",
-    name: "Handmaids and Servants",
-    type: "monster",
-    category: "human",
-    group: "The Gravin's Staff",
-    count: 4,
-    tags: [...sourceTags],
-    statBlock: { M: 4, WS: 28, BS: 32, S: 40, T: 39, I: 37, Ag: 40, Dex: 31, Int: 28, WP: 25, Fel: 43, W: 12 },
-    talents: ["Weapon (Fist) +6"],
-  },
-  {
     id: "three-feathers-dominique-herveaux",
     name: "Dominique Herveaux",
+    isNpc: true,
+    description: "An assassin posing as a servant in the Gravin's household.",
     type: "monster",
     category: "human",
     group: "The Gravin's Staff",
@@ -198,10 +183,17 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-gunni-bart-hans-frederick",
     name: "Gunni, Bart, and Hans-Frederick",
+    isNpc: true,
+    description: "A smuggler disguised as a Morrian priest.",
     type: "monster",
     category: "human",
     group: "The Morrians and Their Pursuer",
     count: 3,
+    members: [
+      { id: "three-feathers-gunni", name: "Gunni" },
+      { id: "three-feathers-bart", name: "Bart" },
+      { id: "three-feathers-hans-frederick", name: "Hans-Frederick" },
+    ],
     tags: [...sourceTags],
     statBlock: { M: 4, WS: 34, BS: 31, S: 43, T: 45, I: 44, Ag: 38, Dex: 36, Int: 28, WP: 45, Fel: 28, W: 16 },
     talents: ["Weapon (Bone Clubs) +8"],
@@ -210,6 +202,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-josef-aufwiegler",
     name: "Josef Aufwiegler",
+    isNpc: true,
+    description: "A drugged agitator hidden in the coffin.",
     type: "monster",
     category: "human",
     group: "The Morrians and Their Pursuer",
@@ -220,6 +214,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-ursula-kopfgeld",
     name: "Ursula Kopfgeld",
+    isNpc: true,
+    description: "A bounty hunter tracking Josef and the smugglers.",
     type: "monster",
     category: "human",
     group: "The Morrians and Their Pursuer",
@@ -260,6 +256,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-friedrich-von-pfeifraucher",
     name: "Friedrich von Pfeifraucher",
+    isNpc: true,
+    description: "A minor noble travelling under a false name with Hanna.",
     type: "monster",
     category: "human",
     group: "The Illicit Lovers and Their Pursuers",
@@ -271,6 +269,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-hanna-lastkahn",
     name: "Hanna Lastkahn",
+    isNpc: true,
+    description: "Friedrich's lover and Prahmhandler's runaway fiancee.",
     type: "monster",
     category: "human",
     group: "The Illicit Lovers and Their Pursuers",
@@ -282,10 +282,17 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-mho-larz-curls",
     name: "Mho, Larz, and 'Curls'",
+    isNpc: true,
+    description: "A hired thug brought to force a confrontation.",
     type: "monster",
     category: "human",
     group: "The Illicit Lovers and Their Pursuers",
     count: 3,
+    members: [
+      { id: "three-feathers-mho", name: "Mho" },
+      { id: "three-feathers-larz", name: "Larz" },
+      { id: "three-feathers-curls", name: "'Curls'" },
+    ],
     tags: [...sourceTags],
     statBlock: { M: 4, WS: 50, BS: 33, S: 53, T: 43, I: 42, Ag: 41, Dex: 29, Int: 27, WP: 43, Fel: 28, W: 17 },
     skills: ["Dodge 56", "Melee (Brawling) 60", "Melee (Basic) 55"],
@@ -294,6 +301,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-thomas-prahmhandler",
     name: "Thomas Prahmhandler",
+    isNpc: true,
+    description: "A wronged merchant and source of a late-night escalation.",
     type: "monster",
     category: "human",
     group: "The Illicit Lovers and Their Pursuers",
@@ -305,40 +314,26 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-allrelia-elphoise-helga",
     name: "Allrelia, Elphoise, and Helga",
+    isNpc: true,
+    description: "An Ordo Ultima agent hunting Rechtshandler's old secrets.",
     type: "monster",
     category: "human",
     group: "The Cultists",
     count: 3,
+    members: [
+      { id: "three-feathers-allrelia", name: "Allrelia" },
+      { id: "three-feathers-elphoise", name: "Elphoise" },
+      { id: "three-feathers-helga", name: "Helga" },
+    ],
     tags: [...sourceTags],
     statBlock: { M: 4, WS: 34, BS: 31, S: 39, T: 51, I: 25, Ag: 32, Dex: 43, Int: 45, WP: 41, Fel: 43, W: 17 },
     talents: ["Prejudice (Warriors)", "Weapon (Dagger) +6"],
   },
   {
-    id: "three-feathers-coachmen",
-    name: "Coachmen",
-    type: "monster",
-    category: "human",
-    group: "Other Customers",
-    count: 4,
-    tags: [...sourceTags],
-    statBlock: { M: 4, WS: 33, BS: 54, S: 31, T: 45, I: 36, Ag: 50, Dex: 38, Int: 29, WP: 55, Fel: 29, W: 16 },
-    talents: ["Prejudice (Boatmen)", "Ranged (Blunderbuss) +8 (20)", "Ranged (Whip) +6 (6)", "Weapon (Club) +7"],
-  },
-  {
-    id: "three-feathers-boatmen",
-    name: "Boatmen",
-    type: "monster",
-    category: "human",
-    group: "Other Customers",
-    count: 4,
-    tags: [...sourceTags],
-    statBlock: { M: 4, WS: 32, BS: 37, S: 52, T: 54, I: 51, Ag: 47, Dex: 32, Int: 33, WP: 28, Fel: 35, W: 17 },
-    skills: ["Armour (Leathers) 1"],
-    talents: ["Prejudice (Coachmen)", "Weapon (Club) +8"],
-  },
-  {
     id: "three-feathers-glimbrin-oddsock",
     name: "Glimbrin Oddsock",
+    isNpc: true,
+    description: "A gnome thief using the crowd as cover.",
     type: "monster",
     category: "human",
     group: "Glimbrin and Seedling",
@@ -385,6 +380,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-mercurinellin-seedling-thorncobble-xiii",
     name: "Mercurinellin 'Seedling' Thorncobble XIII",
+    isNpc: true,
+    description: "A halfling gambler whose table gathers rumours and marks.",
     type: "monster",
     category: "human",
     group: "Glimbrin and Seedling",
@@ -412,6 +409,8 @@ const threeFeathersNpcSource = [
   {
     id: "three-feathers-hans-orf",
     name: "Hans Orf",
+    isNpc: true,
+    description: "The landlord of the Three Feathers.",
     type: "monster",
     category: "human",
     group: "The Staff of the Three Feathers",
@@ -420,19 +419,10 @@ const threeFeathersNpcSource = [
     talents: ["Prejudice (Thieves)", "Weapon (Club) +7"],
   },
   {
-    id: "three-feathers-servants-cleaners-menials",
-    name: "Servants, Cleaners, and Similar Menials",
-    type: "monster",
-    category: "human",
-    group: "The Staff of the Three Feathers",
-    count: 4,
-    tags: [...sourceTags],
-    statBlock: { M: 4, WS: 31, BS: 32, S: 32, T: 39, I: 32, Ag: 43, Dex: 31, Int: 34, WP: 37, Fel: 34, W: 12 },
-    talents: ["Weapon (Bucket/Tool/Tray/Mop) +5"],
-  },
-  {
     id: "three-feathers-ol-bess",
     name: "Ol' Bess",
+    isNpc: true,
+    description: "The inn's smith and a source of practical help.",
     type: "monster",
     category: "human",
     group: "The Staff of the Three Feathers",
@@ -442,6 +432,6 @@ const threeFeathersNpcSource = [
   },
 ] as const;
 
-export const threeFeathersNpcs: NpcTemplate[] = threeFeathersNpcSource.map(
+export const npcCatalog: NpcTemplate[] = threeFeathersNpcSource.map(
   ({ type: _legacyType, ...npc }) => npc,
 );

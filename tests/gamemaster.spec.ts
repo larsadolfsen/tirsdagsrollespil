@@ -1,5 +1,24 @@
 import { expect, test } from "@playwright/test";
 
+test("GM pages use the top content heading as the only h1", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open Game Master" }).click();
+
+  await expect(page.locator("h1")).toHaveCount(1);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Campaign Sessions");
+
+  await page.getByRole("button", { name: "Open", exact: true }).first().click();
+
+  await expect(page.locator("h1")).toHaveCount(1);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/.+/);
+  await expect(page.getByRole("heading", { name: "Enemy Within" })).toHaveCount(0);
+
+  const campaignHeader = page.getByRole("region", { name: "Campaign header" });
+  const campaignIdentity = campaignHeader.getByRole("group", { name: "Campaign identity" });
+  await expect(campaignIdentity.locator("span").nth(0)).toHaveText("Enemy Within");
+  await expect(campaignIdentity.locator("span").nth(1)).toHaveText("Campaign View");
+});
+
 test("Game Master page scene components workflow", async ({ page }) => {
   // 1. Visit landing page and navigate to GM page
   await page.goto("/");
