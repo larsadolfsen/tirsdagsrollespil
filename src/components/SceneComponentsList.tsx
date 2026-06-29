@@ -96,25 +96,39 @@ function MonsterParticipantRow({
   initiative,
   currentWounds,
   maxWounds,
+  isNpc,
 }: {
   name: string;
   category: string;
   initiative: number;
   currentWounds: number;
   maxWounds: number;
+  isNpc?: boolean;
 }) {
   const isDead = currentWounds === 0;
+  const initials = name
+    .split(" ")
+    .map((p) => p.charAt(0))
+    .join("")
+    .slice(0, 2);
+
   return (
     <>
       <TableCell>
-        <div className={`flex h-9 w-9 items-center justify-center rounded border ${
-          isDead ? "border-red-900/50 bg-red-950/20" : "border-wfrp-border bg-wfrp-dark"
+        <div className={`flex h-9 w-9 items-center justify-center rounded border overflow-hidden ${
+          isNpc
+            ? "border-wfrp-border bg-wfrp-dark"
+            : (isDead ? "border-red-900/50 bg-red-950/20" : "border-wfrp-border bg-wfrp-dark")
         }`}>
-          <Skull size={14} className={isDead ? "text-red-500/60" : "text-wfrp-muted-text/50"} />
+          {isNpc ? (
+            <span className="text-wfrp-muted-text">{initials}</span>
+          ) : (
+            <Skull size={14} className={isDead ? "text-red-500/60" : "text-wfrp-muted-text/50"} />
+          )}
         </div>
       </TableCell>
       <TableCell className="min-w-0">
-        <span className={`block truncate font-semibold leading-tight ${isDead ? "text-wfrp-muted-text line-through" : ""}`}>
+        <span className={`block truncate font-semibold leading-tight ${(!isNpc && isDead) ? "text-wfrp-muted-text line-through" : ""}`}>
           {name}
         </span>
         <span className="block truncate capitalize text-wfrp-muted-text">{category}</span>
@@ -753,7 +767,7 @@ function EncounterComponent({
   // Build combined participant list
   type Participant =
     | { kind: "player"; id: string; characterId: string; initiative: number; agility: number }
-    | { kind: "monster"; id: string; groupId: string; instanceIndex: number; initiative: number; agility: number; name: string; category: string; currentWounds: number; maxWounds: number };
+    | { kind: "monster"; id: string; groupId: string; instanceIndex: number; initiative: number; agility: number; name: string; category: string; currentWounds: number; maxWounds: number; isNpc?: boolean };
 
   const allParticipants: Participant[] = [
     ...characters.map((char) => ({
@@ -777,6 +791,7 @@ function EncounterComponent({
         category: npc?.category ?? template?.category ?? "",
         currentWounds,
         maxWounds: npc?.statBlock.W ?? template?.statBlock.wounds ?? group.wounds[i] ?? 0,
+        isNpc: group.source === "npc",
       }));
     }),
   ];
@@ -966,6 +981,7 @@ function EncounterComponent({
                           initiative={participant.initiative}
                           currentWounds={participant.currentWounds}
                           maxWounds={participant.maxWounds}
+                          isNpc={participant.isNpc}
                         />
                       )}
                     </TableRow>
@@ -1182,8 +1198,10 @@ export function SceneComponentsList({
 
             {/* Body */}
             {component.type === "text" && (
-              <div className="py-2">
+              <div className="py-2 pl-8">
                 <FormattedTextField
+                  className="max-w-[400px]"
+                  size="base"
                   value={component.text}
                   onChange={(text) => onUpdateComponentText(component.id, text)}
                   ariaLabel={`Scene ${sceneNumber} text field`}

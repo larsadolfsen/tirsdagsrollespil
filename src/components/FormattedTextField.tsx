@@ -11,6 +11,7 @@ type FormattedTextFieldProps = {
   onChange: (value: string) => void;
   placeholder?: string;
   value: string;
+  size?: "sm" | "base";
 };
 
 const formatActions: Array<{
@@ -38,6 +39,7 @@ export function FormattedTextField({
   onChange,
   placeholder = "Write…",
   value,
+  size = "sm",
 }: FormattedTextFieldProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [draftValue, setDraftValue] = useState(value);
@@ -95,7 +97,8 @@ export function FormattedTextField({
           aria-label={`Edit ${ariaLabel}`}
           title="Click to edit"
           className={cn(
-            "wfrp-text cursor-pointer hover:text-white transition-colors outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 rounded [&_b]:font-bold [&_i]:italic [&_li]:my-1 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5",
+            "cursor-pointer hover:text-white transition-colors outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 rounded [&_b]:font-bold [&_i]:italic [&_li]:my-1 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5",
+            size === "base" ? "text-base font-normal leading-relaxed" : "wfrp-text",
             isEmpty ? "text-wfrp-muted-text/60 italic font-sans" : "text-gray-200"
           )}
           dangerouslySetInnerHTML={{ __html: isEmpty ? placeholder : value }}
@@ -149,7 +152,10 @@ export function FormattedTextField({
             event.preventDefault();
             document.execCommand("insertText", false, event.clipboardData.getData("text/plain"));
           }}
-          className="min-h-32 px-3 py-2.5 wfrp-text text-gray-200 outline-none [&:empty]:before:pointer-events-none [&:empty]:before:text-wfrp-muted-text [&:empty]:before:content-[attr(data-placeholder)] [&_b]:font-bold [&_i]:italic [&_li]:my-1 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5"
+          className={cn(
+            "min-h-32 px-3 py-2.5 text-gray-200 outline-none [&:empty]:before:pointer-events-none [&:empty]:before:text-wfrp-muted-text [&:empty]:before:content-[attr(data-placeholder)] [&_b]:font-bold [&_i]:italic [&_li]:my-1 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5",
+            size === "base" ? "text-base font-normal leading-relaxed" : "wfrp-text"
+          )}
         />
       </div>
       <div className="mt-2 flex justify-end">
