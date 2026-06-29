@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  BookOpen,
+  Calendar,
+  EllipsisVertical,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
+  Trash2,
 } from "lucide-react";
 import type { CharacterSummary } from "../data/repository";
 import type { EncounterData, GMScene, GMSession } from "../data/gmSessions";
@@ -24,12 +26,16 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   Heading,
+  Separator,
   type BreadcrumbItem,
 } from "./ui";
-import {
-  SheetEmptyState,
-} from "./wfrp";
+import { SheetEmptyState } from "./wfrp";
+import { FormattedTextField } from "./FormattedTextField";
 import { SceneComponentsList, type SceneComponent } from "./SceneComponentsList";
 
 type GameMasterPageProps = {
@@ -40,12 +46,13 @@ type GameMasterPageProps = {
   isLoadingSessions: boolean;
   isSessionsSidebarOpen: boolean;
   onCreateSession: () => void;
+  onDeleteSession: (sessionId: string) => void;
   onImportScenario: (scenario: ScenarioSessionImportDefinition) => Promise<void>;
   onScenesChange?: (scenes: GMScene[]) => void;
   onSelectSession: (sessionId: string) => void;
   onUpdateComponentEncounterData?: (sceneId: string, componentId: string, data: EncounterData) => void;
   onSessionsSidebarOpenChange: (isOpen: boolean) => void;
-  onUpdateSession: (field: "name", value: string) => void;
+  onUpdateSession: (field: "name" | "notes", value: string) => void;
   selectedSessionId: string | null;
   sessions: GMSession[];
 };
@@ -108,6 +115,7 @@ export function GameMasterPage({
   isLoadingSessions,
   isSessionsSidebarOpen,
   onCreateSession,
+  onDeleteSession,
   onImportScenario,
   onScenesChange,
   onSelectSession,
@@ -314,7 +322,6 @@ export function GameMasterPage({
             variant="secondary"
             onClick={() => setIsScenarioDialogOpen(true)}
             className="justify-center"
-            leadingIcon={<BookOpen />}
           >
             Import scenario
           </Button>
@@ -322,7 +329,6 @@ export function GameMasterPage({
             variant="secondary"
             onClick={onCreateSession}
             className="justify-center"
-            leadingIcon={<Plus />}
           >
             Create session
           </Button>
@@ -466,6 +472,16 @@ export function GameMasterPage({
                     </div>
                   )}
 
+                  {/* Session Description */}
+                  <div className="mt-2 mb-6 max-w-3xl">
+                    <FormattedTextField
+                      ariaLabel="Session description"
+                      value={activeSession.notes || ""}
+                      onChange={(value) => onUpdateSession("notes", value)}
+                      placeholder="Add a session description…"
+                    />
+                  </div>
+
                   {scenes.length > 0 ? (
                     <div className="flex flex-col gap-8">
                       {scenes.map((scene, sceneIndex) => (
@@ -487,26 +503,9 @@ export function GameMasterPage({
                               onAddAfter={() => addScene(sceneIndex, "after")}
                               onCopy={() => copyScene(sceneIndex)}
                               onDelete={() => deleteScene(scene.id)}
+                              onAddTextField={() => addComponentToScene(scene.id, "text")}
+                              onAddEncounter={() => addComponentToScene(scene.id, "encounter")}
                             />
-                          </div>
-                          <div className="mt-2">
-                            <span className="wfrp-label mb-2 block text-wfrp-muted-text">
-                              Add component
-                            </span>
-                            <div className="flex flex-wrap gap-2">
-                              <Button
-                                variant="secondary"
-                                onClick={() => addComponentToScene(scene.id, "text")}
-                              >
-                                Text field
-                              </Button>
-                              <Button
-                                variant="secondary"
-                                onClick={() => addComponentToScene(scene.id, "encounter")}
-                              >
-                                Encounter
-                              </Button>
-                            </div>
                           </div>
 
                           <SceneComponentsList
@@ -536,11 +535,96 @@ export function GameMasterPage({
                   )}
                 </div>
               ) : (
-                <SheetEmptyState title="No session selected" className="min-h-[400px] flex-1">
-                  {sessions.length > 0
-                    ? "Select a session from the sidebar to view or edit its notes."
-                    : "Create a session to start planning."}
-                </SheetEmptyState>
+                <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <Heading level={2} variant="sectionDisplay">
+                        Campaign Sessions
+                      </Heading>
+                      <p className="mt-1 text-sm text-wfrp-muted-text">
+                        Create sessions to organize your campaign notes, scenes, and encounters.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="secondary"
+                        onClick={() => setIsScenarioDialogOpen(true)}
+                      >
+                        Import scenario
+                      </Button>
+                      <Button
+                        variant="default"
+                        isGolden
+                        onClick={onCreateSession}
+                      >
+                        Create session
+                      </Button>
+                    </div>
+                  </div>
+
+                  {sessions.length > 0 ? (
+                    <div className="flex flex-col gap-8">
+                      {sessions.map((session, index) => (
+                        <div key={session.id} className="flex flex-col">
+                          {index > 0 && <Separator className="mb-8" />}
+                          <section>
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                              <div className="min-w-0 flex-1">
+                                <span className="wfrp-label block text-wfrp-muted-text mb-1">
+                                  Session {session.sessionNumber + 1}
+                                </span>
+                                <Heading level={3} variant="sectionDisplay">
+                                  {session.name || "Untitled Session"}
+                                </Heading>
+                                {session.notes && (
+                                  <div className="mt-1 pl-1">
+                                    <div
+                                      className="wfrp-text text-sm text-wfrp-muted-text/80 line-clamp-3 font-sans [&_b]:font-semibold [&_i]:italic [&_strong]:font-semibold [&_ul]:list-disc [&_ul]:pl-4"
+                                      dangerouslySetInnerHTML={{ __html: session.notes }}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0 max-sm:justify-end">
+                                <Button
+                                  variant="secondary"
+                                  onClick={() => onSelectSession(session.id)}
+                                  className="justify-center"
+                                >
+                                  Open
+                                </Button>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger
+                                    aria-label={`Session ${session.sessionNumber + 1} menu`}
+                                    title={`Session ${session.sessionNumber + 1} menu`}
+                                    className="wfrp-standard-icon cursor-pointer"
+                                  >
+                                    <span className="wfrp-standard-icon__glyph" aria-hidden="true">
+                                      <EllipsisVertical />
+                                    </span>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem
+                                      onClick={() => onDeleteSession(session.id)}
+                                      className="text-red-400 focus:text-red-400"
+                                    >
+                                      <Trash2 className="mr-2 size-4" aria-hidden="true" />
+                                      Delete session
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+                            </div>
+                          </section>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <SheetEmptyState title="No sessions" className="min-h-[300px]">
+                      Create the first session or import a scenario to start planning campaign notes.
+                    </SheetEmptyState>
+                  )}
+                </div>
               )}
             </section>
           </div>
