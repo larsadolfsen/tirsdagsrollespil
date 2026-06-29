@@ -1118,9 +1118,17 @@ export function SceneComponentsList({
           >
             {/* Control bar */}
             <div className="flex min-h-10 items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="relative flex items-center pl-8 md:pl-0">
+                {/* Desktop drag handle (absolute positioned to the left of the container) */}
                 <div
-                  className="flex h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-colors active:cursor-grabbing"
+                  className="absolute right-full mr-2 hidden md:flex h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-colors active:cursor-grabbing"
+                  title="Drag to reorder"
+                >
+                  <GripVertical size={16} aria-hidden="true" />
+                </div>
+                {/* Mobile drag handle (rendered inline) */}
+                <div
+                  className="flex md:hidden h-8 w-6 cursor-grab items-center justify-center rounded text-wfrp-muted-text hover:text-white transition-colors active:cursor-grabbing mr-2"
                   title="Drag to reorder"
                 >
                   <GripVertical size={16} aria-hidden="true" />
@@ -1198,7 +1206,7 @@ export function SceneComponentsList({
 
             {/* Body */}
             {component.type === "text" && (
-              <div className="py-2 pl-8">
+              <div className="py-2 pl-8 md:pl-0">
                 <FormattedTextField
                   className="max-w-[440px]"
                   value={component.text}
@@ -1209,12 +1217,14 @@ export function SceneComponentsList({
               </div>
             )}
             {component.type === "encounter" && (
-              <EncounterComponent
-                component={component}
-                characters={characters}
-                onUpdateEncounterData={(data) => onUpdateComponentEncounterData(component.id, data)}
-                onOpenMonsterSidebar={onOpenMonsterSidebar}
-              />
+              <div className="pl-8 md:pl-0">
+                <EncounterComponent
+                  component={component}
+                  characters={characters}
+                  onUpdateEncounterData={(data) => onUpdateComponentEncounterData(component.id, data)}
+                  onOpenMonsterSidebar={onOpenMonsterSidebar}
+                />
+              </div>
             )}
           </div>
         );
