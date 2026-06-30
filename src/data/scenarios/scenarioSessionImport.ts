@@ -30,6 +30,17 @@ export interface ScenarioNpcReference {
   tags?: string[];
 }
 
+export type ScenarioCharacterSource = "npc" | "generic" | "creature";
+
+export interface ScenarioCharacterInstance {
+  id: string;
+  source: ScenarioCharacterSource;
+  templateId: string;
+  name: string;
+  role?: string;
+  count?: number;
+}
+
 interface ScenarioSceneComponentBase {
   id: string;
   title?: string;
@@ -79,6 +90,8 @@ export interface ScenarioSessionImportDefinition {
   summary: string;
   defaultSession: ScenarioSessionDefaults;
   locations: ScenarioLocationReference[];
+  characters: ScenarioCharacterInstance[];
+  /** @deprecated Use characters. */
   npcs: ScenarioNpcReference[];
   scenes: ScenarioSceneImport[];
 }

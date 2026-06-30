@@ -118,7 +118,9 @@ export function getSortedParticipants(
     })),
     ...monsterGroups.flatMap((group): EncounterParticipant[] => {
       const template = creatureTemplatesById[group.templateId as keyof typeof creatureTemplatesById];
-      const npc = group.source === "npc" ? npcTemplatesById[group.templateId] : undefined;
+      const npc = group.source === "npc" || group.source === "generic"
+        ? npcTemplatesById[group.templateId]
+        : undefined;
       return group.wounds.map((currentWounds, i) => ({
         kind: "monster" as const,
         id: `monster-${group.id}-${i}`,
@@ -130,7 +132,7 @@ export function getSortedParticipants(
         category: npc?.category ?? template?.category ?? "",
         currentWounds,
         maxWounds: npc?.statBlock.W ?? template?.statBlock.wounds ?? group.wounds[i] ?? 0,
-        isNpc: npc?.isNpc ?? false,
+        isNpc: group.source === "generic" || (npc?.isNpc ?? false),
       }));
     }),
   ];
@@ -872,7 +874,9 @@ export function EncounterComponent({
     const group = monsterGroups.find((g) => g.id === groupId);
     if (!group) return;
     const template = creatureTemplatesById[group.templateId as keyof typeof creatureTemplatesById];
-    const npc = group.source === "npc" ? npcTemplatesById[group.templateId] : undefined;
+    const npc = group.source === "npc" || group.source === "generic"
+      ? npcTemplatesById[group.templateId]
+      : undefined;
     const maxWounds = npc?.statBlock.W ?? template?.statBlock.wounds ?? group.wounds[instanceIndex] ?? 0;
     onUpdateEncounterData({
       ...encounterData,
@@ -1008,7 +1012,9 @@ export function EncounterComponent({
             )}
             {selectedParticipant?.kind === "monster" && (() => {
               const group = monsterGroups.find((entry) => entry.id === selectedParticipant.groupId);
-              const npc = group?.source === "npc" ? npcTemplatesById[group.templateId] : undefined;
+              const npc = group?.source === "npc" || group?.source === "generic"
+                ? npcTemplatesById[group.templateId]
+                : undefined;
               if (npc) {
                 return (
                   <NpcInfoPane
@@ -1427,24 +1433,25 @@ export function SceneComponentsList({
             setIsAdversarySidebarOpen(false);
             setActiveEncounterId(null);
           }}
-          onAddAdversary={(template, count, type) => {
+          onAddAdversary={(template, count, type, instanceName) => {
             const component = components.find((c) => c.id === activeEncounterId);
             if (!component) return;
             const encounterData = getEncounterData(component);
             const { monsterGroups = [] } = encounterData;
 
+            const groupId = `${type}-${template.id}-${Date.now()}`;
             const newGroup = {
-              id: `${type}-${template.id}-${Date.now()}`,
+              id: groupId,
               templateId: template.id,
-              name: template.name,
+              name: instanceName ?? template.name,
               count,
               source: type,
+              scenarioCharacterId: type === "generic" ? groupId : undefined,
               wounds: Array.from({ length: count }, () => {
-                if (type === "npc") {
-                  return (template as NpcTemplate).statBlock.W;
-                } else {
+                if (type === "creature") {
                   return (template as CreatureTemplate).statBlock.wounds;
                 }
+                return (template as NpcTemplate).statBlock.W;
               }),
             };
 

@@ -1,6 +1,9 @@
-import { npcCatalog } from "../npcCatalog";
-import { adversaryCatalog } from "../adversaryCatalog";
-import type { ScenarioSessionImportDefinition } from "./scenarioSessionImport";
+import { npcCatalog } from "../npcs/index";
+import { genericCatalog } from "../generic";
+import type {
+  ScenarioCharacterInstance,
+  ScenarioSessionImportDefinition,
+} from "./scenarioSessionImport";
 
 const sourceTags = [
   "Rough Nights & Hard Days",
@@ -60,10 +63,24 @@ const LOC = {
   room15: "three-feathers-room-15-gravins-servants",
 } as const;
 
-const scenarioCharacterIds = new Set<string>(Object.values(NPC));
-const scenarioCharacters = [...npcCatalog, ...adversaryCatalog]
-  .filter((character) => scenarioCharacterIds.has(character.id));
-const npcById = new Map(scenarioCharacters.map((npc) => [npc.id, npc]));
+const catalogById = new Map(
+  [...npcCatalog, ...genericCatalog].map((template) => [template.id, template]),
+);
+
+const namedGenericInstances: ScenarioCharacterInstance[] = [
+  { id: "three-feathers-gunni-bart-hans-frederick", source: "generic", templateId: "three-feathers-morrian-smuggler", name: "Gunni", role: "Smuggler disguised as a Morrian priest" },
+  { id: "three-feathers-bart", source: "generic", templateId: "three-feathers-morrian-smuggler", name: "Bart", role: "Smuggler disguised as a Morrian initiate" },
+  { id: "three-feathers-hans-frederick", source: "generic", templateId: "three-feathers-morrian-smuggler", name: "Hans-Frederick", role: "Smuggler disguised as a Morrian initiate" },
+  { id: "three-feathers-mho-larz-curls", source: "generic", templateId: "three-feathers-hired-thug", name: "Mho", role: "Thug hired by Thomas Prahmhandler" },
+  { id: "three-feathers-larz", source: "generic", templateId: "three-feathers-hired-thug", name: "Larz", role: "Thug hired by Thomas Prahmhandler" },
+  { id: "three-feathers-curls", source: "generic", templateId: "three-feathers-hired-thug", name: "'Curls'", role: "Thug hired by Thomas Prahmhandler" },
+  { id: "three-feathers-allrelia-elphoise-helga", source: "generic", templateId: "three-feathers-ordo-ultima-agent", name: "Allrelia", role: "Ordo Ultima agent hunting Rechtshandler's secrets" },
+  { id: "three-feathers-elphoise", source: "generic", templateId: "three-feathers-ordo-ultima-agent", name: "Elphoise", role: "Ordo Ultima agent hunting Rechtshandler's secrets" },
+  { id: "three-feathers-helga", source: "generic", templateId: "three-feathers-ordo-ultima-agent", name: "Helga", role: "Ordo Ultima agent hunting Rechtshandler's secrets" },
+];
+const namedGenericInstancesById = new Map(
+  namedGenericInstances.map((instance) => [instance.id, instance]),
+);
 
 const npcRoles: Record<string, string> = {
   [NPC.gravin]: "Travelling noble whose judicial champion is targeted before her trial",
@@ -89,15 +106,57 @@ const npcRoles: Record<string, string> = {
   [NPC.bess]: "Inn smith and potential source of practical help",
 };
 
-function npcGroup(id: string, templateId: string, count = 1, name?: string) {
-  const npc = npcById.get(templateId);
+const scenarioGenericNames: Record<string, string> = {
+  [NPC.bodyguards]: "The Gravin's Bodyguards",
+  [NPC.handmaids]: "The Gravin's Handmaids",
+  [NPC.coachmen]: "The Coachmen",
+  [NPC.boatmen]: "The Boatmen",
+  [NPC.staff]: "The Three Feathers Inn Staff",
+};
+
+const scenarioCharacterCounts: Record<string, number> = {
+  [NPC.bodyguards]: 4,
+  [NPC.handmaids]: 4,
+  [NPC.coachmen]: 4,
+  [NPC.boatmen]: 4,
+  [NPC.staff]: 4,
+};
+
+const scenarioCharacterIds = new Set<string>(Object.values(NPC));
+const scenarioCharacters: ScenarioCharacterInstance[] = [
+  ...[...scenarioCharacterIds].flatMap((id) => {
+    const namedGeneric = namedGenericInstancesById.get(id);
+    if (namedGeneric) return [namedGeneric];
+
+    const template = catalogById.get(id);
+    if (!template) return [];
+    return [{
+      id,
+      source: template.isNpc ? "npc" as const : "generic" as const,
+      templateId: template.id,
+      name: scenarioGenericNames[id] ?? template.name,
+      role: npcRoles[id] ?? template.group,
+      ...(scenarioCharacterCounts[id] ? { count: scenarioCharacterCounts[id] } : {}),
+    }];
+  }),
+  ...namedGenericInstances.filter((instance) => !scenarioCharacterIds.has(instance.id)),
+];
+const scenarioCharactersById = new Map(
+  scenarioCharacters.map((instance) => [instance.id, instance]),
+);
+
+function npcGroup(id: string, scenarioCharacterId: string, count = 1, name?: string) {
+  const instance = scenarioCharactersById.get(scenarioCharacterId);
+  const templateId = instance?.templateId ?? scenarioCharacterId;
+  const npc = catalogById.get(templateId);
   return {
     id,
     templateId,
-    name: name ?? npc?.name ?? templateId,
+    scenarioCharacterId: instance?.id,
+    name: name ?? instance?.name ?? npc?.name ?? templateId,
     count,
     wounds: Array.from({ length: count }, () => npc?.statBlock.W ?? 0),
-    source: "npc" as const,
+    source: instance?.source === "generic" ? "generic" as const : "npc" as const,
   };
 }
 
@@ -115,7 +174,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
     name: "A Rough Night at the Three Feathers",
     sessionNumber: 0,
     notes:
-      "Detailed scenario import. Player-facing descriptions are kept in normal text components and written in simple second person present tense. GM-only secrets remain in gmNotes. NPCs are linked to the NPC database by id, and encounters use source: npc and templateId.",
+      "Detailed scenario import. Player-facing descriptions are kept in normal text components and written in simple second person present tense. GM-only secrets remain in gmNotes. Scenario characters reference canonical NPC or Generic templates, and named instances keep scenario identity separate from inherited mechanics.",
   },
   locations: [
     {
@@ -191,11 +250,12 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
     { id: LOC.room14, name: "Room 14, Glimbrin", kind: "room", parentLocationId: LOC.guestRooms, tags: [...sourceTags] },
     { id: LOC.room15, name: "Room 15, The Gravin's Servants", kind: "room", parentLocationId: LOC.guestRooms, tags: [...sourceTags] },
   ],
-  npcs: scenarioCharacters.map((npc) => ({
-    id: npc.id,
-    name: npc.name,
-    role: npcRoles[npc.id] ?? npc.group,
-    tags: [...npc.tags],
+  characters: scenarioCharacters,
+  npcs: scenarioCharacters.map((character) => ({
+    id: character.id,
+    name: character.name,
+    role: character.role,
+    tags: [...sourceTags],
   })),
   scenes: [
     {
@@ -543,7 +603,14 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
             "If they arrive late, focus on physical traces: disturbed room, window, papers, and who was seen on the corridor.",
           ],
           links: { locations: [LOC.room3, LOC.guestRooms, LOC.roof], npcs: [NPC.rechtshandler, NPC.cultists], skills: ["Cool", "Intimidate", "Perception", "Track"], weapons: ["dagger"] },
-          encounterData: { monsterGroups: [npcGroup("grp-cultists-rechtshandler", NPC.cultists, 3, "Ordo Ultima Cultists")], playerOrder: [] },
+          encounterData: {
+            monsterGroups: [
+              npcGroup("grp-cultist-allrelia", "three-feathers-allrelia-elphoise-helga"),
+              npcGroup("grp-cultist-elphoise", "three-feathers-elphoise"),
+              npcGroup("grp-cultist-helga", "three-feathers-helga"),
+            ],
+            playerOrder: [],
+          },
         },
         {
           id: "text-2315-blackmail-hook",
@@ -583,7 +650,15 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
             "If the Characters prevent him from reaching room 11, award that as meaningful progress.",
           ],
           links: { locations: [LOC.barroom, LOC.guestRooms, LOC.room11], npcs: [NPC.prahmhandler, NPC.thugs, NPC.bodyguards, NPC.staff], weapons: ["dagger", "whip", "knuckledusters", "improvised_weapon", "sword"], skills: ["Dodge", "Melee (Basic)", "Melee (Brawling)"] },
-          encounterData: { monsterGroups: [npcGroup("grp-prahmhandler", NPC.prahmhandler), npcGroup("grp-prahmhandler-thugs", NPC.thugs, 3, "Prahmhandler's Thugs")], playerOrder: [] },
+          encounterData: {
+            monsterGroups: [
+              npcGroup("grp-prahmhandler", NPC.prahmhandler),
+              npcGroup("grp-thug-mho", "three-feathers-mho-larz-curls"),
+              npcGroup("grp-thug-larz", "three-feathers-larz"),
+              npcGroup("grp-thug-curls", "three-feathers-curls"),
+            ],
+            playerOrder: [],
+          },
         },
       ],
     },
@@ -614,7 +689,16 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
             "If Josef escapes into the inn, treat it as a chase through rooms and stairs.",
           ],
           links: { locations: [LOC.room9, LOC.guestRooms, LOC.landing, LOC.yard], npcs: [NPC.morrians, NPC.josef, NPC.ursula], weapons: ["improvised_weapon", "sword", "crossbow"] },
-          encounterData: { monsterGroups: [npcGroup("grp-morrian-smugglers", NPC.morrians, 3, "False Morrians"), npcGroup("grp-josef-aufwiegler", NPC.josef), npcGroup("grp-ursula-kopfgeld", NPC.ursula)], playerOrder: [] },
+          encounterData: {
+            monsterGroups: [
+              npcGroup("grp-morrian-gunni", "three-feathers-gunni-bart-hans-frederick"),
+              npcGroup("grp-morrian-bart", "three-feathers-bart"),
+              npcGroup("grp-morrian-hans-frederick", "three-feathers-hans-frederick"),
+              npcGroup("grp-josef-aufwiegler", NPC.josef),
+              npcGroup("grp-ursula-kopfgeld", NPC.ursula),
+            ],
+            playerOrder: [],
+          },
         },
       ],
     },

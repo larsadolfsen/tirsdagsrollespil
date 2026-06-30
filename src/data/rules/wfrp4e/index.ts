@@ -140,7 +140,6 @@ export {
   resolvedCreatureTemplatesById,
   resolveCreatureTemplate,
   resolveCreatureTraitInstance,
-  skavenCreatureTemplates,
   type CreatureCategory,
   type CreatureCharacteristics,
   type CreatureSize,

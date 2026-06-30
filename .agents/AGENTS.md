@@ -103,6 +103,15 @@ Her er den komplette liste over fælles komponenter i projektet. Alle nye fælle
 
 ## 4. Git og Datahåndtering
 
+### Faste karakterkataloger
+
+- Der findes præcis tre faste karakterlignende datakataloger: **NPC** (navngivet karakter), **Generic** (genbrugelig unavngiven character-stat block) og **Creature** (unavngiven trait-baseret record).
+- `Adversary` er kun en samlet encounter-picker/UI-betegnelse, ikke en datatype.
+- Scenarier refererer katalog-id'er og ejer kun deres egne navngivne instanser eller aliases.
+- NPC og Generic bruger character-modellen med `statBlock` og valgfrie `skills`, `talents` og `trappings`. Creature bruger creature-modellen med `statBlock`, `traits`, valgfrie `optionalTraits` og `trappings`.
+- Klassificer efter identitet og regelmodel, ikke species: navngivet karakter = NPC; unavngiven character-stat block = Generic; trait-baseret record = Creature.
+- Kataloger med højst 20 entries bliver i én `index.ts`. Kataloger med mere end 20 entries splittes alfabetisk efter display name, aldrig efter species, faction, scenario eller role.
+
 - **Ingen runtime data i Git**:
   - Karakterdata, databaser (`.sqlite`, `.sqlite-wal`, `.sqlite-shm`) og gemte fremskridt under `data/` må ALDRIG pushes eller committes til repositoryet.
   - Git-hooks i `.githooks` forhindrer dette automatisk under commit og push. Aktiver dem i et nyt repository med:

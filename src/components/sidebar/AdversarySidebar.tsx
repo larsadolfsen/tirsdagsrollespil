@@ -1,10 +1,22 @@
 import { useMemo, useState } from "react";
 import { AppSidebar } from "./AppSidebar";
 import { SidebarItemList } from "./SidebarItemList";
-import { WfrpFilterChips, WfrpSearchField } from "../ui";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Label,
+  WfrpFilterChips,
+  WfrpSearchField,
+} from "../ui";
 import { resolvedCreatureTemplates } from "../../data/rules/wfrp4e";
 import type { CreatureTemplate } from "../../data/rules/wfrp4e";
-import { adversaryTemplates, expandNpcTemplate, npcTemplates } from "../../data/npcs";
+import { expandNpcTemplate, genericTemplates, npcTemplates } from "../../data/npcs";
 import type { NpcTemplate } from "../../data/npcs";
 
 type AdversaryCategory = string;
@@ -24,19 +36,26 @@ export function AdversarySidebar({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onAddAdversary: (template: CreatureTemplate | NpcTemplate, count: number, type: "creature" | "npc") => void;
+  onAddAdversary: (
+    template: CreatureTemplate | NpcTemplate,
+    count: number,
+    type: "creature" | "npc" | "generic",
+    name?: string,
+  ) => void;
   className?: string;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<AdversaryTypeFilter[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<AdversaryCategory[]>([]);
+  const [pendingGeneric, setPendingGeneric] = useState<NpcTemplate | null>(null);
+  const [genericName, setGenericName] = useState("");
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
   const activeCategories = useMemo(() => {
     const present = new Set<string>();
     resolvedCreatureTemplates.forEach((t) => present.add(t.category));
-    [...npcTemplates, ...adversaryTemplates].forEach((n) => present.add(n.category));
+    [...npcTemplates, ...genericTemplates].forEach((n) => present.add(n.category));
     return Array.from(present)
       .sort((a, b) => a.localeCompare(b))
       .map((c) => ({ id: c, label: c.charAt(0).toUpperCase() + c.slice(1) }));
@@ -74,7 +93,7 @@ export function AdversarySidebar({
       };
     });
 
-    const npcs = [...npcTemplates, ...adversaryTemplates]
+    const npcs = [...npcTemplates, ...genericTemplates]
       .flatMap(expandNpcTemplate)
       .map((npc) => {
         const scenario = npc.isNpc
@@ -99,7 +118,14 @@ export function AdversarySidebar({
             {
               isActive: true,
               label: "Add",
-              onClick: () => onAddAdversary(npc, 1, "npc"),
+              onClick: () => {
+                if (npc.isNpc) {
+                  onAddAdversary(npc, 1, "npc");
+                  return;
+                }
+                setGenericName("");
+                setPendingGeneric(npc);
+              },
             },
           ],
         };
@@ -124,6 +150,7 @@ export function AdversarySidebar({
   }, [normalizedQuery, onAddAdversary, selectedCategories, selectedTypes]);
 
   return (
+    <>
     <AppSidebar
       isOpen={isOpen}
       motionKey="adversary-sidebar"
@@ -136,7 +163,7 @@ export function AdversarySidebar({
       contentClassName="!p-0"
       className={className}
       trapFocus
-      closeOnOutsidePointerDown
+      closeOnOutsidePointerDown={!pendingGeneric}
     >
       <WfrpSearchField
         id="adversary-sidebar-search"
@@ -175,5 +202,51 @@ export function AdversarySidebar({
         emptyMessage="No adversaries match the selected filters."
       />
     </AppSidebar>
+    <Dialog
+      open={Boolean(pendingGeneric)}
+      onOpenChange={(open) => {
+        if (!open) {
+          setPendingGeneric(null);
+          setGenericName("");
+        }
+      }}
+    >
+      <DialogContent>
+        <div>
+          <DialogHeader>
+            <DialogTitle>Name this character</DialogTitle>
+            <DialogDescription>
+              This scenario character inherits its mechanics from {pendingGeneric?.name}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-4">
+            <Label htmlFor="generic-character-name">Name</Label>
+            <Input
+              id="generic-character-name"
+              autoFocus
+              required
+              value={genericName}
+              onChange={(event) => setGenericName(event.target.value)}
+              placeholder="Character name"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              disabled={!genericName.trim()}
+              onClick={() => {
+                const name = genericName.trim();
+                if (!pendingGeneric || !name) return;
+                onAddAdversary(pendingGeneric, 1, "generic", name);
+                setPendingGeneric(null);
+                setGenericName("");
+              }}
+            >
+              Add character
+            </Button>
+          </DialogFooter>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }

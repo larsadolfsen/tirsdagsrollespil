@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'path';
 import {DatabaseSync} from 'node:sqlite';
 import {defineConfig} from 'vite';
-import type {Plugin} from 'vite';
+import type {Plugin, ViteDevServer} from 'vite';
 
 const stateDataDirectory = path.resolve(
   process.env.WFRP_DATA_DIR ??
@@ -499,6 +499,288 @@ function campaignGmSessionsPlugin(): Plugin {
   };
 }
 
+type AdversaryCatalogType = 'npc' | 'generic' | 'creature';
+
+function isAdversaryCatalogType(value: unknown): value is AdversaryCatalogType {
+  return value === 'npc' || value === 'generic' || value === 'creature';
+}
+
+function isSafeAdversaryId(value: unknown): value is string {
+  return typeof value === 'string' && /^[a-z0-9](?:[a-z0-9-]{0,98}[a-z0-9])?$/.test(value);
+}
+
+function isValidIdentifier(key: string) {
+  return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key);
+}
+
+function serializeAdversaryValue(value: unknown, indent: number): string {
+  const pad = '  '.repeat(indent);
+  const padInner = '  '.repeat(indent + 1);
+
+  if (value === null || value === undefined) {
+    return 'null';
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return '[]';
+    }
+    const items = value.map((item) => `${padInner}${serializeAdversaryValue(item, indent + 1)}`);
+    return `[\n${items.join(',\n')},\n${pad}]`;
+  }
+
+  if (typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>).filter(([, v]) => v !== undefined);
+    if (entries.length === 0) {
+      return '{}';
+    }
+    const items = entries.map(([key, v]) => {
+      const propertyKey = isValidIdentifier(key) ? key : JSON.stringify(key);
+      return `${padInner}${propertyKey}: ${serializeAdversaryValue(v, indent + 1)}`;
+    });
+    return `{\n${items.join(',\n')},\n${pad}}`;
+  }
+
+  return JSON.stringify(value);
+}
+
+function serializeAdversaryArrayLiteral(entries: unknown[]): string {
+  return serializeAdversaryValue(entries, 0);
+}
+
+function replaceExportedArrayLiteral(fileText: string, exportName: string, newArrayLiteral: string): string {
+  const declarationPattern = new RegExp(`export const ${exportName}\\s*:[^=]+=\\s*\\[`);
+  const match = declarationPattern.exec(fileText);
+
+  if (!match) {
+    throw new Error(`Could not find exported array "${exportName}"`);
+  }
+
+  const arrayStart = match.index + match[0].length - 1;
+  let depth = 0;
+  let inString: string | null = null;
+  let arrayEnd = -1;
+
+  for (let i = arrayStart; i < fileText.length; i++) {
+    const ch = fileText[i];
+
+    if (inString) {
+      if (ch === '\\') {
+        i++;
+      } else if (ch === inString) {
+        inString = null;
+      }
+      continue;
+    }
+
+    if (ch === '"' || ch === "'" || ch === '`') {
+      inString = ch;
+      continue;
+    }
+
+    if (ch === '[') {
+      depth++;
+    } else if (ch === ']') {
+      depth--;
+      if (depth === 0) {
+        arrayEnd = i;
+        break;
+      }
+    }
+  }
+
+  if (arrayEnd === -1) {
+    throw new Error(`Could not find end of array "${exportName}"`);
+  }
+
+  return fileText.slice(0, arrayStart) + newArrayLiteral + fileText.slice(arrayEnd + 1);
+}
+
+function splitNamedNpcsByLetter(entries: Record<string, unknown>[]) {
+  const ag: Record<string, unknown>[] = [];
+  const hz: Record<string, unknown>[] = [];
+
+  for (const entry of entries) {
+    const name = typeof entry.name === 'string' ? entry.name : '';
+    const firstLetter = name.replace(/^[^A-Za-z]+/, '').charAt(0).toUpperCase();
+
+    if (firstLetter >= 'A' && firstLetter <= 'G') {
+      ag.push(entry);
+    } else {
+      hz.push(entry);
+    }
+  }
+
+  return { ag, hz };
+}
+
+function isValidAdversaryEntry(entry: unknown): entry is Record<string, unknown> {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    return false;
+  }
+
+  const record = entry as Record<string, unknown>;
+  return isSafeAdversaryId(record.id) &&
+    typeof record.name === 'string' &&
+    record.name.trim().length > 0 &&
+    Boolean(record.statBlock) &&
+    typeof record.statBlock === 'object';
+}
+
+function hasUniqueIds(entries: Record<string, unknown>[]) {
+  const ids = entries.map((entry) => entry.id);
+  return new Set(ids).size === ids.length;
+}
+
+const npcsNamedDir = path.resolve(__dirname, 'src/data/npcs/named');
+const genericCatalogPath = path.resolve(__dirname, 'src/data/generic/index.ts');
+const creatureCatalogPath = path.resolve(__dirname, 'src/data/rules/wfrp4e/creatureCatalog/index.ts');
+const npcAGPath = path.join(npcsNamedDir, 'a-g.ts');
+const npcHZPath = path.join(npcsNamedDir, 'h-z.ts');
+
+function writeNamedNpcFiles(entries: Record<string, unknown>[]) {
+  const { ag, hz } = splitNamedNpcsByLetter(entries);
+
+  const agContent = `import type { NpcTemplate } from "../../npcTypes";\n\n` +
+    `export const namedNpcsAG: NpcTemplate[] = ${serializeAdversaryArrayLiteral(ag)};\n`;
+  const hzContent = `import type { NpcTemplate } from "../../npcTypes";\n\n` +
+    `export const namedNpcsHZ: NpcTemplate[] = ${serializeAdversaryArrayLiteral(hz)};\n`;
+
+  fs.writeFileSync(npcAGPath, agContent, 'utf8');
+  fs.writeFileSync(npcHZPath, hzContent, 'utf8');
+}
+
+function writeGenericCatalogFile(entries: Record<string, unknown>[]) {
+  const content = `import type { NpcTemplate } from "../npcTypes";\n\n` +
+    `export const genericCatalog: NpcTemplate[] = ${serializeAdversaryArrayLiteral(entries)};\n`;
+  fs.writeFileSync(genericCatalogPath, content, 'utf8');
+}
+
+function writeCreatureCatalogFile(entries: Record<string, unknown>[]) {
+  const fileText = fs.readFileSync(creatureCatalogPath, 'utf8');
+  const nextFileText = replaceExportedArrayLiteral(
+    fileText,
+    'creatureTemplates',
+    serializeAdversaryArrayLiteral(entries),
+  );
+  fs.writeFileSync(creatureCatalogPath, nextFileText, 'utf8');
+}
+
+async function loadFreshModule(server: ViteDevServer, url: string) {
+  const existingModule = await server.moduleGraph.getModuleByUrl(url);
+  if (existingModule) {
+    server.moduleGraph.invalidateModule(existingModule);
+  }
+  return server.ssrLoadModule(url);
+}
+
+async function readAdversaryCatalog(
+  server: ViteDevServer,
+  type: AdversaryCatalogType,
+): Promise<Record<string, unknown>[]> {
+  if (type === 'npc') {
+    const ag = await loadFreshModule(server, '/src/data/npcs/named/a-g.ts');
+    const hz = await loadFreshModule(server, '/src/data/npcs/named/h-z.ts');
+    return [...(ag.namedNpcsAG ?? []), ...(hz.namedNpcsHZ ?? [])];
+  }
+
+  if (type === 'generic') {
+    const mod = await loadFreshModule(server, '/src/data/generic/index.ts');
+    return mod.genericCatalog ?? [];
+  }
+
+  const mod = await loadFreshModule(server, '/src/data/rules/wfrp4e/creatureCatalog/index.ts');
+  return mod.creatureTemplates ?? [];
+}
+
+function writeAdversaryCatalog(type: AdversaryCatalogType, entries: Record<string, unknown>[]) {
+  if (type === 'npc') {
+    writeNamedNpcFiles(entries);
+  } else if (type === 'generic') {
+    writeGenericCatalogFile(entries);
+  } else {
+    writeCreatureCatalogFile(entries);
+  }
+}
+
+function adversaryCatalogFilePlugin(): Plugin {
+  return {
+    name: 'wfrp-adversary-catalog-file',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use('/api/adversary-catalog', async (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+
+        const requestUrl = new URL(req.url ?? '', 'http://localhost');
+        const type = requestUrl.searchParams.get('type');
+
+        if (!isAdversaryCatalogType(type)) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: 'Invalid or missing catalog type' }));
+          return;
+        }
+
+        if (req.method === 'GET') {
+          try {
+            const entries = await readAdversaryCatalog(server, type);
+            res.end(JSON.stringify(entries));
+          } catch (error) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: (error as Error).message }));
+          }
+          return;
+        }
+
+        if (req.method === 'PUT') {
+          try {
+            const body = await readRequestJson(req) as Record<string, unknown>;
+            const entries = body.entries;
+
+            if (!Array.isArray(entries) || !entries.every(isValidAdversaryEntry) || !hasUniqueIds(entries)) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({ error: 'Invalid adversary entries' }));
+              return;
+            }
+
+            writeAdversaryCatalog(type, entries);
+            res.statusCode = 204;
+            res.end();
+          } catch (error) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: (error as Error).message }));
+          }
+          return;
+        }
+
+        if (req.method === 'DELETE') {
+          const id = requestUrl.searchParams.get('id');
+
+          if (!isSafeAdversaryId(id)) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: 'Invalid adversary id' }));
+            return;
+          }
+
+          try {
+            const entries = await readAdversaryCatalog(server, type);
+            const nextEntries = entries.filter((entry) => entry.id !== id);
+            writeAdversaryCatalog(type, nextEntries);
+            res.statusCode = 204;
+            res.end();
+          } catch (error) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: (error as Error).message }));
+          }
+          return;
+        }
+
+        res.statusCode = 405;
+        res.end(JSON.stringify({ error: 'Method not allowed' }));
+      });
+    },
+  };
+}
+
 function nonBlockingStylesheetPlugin(): Plugin {
   return {
     name: 'wfrp-non-blocking-stylesheets',
@@ -529,6 +811,7 @@ export default defineConfig(() => {
       characterProgressFilePlugin(),
       campaignDiceRollsPlugin(),
       campaignGmSessionsPlugin(),
+      adversaryCatalogFilePlugin(),
       nonBlockingStylesheetPlugin(),
     ],
     resolve: {

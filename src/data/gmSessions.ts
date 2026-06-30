@@ -4,7 +4,8 @@ export interface EncounterMonsterGroup {
   name: string;
   count: number;
   wounds: number[];
-  source?: "creature" | "npc";
+  source?: "creature" | "npc" | "generic";
+  scenarioCharacterId?: string;
 }
 
 export interface EncounterData {
