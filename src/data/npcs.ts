@@ -1,4 +1,5 @@
 import { npcCatalog } from "./npcCatalog";
+import { manseHeistNpcCatalog } from "./manseHeistNpcCatalog";
 import { adversaryCatalog } from "./adversaryCatalog";
 import type { NpcTemplate } from "./npcTypes";
 
@@ -6,6 +7,7 @@ export type { NpcStatBlock, NpcTemplate } from "./npcTypes";
 
 export const npcTemplates: NpcTemplate[] = [
   ...npcCatalog,
+  ...manseHeistNpcCatalog,
 ];
 
 export const adversaryTemplates: NpcTemplate[] = [
