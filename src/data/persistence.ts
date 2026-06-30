@@ -52,6 +52,36 @@ export function subscribeToProgressUpdates(handler: ProgressUpdateHandler): () =
 }
 
 // ---------------------------------------------------------------------------
+// Durable-save status
+//
+// A durable save is a fire-and-forget PUT/DELETE to the server. Previously any
+// HTTP error (or network failure) was swallowed, so the UI would behave as if
+// the save had succeeded when it had not. These events let the UI surface the
+// failure instead of silently losing data.
+// ---------------------------------------------------------------------------
+
+export type SaveStatusMessage =
+  | { type: "error"; characterId: string; status?: number }
+  | { type: "success"; characterId: string };
+
+type SaveStatusHandler = (msg: SaveStatusMessage) => void;
+
+const saveStatusHandlers = new Set<SaveStatusHandler>();
+
+function notifySaveStatus(msg: SaveStatusMessage) {
+  for (const handler of saveStatusHandlers) {
+    handler(msg);
+  }
+}
+
+/** Subscribe to durable-save success/failure for character progress.
+ *  Returns an unsubscribe function. */
+export function subscribeToSaveStatus(handler: SaveStatusHandler): () => void {
+  saveStatusHandlers.add(handler);
+  return () => saveStatusHandlers.delete(handler);
+}
+
+// ---------------------------------------------------------------------------
 // SSE connection — one shared EventSource for the whole browser tab
 // ---------------------------------------------------------------------------
 function openSseConnection() {
@@ -112,15 +142,24 @@ async function writeCharacterProgressFile(characterId: string, progress: Charact
   if (typeof fetch === "undefined") return;
 
   try {
-    await fetch(characterProgressEndpoint(characterId), {
+    const response = await fetch(characterProgressEndpoint(characterId), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(progress),
     });
+    // `await fetch` only rejects on network errors, so an HTTP 4xx/5xx must be
+    // checked explicitly — otherwise a failed save looks successful.
+    if (!response.ok) {
+      console.error(`Failed to save character progress for "${characterId}" (HTTP ${response.status}).`);
+      notifySaveStatus({ type: "error", characterId, status: response.status });
+      return;
+    }
     // The server broadcasts the SSE event to all OTHER clients after this PUT.
     // This tab is notified via BroadcastChannel below.
-  } catch {
-    // The UI keeps the latest values in memory, but durable saves require the server endpoint.
+    notifySaveStatus({ type: "success", characterId });
+  } catch (error) {
+    console.error(`Failed to save character progress for "${characterId}".`, error);
+    notifySaveStatus({ type: "error", characterId });
   }
 }
 
@@ -128,9 +167,16 @@ async function deleteCharacterProgressFile(characterId: string) {
   if (typeof fetch === "undefined") return;
 
   try {
-    await fetch(characterProgressEndpoint(characterId), { method: "DELETE" });
-  } catch {
-    // The UI keeps the latest values in memory, but durable saves require the server endpoint.
+    const response = await fetch(characterProgressEndpoint(characterId), { method: "DELETE" });
+    if (!response.ok) {
+      console.error(`Failed to delete character progress for "${characterId}" (HTTP ${response.status}).`);
+      notifySaveStatus({ type: "error", characterId, status: response.status });
+      return;
+    }
+    notifySaveStatus({ type: "success", characterId });
+  } catch (error) {
+    console.error(`Failed to delete character progress for "${characterId}".`, error);
+    notifySaveStatus({ type: "error", characterId });
   }
 }
 

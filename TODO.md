@@ -70,11 +70,14 @@ Suggested fix order: #1 → #2 → #3 → #4/#5 → #6. The first three corrupt 
     restore the native methods to write straight through. Verified live (red: empty stream → green:
     `: connected` plus a broadcast `data:` event both arrive with `Accept-Encoding: gzip`).
 
-- [ ] **3. ✅ Saves can fail completely silently.**
-  - File: `src/data/persistence.ts:111-125`
-  - `writeCharacterProgressFile` never checks `response.ok`; `await fetch` only rejects on network
-    errors, so HTTP 500/413/409 is treated as a successful save. No retry, no UI error — the
-    "saved … ago" indicator lies.
+- [x] **3. ✅ Saves can fail completely silently.** — FIXED.
+  - File: `src/data/persistence.ts`
+  - `writeCharacterProgressFile`/`deleteCharacterProgressFile` now check `response.ok` (an HTTP
+    4xx/5xx was previously swallowed as success) and emit a durable-save status event via the new
+    `subscribeToSaveStatus` channel, plus a `console.error`. A new `SaveStatusBanner` (mounted in
+    `App.tsx`) subscribes and shows a non-blocking toast when a save fails, clearing on the next
+    successful save. Covered by `tests/save-status.spec.ts` (500 → banner; 204 → no banner).
+  - Not done here: automatic retry/version-guard (that is the separate concern in #8).
 
 - [ ] **4. ✅ Dice success math is inconsistent when a bonus is present.**
   - File: `src/features/dice/useDiceRoller.ts:328-339`
