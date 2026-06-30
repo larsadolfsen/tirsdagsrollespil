@@ -5,6 +5,7 @@ import type {
   ResolvedCharacterTalent,
 } from "../data/characters/resolved";
 import { UI_LABELS } from "../labels";
+import { getAdvanceCost, getCharacteristicAdvanceCost, getTalentPurchaseCost } from "../lib/advanceCosts";
 import type { Ruleset, SkillDefinition } from "../types";
 
 interface UseCareerAdvancementOptions {
@@ -153,7 +154,34 @@ export function useCareerAdvancement({
       hasCareerTalentRequirement
     );
   };
-  const pendingAvailableXp = Math.max(0, Number(xpCurrent));
+  // Total XP cost of every queued (pending) advance, charged on save. Each successive
+  // advance is priced against the next band, so costs are summed incrementally.
+  const pendingAdvancesXpCost = (() => {
+    let total = 0;
+    for (const [key, count] of Object.entries(pendingCharacteristicAdvances)) {
+      const base = currentCharacteristicAdvances[key] ?? 0;
+      for (let step = 0; step < count; step += 1) {
+        total += getCharacteristicAdvanceCost(base + step);
+      }
+    }
+    for (const [skillName, count] of Object.entries(pendingSkillAdvances)) {
+      const base = characterSkillByName.get(skillName)?.advances ?? 0;
+      for (let step = 0; step < count; step += 1) {
+        total += getAdvanceCost(base + step);
+      }
+    }
+    for (const [talentName, count] of Object.entries(pendingTalentPurchases)) {
+      const base = characterTalents.filter((talent) => talent.name === talentName).length;
+      for (let step = 0; step < count; step += 1) {
+        total += getTalentPurchaseCost(base + step);
+      }
+    }
+    return total;
+  })();
+  // `xpCurrent` already folds in the manual XP adjustment (see call site), so subtracting the
+  // queued advance cost yields the XP still available to spend. This drives both the purchase
+  // affordability gates (sidebars) and the live "Current Experience" display.
+  const pendingAvailableXp = Math.max(0, Number(xpCurrent) - pendingAdvancesXpCost);
   const requiredCareerAdvances = displayedCareerRank * 5;
   const completedCareerCharacteristics = availableCareerCharacteristicKeys.filter((characteristicKey) => {
     const baseAdvances = currentCharacteristicAdvances[characteristicKey] ?? 0;
@@ -192,6 +220,7 @@ export function useCareerAdvancement({
     hasPendingCareerChanges,
     isCareerSkillName,
     nextCareerRankRecord,
+    pendingAdvancesXpCost,
     pendingAvailableXp,
     pendingCareerRank,
     pendingCharacteristicAdvances,

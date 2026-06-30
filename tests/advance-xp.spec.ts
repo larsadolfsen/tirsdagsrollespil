@@ -178,6 +178,36 @@ test("advance talents submenu filters bought talents", async ({ page }) => {
   ]);
 });
 
+test("purchasing a talent spends its XP cost and keeps it spent after save", async ({ page }) => {
+  await openAdvanceTab(page);
+
+  // Starting current XP from the Experience subtab.
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+  const currentXpField = page.getByRole("spinbutton", { name: "Current XP" });
+  const startXp = Number(await currentXpField.inputValue());
+  expect(startXp).toBeGreaterThan(0);
+
+  // Buy a talent the character does not yet have. Talent cost is (timesTaken + 1) * 100.
+  await page.getByRole("button", { name: "Talents", exact: true }).click();
+  const talentName = "Strike Mighty Blow";
+  const takenBefore = Number(
+    await page.getByRole("spinbutton", { name: `Taken count for ${talentName}` }).inputValue(),
+  );
+  const expectedCost = (takenBefore + 1) * 100;
+  await page.getByRole("button", { name: `Purchase talent ${talentName}` }).click();
+
+  // The purchase is pending: available current XP drops by the talent's cost.
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+  await expect(currentXpField).toHaveValue(String(startXp - expectedCost));
+
+  // Saving commits the spend; the reduced XP must persist (pending is cleared on save,
+  // so an un-deducted bug would revert the field back to startXp here).
+  await page.getByRole("button", { name: "Save edit character changes" }).first().click();
+  await page.getByRole("button", { name: "Talents", exact: true }).click();
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+  await expect(currentXpField).toHaveValue(String(startXp - expectedCost));
+});
+
 test("cancel edit character discards pending XP changes", async ({ page }) => {
   await openAdvanceTab(page);
   await page.getByRole("button", { name: "Experience", exact: true }).click();
