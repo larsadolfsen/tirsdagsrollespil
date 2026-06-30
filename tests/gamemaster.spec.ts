@@ -49,7 +49,7 @@ test("Game Master page scene components workflow", async ({ page }) => {
   await page.getByRole("button", { name: "Save" }).click();
 
   // 5. Verify custom text is displayed
-  const savedText = page.getByText("This is my custom scene text.");
+  const savedText = page.getByText("This is my custom scene text.").last();
   await expect(savedText).toBeVisible();
 
   // 6. Click the saved text to open the editor again
@@ -63,7 +63,8 @@ test("Game Master page scene components workflow", async ({ page }) => {
   // 8. Verify placeholder is shown in read mode when empty
   await expect(placeholderText).toBeVisible();
 
-  // 9. Rename the component title from "Text field" to "Introduction Text"
+  // 9. Rename the component title from "Text field" to a unique "Introduction Text [timestamp]"
+  const uniqueTitle = `Introduction Text ${Date.now()}`;
   const titleSpan = page.getByTitle("Click to rename").filter({ hasText: "Description" }).last();
   await expect(titleSpan).toBeVisible();
   await expect(titleSpan).toHaveText("Description");
@@ -71,18 +72,18 @@ test("Game Master page scene components workflow", async ({ page }) => {
 
   const titleInput = page.locator("input[type='text']");
   await expect(titleInput).toBeVisible();
-  await titleInput.fill("Introduction Text");
+  await titleInput.fill(uniqueTitle);
   await titleInput.press("Enter");
 
   // 10. Verify the title has updated
-  await expect(page.getByText("Introduction Text", { exact: true })).toBeVisible();
+  await expect(page.getByText(uniqueTitle, { exact: true })).toBeVisible();
 
   // 11. Open the dropdown menu and delete the component
-  await page.getByRole("button", { name: "Introduction Text actions" }).click();
+  await page.getByRole("button", { name: `${uniqueTitle} actions` }).click();
   await page.getByRole("menuitem", { name: "Delete" }).click();
 
   // 12. Verify the component is deleted
-  await expect(page.getByText("Introduction Text")).not.toBeVisible();
+  await expect(page.getByRole("button", { name: `${uniqueTitle} actions` })).not.toBeVisible();
 });
 
 test("Dropdown menus close other open menus when opened", async ({ page }) => {
@@ -121,5 +122,33 @@ test("Dropdown menus close other open menus when opened", async ({ page }) => {
 
   // Verify Component menu content is now hidden
   await expect(componentMenuItem).not.toBeVisible();
+});
+
+test("Game Master page automatically opens a scene when a block is added", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open Game Master" }).click();
+  await page.getByRole("button", { name: "Open", exact: true }).first().click();
+
+  await page.getByRole("heading", { name: "Scenes" }).scrollIntoViewIfNeeded();
+
+  // Add a new scene (which will start collapsed by default)
+  await page.getByRole("button", { name: "Scene 1 menu" }).last().click();
+  await page.getByRole("menuitem", { name: "Add scene after" }).click();
+
+  // Find the new scene (which is now the last scene card)
+  const sceneHeader = page.locator("section.group\\/scene").last();
+  await expect(sceneHeader.getByText(/Scene \d+/)).toBeVisible();
+
+  // Verify the expand button is visible and shows it's collapsed (aria-expanded is not true/false but button name is Expand scene)
+  const expandButton = sceneHeader.getByRole("button", { name: "Expand scene" });
+  await expect(expandButton).toBeVisible();
+
+  // Add a description block to this new scene
+  await sceneHeader.getByRole("button", { name: /Scene \d+ menu/ }).click();
+  await page.getByRole("menuitem", { name: "Add description" }).click();
+
+  // Verify the scene is now expanded automatically, so the placeholder is visible
+  const placeholder = page.getByText("Write the scene description here…").last();
+  await expect(placeholder).toBeVisible();
 });
 

@@ -410,6 +410,11 @@ export function GameMasterPage({
       }
       return scene;
     }));
+    setExpandedScenes((prev) => {
+      const next = new Set(prev);
+      next.add(sceneId);
+      return next;
+    });
   };
 
   const removeComponentFromScene = (sceneId: string, componentId: string) => {
