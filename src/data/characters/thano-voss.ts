@@ -81,7 +81,6 @@ export const thanoVoss: CharacterRecord = {
     { talentId: "doomed" },
     { talentId: "suave" },
     { talentId: "perfect_pitch" },
-    { talentId: "perfect_pitch" },
     { talentId: "read_write" },
     { talentId: "resistance_corruption" },
     { talentId: "instinctive_diction" },
