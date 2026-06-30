@@ -26,6 +26,13 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 const database = new DatabaseSync(databaseFilePath);
+// Keep a strong, process-lifetime reference to the DatabaseSync object. The request
+// handlers below close over the prepared statements but never over `database` itself,
+// so V8's per-closure variable capture would otherwise let `database` become
+// unreachable. node:sqlite finalizes a database (and all its statements) when the
+// DatabaseSync object is garbage-collected, which would make the still-referenced
+// statements throw "statement has been finalized" on the first request.
+(globalThis as Record<string, unknown>).__wfrpDatabaseKeepAlive = database;
 const campaignDateFormatter = new Intl.DateTimeFormat('en-CA', {
   timeZone: process.env.WFRP_CAMPAIGN_TIME_ZONE ?? 'Europe/Copenhagen',
   year: 'numeric',

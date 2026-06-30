@@ -211,7 +211,10 @@ export const CareerTab = forwardRef<CareerTabHandle, CareerTabProps>(function Ca
         first.careerName.localeCompare(second.careerName),
       );
   }, []);
-  const currentXpValue = Math.max(0, pendingAvailableXp + pendingXpAdjustment);
+  // `pendingAvailableXp` already folds in the manual XP adjustment (the parent
+  // passes `xpCurrent + pendingXpAdjustment` into the advancement hook), so it
+  // must not be added a second time here or the field doubles every adjustment.
+  const currentXpValue = Math.max(0, pendingAvailableXp);
   const currentXpDisplay = currentXpValue;
   const pendingTotalXp = Math.max(0, characterData.xpTotal + pendingTotalXpAdjustment);
   const adjustXp = (amount: number) => {

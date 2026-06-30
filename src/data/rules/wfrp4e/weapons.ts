@@ -675,7 +675,7 @@ export const weaponDefinitions: WeaponDefinition[] = [
     price: price("5GC", 5, "gc"),
     encumbrance: 2,
     availability: "common",
-    damage: "9",
+    damage: "+9",
     range: "60",
     hands: 2,
     qualities: [],

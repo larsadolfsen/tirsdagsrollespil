@@ -610,6 +610,7 @@ export function AppComposition() {
     getCareerSkillOptions,
     hasPendingCareerChanges,
     isCareerSkillName,
+    pendingAdvancesXpCost,
     pendingAvailableXp,
     pendingCareerRank,
     pendingCharacteristicAdvances,
@@ -1071,17 +1072,12 @@ export function AppComposition() {
       return;
     }
 
-    setCharacterTalents((prev) => [
+    // Queue the purchase as pending so it is costed and committed on save (saveCareerChanges),
+    // consistent with skill/characteristic advances. Direct edits use addTalentForFree.
+    setPendingTalentPurchases((prev) => ({
       ...prev,
-      {
-        id: talentDefinition.id,
-        name: talentDefinition.name,
-        description: talentDefinition.description,
-        max: talentDefinition.max,
-        tests: talentDefinition.tests,
-        effects: talentDefinition.effects,
-      },
-    ]);
+      [talentName]: (prev[talentName] ?? 0) + 1,
+    }));
   };
 
   const addTalentForFree = (talentName: string) => {
@@ -1351,7 +1347,7 @@ export function AppComposition() {
       setCurrentCareerRank(pendingCareerRank);
     }
 
-    setXpCurrent((prev) => Math.max(0, prev + pendingXpAdjustment));
+    setXpCurrent((prev) => Math.max(0, prev + pendingXpAdjustment - pendingAdvancesXpCost));
     setXpTotal((prev) => Math.max(0, prev + pendingTotalXpAdjustment));
     setPendingXpAdjustment(0);
     setPendingTotalXpAdjustment(0);

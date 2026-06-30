@@ -49,7 +49,7 @@ export const gerhardLehrmann: CharacterRecord = {
     { skillId: "ranged", specialisationId: "ranged_blackpowder", advances: 5 },
     { skillId: "research", advances: 2 },
     { skillId: "navigation", advances: 2 },
-    { skillId: "language", specialisationId: "language_guild", advances: 2 },
+    { skillId: "language", specialisationId: "language_guilder", advances: 2 },
   ],
   equipment: [
     { id: "gerhard_lehrmann_mail_coat_1", itemId: "mail_coat_item", equipped: true },

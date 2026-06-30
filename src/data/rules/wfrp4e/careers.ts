@@ -16,7 +16,7 @@ export const careerDefinitions: CareerDefinition[] = [
     talentIds: [
       "drilled",
       "flee",
-      "shields_up",
+      "shieldsman",
       "strike_to_injure",
       "strike_to_stun",
       "warrior_born",

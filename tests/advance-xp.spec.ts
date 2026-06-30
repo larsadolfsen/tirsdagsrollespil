@@ -1,10 +1,24 @@
 import { expect, type Page, test } from "@playwright/test";
 import { talentDefinitions } from "../src/data/rules/wfrp4e/talents";
 
+// Isolate every test from the shared, persistent character-progress backend.
+// GET → 404/null makes the app fall back to pristine source-defined characters
+// (e.g. Thano Voss at 550 Current XP); PUT/DELETE → 204 lets saves "succeed"
+// in-session without writing through, so tests never contend on shared state.
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/character-progress/**", async (route) => {
+    if (route.request().method() === "GET") {
+      await route.fulfill({ status: 404, body: "null" });
+      return;
+    }
+    await route.fulfill({ status: 204 });
+  });
+});
+
 async function openAdvanceTab(page: Page) {
   await page.goto("/");
   await page.locator(".wfrp-landing-character-card").filter({ hasNotText: "Game Master" }).first().click();
-  await page.getByRole("button", { name: "Edit Character" }).click();
+  await page.getByRole("button", { name: "Edit Character", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Edit Character" })).toBeVisible();
 }
 
@@ -96,7 +110,11 @@ test("advance careers tab lists the full career catalog", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Apothecary" })).toHaveCount(0);
 });
 
-test("mobile swipe changes edit character tabs", async ({ page }) => {
+test("mobile swipe changes edit character tabs", async ({ page, browserName }) => {
+  // WebKit does not expose the synthetic Touch/TouchEvent constructors this
+  // gesture simulation relies on; the swipe handler itself is browser-agnostic
+  // and stays covered on chromium + firefox.
+  test.skip(browserName === "webkit", "WebKit lacks the Touch/TouchEvent constructors");
   await openAdvanceTab(page);
   await page.setViewportSize({ width: 390, height: 844 });
 
@@ -178,19 +196,70 @@ test("advance talents submenu filters bought talents", async ({ page }) => {
   ]);
 });
 
+test("purchasing a talent spends its XP cost and keeps it spent after save", async ({ page }) => {
+  await openAdvanceTab(page);
+
+  // Starting current XP from the Experience subtab.
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+  const currentXpField = page.getByRole("spinbutton", { name: "Current XP" });
+  const startXp = Number(await currentXpField.inputValue());
+  expect(startXp).toBeGreaterThan(0);
+
+  // Buy a talent the character does not yet have. Talent cost is (timesTaken + 1) * 100.
+  await page.getByRole("button", { name: "Talents", exact: true }).click();
+  const talentName = "Strike Mighty Blow";
+  const takenBefore = Number(
+    await page.getByRole("spinbutton", { name: `Taken count for ${talentName}` }).inputValue(),
+  );
+  const expectedCost = (takenBefore + 1) * 100;
+  await page.getByRole("button", { name: `Purchase talent ${talentName}` }).click();
+
+  // The purchase is pending: available current XP drops by the talent's cost.
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+  await expect(currentXpField).toHaveValue(String(startXp - expectedCost));
+
+  // Saving commits the spend; the reduced XP must persist (pending is cleared on save,
+  // so an un-deducted bug would revert the field back to startXp here).
+  await page.getByRole("button", { name: "Save edit character changes" }).first().click();
+  await page.getByRole("button", { name: "Talents", exact: true }).click();
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+  await expect(currentXpField).toHaveValue(String(startXp - expectedCost));
+});
+
 test("cancel edit character discards pending XP changes", async ({ page }) => {
   await openAdvanceTab(page);
   await page.getByRole("button", { name: "Experience", exact: true }).click();
 
-  await page.getByRole("button", { name: "Add 10 current XP" }).click();
-  await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
-  await page.getByRole("button", { name: "Cancel" }).click();
+  const currentXpField = page.getByRole("spinbutton", { name: "Current XP" });
+  const startXp = Number(await currentXpField.inputValue());
+  expect(startXp).toBeGreaterThan(0);
 
-  await expect(page.getByRole("heading", { name: "Edit Character" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Settings" }).click();
-  await page.getByRole("menuitem", { name: "Edit Character" }).click();
+  // Queue a pending current-XP change; the field moves off its starting value.
+  await page.getByRole("button", { name: "Add 10 current XP" }).click();
+  await expect(currentXpField).not.toHaveValue(String(startXp));
+
+  // Cancel discards pending changes in place and keeps the editor open by
+  // design (it does not navigate away), so the reverted value is visible here.
+  await page.getByRole("button", { name: "Cancel" }).click();
+  await expect(page.getByRole("heading", { name: "Edit Character" })).toBeVisible();
+  await expect(currentXpField).toHaveValue(String(startXp));
+});
+
+test("manual current-XP adjustment moves the field by exactly that amount", async ({ page }) => {
+  await openAdvanceTab(page);
   await page.getByRole("button", { name: "Experience", exact: true }).click();
 
-  await expect(page.getByRole("spinbutton", { name: "Current XP" })).toHaveValue("550");
-  await expect(page.getByRole("button", { name: "Close" })).toBeVisible();
+  const currentXpField = page.getByRole("spinbutton", { name: "Current XP" });
+  const startXp = Number(await currentXpField.inputValue());
+  expect(startXp).toBeGreaterThan(0);
+
+  // The pending adjustment must be applied to Current XP once, not twice.
+  await page.getByRole("button", { name: "Add 10 current XP" }).click();
+  await expect(currentXpField).toHaveValue(String(startXp + 10));
+
+  await page.getByRole("button", { name: "Add 100 current XP" }).click();
+  await expect(currentXpField).toHaveValue(String(startXp + 110));
+
+  await page.getByRole("button", { name: "Remove 10 pending XP" }).click();
+  await expect(currentXpField).toHaveValue(String(startXp + 100));
 });

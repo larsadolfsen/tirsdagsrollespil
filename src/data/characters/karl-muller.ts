@@ -43,7 +43,7 @@ export const karlMuller: CharacterRecord = {
     { skillId: "intuition", advances: 5 },
     { skillId: "leadership", advances: 5 },
     { skillId: "melee", specialisationId: "melee_basic", advances: 20 },
-    { skillId: "melee", specialisationId: "melee_polearm", advances: 5 },
+    { skillId: "melee", specialisationId: "melee_pole_arm", advances: 5 },
     { skillId: "perception", advances: 5 },
     { skillId: "heal", advances: 10 },
     { skillId: "lore", specialisationId: "lore_theology", advances: 5 },
