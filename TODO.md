@@ -238,6 +238,10 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
 
 ## 🔴 Talents — `max` values
 
+> ⤵ **R6/R7 are now superseded by the validated lists in "Dataset completeness vs Core + Winds of
+> Magic" at the bottom of this file** (exact wrong-max values, the full 108 missing-talent list, and
+> the extra/unknown talents). Keep R6/R7 below for historical context only.
+
 - [ ] **R6. Systematic wrong `max`: ~28 talents hardcode `"1"`/`"5"` where the book uses a
   Characteristic Bonus.** `src/data/rules/wfrp4e/talents.ts`
   - Verified examples: `public_speaker:373` (→ Fellowship Bonus), `combat_reflexes:262` (→ Initiative
@@ -268,14 +272,28 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
 
 ## 🟡 Skills
 
-- [ ] **R9. `Art` misclassified as Advanced.** `src/data/rules/wfrp4e/skills.ts:335`
-  - Book: `Art (Dex) basic, grouped`. Should be **basic**, and is missing its `grouped` flag.
-- [ ] **R10. Missing `grouped` flag.** `skills.ts` — `ride` and `sail` are grouped in the book but
-  not listed in `GROUPED_SPECIALISATIONS`.
-- [ ] **R11. Specialisation naming nits (Low).** `Polearm`→"Pole-Arm" (melee), `Magic`→"Magick"
-  (lore), `Norsk`→"Norse" / `Guild`→"Guilder" (language), `channelling` omits **Dhar**.
-  (Note: the book's specialisation lists are explicitly "sample" lists, so additions are defensible.)
-- Correction to raw audit: `psychometry` is **valid** (*Winds of Magic*, Int/Advanced) — not a bug.
+> ✅ **Full skills validation done (2026-06-30, session 2)** against Core + Winds of Magic. Result:
+> all 45 core skills present; every characteristic and Basic/Advanced classification is **correct**.
+> Only grouped-flag and specialisation-content issues remain (R9–R11 + R9b below). No missing skills.
+
+- [ ] **R9. `Art` missing its `grouped` flag.** `src/data/rules/wfrp4e/skills.ts` (`GROUPED_SPECIALISATIONS`)
+  - VALIDATED: code already classifies Art as **basic** (the raw audit's "misclassified as Advanced" was
+    wrong). Book: `Art (Dex) basic, grouped` — specialisations Cartography, Engraving, Mosaics, Painting,
+    Sculpture, Tattoo, Weaving. Code does not mark it grouped.
+- [ ] **R9b. `Pray` is over-flagged as grouped.** `skills.ts` `GROUPED_SPECIALISATIONS`
+  - Book line ~6687: `Pray (Fel) advanced` — **not** a Grouped Skill (no specialisation list). Code defines
+    `pray` with deity specialisations, so it renders grouped. Remove from grouped set (or confirm a
+    house-rule intent).
+- [ ] **R10. Missing `grouped` flag.** `skills.ts` — VALIDATED: `ride` (basic, grouped) and `sail`
+  (advanced, grouped) are grouped in the book but not in `GROUPED_SPECIALISATIONS`.
+- [ ] **R11. Specialisation naming/content nits (Low).** `Polearm`→"Pole-Arm" (melee), `Magic`→"Magick"
+  (lore), `Norsk`→"Norse" / `Guild`→"Guilder" (language); `channelling` omits **Dhar** (the book lists 9
+  winds incl. Dhar at ~6232); `Secret Signs` omits "Vagabond"; `Lore` omits "Geology"; Perform/Play/Trade
+  spec lists differ from the book. (Note: the book's spec lists are explicitly "sample" lists, so additions
+  are defensible — Dhar and the omissions are the only literal gaps.)
+- Correction to raw audit: `psychometry` (code, Int/Advanced) is **NOT** in Core or Winds of Magic — it is
+  from another supplement (likely *Up in Arms*/*Archives of the Empire*). Leave as unverified until the
+  user adds that book.
 
 ## 🟡 Careers
 
@@ -288,3 +306,182 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
     authoritative source (`well_prepared` is the likely extra) — every career level has exactly 4.
 - Note: the 3 broken career skill ids are already logged as #6 above
   (`bribe`→`bribery`, `intimidation`→`intimidate`, `set_traps`→`set_trap`).
+
+---
+
+# Dataset completeness vs Core + Winds of Magic (full validation, 2026-06-30 session 2)
+
+> Method: extracted both rulebooks with `pdftotext -layout` and ran two parallel by-name validations
+> (talents, skills) of `src/data/rules/wfrp4e/talents.ts` and `skills.ts`. **Core checked first, then
+> Winds of Magic.** Skills came back essentially complete (see R9–R11 above). Talents have a large gap:
+> the code holds ~58 distinct talents; the Core book has ~160. Supersedes/refines R6–R8 with exact data.
+> Specialisation families (Acute Sense, Resistance, Strider, Craftsman, Savant, Master Tradesman,
+> Arcane/Chaos/Divine magic, etc.) are counted once and modelled as a single parameterised talent.
+
+## 🔴 Talents — MISSING from Core Rulebook (108) — `talents.ts`
+
+Each: `Name — Max — one-line effect`. (Add these to make the talent list complete.)
+
+- [ ] Acute Sense — Initiative Bonus — Perception to detect imperceptible details (per-sense spec)
+- [ ] Alley Cat — Initiative Bonus — reverse failed Stealth (Urban) Tests
+- [ ] Ambidextrous — 2 — off-hand penalty reduced to -10 (none if taken twice)
+- [ ] Animal Affinity — Willpower Bonus — Bestial creatures stay calm near you
+- [ ] Arcane Magic (Lore) — 1 — learn/memorise spells from a chosen Arcane Lore
+- [ ] Artistic — Dexterity Bonus — Trade (Artist); add to any Career
+- [ ] Battle Rage — Willpower Bonus — end Frenzy with a Cool Test
+- [ ] Beat Blade — Weapon Skill Bonus — Melee Test strips opponent Advantage
+- [ ] Beneath Notice — Fellowship Bonus — higher-Status folk ignore you / gain no Advantage vs you
+- [ ] Berserk Charge — Strength Bonus — +1 Damage/level to Melee on a Charge
+- [ ] Break and Enter — Strength Bonus — +1 Damage/level vs inanimate objects
+- [ ] Briber — Fellowship Bonus — reduce bribe cost 10%/level
+- [ ] Cardsharp — Intelligence Bonus — use units die as SL when playing cards
+- [ ] Careful Strike — Initiative Bonus — modify Hit Location by ±10/level
+- [ ] Catfall — Agility Bonus — Athletics Test reduces fall distance
+- [ ] Cat-tongued — Fellowship Bonus — targets can't oppose Charm-lies with Intuition
+- [ ] Chaos Magic (Lore) — Spells available in chosen Chaos Lore — learn Chaos spells, gain Corruption
+- [ ] Combat Master — Agility Bonus — count as +1 person when outnumbered, per level
+- [ ] Concoct — Intelligence Bonus — free Crafting Endeavour w/ Trade (Apothecary), no workshop
+- [ ] Contortionist — Agility Bonus — Perform/Agility when contorting
+- [ ] Crack the Whip — Dexterity Bonus — +1 Movement to fleeing/running controlled animal
+- [ ] Craftsman (Trade) — Dexterity Bonus — add a Trade Skill to any Career
+- [ ] Criminal — None — earn coin illegally; treated as lower Status
+- [ ] Deadeye Shot — 1 — pick ranged Hit Location instead of reversing dice
+- [ ] Detect Artefact — Initiative Bonus — Intuition to sense magic in items
+- [ ] Diceman — Intelligence Bonus — use units die as SL when playing dice
+- [ ] Dirty Fighting — Weapon Skill Bonus — +1 Damage/level on Melee (Brawling)
+- [ ] Disarm — Initiative Bonus — Opposed Melee Test to disarm
+- [ ] Distract — Agility Bonus — Opposed Athletics/Cool denies opponent Advantage
+- [ ] Dual Wielder — Agility Bonus — attack with both weapons in one Action
+- [ ] Embezzle — Intelligence Bonus — Intelligence (Embezzling) to skim money
+- [ ] Enclosed Fighter — Agility Bonus — ignore Melee penalties in confined spaces
+- [ ] Fast Shot — Agility Bonus — fire before Initiative order next Round
+- [ ] Fearless (Enemy) — Willpower Bonus — ignore Intimidate/Fear/Terror from a specified enemy
+- [ ] Feint — Weapon Skill Bonus — Opposed Melee (Fencing) adds SL to next attack
+- [ ] Field Dressing — Intelligence Bonus — reverse failed Heal Test in combat
+- [ ] Fisherman — Initiative Bonus — auto-feed yourself + others
+- [ ] Flagellant — Toughness Bonus — pain devotion; enter Frenzy without testing
+- [ ] Fleet Footed — 1 — +1 Movement Attribute
+- [ ] Frenzy — 1 — can Frenzy (p190)
+- [ ] Frightening — Strength Bonus — Fear Rating 1, +1/level
+- [ ] Furious Assault — Agility Bonus — spend Advantage/Move for an extra Melee attack
+- [ ] Gregarious — Fellowship Bonus — reverse failed Gossip Tests with travellers
+- [ ] Hardy — Toughness Bonus — +Toughness Bonus to Wounds
+- [ ] Holy Hatred — Fellowship Bonus — +1 Damage with Miracles/level
+- [ ] Holy Visions — Initiative Bonus — Intuition for visions on Holy Ground
+- [ ] Hunter's Eye — Initiative Bonus — auto-hunt food for yourself + others
+- [ ] Implacable — Toughness Bonus — ignore Wound loss from Bleeding/level
+- [ ] In-fighter — Dexterity Bonus — no penalty vs longer weapons; +10 in-fighting
+- [ ] Inspiring — Fellowship Bonus — Leadership influences far more people at war
+- [ ] Invoke (Divine Lore) — 1 — empower a Cult's Miracles; buy more for XP
+- [ ] Iron Jaw — Toughness Bonus — Endurance Test to shrug off Stunned
+- [ ] Jump Up — 1 — Agility Test to stand from Prone
+- [ ] Kingpin — 1 — ignore Status loss of Criminal Talent
+- [ ] Lightning Reflexes — 1 — +5 starting Agility
+- [ ] Linguistics — Intelligence Bonus — learn Languages as Basic after a month
+- [ ] Magical Sense — Initiative Bonus — Intuition to detect Wizards
+- [ ] Magnum Opus — None — create unrivalled masterwork art/trade pieces
+- [ ] Master of Disguise — Fellowship Bonus — disguise without a kit
+- [ ] Master Orator — Fellowship Bonus — +SL to Public Speaking Charm Tests
+- [ ] Master Tradesman (Trade) — Dexterity Bonus — reduce required SL on Extended Trade Tests
+- [ ] Numismatics — Initiative Bonus — judge coin value/forgeries without a Test
+- [ ] Old Salt — Agility Bonus — ignore sea-weather penalties; count as two crew
+- [ ] Orientation — Initiative Bonus — always know which way is north
+- [ ] Panhandle — Fellowship Bonus — Charm (Begging) every half-hour
+- [ ] Pharmacist — Intelligence Bonus — reverse failed Trade (Apothecary) Tests
+- [ ] Pilot — Initiative Bonus — reverse failed Tests navigating dangerous waters
+- [ ] Pure Soul — Willpower Bonus — extra Corruption before testing
+- [ ] Rapid Reload — Dexterity Bonus — +SL to ranged reload Tests
+- [ ] Reaction Strike — Initiative Bonus — Initiative Test for a Free Attack when Charged
+- [ ] Resistance (Threat) — Toughness Bonus — auto-pass first Test vs a threat/session (code only has Corruption spec)
+- [ ] Resolute — Strength Bonus — +level to Strength Bonus on a Charge
+- [ ] Riposte — Agility Bonus — counterattack with a Fast weapon when defending
+- [ ] River Guide — Initiative Bonus — no Test for dangerous river stretches
+- [ ] Robust — Toughness Bonus — reduce incoming Damage +1/level
+- [ ] Roughrider — Agility Bonus — mount takes an Action without a Ride Test
+- [ ] Rover — Agility Bonus — no passive Perception vs your rural Stealth
+- [ ] Savant (Lore) — Intelligence Bonus — auto-know facts in a field (code only has Engineering spec)
+- [ ] Scale Sheer Surface — Strength Bonus — climb near-impossible surfaces
+- [ ] Schemer — Intelligence Bonus — ask GM a political question once/session
+- [ ] Sea Legs — Toughness Bonus — never test vs Sea Sickness
+- [ ] Seasoned Traveller — Intelligence Bonus — add Lore (Local) to any Career
+- [ ] Secret Identity — Intelligence Bonus — maintain alternate-Status identities
+- [ ] Sharp — 1 — +5 starting Initiative
+- [ ] Sharpshooter — 1 — ignore Difficulty penalties for target size (ranged)
+- [ ] Slayer — 1 — use target's Toughness Bonus as Strength Bonus if higher
+- [ ] Sniper — 4 — no penalty at Long range, half at Extreme
+- [ ] Stone Soup — Toughness Bonus — subsist on half food
+- [ ] Stout-hearted — Willpower Bonus — Cool Test to remove Broken each Turn
+- [ ] Strider (Terrain) — Agility Bonus — ignore movement penalties in a terrain type
+- [ ] Strong Back — Strength Bonus — +SL Opposed Strength; carry more Encumbrance
+- [ ] Strong Legs — Strength Bonus — +SL to Athletics (Leaping)
+- [ ] Strong-minded — Willpower Bonus — +level to max Resolve
+- [ ] Strong Swimmer — Strength Bonus — +level to Toughness Bonus for holding breath
+- [ ] Super Numerate — Intelligence Bonus — Evaluate/Gamble; mental calculation
+- [ ] Supportive — Fellowship Bonus — use units die as SL influencing superiors
+- [ ] Sure Shot — Initiative Bonus — ignore Armour Points = level (ranged)
+- [ ] Surgery — Intelligence Bonus — treat Surgery Criticals; perform surgery
+- [ ] Tenacious — Toughness Bonus — double duration of endured hardships
+- [ ] Tinker — Dexterity Bonus — count Trade Skills as Basic when repairing
+- [ ] Tower of Memories — Intelligence Bonus — perfectly recall sequences of facts
+- [ ] Trapper — Initiative Bonus — auto-spot traps with Perception
+- [ ] Trick Riding — Agility Bonus — Performer Skills + Dodge on horseback
+- [ ] Tunnel Rat — Agility Bonus — no passive Perception vs your underground Stealth
+- [ ] Unshakable — Willpower Bonus — only test vs Broken when wounded by Blackpowder
+- [ ] War Leader — Fellowship Bonus — subordinates add level to a Willpower Test/Round
+- [ ] War Wizard — 1 — cast a CN≤5 spell free without using your Action
+- [ ] Waterman — Agility Bonus — ignore river-vessel penalties; count as two crew
+- [ ] Well-prepared — Initiative Bonus — pull a needed cheap trapping from your pack
+
+## 🔴 Talents — WRONG `max` in Core (supersedes R6, exact values) — `talents.ts`
+
+The recurring bug: a flat `"1"`/`"5"` where the book uses a Characteristic Bonus or "None".
+- [ ] Argumentative: `1` → **Fellowship Bonus**
+- [ ] Attractive: `1` → **Fellowship Bonus**
+- [ ] Carouser: `1` → **Toughness Bonus**
+- [ ] Combat Reflexes: `5` → **Initiative Bonus**
+- [ ] Commanding Presence: `5` → **Fellowship Bonus**
+- [ ] Dealmaker: `1` → **Fellowship Bonus**
+- [ ] Etiquette (grouped): `1` → **Fellowship Bonus**
+- [ ] Fast Hands: `5` → **Dexterity Bonus**
+- [ ] Hatred (grouped): `1` → **Willpower Bonus**
+- [ ] Iron Will: `1` → **Willpower Bonus**
+- [ ] Lip Reading: `1` → **Initiative Bonus**
+- [ ] Luck: `5` → **Fellowship Bonus**
+- [ ] Menacing: `1` → **Strength Bonus**
+- [ ] Mimic: `1` → **Initiative Bonus**
+- [ ] Night Vision: `5` → **Initiative Bonus**
+- [ ] Public Speaker: `5` → **Fellowship Bonus**
+- [ ] Relentless: `1` → **Agility Bonus**
+- [ ] Reversal: `5` → **Weapon Skill Bonus**
+- [ ] Shadow: `1` → **Agility Bonus**
+- [ ] Shieldsman: `1` → **Strength Bonus**
+- [ ] Sixth Sense: `1` → **Initiative Bonus**
+- [ ] Speedreader: `5` → **Intelligence Bonus**
+- [ ] Sprinter: `5` → **Strength Bonus**
+- [ ] Step Aside: `5` → **Agility Bonus**
+- [ ] Strike Mighty Blow: `1` → **Strength Bonus**
+- [ ] Wealthy: `5` → **None**
+
+## 🔴 Talents — wrong MECHANIC (not just max) — `talents.ts`
+- [ ] **Gunner**: code max `BS Bonus` + "ranged Tests" effect → book is **Dexterity Bonus**, effect is
+  *reload blackpowder weapons faster* (not a ranged-attack bonus).
+- [ ] **Magic Resistance**: code max `Toughness Bonus` + per-level SL bonus → book is **Max: 1**, effect is
+  *oppose spells targeting you with Willpower* (no SL bonus).
+
+## 🟠 Talents — extra / unverified in code (supersedes R7) — `talents.ts`
+- [ ] `shields_up` — **remove**: misnamed duplicate of **Shieldsman** (which exists; fix its max above).
+- [ ] `public_speaking` — **remove**: duplicate of **Public Speaker** (the real talent).
+- [ ] `tough` — **remove/rename**: no "Tough" talent in Core or WoM (use Hardy/Robust/Very Resilient).
+- [ ] `fanatical` — **verify/remove**: not found in Core or WoM.
+- [ ] `armour`, `ranged`, `weapon`, `prejudice` — grouped meta-entries that are **not** Core *player*
+  talents (equipment/creature-trait/Psychology constructs). Confirm they're intentional app constructs.
+- `suffuse_with_ulgu` — **WoM-valid** but should be the grouped "Suffuse With (Wind)" talent (see below).
+
+## 🟡 Talents — Winds of Magic additions (do after Core) — `talents.ts`
+- [ ] **Suffuse With (Wind)** — Max 1 — grouped over the 8 Winds (Aqshy, Azyr, Chamon, Ghur, Ghyran, Hysh,
+  Shyish, Ulgu); +1 SL to Lore spells cast within 8 yds + a per-Wind effect. Replace the single
+  `suffuse_with_ulgu` with this grouped form.
+- [ ] **Magical Assistant** — Max 1 — Power-Familiar only; familiar gives +20 to creator's
+  Channelling / Lore (Magic) / Language (Magick) / Research Tests.
+- Note: WoM has no fresh alphabetical talent list; it reuses Core talents + reprints an updated **Concoct**
+  (now also Trade (Alchemist)). Concoct is already in the Core-missing list above.
