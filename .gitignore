@@ -16,3 +16,6 @@ data/character-status/
 data/characters/
 data/*.sqlite
 data/*.sqlite-*
+
+# Reference rulebook PDFs — large binaries, not for distribution
+source/

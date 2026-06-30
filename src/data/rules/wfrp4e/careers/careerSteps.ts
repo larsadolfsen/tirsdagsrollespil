@@ -199,7 +199,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "magnum_opus",
       "rapid_reload",
       "savant_engineering",
-      "unshakeable"
+      "unshakable"
     ],
     "trappingIds": [
       "guild_license",
@@ -725,9 +725,9 @@ export const careerSteps: CareerStepDefinition[] = [
       "dodge",
       "intuition",
       "language_magick",
-      "lore_magic",
+      "lore_magick",
       "melee_basic",
-      "melee_polearm",
+      "melee_pole_arm",
       "perception"
     ],
     "talentIds": [
@@ -1979,7 +1979,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "characteristicAdvances": [],
     "skillIds": [
       "art_writing",
-      "bribe",
+      "bribery",
       "cool",
       "gossip",
       "haggle",
@@ -2146,7 +2146,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "commanding_presence",
       "iron_will",
-      "warleader",
+      "war_leader",
       "wealthy"
     ],
     "trappingIds": [
@@ -2516,7 +2516,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "break_and_enter",
       "criminal",
-      "public_speaking",
+      "public_speaker",
       "strike_to_stun"
     ],
     "trappingIds": [
@@ -2638,7 +2638,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "skillIds": [
       "haggle",
       "lore_genealogy",
-      "lore_magic",
+      "lore_magick",
       "lore_spirits"
     ],
     "talentIds": [
@@ -2665,7 +2665,7 @@ export const careerSteps: CareerStepDefinition[] = [
     ],
     "talentIds": [
       "acute_sense_any",
-      "master_craftsman_herbalist",
+      "master_tradesman_herbalist",
       "night_vision",
       "strong_minded"
     ],
@@ -3453,7 +3453,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "characteristicAdvances": [],
     "skillIds": [
       "animal_training_horse",
-      "intimidation",
+      "intimidate",
       "language_any",
       "lore_routes"
     ],
@@ -3511,7 +3511,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "attractive",
       "mimic",
-      "public_speaking",
+      "public_speaker",
       "suave"
     ],
     "trappingIds": [
@@ -3766,7 +3766,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "nose_for_trouble",
       "relentless",
       "tenacious",
-      "trick_rider"
+      "trick_riding"
     ],
     "trappingIds": [
       "backpack",
@@ -4485,7 +4485,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "skillIds": [
       "charm",
       "intuition",
-      "melee_polearm",
+      "melee_pole_arm",
       "perception"
     ],
     "talentIds": [
@@ -4511,7 +4511,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "lore_folklore"
     ],
     "talentIds": [
-      "master_craftsman_boatbuilder",
+      "master_tradesman_boatbuilder",
       "public_speaker",
       "sharp",
       "strong_minded"
@@ -4612,7 +4612,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "orientation",
       "pilot",
-      "public_speaking",
+      "public_speaker",
       "savvy"
     ],
     "trappingIds": [
@@ -4800,7 +4800,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "dealmaker",
       "embezzle",
       "etiquette_criminals",
-      "public_speaking"
+      "public_speaker"
     ],
     "trappingIds": [
       "gang_of_stevedores",
@@ -4871,7 +4871,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "intuition",
       "navigation",
       "perception",
-      "set_traps"
+      "set_trap"
     ],
     "talentIds": [
       "flee",
@@ -4979,7 +4979,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "ambidextrous",
       "carouser",
       "criminal",
-      "resistant_disease"
+      "resistance_disease"
     ],
     "trappingIds": [
       "dose_of_weirdroot",
@@ -5698,7 +5698,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "charm_animal",
       "dodge",
       "intuition",
-      "melee_polearm",
+      "melee_pole_arm",
       "perception",
       "trade_herbalist"
     ],
@@ -5749,7 +5749,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "characteristicAdvances": [],
     "skillIds": [
       "lore_daemonology",
-      "lore_magic"
+      "lore_magick"
     ],
     "talentIds": [
       "aethyric_attunement",
@@ -5837,7 +5837,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "combat_reflexes",
       "fast_shot",
       "hatred_any",
-      "warleader"
+      "war_leader"
     ],
     "trappingIds": [
       "sash"
@@ -5906,7 +5906,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "cool",
       "dodge",
       "intimidate",
-      "melee_polearm",
+      "melee_pole_arm",
       "ranged_bow"
     ],
     "talentIds": [
@@ -5939,7 +5939,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "fearless_intruders",
       "jump_up",
       "stout_hearted",
-      "unshakeable"
+      "unshakable"
     ],
     "trappingIds": [
       "great_weapon_or_halberd",
@@ -6043,8 +6043,8 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "fearless_any",
       "stout_hearted",
-      "unshakeable",
-      "warleader"
+      "unshakable",
+      "war_leader"
     ],
     "trappingIds": [
       "barding",
@@ -6092,7 +6092,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "melee_brawling"
     ],
     "talentIds": [
-      "dirty_fighter",
+      "dirty_fighting",
       "in_fighter",
       "iron_jaw",
       "reversal"
@@ -6353,8 +6353,8 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "combat_aware",
       "enclosed_fighter",
-      "unshakeable",
-      "warleader"
+      "unshakable",
+      "war_leader"
     ],
     "trappingIds": [
       "symbol_of_rank",
@@ -6374,7 +6374,7 @@ export const careerSteps: CareerStepDefinition[] = [
     ],
     "talentIds": [
       "inspiring",
-      "public_speaking",
+      "public_speaker",
       "seasoned_traveller",
       "stout_hearted"
     ],
@@ -6585,7 +6585,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "fearless_any",
       "furious_assault",
       "holy_hatred",
-      "warleader"
+      "war_leader"
     ],
     "trappingIds": [
       "religious_relic"
