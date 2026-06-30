@@ -23,6 +23,13 @@ export type SidebarListItem = {
   markerVariant?: "gold" | "gray";
   meta?: ReactNode;
   name: ReactNode;
+  quickAction?: {
+    className?: string;
+    disabled?: boolean;
+    isActive?: boolean;
+    label: ReactNode;
+    onClick: () => void;
+  };
 };
 
 export type SidebarItemProps = {
@@ -54,19 +61,21 @@ export function SidebarItem({
         index % 2 === 0 ? "bg-card" : "bg-background",
       )}
     >
-      <button
-        type="button"
+      <div
         className={cn(
-          "flex w-full cursor-pointer justify-between gap-3 px-4 text-left wfrp-text-strong leading-6 text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
+          "flex w-full justify-between gap-3 px-4 text-left wfrp-text-strong leading-6 text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white",
           isOpen ? "min-h-10 items-start pb-1 pt-3" : "min-h-12 items-center py-2",
           isSelected && "text-wfrp-gold",
           itemClassName,
         )}
-        aria-current={isSelected ? "page" : undefined}
-        aria-expanded={isDisclosure ? isOpen : undefined}
-        onClick={() => onClick(item)}
       >
-        <span className="flex min-w-0 flex-1 items-center gap-2">
+        <button
+          type="button"
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 bg-transparent text-left focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
+          aria-current={isSelected ? "page" : undefined}
+          aria-expanded={isDisclosure ? isOpen : undefined}
+          onClick={() => onClick(item)}
+        >
           <span className="min-w-0 flex-1 truncate">{item.name}</span>
           {markerVariant ? (
             <span
@@ -77,23 +86,41 @@ export function SidebarItem({
               aria-label={markerVariant === "gold" ? "Has advances" : "Career skill"}
             />
           ) : null}
-          {item.meta ? (
+          {!item.quickAction && item.meta ? (
             <span className="wfrp-label ml-auto shrink-0 text-wfrp-muted-text">
               {item.meta}
             </span>
           ) : null}
-        </span>
-        {isDisclosure ? (
-          <ChevronDown
-            size={16}
-            className={cn(
-              "mt-1 shrink-0 text-wfrp-muted-text transition-transform",
-              isOpen && "rotate-180 text-wfrp-gold",
-            )}
-            aria-hidden="true"
-          />
+          {item.quickAction && item.meta ? (
+            <span className="sr-only"> {item.meta}</span>
+          ) : null}
+          {isDisclosure ? (
+            <ChevronDown
+              size={16}
+              className={cn(
+                "ml-auto shrink-0 text-wfrp-muted-text transition-transform",
+                isOpen && "rotate-180 text-wfrp-gold",
+              )}
+              aria-hidden="true"
+            />
+          ) : null}
+        </button>
+        {item.quickAction ? (
+          <Button
+            type="button"
+            variant="subtabAction"
+            isActive={item.quickAction.isActive ?? true}
+            disabled={item.quickAction.disabled}
+            className={cn("shrink-0 self-center", item.quickAction.className)}
+            onClick={(event) => {
+              event.stopPropagation();
+              item.quickAction!.onClick();
+            }}
+          >
+            {item.quickAction.label}
+          </Button>
         ) : null}
-      </button>
+      </div>
       {isDisclosure && isOpen ? (
         <div
           className={cn(
@@ -101,6 +128,9 @@ export function SidebarItem({
             item.actions?.length ? "pb-0" : "pb-4",
           )}
         >
+          {item.quickAction && item.meta ? (
+            <div className="wfrp-label mb-2 text-wfrp-muted-text">{item.meta}</div>
+          ) : null}
           <div>
             {item.description || <span className="italic">No description available.</span>}
           </div>

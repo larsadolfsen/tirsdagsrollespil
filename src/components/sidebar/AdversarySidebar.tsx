@@ -99,19 +99,17 @@ export function AdversarySidebar({
         filterType: "creature" as const,
         meta: `Creature - ${template.category.charAt(0).toUpperCase() + template.category.slice(1)}`,
         description: `${traitsText}${trappingsText}`,
-        actions: [
-          {
-            isActive: true,
-            label: count > 1 ? `Add ×${count}` : "Add",
-            onClick: () => {
-              onAddAdversary(template, count, "creature");
-              setAddedFeedback((prev) => ({
-                ...prev,
-                [template.id]: `${count} ${pluralize(template.name, count)} added`,
-              }));
-            },
+        quickAction: {
+          isActive: true,
+          label: count > 1 ? `Add ×${count}` : "Add",
+          onClick: () => {
+            onAddAdversary(template, count, "creature");
+            setAddedFeedback((prev) => ({
+              ...prev,
+              [template.id]: `${count} ${pluralize(template.name, count)} added`,
+            }));
           },
-        ],
+        },
         extra: addedFeedback[template.id],
       };
     });
@@ -139,21 +137,19 @@ export function AdversarySidebar({
               {scenario ? <p className="mt-2">Scenario: {scenario}</p> : null}
             </>
           ),
-          actions: [
-            {
-              disabled: isNpcAlreadyAdded,
-              isActive: !isNpcAlreadyAdded,
-              label: isNpcAlreadyAdded ? "Added" : "Add",
-              onClick: () => {
-                if (npc.isNpc) {
-                  onAddAdversary(npc, 1, "npc");
-                  return;
-                }
-                setGenericName("");
-                setPendingGeneric(npc);
-              },
+          quickAction: {
+            disabled: isNpcAlreadyAdded,
+            isActive: !isNpcAlreadyAdded,
+            label: isNpcAlreadyAdded ? "Added" : "Add",
+            onClick: () => {
+              if (npc.isNpc) {
+                onAddAdversary(npc, 1, "npc");
+                return;
+              }
+              setGenericName("");
+              setPendingGeneric(npc);
             },
-          ],
+          },
           extra: addedFeedback[npc.id],
         };
       });
