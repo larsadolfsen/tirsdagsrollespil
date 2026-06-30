@@ -902,6 +902,7 @@ export function GameMasterPage({
                               onUpdateComponentEncounterData={(componentId, data) => updateComponentEncounterData(scene.id, componentId, data)}
                               onAddComponent={(type) => addComponentToScene(scene.id, type)}
                               onOpenMonsterSidebar={openMonsterSidebar}
+                              sceneNpcIds={getSceneNpcIds(scene)}
                             />
                           )}
                         </section>

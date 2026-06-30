@@ -56,14 +56,25 @@ test("Game Master page scene components workflow", async ({ page }) => {
   await savedText.click();
   await expect(editor).toBeVisible();
 
-  // 7. Clear the text and click Save to test placeholder in read mode
+  // 7. Leaving the editor saves immediately and deactivates the button
+  await editor.fill("This text was saved by leaving the editor.");
+  await expect(page.getByRole("button", { name: "Save", exact: true })).toBeEnabled();
+  await page.getByRole("heading", { name: "Scenes" }).click();
+  await expect(page.getByRole("button", { name: "Saved", exact: true })).toBeDisabled();
+
+  // 8. Further edits reactivate Save, then autosave after the interval
+  await editor.fill("This text was autosaved.");
+  await expect(page.getByRole("button", { name: "Save", exact: true })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Saved", exact: true })).toBeDisabled({ timeout: 4_000 });
+
+  // 9. Clear the text and click Save to test placeholder in read mode
   await editor.fill("");
   await page.getByRole("button", { name: "Save" }).click();
 
-  // 8. Verify placeholder is shown in read mode when empty
+  // 10. Verify placeholder is shown in read mode when empty
   await expect(placeholderText).toBeVisible();
 
-  // 9. Rename the component title from "Text field" to a unique "Introduction Text [timestamp]"
+  // 11. Rename the component title from "Text field" to a unique "Introduction Text [timestamp]"
   const uniqueTitle = `Introduction Text ${Date.now()}`;
   const titleSpan = page.getByTitle("Click to rename").filter({ hasText: "Description" }).last();
   await expect(titleSpan).toBeVisible();
@@ -75,14 +86,14 @@ test("Game Master page scene components workflow", async ({ page }) => {
   await titleInput.fill(uniqueTitle);
   await titleInput.press("Enter");
 
-  // 10. Verify the title has updated
+  // 12. Verify the title has updated
   await expect(page.getByText(uniqueTitle, { exact: true })).toBeVisible();
 
-  // 11. Open the dropdown menu and delete the component
+  // 13. Open the dropdown menu and delete the component
   await page.getByRole("button", { name: `${uniqueTitle} actions` }).click();
   await page.getByRole("menuitem", { name: "Delete" }).click();
 
-  // 12. Verify the component is deleted
+  // 14. Verify the component is deleted
   await expect(page.getByRole("button", { name: `${uniqueTitle} actions` })).not.toBeVisible();
 });
 

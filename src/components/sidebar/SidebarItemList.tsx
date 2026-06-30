@@ -17,6 +17,7 @@ export type SidebarListItem = {
     label: ReactNode;
     value: ReactNode;
   }>;
+  extra?: ReactNode;
   id: string;
   isMarked?: boolean;
   markerVariant?: "gold" | "gray";
@@ -130,6 +131,11 @@ export function SidebarItem({
                   {action.label}
                 </Button>
               ))}
+            </div>
+          ) : null}
+          {item.extra ? (
+            <div className="mt-2 text-sm font-semibold text-wfrp-gold">
+              {item.extra}
             </div>
           ) : null}
         </div>
