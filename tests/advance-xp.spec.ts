@@ -244,3 +244,22 @@ test("cancel edit character discards pending XP changes", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Edit Character" })).toBeVisible();
   await expect(currentXpField).toHaveValue(String(startXp));
 });
+
+test("manual current-XP adjustment moves the field by exactly that amount", async ({ page }) => {
+  await openAdvanceTab(page);
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+
+  const currentXpField = page.getByRole("spinbutton", { name: "Current XP" });
+  const startXp = Number(await currentXpField.inputValue());
+  expect(startXp).toBeGreaterThan(0);
+
+  // The pending adjustment must be applied to Current XP once, not twice.
+  await page.getByRole("button", { name: "Add 10 current XP" }).click();
+  await expect(currentXpField).toHaveValue(String(startXp + 10));
+
+  await page.getByRole("button", { name: "Add 100 current XP" }).click();
+  await expect(currentXpField).toHaveValue(String(startXp + 110));
+
+  await page.getByRole("button", { name: "Remove 10 pending XP" }).click();
+  await expect(currentXpField).toHaveValue(String(startXp + 100));
+});
