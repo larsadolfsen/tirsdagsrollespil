@@ -626,4 +626,31 @@ export const namedNpcsHZ: NpcTemplate[] = [
       "Miracle notes: Command, Blindness, Hold Person, Bestow Curse, Slow, Bane, Bless",
     ],
   },
+  {
+    id: "verification-test-entry",
+    name: "Verification Test Entry",
+    isNpc: true,
+    category: "human",
+    tags: [],
+    statBlock: {
+      M: 4,
+      WS: 20,
+      BS: 20,
+      S: 20,
+      T: 20,
+      I: 20,
+      Ag: 20,
+      Dex: 20,
+      Int: 20,
+      WP: 20,
+      Fel: 20,
+      W: 10,
+    },
+    skills: [
+      "Dodge 0",
+    ],
+    talents: [
+      "Prejudice (Witch Hunters)",
+    ],
+  },
 ];

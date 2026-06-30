@@ -76,7 +76,7 @@ export function createSceneComponent(
 }
 
 function createScene(
-  components: SceneComponent[] = [],
+  components: SceneComponent[] = [createSceneComponent("notes")],
 ): GMScene {
   return {
     id: `scene-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -176,7 +176,8 @@ export function GameMasterPage({
   const [isScenarioDialogOpen, setIsScenarioDialogOpen] = useState(false);
   const [importingScenarioId, setImportingScenarioId] = useState<string | null>(null);
   const [sessionTitleDraft, setSessionTitleDraft] = useState(editingSessionName);
-  const [scenes, setScenes] = useState<GMScene[]>(() => [createScene()]);
+  const [initialScene] = useState(() => createScene());
+  const [scenes, setScenes] = useState<GMScene[]>(() => [initialScene]);
   const onScenesChangeRef = useRef(onScenesChange);
   useEffect(() => { onScenesChangeRef.current = onScenesChange; });
 
@@ -184,7 +185,7 @@ export function GameMasterPage({
   const [sceneTitleDraft, setSceneTitleDraft] = useState("");
   const [editingSceneLocationId, setEditingSceneLocationId] = useState<string | null>(null);
   const [sceneLocationDraft, setSceneLocationDraft] = useState("");
-  const [expandedScenes, setExpandedScenes] = useState<Set<string>>(new Set());
+  const [expandedScenes, setExpandedScenes] = useState<Set<string>>(() => new Set([initialScene.id]));
 
   const toggleSceneCollapsed = (sceneId: string) => {
     setExpandedScenes((prev) => {
@@ -287,6 +288,7 @@ export function GameMasterPage({
 
   useEffect(() => {
     const loaded = activeSession?.scenes;
+    const isNewSession = !loaded || loaded.length === 0;
     const initial = loaded && loaded.length > 0 ? loaded : [createScene()];
     setIsRenamingSession(false);
     setSessionTitleDraft(editingSessionName);
@@ -295,6 +297,11 @@ export function GameMasterPage({
     setEditingSceneLocationId(null);
     setActiveNpcSceneId(null);
     setNpcEncounterData(buildSceneNpcEncounterData(initial));
+    if (isNewSession) {
+      setExpandedScenes(new Set(initial.map((s) => s.id)));
+    } else {
+      setExpandedScenes(new Set());
+    }
   }, [activeSession?.id]);
 
   useEffect(() => {
@@ -318,11 +325,23 @@ export function GameMasterPage({
   };
 
   const addScene = (sceneIndex: number, placement: "before" | "after") => {
+    const newScene = createScene();
     setScenes((currentScenes) => {
       const nextScenes = [...currentScenes];
-      nextScenes.splice(sceneIndex + (placement === "after" ? 1 : 0), 0, createScene());
+      nextScenes.splice(sceneIndex + (placement === "after" ? 1 : 0), 0, newScene);
       return nextScenes;
     });
+    setExpandedScenes((prev) => {
+      const next = new Set(prev);
+      next.add(newScene.id);
+      return next;
+    });
+  };
+
+  const handleAddFirstScene = () => {
+    const newScene = createScene();
+    setScenes([newScene]);
+    setExpandedScenes(new Set([newScene.id]));
   };
 
   const copyScene = (sceneIndex: number) => {
@@ -930,7 +949,7 @@ export function GameMasterPage({
                   ) : (
                     <Button
                       variant="secondary"
-                      onClick={() => setScenes([createScene()])}
+                      onClick={handleAddFirstScene}
                       leadingIcon={<Plus />}
                       className="mt-4"
                     >

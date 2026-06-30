@@ -150,31 +150,35 @@ test("expanded scenes end with a block type Add menu", async ({ page }) => {
   await expect(page.getByRole("menuitem", { name: "Encounter", exact: true })).toBeVisible();
 });
 
-test("Game Master page automatically opens a scene when a block is added", async ({ page }) => {
+test("Game Master page new scenes start open with a Notes block", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Open Game Master" }).click();
   await page.getByRole("button", { name: "Open", exact: true }).first().click();
 
   await page.getByRole("heading", { name: "Scenes" }).scrollIntoViewIfNeeded();
 
-  // Add a new scene (which will start collapsed by default)
+  // Add a new scene
   await page.getByRole("button", { name: "Scene 1 menu" }).last().click();
   await page.getByRole("menuitem", { name: "Add scene after" }).click();
 
-  // Find the new scene (which is now the last scene card)
-  const sceneHeader = page.locator("section.group\\/scene").last();
+  // Find the new scene (which is now the second scene card)
+  const sceneHeader = page.locator("section.group\\/scene").nth(1);
   await expect(sceneHeader.getByText(/Scene \d+/)).toBeVisible();
 
-  // Verify the expand button is visible and shows it's collapsed (aria-expanded is not true/false but button name is Expand scene)
-  const expandButton = sceneHeader.getByRole("button", { name: "Expand scene" });
-  await expect(expandButton).toBeVisible();
+  // Verify the expand/collapse button is visible and shows it's expanded (Collapse scene)
+  const collapseButton = sceneHeader.getByRole("button", { name: "Collapse scene" });
+  await expect(collapseButton).toBeVisible();
+
+  // Verify it starts with a Notes block and the placeholder is visible
+  const notesPlaceholder = sceneHeader.getByText("Add GM notes…");
+  await expect(notesPlaceholder).toBeVisible();
 
   // Add a description block to this new scene
   await sceneHeader.getByRole("button", { name: /Scene \d+ menu/ }).click();
   await page.getByRole("menuitem", { name: "Add description" }).click();
 
-  // Verify the scene is now expanded automatically, so the placeholder is visible
-  const placeholder = page.getByText("Write the scene description here…").last();
-  await expect(placeholder).toBeVisible();
+  // Verify the description block is also visible
+  const descriptionPlaceholder = sceneHeader.getByText("Write the scene description here…");
+  await expect(descriptionPlaceholder).toBeVisible();
 });
 

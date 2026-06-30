@@ -115,7 +115,7 @@ export const careerAdvancementByName = Object.fromEntries(
   ]),
 );
 
-export { buildResolvedSkillOptions, getSkillDisplayName, skillCharacteristicById };
+export { buildResolvedSkillOptions, getSkillDisplayName, skillCharacteristicById, skillDefinitions, skillSpecialisationDefinitions };
 export {
   buildResolvedWeaponOptions,
   getRequiredSkillDisplayName,

@@ -65,6 +65,8 @@ export interface TalentDefinition extends RulesTextDefinition {
   max: string;
   tests?: string;
   effects?: TalentEffect[];
+  grouped?: boolean;
+  specialisationLabel?: string;
 }
 
 export interface SpellDefinition extends RulesTextDefinition {
