@@ -1,24 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
-import {
-  Button,
-  Heading,
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  Text,
-  WfrpSearchField,
-} from "../ui";
+import { AppSidebar } from "../sidebar/AppSidebar";
+import { SidebarItemList } from "../sidebar/SidebarItemList";
+import { Button, Text, WfrpFilterChips, WfrpSearchField } from "../ui";
 import { AdversaryRecordForm } from "./AdversaryRecordForm";
 import { DeleteAdversaryDialog } from "./DeleteAdversaryDialog";
 import { deleteAdversary, listAdversaries, saveAdversaryCatalog } from "../../lib/adversaryEditorApi";
@@ -132,72 +116,86 @@ export function AdversaryEditorPage({
     }
   }
 
+  const items = visibleEntries
+    .map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      meta: entry.category,
+      description: entry.group ?? undefined,
+      details: entry.group ? [{ label: "Group", value: entry.group }] : undefined,
+      actions: [
+        { label: "Edit", onClick: () => setEditingRecord(entry) },
+        {
+          className: "[&_span]:bg-destructive/80 [&_span]:text-white hover:[&_span]:bg-destructive",
+          label: "Delete",
+          onClick: () => setDeletingRecord(entry),
+        },
+      ],
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <>
-      <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent className="w-full max-w-4xl">
-          <SheetHeader>
-            <SheetTitle>Adversary Editor</SheetTitle>
-          </SheetHeader>
-
-          <div className="mt-4 space-y-4">
-            <Tabs value={activeType} onValueChange={(value) => setActiveType(value as AdversaryEditorType)}>
-              <TabsList>
-                {tabs.map((tab) => (
-                  <TabsTrigger key={tab.id} value={tab.id}>{tab.label}</TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
-
-            <div className="flex items-center gap-3">
-              <WfrpSearchField
-                id="adversary-editor-search"
-                label="Search catalog"
-                value={searchQuery}
-                onValueChange={setSearchQuery}
-                className="flex-1 border-0 bg-transparent px-0 py-0"
-              />
-              <Button
-                leadingIcon={<Plus size={16} />}
-                name="New"
-                onClick={() => setEditingRecord(null)}
-              />
-            </div>
-
-            {errorMessage ? <Text className="text-destructive">{errorMessage}</Text> : null}
-
-            {isLoading ? (
-              <Text variant="bodyMuted">Loading catalog…</Text>
-            ) : visibleEntries.length === 0 ? (
-              <Text variant="bodyMuted">No entries match.</Text>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Group</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {visibleEntries.map((entry) => (
-                    <TableRow key={entry.id}>
-                      <TableCell>{entry.name}</TableCell>
-                      <TableCell>{entry.category}</TableCell>
-                      <TableCell>{entry.group ?? ""}</TableCell>
-                      <TableCell className="flex justify-end gap-2 text-right">
-                        <Button variant="secondary" autoHeight name="Edit" onClick={() => setEditingRecord(entry)} />
-                        <Button variant="destructive" autoHeight name="Delete" onClick={() => setDeletingRecord(entry)} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
+      <AppSidebar
+        isOpen={isOpen}
+        motionKey="adversary-editor-sidebar"
+        onClose={onClose}
+        side="right"
+        title="Adversary Editor"
+        titleId="adversary-editor-title"
+        closeLabel="Close adversary editor"
+        alwaysOverlay
+        contentClassName="!p-0"
+        trapFocus
+        closeOnOutsidePointerDown={!editingRecord && !deletingRecord}
+        footer={(
+          <Button
+            leadingIcon={<Plus size={16} />}
+            name="New"
+            className="w-full"
+            onClick={() => setEditingRecord(null)}
+          />
+        )}
+      >
+        <WfrpSearchField
+          id="adversary-editor-search"
+          label="Search catalog"
+          placeholder="Search catalog"
+          value={searchQuery}
+          onSearch={setSearchQuery}
+          onValueChange={setSearchQuery}
+        />
+        <div className="border-b border-wfrp-border bg-[#242424] px-4 py-3">
+          <div className="space-y-1.5">
+            <div className="wfrp-label text-wfrp-muted-text">Type</div>
+            <WfrpFilterChips
+              ariaLabel="Adversary type filters"
+              options={tabs}
+              selectedIds={[activeType]}
+              onChange={(selected) => {
+                const nextType = selected.find((id) => id !== activeType);
+                if (nextType) setActiveType(nextType);
+              }}
+            />
           </div>
-        </SheetContent>
-      </Sheet>
+        </div>
+
+        {errorMessage ? (
+          <Text className="px-4 pt-3 text-destructive">{errorMessage}</Text>
+        ) : null}
+
+        <div className="p-4">
+          {isLoading ? (
+            <Text variant="bodyMuted">Loading catalog…</Text>
+          ) : (
+            <SidebarItemList
+              items={items}
+              title={tabs.find((tab) => tab.id === activeType)?.label}
+              emptyMessage="No entries match."
+            />
+          )}
+        </div>
+      </AppSidebar>
 
       {editingRecord !== undefined ? (
         <AdversaryRecordForm
