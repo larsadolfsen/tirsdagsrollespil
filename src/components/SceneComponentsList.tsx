@@ -73,6 +73,7 @@ type SceneComponentsListProps = {
   onAddComponent: (type: "text" | "notes" | "encounter") => void;
   onOpenMonsterSidebar: (onAdd: (template: CreatureTemplate, count: number) => void) => void;
   onRollInitiative?: (name: string, bonus: number) => void;
+  sceneNpcIds?: string[];
 };
 
 const ENCOUNTER_SECTION_DIVIDER = {
@@ -1192,6 +1193,7 @@ export function SceneComponentsList({
   onUpdateComponentEncounterData,
   onAddComponent,
   onOpenMonsterSidebar,
+  sceneNpcIds = [],
 }: SceneComponentsListProps) {
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [titleDraft, setTitleDraft] = useState("");
@@ -1451,6 +1453,16 @@ export function SceneComponentsList({
       {activeEncounterId && (
         <AdversarySidebar
           isOpen={isAdversarySidebarOpen}
+          existingNpcIds={(() => {
+            const component = components.find((c) => c.id === activeEncounterId);
+            if (!component) return [];
+            const encounterData = getEncounterData(component);
+            const encounterNpcIds = (encounterData.monsterGroups ?? [])
+              .filter((g) => g.source === "npc")
+              .map((g) => g.templateId);
+            const sceneNpcIdsList = sceneNpcIds ?? [];
+            return Array.from(new Set([...encounterNpcIds, ...sceneNpcIdsList]));
+          })()}
           onClose={() => {
             setIsAdversarySidebarOpen(false);
             setActiveEncounterId(null);
@@ -1481,9 +1493,6 @@ export function SceneComponentsList({
               ...encounterData,
               monsterGroups: [...monsterGroups, newGroup],
             });
-
-            setIsAdversarySidebarOpen(false);
-            setActiveEncounterId(null);
           }}
         />
       )}

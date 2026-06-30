@@ -32,6 +32,7 @@ export function AdversarySidebar({
   isOpen,
   onClose,
   onAddAdversary,
+  existingNpcIds = [],
   className,
 }: {
   isOpen: boolean;
@@ -42,6 +43,7 @@ export function AdversarySidebar({
     type: "creature" | "npc" | "generic",
     name?: string,
   ) => void;
+  existingNpcIds?: string[];
   className?: string;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,6 +51,20 @@ export function AdversarySidebar({
   const [selectedCategories, setSelectedCategories] = useState<AdversaryCategory[]>([]);
   const [pendingGeneric, setPendingGeneric] = useState<NpcTemplate | null>(null);
   const [genericName, setGenericName] = useState("");
+  const [addedFeedback, setAddedFeedback] = useState<Record<string, string>>({});
+
+  const pluralize = (word: string, amount: number) => {
+    if (amount === 1) return word;
+    if (word.toLowerCase() === "wolf") return "Wolves";
+    if (word.toLowerCase() === "thief") return "Thieves";
+    if (word.toLowerCase().endsWith("y") && !/[aeiou]y$/i.test(word)) {
+      return word.slice(0, -1) + "ies";
+    }
+    if (word.endsWith("s") || word.endsWith("sh") || word.endsWith("ch") || word.endsWith("x") || word.endsWith("z")) {
+      return word + "es";
+    }
+    return word + "s";
+  };
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
@@ -87,9 +103,16 @@ export function AdversarySidebar({
           {
             isActive: true,
             label: count > 1 ? `Add ×${count}` : "Add",
-            onClick: () => onAddAdversary(template, count, "creature"),
+            onClick: () => {
+              onAddAdversary(template, count, "creature");
+              setAddedFeedback((prev) => ({
+                ...prev,
+                [template.id]: `${count} ${pluralize(template.name, count)} added`,
+              }));
+            },
           },
         ],
+        extra: addedFeedback[template.id],
       };
     });
 
@@ -99,6 +122,8 @@ export function AdversarySidebar({
         const scenario = npc.isNpc
           ? npc.tags.find((tag) => tag.includes("Three Feathers"))
           : undefined;
+
+        const isNpcAlreadyAdded = npc.isNpc && existingNpcIds.includes(npc.id);
 
         return {
           id: npc.id,
@@ -116,8 +141,9 @@ export function AdversarySidebar({
           ),
           actions: [
             {
-              isActive: true,
-              label: "Add",
+              disabled: isNpcAlreadyAdded,
+              isActive: !isNpcAlreadyAdded,
+              label: isNpcAlreadyAdded ? "Added" : "Add",
               onClick: () => {
                 if (npc.isNpc) {
                   onAddAdversary(npc, 1, "npc");
@@ -128,6 +154,7 @@ export function AdversarySidebar({
               },
             },
           ],
+          extra: addedFeedback[npc.id],
         };
       });
 
@@ -147,7 +174,7 @@ export function AdversarySidebar({
         return true;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [normalizedQuery, onAddAdversary, selectedCategories, selectedTypes]);
+  }, [normalizedQuery, onAddAdversary, selectedCategories, selectedTypes, addedFeedback, existingNpcIds]);
 
   return (
     <>
@@ -237,6 +264,10 @@ export function AdversarySidebar({
                 const name = genericName.trim();
                 if (!pendingGeneric || !name) return;
                 onAddAdversary(pendingGeneric, 1, "generic", name);
+                setAddedFeedback((prev) => ({
+                  ...prev,
+                  [pendingGeneric.id]: `1 ${name} added`,
+                }));
                 setPendingGeneric(null);
                 setGenericName("");
               }}

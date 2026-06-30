@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Bold, Italic, List, Pencil } from "lucide-react";
 import { cn } from "../lib/utils";
 import { Button } from "./ui";
@@ -33,6 +33,8 @@ const isHtmlEmpty = (html: string) => {
   return clean === "";
 };
 
+const AUTOSAVE_INTERVAL_MS = 2_000;
+
 export function FormattedTextField({
   ariaLabel,
   className,
@@ -41,13 +43,25 @@ export function FormattedTextField({
   value,
   size = "sm",
 }: FormattedTextFieldProps) {
+  const fieldRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const [draftValue, setDraftValue] = useState(value);
+  const [savedValue, setSavedValue] = useState(value);
   const [isEditing, setIsEditing] = useState(false);
+  const draftValueRef = useRef(value);
+  const savedValueRef = useRef(value);
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
     if (!isEditing) {
       setDraftValue(value);
+      setSavedValue(value);
+      draftValueRef.current = value;
+      savedValueRef.current = value;
     }
   }, [isEditing, value]);
 
@@ -59,8 +73,36 @@ export function FormattedTextField({
     }
   }, [isEditing]);
 
+  const persistValue = useCallback((nextValue = draftValueRef.current) => {
+    if (nextValue === savedValueRef.current) return;
+
+    onChangeRef.current(nextValue);
+    savedValueRef.current = nextValue;
+    setSavedValue(nextValue);
+  }, []);
+
+  useEffect(() => {
+    if (!isEditing) return;
+
+    const intervalId = window.setInterval(() => {
+      persistValue();
+    }, AUTOSAVE_INTERVAL_MS);
+
+    return () => window.clearInterval(intervalId);
+  }, [isEditing, persistValue]);
+
+  useEffect(() => {
+    return () => {
+      if (draftValueRef.current !== savedValueRef.current) {
+        onChangeRef.current(draftValueRef.current);
+      }
+    };
+  }, []);
+
   const emitChange = () => {
-    setDraftValue(editorRef.current?.innerHTML ?? "");
+    const nextValue = editorRef.current?.innerHTML ?? "";
+    draftValueRef.current = nextValue;
+    setDraftValue(nextValue);
   };
 
   const applyFormat = (command: FormatCommand) => {
@@ -70,16 +112,20 @@ export function FormattedTextField({
   };
 
   const save = () => {
-    onChange(draftValue);
+    persistValue();
     setIsEditing(false);
   };
 
   const edit = () => {
     setDraftValue(value);
+    setSavedValue(value);
+    draftValueRef.current = value;
+    savedValueRef.current = value;
     setIsEditing(true);
   };
 
   const isEmpty = isHtmlEmpty(value);
+  const isDirty = draftValue !== savedValue;
 
   if (!isEditing) {
     return (
@@ -108,7 +154,7 @@ export function FormattedTextField({
   }
 
   return (
-    <div className={className}>
+    <div ref={fieldRef} className={className}>
       <div
         className={cn(
           "overflow-hidden rounded border border-wfrp-border bg-black/20 transition-colors focus-within:border-wfrp-gold/60 focus-within:ring-1 focus-within:ring-wfrp-gold/30",
@@ -143,9 +189,16 @@ export function FormattedTextField({
           data-placeholder={placeholder}
           onInput={emitChange}
           onBlur={(event) => {
-            if (!event.currentTarget.textContent?.trim()) {
-              event.currentTarget.innerHTML = "";
-              setDraftValue("");
+            const nextValue = event.currentTarget.textContent?.trim()
+              ? event.currentTarget.innerHTML
+              : "";
+            event.currentTarget.innerHTML = nextValue;
+            draftValueRef.current = nextValue;
+            setDraftValue(nextValue);
+
+            const nextFocusedElement = event.relatedTarget;
+            if (!(nextFocusedElement instanceof Node) || !fieldRef.current?.contains(nextFocusedElement)) {
+              persistValue(nextValue);
             }
           }}
           onPaste={(event) => {
@@ -159,8 +212,8 @@ export function FormattedTextField({
         />
       </div>
       <div className="mt-2 flex justify-end">
-        <Button onClick={save} isGolden>
-          Save
+        <Button onClick={save} isGolden isDeactivated={!isDirty}>
+          {isDirty ? "Save" : "Saved"}
         </Button>
       </div>
     </div>
