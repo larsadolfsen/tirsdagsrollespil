@@ -4,7 +4,7 @@ import { talentDefinitions } from "../src/data/rules/wfrp4e/talents";
 async function openAdvanceTab(page: Page) {
   await page.goto("/");
   await page.locator(".wfrp-landing-character-card").filter({ hasNotText: "Game Master" }).first().click();
-  await page.getByRole("button", { name: "Edit Character" }).click();
+  await page.getByRole("button", { name: "Edit Character", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Edit Character" })).toBeVisible();
 }
 
