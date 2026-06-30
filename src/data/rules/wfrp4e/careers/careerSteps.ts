@@ -199,7 +199,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "magnum_opus",
       "rapid_reload",
       "savant_engineering",
-      "unshakeable"
+      "unshakable"
     ],
     "trappingIds": [
       "guild_license",
@@ -2146,7 +2146,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "commanding_presence",
       "iron_will",
-      "warleader",
+      "war_leader",
       "wealthy"
     ],
     "trappingIds": [
@@ -2665,7 +2665,7 @@ export const careerSteps: CareerStepDefinition[] = [
     ],
     "talentIds": [
       "acute_sense_any",
-      "master_craftsman_herbalist",
+      "master_tradesman_herbalist",
       "night_vision",
       "strong_minded"
     ],
@@ -3766,7 +3766,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "nose_for_trouble",
       "relentless",
       "tenacious",
-      "trick_rider"
+      "trick_riding"
     ],
     "trappingIds": [
       "backpack",
@@ -4511,7 +4511,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "lore_folklore"
     ],
     "talentIds": [
-      "master_craftsman_boatbuilder",
+      "master_tradesman_boatbuilder",
       "public_speaker",
       "sharp",
       "strong_minded"
@@ -4979,7 +4979,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "ambidextrous",
       "carouser",
       "criminal",
-      "resistant_disease"
+      "resistance_disease"
     ],
     "trappingIds": [
       "dose_of_weirdroot",
@@ -5837,7 +5837,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "combat_reflexes",
       "fast_shot",
       "hatred_any",
-      "warleader"
+      "war_leader"
     ],
     "trappingIds": [
       "sash"
@@ -5939,7 +5939,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "fearless_intruders",
       "jump_up",
       "stout_hearted",
-      "unshakeable"
+      "unshakable"
     ],
     "trappingIds": [
       "great_weapon_or_halberd",
@@ -6043,8 +6043,8 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "fearless_any",
       "stout_hearted",
-      "unshakeable",
-      "warleader"
+      "unshakable",
+      "war_leader"
     ],
     "trappingIds": [
       "barding",
@@ -6092,7 +6092,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "melee_brawling"
     ],
     "talentIds": [
-      "dirty_fighter",
+      "dirty_fighting",
       "in_fighter",
       "iron_jaw",
       "reversal"
@@ -6353,8 +6353,8 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "combat_aware",
       "enclosed_fighter",
-      "unshakeable",
-      "warleader"
+      "unshakable",
+      "war_leader"
     ],
     "trappingIds": [
       "symbol_of_rank",
@@ -6585,7 +6585,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "fearless_any",
       "furious_assault",
       "holy_hatred",
-      "warleader"
+      "war_leader"
     ],
     "trappingIds": [
       "religious_relic"
