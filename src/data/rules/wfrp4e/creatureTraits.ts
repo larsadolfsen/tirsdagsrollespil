@@ -270,11 +270,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     summary: "Adds a magical touch attack that ignores normal soak sources.",
     statBlock: "Store as a special melee option.",
     combatTracker: "Show cost, target, and damage rule on the action card.",
-    diceRoller: "Roll opposed melee or dodge test and apply fixed SL-based wound loss without Toughness Bonus or armour.",
+    diceRoller: "Roll opposed melee or dodge test and apply 1d10 + SL wound loss without Toughness Bonus or armour.",
     modifiers: [
       { type: "actionOption", action: "Chill Grasp", trigger: "Action plus Advantage cost" },
       { type: "opposedTest", target: "Melee or Dodge" },
-      { type: "damage", formula: "10 + SL", notes: "Ignore Toughness Bonus and armour." },
+      { type: "damage", formula: "1d10 + SL", notes: "Ignore Toughness Bonus and armour." },
     ],
   },
   {
@@ -756,7 +756,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Resolve opposed gaze test and apply Stunned based on SL.",
     modifiers: [
       { type: "actionOption", action: "Petrifying Gaze", trigger: "Action plus Advantage cost" },
-      { type: "condition", condition: "Stunned", target: "opponent", formula: "2 + SL" },
+      { type: "condition", condition: "Stunned", target: "opponent", formula: "1 Stunned per 2 SL" },
       { type: "combatFlag", target: "petrify-at-stunned-threshold" },
     ],
   },
