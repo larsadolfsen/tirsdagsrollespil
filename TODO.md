@@ -287,11 +287,11 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
     house-rule intent).
 - [x] **R10. Missing `grouped` flag.** — FIXED (a8d4635). `skills.ts` — `ride` (basic, grouped) and `sail`
   (advanced, grouped) are grouped in the book but not in `GROUPED_SPECIALISATIONS`.
-- [ ] **R11. Specialisation naming/content nits (Low).** `Polearm`→"Pole-Arm" (melee), `Magic`→"Magick"
-  (lore), `Norsk`→"Norse" / `Guild`→"Guilder" (language); `channelling` omits **Dhar** (the book lists 9
-  winds incl. Dhar at ~6232); `Secret Signs` omits "Vagabond"; `Lore` omits "Geology"; Perform/Play/Trade
-  spec lists differ from the book. (Note: the book's spec lists are explicitly "sample" lists, so additions
-  are defensible — Dhar and the omissions are the only literal gaps.)
+- [x] **R11. Specialisation naming/content nits (Low).** — FIXED. Renamed `Polearm`→"Pole-Arm" (melee),
+  `Magic`→"Magick" (lore), `Norsk`→"Norse" and `Guild`→"Guilder" (language), and added `Geology` (lore);
+  `Dhar` (channelling) and `Vagabond` (secret signs) added in a8d4635. All character/career references to
+  the renamed ids (melee_pole_arm, lore_magick, language_guilder/norse) were repointed. Perform/Play/Trade
+  spec lists are left as-is (the book calls them "sample" lists, so the dataset's variants are defensible).
 - Correction to raw audit: `psychometry` (code, Int/Advanced) is **NOT** in Core or Winds of Magic — it is
   from another supplement (likely *Up in Arms*/*Archives of the Empire*). Leave as unverified until the
   user adds that book.

@@ -51,7 +51,7 @@ export const thanoVoss: CharacterRecord = {
     { skillId: "haggle", advances: 3 },
     { skillId: "intimidate", advances: 5 },
     { skillId: "melee", specialisationId: "melee_basic", advances: 3 },
-    { skillId: "melee", specialisationId: "melee_polearm", advances: 5 },
+    { skillId: "melee", specialisationId: "melee_pole_arm", advances: 5 },
     { skillId: "perception", advances: 5 },
     { skillId: "stealth", specialisationId: "stealth_rural", advances: 5 },
     { skillId: "lore", specialisationId: "lore_reikland", advances: 3 },
@@ -63,7 +63,7 @@ export const thanoVoss: CharacterRecord = {
     { skillId: "secret_signs", specialisationId: "secret_signs_thief", advances: 1 },
     { skillId: "lore", specialisationId: "lore_chaos", advances: 1 },
     { skillId: "channelling", specialisationId: "channelling_aqshy", advances: 8 },
-    { skillId: "lore", specialisationId: "lore_magic", advances: 1 },
+    { skillId: "lore", specialisationId: "lore_magick", advances: 1 },
   ],
   equipment: [
     { id: "thano_dagger_1", itemId: "dagger_item", equipped: true },

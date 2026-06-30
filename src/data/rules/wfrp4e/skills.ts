@@ -287,10 +287,10 @@ This resolves as an extended test. You can also perform this as a Lore test for 
 const GROUPED_SPECIALISATIONS: Record<string, string[]> = {
   art: ["Cartography", "Engraving", "Mosaics", "Painting", "Sculpture", "Tattoo", "Weaving"],
   entertain: ["Acting", "Comedy", "Singing", "Storytelling"],
-  melee: ["Basic", "Brawling", "Cavalry", "Fencing", "Flail", "Parry", "Polearm", "Two-Handed"],
+  melee: ["Basic", "Brawling", "Cavalry", "Fencing", "Flail", "Parry", "Pole-Arm", "Two-Handed"],
   animal_training: ["Demigryph", "Dog", "Horse", "Pegasus", "Pigeon", "Wolf"],
-  language: ["Battle Tongue", "Bretonnian", "Classical", "Estalian", "Guild", "Khazalid", "Magick", "Mootish", "Norsk", "Reikspiel", "Tilean", "Wastelander"],
-  lore: ["Engineering", "Heraldry", "History", "Law", "Magic", "Metallurgy", "Science", "Theology", "Reikland", "The Empire", "War", "Local", "Chaos"],
+  language: ["Battle Tongue", "Bretonnian", "Classical", "Estalian", "Guilder", "Khazalid", "Magick", "Mootish", "Norse", "Reikspiel", "Tilean", "Wastelander"],
+  lore: ["Engineering", "Geology", "Heraldry", "History", "Law", "Magick", "Metallurgy", "Science", "Theology", "Reikland", "The Empire", "War", "Local", "Chaos"],
   channelling: ["Aqshy", "Azyr", "Chamon", "Dhar", "Ghyran", "Ghur", "Hysh", "Shyish", "Ulgu"],
   perform: ["Acrobatics", "Clowning", "Dance", "Firebreathing", "Juggling", "Mountebank", "Sleight of Hand"],
   play: ["Bagpipe", "Drum", "Fiddle", "Flute", "Harp", "Horn", "Lute"],

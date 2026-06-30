@@ -725,9 +725,9 @@ export const careerSteps: CareerStepDefinition[] = [
       "dodge",
       "intuition",
       "language_magick",
-      "lore_magic",
+      "lore_magick",
       "melee_basic",
-      "melee_polearm",
+      "melee_pole_arm",
       "perception"
     ],
     "talentIds": [
@@ -2638,7 +2638,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "skillIds": [
       "haggle",
       "lore_genealogy",
-      "lore_magic",
+      "lore_magick",
       "lore_spirits"
     ],
     "talentIds": [
@@ -4485,7 +4485,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "skillIds": [
       "charm",
       "intuition",
-      "melee_polearm",
+      "melee_pole_arm",
       "perception"
     ],
     "talentIds": [
@@ -5698,7 +5698,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "charm_animal",
       "dodge",
       "intuition",
-      "melee_polearm",
+      "melee_pole_arm",
       "perception",
       "trade_herbalist"
     ],
@@ -5749,7 +5749,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "characteristicAdvances": [],
     "skillIds": [
       "lore_daemonology",
-      "lore_magic"
+      "lore_magick"
     ],
     "talentIds": [
       "aethyric_attunement",
@@ -5906,7 +5906,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "cool",
       "dodge",
       "intimidate",
-      "melee_polearm",
+      "melee_pole_arm",
       "ranged_bow"
     ],
     "talentIds": [
