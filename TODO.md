@@ -79,13 +79,13 @@ Suggested fix order: #1 → #2 → #3 → #4/#5 → #6. The first three corrupt 
     successful save. Covered by `tests/save-status.spec.ts` (500 → banner; 204 → no banner).
   - Not done here: automatic retry/version-guard (that is the separate concern in #8).
 
-- [ ] **4. ✅ Dice success math is inconsistent when a bonus is present.**
+- [ ] **4. ⏸️ DEFERRED (not a priority right now). Dice success math is inconsistent when a bonus is present.**
   - File: `src/features/dice/useDiceRoller.ts:328-339`
   - Base `success` honors auto-success (≤5) / auto-fail (≥96), but line 339 discards it
     (`finalSuccess = totalSl >= 0`) whenever any bonus exists. A 96+ roll (should auto-fail) can
     report success once a bonus applies.
 
-- [ ] **5. ✅ `getIsCritical` is wrong.**
+- [ ] **5. ⏸️ DEFERRED (not a priority right now). `getIsCritical` is wrong.**
   - File: `src/features/dice/useDiceRoller.ts:154-158`
   - Returns `false` for every non-attack test and ignores `isSuccess`. Doubles-as-fumbles never
     register; a *failed* attack rolling a double (e.g. target 30, roll 44) is wrongly flagged a
