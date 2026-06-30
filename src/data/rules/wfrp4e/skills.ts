@@ -285,17 +285,22 @@ This resolves as an extended test. You can also perform this as a Lore test for 
 };
 
 const GROUPED_SPECIALISATIONS: Record<string, string[]> = {
+  art: ["Cartography", "Engraving", "Mosaics", "Painting", "Sculpture", "Tattoo", "Weaving"],
   entertain: ["Acting", "Comedy", "Singing", "Storytelling"],
   melee: ["Basic", "Brawling", "Cavalry", "Fencing", "Flail", "Parry", "Polearm", "Two-Handed"],
   animal_training: ["Demigryph", "Dog", "Horse", "Pegasus", "Pigeon", "Wolf"],
   language: ["Battle Tongue", "Bretonnian", "Classical", "Estalian", "Guild", "Khazalid", "Magick", "Mootish", "Norsk", "Reikspiel", "Tilean", "Wastelander"],
   lore: ["Engineering", "Heraldry", "History", "Law", "Magic", "Metallurgy", "Science", "Theology", "Reikland", "The Empire", "War", "Local", "Chaos"],
-  channelling: ["Aqshy", "Azyr", "Chamon", "Ghyran", "Ghur", "Hysh", "Shyish", "Ulgu"],
+  channelling: ["Aqshy", "Azyr", "Chamon", "Dhar", "Ghyran", "Ghur", "Hysh", "Shyish", "Ulgu"],
   perform: ["Acrobatics", "Clowning", "Dance", "Firebreathing", "Juggling", "Mountebank", "Sleight of Hand"],
   play: ["Bagpipe", "Drum", "Fiddle", "Flute", "Harp", "Horn", "Lute"],
+  // Pray is ungrouped in the strict Core rules, but this dataset models per-deity
+  // specialisations (used by characters, e.g. Pray (Sigmar)); kept intentionally.
   pray: ["Manann", "Morr", "Myrmidia", "Ranald", "Rhya", "Shallya", "Sigmar", "Taal", "Ulric", "Verena"],
   ranged: ["Blackpowder", "Bow", "Crossbow", "Engineering", "Entangling", "Explosives", "Sling", "Throwing"],
-  secret_signs: ["Grey Order", "Guild", "Ranger", "Scout", "Thief"],
+  ride: ["Demigryph", "Great Wolf", "Griffon", "Horse", "Pegasus"],
+  sail: ["Barge", "Caravel", "Cog", "Frigate", "Wolfship"],
+  secret_signs: ["Grey Order", "Guild", "Ranger", "Scout", "Thief", "Vagabond"],
   stealth: ["Rural", "Urban", "Underground"],
   trade: ["Apothecary", "Calligrapher", "Carpenter", "Cook", "Engineer", "Farmer", "Gunsmith", "Herbalist", "Mason", "Merchant", "Smith", "Tailor"],
 };
