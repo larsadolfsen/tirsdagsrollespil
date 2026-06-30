@@ -65,7 +65,16 @@ test("Game Master page scene components workflow", async ({ page }) => {
   // 8. Further edits reactivate Save, then autosave after the interval
   await editor.fill("This text was autosaved.");
   await expect(page.getByRole("button", { name: "Save", exact: true })).toBeEnabled();
-  await expect(page.getByRole("button", { name: "Saved", exact: true })).toBeDisabled({ timeout: 4_000 });
+  await expect(page.getByRole("button", { name: "Close", exact: true })).toBeVisible({ timeout: 4_000 });
+  await expect(page.getByText(/saved \d+ seconds? ago/)).toBeVisible();
+
+  // Test that clicking Close exits edit mode and hides the editor
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await expect(editor).not.toBeVisible();
+
+  // Re-open editor for step 9
+  await page.getByText("This text was autosaved.").last().click();
+  await expect(editor).toBeVisible();
 
   // 9. Clear the text and click Save to test placeholder in read mode
   await editor.fill("");

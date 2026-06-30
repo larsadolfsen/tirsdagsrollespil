@@ -48,6 +48,8 @@ export function FormattedTextField({
   const [draftValue, setDraftValue] = useState(value);
   const [savedValue, setSavedValue] = useState(value);
   const [isEditing, setIsEditing] = useState(false);
+  const [lastAutosavedTime, setLastAutosavedTime] = useState<number | null>(null);
+  const [secondsAgo, setSecondsAgo] = useState<number>(0);
   const draftValueRef = useRef(value);
   const savedValueRef = useRef(value);
   const onChangeRef = useRef(onChange);
@@ -73,19 +75,22 @@ export function FormattedTextField({
     }
   }, [isEditing]);
 
-  const persistValue = useCallback((nextValue = draftValueRef.current) => {
+  const persistValue = useCallback((nextValue = draftValueRef.current, isAutosave = false) => {
     if (nextValue === savedValueRef.current) return;
 
     onChangeRef.current(nextValue);
     savedValueRef.current = nextValue;
     setSavedValue(nextValue);
+    if (isAutosave) {
+      setLastAutosavedTime(Date.now());
+    }
   }, []);
 
   useEffect(() => {
     if (!isEditing) return;
 
     const intervalId = window.setInterval(() => {
-      persistValue();
+      persistValue(undefined, true);
     }, AUTOSAVE_INTERVAL_MS);
 
     return () => window.clearInterval(intervalId);
@@ -98,6 +103,28 @@ export function FormattedTextField({
       }
     };
   }, []);
+
+  // Reset lastAutosavedTime when draftValue changes (user edits text)
+  useEffect(() => {
+    setLastAutosavedTime(null);
+  }, [draftValue]);
+
+  // Keep track of how many seconds ago the last autosave occurred
+  useEffect(() => {
+    if (lastAutosavedTime === null) {
+      setSecondsAgo(0);
+      return;
+    }
+
+    setSecondsAgo(0);
+
+    const intervalId = window.setInterval(() => {
+      const elapsed = Math.round((Date.now() - lastAutosavedTime) / 1000);
+      setSecondsAgo(elapsed);
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [lastAutosavedTime]);
 
   const emitChange = () => {
     const nextValue = editorRef.current?.innerHTML ?? "";
@@ -113,6 +140,7 @@ export function FormattedTextField({
 
   const save = () => {
     persistValue();
+    setLastAutosavedTime(null);
     setIsEditing(false);
   };
 
@@ -121,7 +149,17 @@ export function FormattedTextField({
     setSavedValue(value);
     draftValueRef.current = value;
     savedValueRef.current = value;
+    setLastAutosavedTime(null);
     setIsEditing(true);
+  };
+
+  const handleButtonClick = () => {
+    if (lastAutosavedTime !== null) {
+      setLastAutosavedTime(null);
+      setIsEditing(false);
+    } else {
+      save();
+    }
   };
 
   const isEmpty = isHtmlEmpty(value);
@@ -157,7 +195,10 @@ export function FormattedTextField({
     <div ref={fieldRef} className={className}>
       <div
         className={cn(
-          "overflow-hidden rounded border border-wfrp-border bg-black/20 transition-colors focus-within:border-wfrp-gold/60 focus-within:ring-1 focus-within:ring-wfrp-gold/30",
+          "overflow-hidden rounded border bg-black/20 transition-colors focus-within:ring-1 focus-within:ring-wfrp-gold/30",
+          isDirty 
+            ? "border-wfrp-gold/60 focus-within:border-wfrp-gold/80" 
+            : "border-wfrp-border focus-within:border-wfrp-border"
         )}
       >
         <div
@@ -199,6 +240,7 @@ export function FormattedTextField({
             const nextFocusedElement = event.relatedTarget;
             if (!(nextFocusedElement instanceof Node) || !fieldRef.current?.contains(nextFocusedElement)) {
               persistValue(nextValue);
+              setLastAutosavedTime(null);
             }
           }}
           onPaste={(event) => {
@@ -211,9 +253,17 @@ export function FormattedTextField({
           )}
         />
       </div>
-      <div className="mt-2 flex justify-end">
-        <Button onClick={save} isGolden isDeactivated={!isDirty}>
-          {isDirty ? "Save" : "Saved"}
+      <div className="mt-2 flex items-center justify-between">
+        <div className="text-wfrp-muted-text text-sm">
+          {lastAutosavedTime !== null && `saved ${secondsAgo} second${secondsAgo === 1 ? "" : "s"} ago`}
+        </div>
+        <Button
+          onClick={handleButtonClick}
+          onPointerDown={(event) => event.preventDefault()}
+          isGolden
+          isDeactivated={lastAutosavedTime === null && !isDirty}
+        >
+          {lastAutosavedTime !== null ? "Close" : isDirty ? "Save" : "Saved"}
         </Button>
       </div>
     </div>
