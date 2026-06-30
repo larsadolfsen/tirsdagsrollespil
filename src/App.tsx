@@ -27,11 +27,13 @@
  * Move app structure into dedicated shell, routing, or provider files.
  */
 import { AppComposition } from "./AppComposition";
+import { SaveStatusBanner } from "./components/SaveStatusBanner";
 import { GameSessionProvider } from "./context/GameSessionContext";
 
 export default function App() {
   return (
     <GameSessionProvider>
+      <SaveStatusBanner />
       <AppComposition />
     </GameSessionProvider>
   );
