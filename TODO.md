@@ -10,6 +10,40 @@ Suggested fix order: #1 → #2 → #3 → #4/#5 → #6. The first three corrupt 
 
 ---
 
+## Discovered while fixing (2026-06-30, session 2)
+
+- [x] **D1. Current XP display double-counted manual XP adjustments.** — FIXED (1a82c5e).
+  `CareerTab.tsx:214` added `pendingXpAdjustment` on top of `pendingAvailableXp`, which already
+  folds it in (`AppComposition.tsx:633`). A "+10" click moved the field by 20. Regression test in
+  `tests/advance-xp.spec.ts` ("manual current-XP adjustment moves the field by exactly that amount").
+
+- [ ] **D2. GM/encounter browser tests are blocked on missing seed data.** The `gm_sessions` SQLite
+  table is empty in this checkout (SQLite is gitignored), so the GM Campaign Sessions list is empty
+  and every test that clicks the session **"Open"** button times out. Affected (chromium, mirrors on
+  firefox/webkit): all of `tests/gamemaster.spec.ts` (5), `tests/encounter-builder-feedback.spec.ts`,
+  and `tests/generic-character.spec.ts` (2, they add adversaries inside a session).
+  - Fix options: (a) a Playwright global-setup / per-spec `beforeAll` that seeds one "Enemy Within"
+    campaign session (14 scenes, including the Scene 7 the encounter test expects) via the
+    `/api/gm-sessions` PUT endpoint or directly into SQLite, sourced from
+    `src/data/scenarios/scenarioSessionImport.ts`; or (b) mock `**/api/gm-sessions/**` per test with a
+    fixture session. (a) is closer to real behaviour and reusable. **Needs a decision before building.**
+
+- [ ] **D3. `tests/dice-log.spec.ts:3` cannot find `.wfrp-sidebar-title`.** The dice-roller sidebar
+  opens (the "Dice Roller" heading is visible) but the `.wfrp-sidebar-title` element the test measures
+  isn't found. Triage: confirm whether the class was renamed/removed (stale test) or the title is
+  genuinely missing in that sidebar variant (app bug). Read-only; not yet investigated in the DOM.
+
+### Browser-suite baseline status (serial, `--workers=1`, clean `data/` )
+- GREEN: `advance-xp.spec.ts` (9, +1 webkit skip for synthetic touch), `creature-traits.spec.ts` (3),
+  `career-steps.spec.ts`, `weapons.spec.ts`, `character-data.spec.ts`, `npc-catalog.spec.ts`,
+  `header-xp.spec.ts`/`routes.spec.ts` (mocked). `example`/`skills`/`shop` not individually re-confirmed
+  but were not in the chromium failing set.
+- RED (causes above): D2 group (8 tests) + D3 (1 test).
+- ⚠️ Tests that hit the real dev server (no mock) repopulate `data/character-progress.json`; reset it
+  to `{}` before a baseline run. `advance-xp` is now mocked and no longer pollutes it.
+
+---
+
 ## 🔴 Critical
 
 - [x] **1. ✅ Advancement costs zero XP; spend is unlimited.** — FIXED (211aa9c), awaiting `npm test` on Node ≥22.
@@ -52,7 +86,8 @@ Suggested fix order: #1 → #2 → #3 → #4/#5 → #6. The first three corrupt 
     register; a *failed* attack rolling a double (e.g. target 30, roll 44) is wrongly flagged a
     Critical. Correct logic already exists in `src/lib/rollMechanics.ts:41-69`.
 
-- [ ] **6. ✅ Three broken skill references in career steps.**
+- [x] **6. ✅ Three broken skill references in career steps.** — FIXED (d42a321); regression test
+  `tests/career-steps.spec.ts` resolves every career skill id.
   - File: `src/data/rules/wfrp4e/careers/careerSteps.ts`
   - `:1982 "bribe"` → should be `bribery`; `:3456 "intimidation"` → `intimidate`;
     `:4874 "set_traps"` → `set_trap`. Skill resolution breaks for the Envoy, Coach Master, and
@@ -111,7 +146,7 @@ Suggested fix order: #1 → #2 → #3 → #4/#5 → #6. The first three corrupt 
     `removeNpcFromScene` leaves orphaned monster groups in `npcEncounterData`; `topEncounterData` isn't
     reset on session switch (leaks prior session's state).
 
-- [ ] **15. ✅ Crossbow damage `"9"` instead of `"+9"`.**
+- [x] **15. ✅ Crossbow damage `"9"` instead of `"+9"`.** — FIXED (d530809); `tests/weapons.spec.ts`.
   - File: `src/data/rules/wfrp4e/weapons.ts:678`
   - Inconsistent with every other ranged weapon's `"+N"` format; parses differently. WFRP4e Crossbow
     is Damage +9.
@@ -121,7 +156,7 @@ Suggested fix order: #1 → #2 → #3 → #4/#5 → #6. The first three corrupt 
   - Buying an already-owned consumable creates a duplicate stack (`shop-${id}-${Date.now()}`) instead
     of incrementing quantity.
 
-- [ ] **17. ✅ Duplicate talent on a player character.**
+- [x] **17. ✅ Duplicate talent on a player character.** — FIXED (1b63ec0); `tests/character-data.spec.ts`.
   - File: `src/data/characters/thano-voss.ts:83-84` — `perfect_pitch` listed twice.
 
 - [ ] **18. Dev request body reader has no size limit.**
@@ -188,10 +223,10 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
     (core rulebook: "the creature's Strength Bonus already" / "Damage, which includes its Strength
     Bonus already"). Fix: damage = Rating (drop the `Strength Bonus +`).
 
-- [ ] **R2. ✅ Chill Grasp damage missing the die.** `creatureTraits.ts:277`
+- [x] **R2. ✅ Chill Grasp damage missing the die.** — FIXED (fc71711); `tests/creature-traits.spec.ts`.
   - Data `"10 + SL"` → book is `1d10 + SL` (ignores Toughness Bonus & armour).
 
-- [ ] **R3. ✅ Petrifying Gaze formula wrong.** `creatureTraits.ts:759`
+- [x] **R3. ✅ Petrifying Gaze formula wrong.** — FIXED (fc71711); `tests/creature-traits.spec.ts`.
   - Data `"2 + SL"` → book is **1 Stunned per 2 SL** (SL÷2), plus permanent petrification at 6+ SL.
 
 - [ ] **R4. Breath trigger wrong.** `creatureTraits.ts:233`
