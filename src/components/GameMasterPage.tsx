@@ -40,6 +40,7 @@ import {
 import { SheetEmptyState } from "./wfrp";
 import { FormattedTextField } from "./FormattedTextField";
 import { SceneComponentsList, EncounterComponent, type SceneComponent } from "./SceneComponentsList";
+import { AdversaryEditorPage } from "./adversaryEditor";
 
 type GameMasterPageProps = {
   activeSession: GMSession | null;
@@ -194,6 +195,7 @@ export function GameMasterPage({
     });
   };
 
+  const [isAdversaryEditorOpen, setIsAdversaryEditorOpen] = useState(false);
   const [isMonsterSidebarOpen, setIsMonsterSidebarOpen] = useState(false);
   const monsterSidebarOnAddRef = useRef<((template: CreatureTemplate, count: number) => void) | null>(null);
 
@@ -597,6 +599,12 @@ export function GameMasterPage({
             }}
             className="!top-14 !h-[calc(100dvh-3.5rem)] !max-h-[calc(100dvh-3.5rem)]"
           />
+          {import.meta.env.DEV ? (
+            <AdversaryEditorPage
+              isOpen={isAdversaryEditorOpen}
+              onClose={() => setIsAdversaryEditorOpen(false)}
+            />
+          ) : null}
           <Dialog open={isScenarioDialogOpen} onOpenChange={setIsScenarioDialogOpen}>
             <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-2xl overflow-y-auto">
               <DialogHeader>
@@ -650,7 +658,17 @@ export function GameMasterPage({
 
         <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-4 px-4 py-4 md:gap-6 xl:px-8 xl:py-6">
           <div className="w-full flex flex-col gap-4 md:gap-6">
-            <Breadcrumbs items={breadcrumbs} />
+            <div className="flex items-center justify-between gap-4">
+              <Breadcrumbs items={breadcrumbs} />
+              {import.meta.env.DEV ? (
+                <Button
+                  variant="secondary"
+                  autoHeight
+                  name="Adversary Editor"
+                  onClick={() => setIsAdversaryEditorOpen(true)}
+                />
+              ) : null}
+            </div>
 
             {activeSession ? (
               <>
