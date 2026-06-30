@@ -37,14 +37,6 @@ export const talentDefinitions: TalentDefinition[] = [
     effects: [{ type: "attribute_bonus", attribute: "movement", valuePerLevel: 1, condition: "when_fleeing" }],
   },
   {
-    id: "shields_up",
-    name: "Shields Up",
-    max: "Strength Bonus",
-    tests: "Any Test to defend with a shield",
-    description: "You are trained to maximize protection when fighting with a shield or under pressure.",
-    effects: [{ type: "special_rule", rule: "Apply shield-specific defensive rules when this Talent is used with a shield." }],
-  },
-  {
     id: "strike_to_stun",
     name: "Strike to Stun",
     max: "Weapon Skill Bonus",
@@ -285,13 +277,6 @@ export const talentDefinitions: TalentDefinition[] = [
     description: "Familiarity with the customs and expectations of a particular social group, noted as the specialisation.",
   },
   {
-    id: "fanatical",
-    name: "Fanatical",
-    max: "1",
-    tests: "Cool Tests to resist fear or temptation related to your cause",
-    description: "Devotion to your cause steels your nerve where others would waver.",
-  },
-  {
     id: "fast_hands",
     name: "Fast Hands",
     max: "Dexterity Bonus",
@@ -372,13 +357,6 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Fellowship Bonus",
     tests: "Charm or Leadership Tests when addressing a crowd",
     description: "You know how to hold a crowd's attention and shape their mood with a speech.",
-  },
-  {
-    id: "public_speaking",
-    name: "Public Speaking",
-    max: "1",
-    tests: "Charm or Leadership Tests when addressing a crowd",
-    description: "You are comfortable and effective when speaking in front of an audience.",
   },
   {
     id: "ranged",
@@ -468,12 +446,6 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "1",
     tests: "Stealth Tests while channelling Ulgu",
     description: "Lingering exposure to the Wind of Shadow makes you naturally harder to notice.",
-  },
-  {
-    id: "tough",
-    name: "Tough",
-    max: "1",
-    description: "Years of hardship or training have toughened your body, granting extra Armour Points against blows that connect.",
   },
   {
     id: "very_resilient",

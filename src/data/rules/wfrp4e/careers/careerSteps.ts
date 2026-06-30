@@ -2516,7 +2516,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "break_and_enter",
       "criminal",
-      "public_speaking",
+      "public_speaker",
       "strike_to_stun"
     ],
     "trappingIds": [
@@ -3511,7 +3511,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "attractive",
       "mimic",
-      "public_speaking",
+      "public_speaker",
       "suave"
     ],
     "trappingIds": [
@@ -4612,7 +4612,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "talentIds": [
       "orientation",
       "pilot",
-      "public_speaking",
+      "public_speaker",
       "savvy"
     ],
     "trappingIds": [
@@ -4800,7 +4800,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "dealmaker",
       "embezzle",
       "etiquette_criminals",
-      "public_speaking"
+      "public_speaker"
     ],
     "trappingIds": [
       "gang_of_stevedores",
@@ -6374,7 +6374,7 @@ export const careerSteps: CareerStepDefinition[] = [
     ],
     "talentIds": [
       "inspiring",
-      "public_speaking",
+      "public_speaker",
       "seasoned_traveller",
       "stout_hearted"
     ],
