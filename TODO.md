@@ -236,7 +236,7 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
   - Labeled `"Patron or source"`; the book's bracketed value is the `(Target)` ignore-blow roll
     (roll 1d10 ≥ Target → blow ignored). The ignore-blow mechanic is also not modeled.
 
-## 🔴 Talents — `max` values
+## 🔴 Talents — `max` values  ✅ FIXED (session 2: 01a6124, 90e2ff8, 3dd521b)
 
 > ⤵ **R6/R7 are now superseded by the validated lists in "Dataset completeness vs Core + Winds of
 > Magic" at the bottom of this file** (exact wrong-max values, the full 108 missing-talent list, and
@@ -276,15 +276,16 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
 > all 45 core skills present; every characteristic and Basic/Advanced classification is **correct**.
 > Only grouped-flag and specialisation-content issues remain (R9–R11 + R9b below). No missing skills.
 
-- [ ] **R9. `Art` missing its `grouped` flag.** `src/data/rules/wfrp4e/skills.ts` (`GROUPED_SPECIALISATIONS`)
+- [x] **R9. `Art` missing its `grouped` flag.** — FIXED (a8d4635). `src/data/rules/wfrp4e/skills.ts` (`GROUPED_SPECIALISATIONS`)
   - VALIDATED: code already classifies Art as **basic** (the raw audit's "misclassified as Advanced" was
     wrong). Book: `Art (Dex) basic, grouped` — specialisations Cartography, Engraving, Mosaics, Painting,
     Sculpture, Tattoo, Weaving. Code does not mark it grouped.
-- [ ] **R9b. `Pray` is over-flagged as grouped.** `skills.ts` `GROUPED_SPECIALISATIONS`
+- [~] **R9b. `Pray` is over-flagged as grouped.** — INTENTIONALLY KEPT grouped (a8d4635): used by
+  characters (Pray (Sigmar)); documented inline as a deliberate deviation from strict Core. `skills.ts`
   - Book line ~6687: `Pray (Fel) advanced` — **not** a Grouped Skill (no specialisation list). Code defines
     `pray` with deity specialisations, so it renders grouped. Remove from grouped set (or confirm a
     house-rule intent).
-- [ ] **R10. Missing `grouped` flag.** `skills.ts` — VALIDATED: `ride` (basic, grouped) and `sail`
+- [x] **R10. Missing `grouped` flag.** — FIXED (a8d4635). `skills.ts` — `ride` (basic, grouped) and `sail`
   (advanced, grouped) are grouped in the book but not in `GROUPED_SPECIALISATIONS`.
 - [ ] **R11. Specialisation naming/content nits (Low).** `Polearm`→"Pole-Arm" (melee), `Magic`→"Magick"
   (lore), `Norsk`→"Norse" / `Guild`→"Guilder" (language); `channelling` omits **Dhar** (the book lists 9
@@ -310,6 +311,14 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
 ---
 
 # Dataset completeness vs Core + Winds of Magic (full validation, 2026-06-30 session 2)
+
+> ✅ **FIXED (session 2).** Skills grouped flags + Dhar (a8d4635). Talent Max/mechanics (01a6124),
+> non-Core talent removal + career repointing (90e2ff8), and all missing Core + WoM talents added
+> (3dd521b) — talent catalog went 64 → 176. Two talents the first pass missed were also caught and
+> added (Nose for Trouble, Witch!). Covered by tests/talents-data, talent-references, skills-data,
+> career-steps specs. Remaining open: R11 naming nits (low), `street_fighting` (pending another book),
+> and enriching the new talents' `tests`/typed `effects` (descriptions + Max are correct now).
+> The lists below are kept for the record.
 
 > Method: extracted both rulebooks with `pdftotext -layout` and ran two parallel by-name validations
 > (talents, skills) of `src/data/rules/wfrp4e/talents.ts` and `skills.ts`. **Core checked first, then
