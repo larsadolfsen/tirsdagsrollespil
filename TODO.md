@@ -12,7 +12,7 @@ Suggested fix order: #1 → #2 → #3 → #4/#5 → #6. The first three corrupt 
 
 ## 🔴 Critical
 
-- [ ] **1. ✅ Advancement costs zero XP; spend is unlimited.**
+- [x] **1. ✅ Advancement costs zero XP; spend is unlimited.** — FIXED (211aa9c), awaiting `npm test` on Node ≥22.
   - Files: `src/AppComposition.tsx:1054-1085`, `:1354`; `src/hooks/useCareerAdvancement.ts:156`
   - `purchaseSkillAdvance`/`purchaseCharacteristicAdvance` only push into pending maps;
     `purchaseTalent` writes straight to `characterTalents`. On save, XP is decremented only by
@@ -181,7 +181,7 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
 
 ## 🔴 Creature traits — combat formulas (highest gameplay impact)
 
-- [ ] **R1. ✅ Natural-weapon damage double-counts Strength Bonus.**
+- [x] **R1. ✅ Natural-weapon damage double-counts Strength Bonus.** — FIXED, awaiting `npm test` on Node ≥22.
   - File: `src/data/rules/wfrp4e/creatureTraits.ts:193` (Bite), `:582` (Horns), `:932` (Tail),
     `:947` (Tentacles), `:1136` (Weapon)
   - All use `formula: "Strength Bonus + rating"`. The book states Rating already includes SB

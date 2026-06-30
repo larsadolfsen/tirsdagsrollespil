@@ -185,12 +185,12 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["attack", "weapon", "free-attack"],
     summary: "Adds a bite attack that can be used as a Free Attack by spending Advantage.",
-    statBlock: "Create a natural weapon using Strength Bonus plus rating for damage.",
+    statBlock: "Create a natural weapon using rating for damage (rating already includes Strength Bonus).",
     combatTracker: "Show as a natural attack option and track Advantage cost.",
     diceRoller: "Roll as melee attack and pass damage formula into damage resolution.",
     modifiers: [
       { type: "actionOption", action: "Free Attack", trigger: "spend 1 Advantage" },
-      { type: "weaponProfile", target: "Bite", formula: "Strength Bonus + rating" },
+      { type: "weaponProfile", target: "Bite", formula: "rating" },
     ],
   },
   {
@@ -574,12 +574,12 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     parameter: { kind: "rating", label: "Rating and feature", required: true },
     tags: ["attack", "charge", "weapon"],
     summary: "Adds a charging horn attack.",
-    statBlock: "Create natural weapon damage from Strength Bonus plus rating.",
+    statBlock: "Create natural weapon damage from rating (rating already includes Strength Bonus).",
     combatTracker: "Show as available after charging with Advantage.",
     diceRoller: "Resolve as melee attack with natural weapon damage.",
     modifiers: [
       { type: "actionOption", action: "Horns Attack", trigger: "after Charge and Advantage gain" },
-      { type: "weaponProfile", target: "Horns", formula: "Strength Bonus + rating" },
+      { type: "weaponProfile", target: "Horns", formula: "rating" },
     ],
   },
   {
@@ -924,12 +924,12 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["attack", "weapon", "condition"],
     summary: "Adds a sweeping tail attack that can knock smaller targets prone.",
-    statBlock: "Create a natural tail weapon using Strength Bonus plus rating.",
+    statBlock: "Create a natural tail weapon using rating (rating already includes Strength Bonus).",
     combatTracker: "Show as Free Attack option with Advantage cost and prone output.",
     diceRoller: "Resolve tail attack and apply Prone to smaller targets that suffer wounds.",
     modifiers: [
       { type: "actionOption", action: "Tail Attack", trigger: "spend 1 Advantage" },
-      { type: "weaponProfile", target: "Tail", formula: "Strength Bonus + rating" },
+      { type: "weaponProfile", target: "Tail", formula: "rating" },
       { type: "condition", condition: "Prone", appliesTo: "smaller target that suffers wounds" },
     ],
   },
@@ -944,7 +944,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Resolve tentacle damage and grapple follow-ups.",
     modifiers: [
       { type: "actionOption", action: "Tentacle Attack", appliesTo: "one per tentacle where allowed" },
-      { type: "weaponProfile", target: "Tentacle", formula: "Strength Bonus + rating" },
+      { type: "weaponProfile", target: "Tentacle", formula: "rating" },
       { type: "combatFlag", target: "tentacle-grapple" },
     ],
   },
@@ -1129,11 +1129,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["attack", "weapon"],
     summary: "Adds or defines a melee natural weapon profile.",
-    statBlock: "Create natural weapon damage from Strength Bonus plus rating.",
+    statBlock: "Create natural weapon damage from rating (rating already includes Strength Bonus).",
     combatTracker: "Show as a standard melee attack option.",
     diceRoller: "Use weapon profile in melee attack and damage resolution.",
     modifiers: [
-      { type: "weaponProfile", target: "Natural weapon", formula: "Strength Bonus + rating" },
+      { type: "weaponProfile", target: "Natural weapon", formula: "rating" },
     ],
   },
   {
