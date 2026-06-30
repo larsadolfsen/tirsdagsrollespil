@@ -60,13 +60,15 @@ Suggested fix order: #1 → #2 → #3 → #4/#5 → #6. The first three corrupt 
 
 ## 🟠 High
 
-- [ ] **2. ✅ Compression middleware silently breaks SSE in production.**
-  - Files: `server.mjs:471-515`, `:906`, `:928`
+- [x] **2. ✅ Compression middleware silently breaks SSE in production.** — FIXED.
+  - Files: `server.mjs` (`compressionMiddleware`)
   - `compressionMiddleware` (global, before the SSE route) overrides `res.write` to buffer chunks and
     only flushes inside `res.end`. SSE never calls `res.end`, so `: connected`, `: ping`, and every
     broadcast event are buffered and never sent. Real-time sync is dead for any browser sending
     `Accept-Encoding` (all of them).
-  - Fix: bypass the middleware for `text/event-stream` / the events route.
+  - Fix: added `isStreamingResponse()`; `res.write`/`res.end` now detect `text/event-stream` and
+    restore the native methods to write straight through. Verified live (red: empty stream → green:
+    `: connected` plus a broadcast `data:` event both arrive with `Accept-Encoding: gzip`).
 
 - [ ] **3. ✅ Saves can fail completely silently.**
   - File: `src/data/persistence.ts:111-125`

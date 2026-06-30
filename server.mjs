@@ -441,6 +441,14 @@ function isCompressibleResponse(res) {
   return COMPRESSIBLE_CONTENT_TYPES.some((pattern) => pattern.test(String(contentType)));
 }
 
+// Server-Sent Events (and any other text/event-stream response) must stream in
+// real time. They never call res.end, so the buffer-until-end compression below
+// would swallow every event. Detect them so we can write straight through.
+function isStreamingResponse(res) {
+  const contentType = res.getHeader("Content-Type");
+  return Boolean(contentType) && /text\/event-stream/i.test(String(contentType));
+}
+
 function responseChunkToBuffer(chunk, encoding) {
   return Buffer.isBuffer(chunk)
     ? chunk
@@ -469,6 +477,14 @@ function compressionMiddleware(req, res, next) {
   const chunks = [];
 
   res.write = (chunk, ...args) => {
+    // A streaming response (SSE) must bypass buffering entirely; restore the
+    // native methods so this and every later write/ping flush immediately.
+    if (isStreamingResponse(res)) {
+      res.write = originalWrite;
+      res.end = originalEnd;
+      return originalWrite(chunk, ...args);
+    }
+
     if (chunk) {
       chunks.push(responseChunkToBuffer(chunk, args[0]));
     }
@@ -477,6 +493,12 @@ function compressionMiddleware(req, res, next) {
   };
 
   res.end = (chunk, ...args) => {
+    if (isStreamingResponse(res)) {
+      res.write = originalWrite;
+      res.end = originalEnd;
+      return originalEnd(chunk, ...args);
+    }
+
     if (chunk) {
       chunks.push(responseChunkToBuffer(chunk, args[0]));
     }
