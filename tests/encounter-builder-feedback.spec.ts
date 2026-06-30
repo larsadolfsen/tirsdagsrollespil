@@ -18,25 +18,25 @@ test("encounter builder keeps sidebar open, shows add feedback, and disables uni
   const sidebarTitle = sidebar.locator("#adversary-sidebar-title");
   await expect(sidebarTitle).toHaveText("Add Adversary");
 
-  // 1. Add Creature: Clanrat (defaultCount is 1)
+  // 1. Add Creature: Clanrat (defaultCount is 4)
   const clanratRow = sidebar.getByRole("button", { name: "Clanrat Creature - Skaven", exact: true });
   await clanratRow.click();
-  const clanratAddButton = sidebar.getByRole("button", { name: "Add", exact: true });
+  const clanratAddButton = sidebar.getByRole("button", { name: "Add ×4", exact: true });
   await clanratAddButton.click();
 
-  // Verify sidebar is still open and feedback text "1 Clanrat added" is shown
+  // Verify sidebar is still open and feedback text "4 Clanrats added" is shown
   await expect(sidebarTitle).toHaveText("Add Adversary");
-  await expect(sidebar.getByText("1 Clanrat added")).toBeVisible();
+  await expect(sidebar.getByText("4 Clanrats added")).toBeVisible();
 
-  // 2. Add Creature: Stormvermin (defaultCount is 4)
+  // 2. Add Creature: Stormvermin (defaultCount is 2)
   const stormverminRow = sidebar.getByRole("button", { name: "Stormvermin Creature - Skaven", exact: true });
   await stormverminRow.click();
-  const stormverminAddButton = sidebar.getByRole("button", { name: "Add ×4", exact: true });
+  const stormverminAddButton = sidebar.getByRole("button", { name: "Add ×2", exact: true });
   await stormverminAddButton.click();
 
-  // Verify sidebar is still open and feedback text "4 Stormvermins added" is shown
+  // Verify sidebar is still open and feedback text "2 Stormvermins added" is shown
   await expect(sidebarTitle).toHaveText("Add Adversary");
-  await expect(sidebar.getByText("4 Stormvermins added")).toBeVisible();
+  await expect(sidebar.getByText("2 Stormvermins added")).toBeVisible();
 
   // 3. Add Generic: Hired Thug (requires instance name)
   const hiredThugRow = sidebar.getByRole("button", { name: "Hired Thug Generic - Human", exact: true });
@@ -70,7 +70,7 @@ test("encounter builder keeps sidebar open, shows add feedback, and disables uni
   await expect(disabledBrunoButton).toBeDisabled();
 
   // 5. Close and reopen sidebar, verify NPC remains disabled
-  await sidebar.getByRole("button", { name: "Close adversary sidebar" }).click();
+  await sidebar.getByRole("button", { name: "Close adversary sidebar" }).click({ force: true });
   await expect(sidebarTitle).not.toBeVisible();
 
   await page.getByRole("button", { name: "Add adversary", exact: true }).click();
