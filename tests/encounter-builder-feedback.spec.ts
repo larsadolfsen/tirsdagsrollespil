@@ -56,18 +56,18 @@ test("encounter builder keeps sidebar open, shows add feedback, and disables uni
   await expect(sidebarTitle).toHaveText("Add Adversary");
   await expect(sidebar.getByText("1 Thug Bob added")).toBeVisible();
 
-  // 4. Add unique NPC: Bruno Franke
-  const brunoRow = sidebar.getByRole("button", { name: "Bruno Franke NPC - Human", exact: true });
-  await brunoRow.click();
-  const brunoAddButton = sidebar.getByRole("button", { name: "Add", exact: true });
-  await expect(brunoAddButton).toBeEnabled();
-  await brunoAddButton.click();
+  // 4. Add unique NPC: Josef Aufwiegler (not in the default scene cast)
+  const josefRow = sidebar.getByRole("button", { name: "Josef Aufwiegler NPC - Human", exact: true });
+  await josefRow.click();
+  const josefAddButton = sidebar.getByRole("button", { name: "Add", exact: true });
+  await expect(josefAddButton).toBeEnabled();
+  await josefAddButton.click();
 
-  // Verify sidebar is still open and the button for Bruno Franke is now disabled with label "Added"
+  // Verify sidebar is still open and the button for Josef Aufwiegler is now disabled with label "Added"
   await expect(sidebarTitle).toHaveText("Add Adversary");
-  const disabledBrunoButton = sidebar.getByRole("button", { name: "Added", exact: true });
-  await expect(disabledBrunoButton).toBeVisible();
-  await expect(disabledBrunoButton).toBeDisabled();
+  const disabledJosefButton = sidebar.getByRole("button", { name: "Added", exact: true });
+  await expect(disabledJosefButton).toBeVisible();
+  await expect(disabledJosefButton).toBeDisabled();
 
   // 5. Close and reopen sidebar, verify NPC remains disabled
   await sidebar.getByRole("button", { name: "Close adversary sidebar" }).click({ force: true });
@@ -76,7 +76,7 @@ test("encounter builder keeps sidebar open, shows add feedback, and disables uni
   await page.getByRole("button", { name: "Add adversary", exact: true }).click();
   await expect(sidebarTitle).toBeVisible();
 
-  // Expand Bruno Franke again
-  await brunoRow.click();
+  // Expand Josef Aufwiegler again
+  await josefRow.click();
   await expect(sidebar.getByRole("button", { name: "Added", exact: true })).toBeDisabled();
 });
