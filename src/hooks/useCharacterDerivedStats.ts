@@ -5,6 +5,10 @@ import type {
 } from "../data/characters/resolved";
 import { formatCharacterCoins } from "../lib/gameSession";
 import {
+  getApplicableTalentEffects,
+  getTalentEncumbranceBonus,
+} from "../lib/talentEffects";
+import {
   getCoinEncumbrance,
   getInventoryEncumbrance,
   isPacksAndContainersItem,
@@ -51,7 +55,13 @@ export function useCharacterDerivedStats({
     if (item.containerId) return sum;
     return sum + getInventoryEncumbrance(item);
   }, coinContainerId ? 0 : coinEncumbrance);
-  const carryCapacity = Math.max(sb + tb, 1);
+  const talentEncumbranceBonus = getTalentEncumbranceBonus(
+    getApplicableTalentEffects({
+      talents: characterData.talents,
+      talentDefinitions: ruleset.talents,
+    }),
+  );
+  const carryCapacity = Math.max(sb + tb + talentEncumbranceBonus, 1);
   const encumbrancePercent = Math.min((totalEncumbrance / carryCapacity) * 100, 100);
   const containers = equipmentState.filter(
     (item) => isPacksAndContainersItem(item) && !item.containerId,

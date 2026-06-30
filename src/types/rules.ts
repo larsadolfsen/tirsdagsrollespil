@@ -28,6 +28,11 @@ export type TalentEffect =
       condition?: string;
     }
   | {
+      type: "encumbrance_bonus";
+      valuePerLevel: number;
+      condition?: string;
+    }
+  | {
       type: "ignore_penalty";
       penalty: string;
       condition?: string;

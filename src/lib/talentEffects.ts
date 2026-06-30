@@ -117,6 +117,14 @@ export function getTalentDamageBonus(effects: ActiveTalentEffect[]) {
     .reduce((total, entry) => total + entry.effect.valuePerLevel * entry.level, 0);
 }
 
+export function getTalentEncumbranceBonus(effects: ActiveTalentEffect[]) {
+  return effects
+    .filter((entry): entry is ActiveTalentEffect & { effect: Extract<TalentEffect, { type: "encumbrance_bonus" }> } =>
+      entry.effect.type === "encumbrance_bonus",
+    )
+    .reduce((total, entry) => total + entry.effect.valuePerLevel * entry.level, 0);
+}
+
 export function formatTalentEffect(effect: TalentEffect) {
   switch (effect.type) {
     case "test_sl_bonus":
@@ -127,6 +135,8 @@ export function formatTalentEffect(effect: TalentEffect) {
       return `+${effect.valuePerLevel} ${effect.attribute} per level${effect.condition ? ` (${effect.condition})` : ""}`;
     case "damage_bonus":
       return `+${effect.valuePerLevel} Damage per level${effect.condition ? ` (${effect.condition})` : ""}`;
+    case "encumbrance_bonus":
+      return `+${effect.valuePerLevel} Encumbrance per level${effect.condition ? ` (${effect.condition})` : ""}`;
     case "ignore_penalty":
       return `Ignore ${effect.penalty}${effect.condition ? ` (${effect.condition})` : ""}`;
     case "action_unlock":

@@ -157,7 +157,10 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Strength Bonus",
     tests: "Endurance Tests involving encumbrance or fatigue",
     description: "You are solidly built and used to carrying weight or enduring physical strain.",
-    effects: [{ type: "special_rule", rule: "Apply Sturdy when resisting or managing physical strain, encumbrance, and similar GM-approved situations." }],
+    effects: [
+      { type: "encumbrance_bonus", valuePerLevel: 2 },
+      { type: "special_rule", rule: "Apply Sturdy when resisting or managing physical strain, encumbrance, and similar GM-approved situations." },
+    ],
   },
   {
     id: "savant_engineering",
