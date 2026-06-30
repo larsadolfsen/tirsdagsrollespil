@@ -1979,7 +1979,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "characteristicAdvances": [],
     "skillIds": [
       "art_writing",
-      "bribe",
+      "bribery",
       "cool",
       "gossip",
       "haggle",
@@ -3453,7 +3453,7 @@ export const careerSteps: CareerStepDefinition[] = [
     "characteristicAdvances": [],
     "skillIds": [
       "animal_training_horse",
-      "intimidation",
+      "intimidate",
       "language_any",
       "lore_routes"
     ],
@@ -4871,7 +4871,7 @@ export const careerSteps: CareerStepDefinition[] = [
       "intuition",
       "navigation",
       "perception",
-      "set_traps"
+      "set_trap"
     ],
     "talentIds": [
       "flee",
