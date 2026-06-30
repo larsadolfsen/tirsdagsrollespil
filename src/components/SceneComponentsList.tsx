@@ -22,6 +22,7 @@ import {
 import { AdversarySidebar } from "./sidebar";
 import {
   Button,
+  buttonVariants,
   Card,
   CardContent,
   DropdownMenu,
@@ -69,6 +70,7 @@ type SceneComponentsListProps = {
   onUpdateComponentTitle: (componentId: string, title: string) => void;
   onUpdateComponentType: (componentId: string, type: "text" | "notes") => void;
   onUpdateComponentEncounterData: (componentId: string, data: EncounterData) => void;
+  onAddComponent: (type: "text" | "notes" | "encounter") => void;
   onOpenMonsterSidebar: (onAdd: (template: CreatureTemplate, count: number) => void) => void;
   onRollInitiative?: (name: string, bonus: number) => void;
 };
@@ -1188,6 +1190,7 @@ export function SceneComponentsList({
   onUpdateComponentTitle,
   onUpdateComponentType,
   onUpdateComponentEncounterData,
+  onAddComponent,
   onOpenMonsterSidebar,
 }: SceneComponentsListProps) {
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
@@ -1203,8 +1206,6 @@ export function SceneComponentsList({
     nextComponents.splice(targetIndex, 0, movedItem);
     onReorderComponents(nextComponents);
   };
-
-  if (components.length === 0) return null;
 
   return (
     <div className="mt-3 flex flex-col">
@@ -1425,6 +1426,27 @@ export function SceneComponentsList({
           </SceneComponentRow>
         );
       })}
+
+      <div className="mt-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className={buttonVariants({ variant: "secondary", className: "px-4" })}
+          >
+            Add
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={() => onAddComponent("text")}>
+              Description
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onAddComponent("notes")}>
+              Notes
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onAddComponent("encounter")}>
+              Encounter
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
       {activeEncounterId && (
         <AdversarySidebar

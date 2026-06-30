@@ -124,6 +124,21 @@ test("Dropdown menus close other open menus when opened", async ({ page }) => {
   await expect(componentMenuItem).not.toBeVisible();
 });
 
+test("expanded scenes end with a block type Add menu", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open Game Master" }).click();
+  await page.getByRole("button", { name: "Open", exact: true }).first().click();
+  await page.getByRole("button", { name: "Expand scene" }).first().click();
+
+  const addButton = page.getByRole("button", { name: "Add", exact: true });
+  await expect(addButton).toHaveCount(1);
+  await addButton.click();
+
+  await expect(page.getByRole("menuitem", { name: "Description", exact: true })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "Notes", exact: true })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "Encounter", exact: true })).toBeVisible();
+});
+
 test("Game Master page automatically opens a scene when a block is added", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Open Game Master" }).click();

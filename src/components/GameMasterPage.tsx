@@ -900,6 +900,7 @@ export function GameMasterPage({
                               onUpdateComponentTitle={(componentId, title) => updateComponentTitle(scene.id, componentId, title)}
                               onUpdateComponentType={(componentId, type) => updateComponentType(scene.id, componentId, type)}
                               onUpdateComponentEncounterData={(componentId, data) => updateComponentEncounterData(scene.id, componentId, data)}
+                              onAddComponent={(type) => addComponentToScene(scene.id, type)}
                               onOpenMonsterSidebar={openMonsterSidebar}
                             />
                           )}
