@@ -19,3 +19,6 @@ data/*.sqlite-*
 
 # Reference rulebook PDFs — large binaries, not for distribution
 source/
+
+# Local git worktrees used for isolated feature work
+.worktrees/
