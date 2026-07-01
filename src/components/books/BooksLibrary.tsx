@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { Button, Heading, Text } from "../ui";
 import { SheetDataButtonRow, SheetDataPanel } from "../wfrp";
-import { bookCatalog, loadChapterContent, type BookMeta } from "../../data/books";
+import { bookCatalog, bookCovers, loadChapterContent, type BookMeta } from "../../data/books";
 import { MarkdownContent } from "./MarkdownContent";
 
 function findChapterIndex(book: BookMeta, chapterId: string): number {
@@ -100,18 +100,36 @@ export function BooksLibrary() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <SheetDataPanel>
+      <div className="wfrp-landing-list">
         {bookCatalog.map((book) => (
-          <SheetDataButtonRow
+          <button
             key={book.id}
-            className="grid-cols-[1fr_24px] px-4 py-3"
+            type="button"
             onClick={() => setSelectedBookId(book.id)}
+            className="wfrp-landing-character-card"
+            aria-label={`Open ${book.title}`}
           >
-            <Text variant="bodyStrong">{book.title}</Text>
-            <ChevronRight size={16} className="justify-self-end text-wfrp-muted-text" aria-hidden="true" />
-          </SheetDataButtonRow>
+            <div className="wfrp-landing-portrait">
+              {bookCovers[book.id] ? (
+                <img
+                  src={bookCovers[book.id]}
+                  alt=""
+                  className="wfrp-landing-portrait-image"
+                />
+              ) : (
+                <span aria-hidden="true" className="wfrp-landing-initials">
+                  {book.title.charAt(0)}
+                </span>
+              )}
+            </div>
+            <div className="wfrp-landing-card-body">
+              <Heading level={2} variant="card">
+                {book.title}
+              </Heading>
+            </div>
+          </button>
         ))}
-      </SheetDataPanel>
+      </div>
     </div>
   );
 }
