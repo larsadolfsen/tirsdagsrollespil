@@ -99,17 +99,19 @@ export function AdversarySidebar({
         filterType: "creature" as const,
         meta: `Creature - ${template.category.charAt(0).toUpperCase() + template.category.slice(1)}`,
         description: `${traitsText}${trappingsText}`,
-        quickAction: {
-          isActive: true,
-          label: count > 1 ? `Add ×${count}` : "Add",
-          onClick: () => {
-            onAddAdversary(template, count, "creature");
-            setAddedFeedback((prev) => ({
-              ...prev,
-              [template.id]: `${count} ${pluralize(template.name, count)} added`,
-            }));
+        actions: [
+          {
+            isActive: true,
+            label: count > 1 ? `Add ×${count}` : "Add",
+            onClick: () => {
+              onAddAdversary(template, count, "creature");
+              setAddedFeedback((prev) => ({
+                ...prev,
+                [template.id]: `${count} ${pluralize(template.name, count)} added`,
+              }));
+            },
           },
-        },
+        ],
         extra: addedFeedback[template.id],
       };
     });
@@ -137,19 +139,36 @@ export function AdversarySidebar({
               {scenario ? <p className="mt-2">Scenario: {scenario}</p> : null}
             </>
           ),
-          quickAction: {
-            disabled: isNpcAlreadyAdded,
-            isActive: !isNpcAlreadyAdded,
-            label: isNpcAlreadyAdded ? "Added" : "Add",
-            onClick: () => {
-              if (npc.isNpc) {
-                onAddAdversary(npc, 1, "npc");
-                return;
-              }
-              setGenericName("");
-              setPendingGeneric(npc);
-            },
-          },
+          actions: npc.isNpc
+            ? [
+                {
+                  disabled: isNpcAlreadyAdded,
+                  isActive: !isNpcAlreadyAdded,
+                  label: isNpcAlreadyAdded ? "Added" : "Add",
+                  onClick: () => onAddAdversary(npc, 1, "npc"),
+                },
+              ]
+            : [
+                {
+                  isActive: true,
+                  label: "Add",
+                  onClick: () => {
+                    onAddAdversary(npc, 1, "generic");
+                    setAddedFeedback((prev) => ({
+                      ...prev,
+                      [npc.id]: `1 ${npc.name} added`,
+                    }));
+                  },
+                },
+                {
+                  isActive: true,
+                  label: "Add Named",
+                  onClick: () => {
+                    setGenericName("");
+                    setPendingGeneric(npc);
+                  },
+                },
+              ],
           extra: addedFeedback[npc.id],
         };
       });
