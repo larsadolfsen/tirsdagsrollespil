@@ -16,11 +16,13 @@ const characterViewPathSegments: Record<MobileMainView, string> = {
   journal: "journal",
   dice: "dice-log",
   career: "advance",
+  books: "books",
 };
 const viewAliases: Record<string, MobileMainView> = {
   action: "actions",
   actions: "actions",
   advance: "career",
+  books: "books",
   career: "career",
   careers: "career",
   characteristics: "characteristics",
@@ -48,6 +50,7 @@ const mainTabByCharacterView: Record<MobileMainView, MainTab> = {
   journal: "journal",
   dice: "dice",
   career: "career",
+  books: "books",
 };
 
 export type CampaignCharacterRoute = {

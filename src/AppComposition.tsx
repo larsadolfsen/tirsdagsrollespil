@@ -125,6 +125,7 @@ const SpellsTab = lazy(() => import("./tabs/SpellsTab").then((module) => ({ defa
 const TalentsTab = lazy(() => import("./tabs/TalentsTab").then((module) => ({ default: module.TalentsTab })));
 const JournalTab = lazy(() => import("./tabs/JournalTab").then((module) => ({ default: module.JournalTab })));
 const CareerTab = lazy(() => import("./tabs/CareerTab").then((module) => ({ default: module.CareerTab })));
+const BooksTab = lazy(() => import("./tabs/BooksTab").then((module) => ({ default: module.BooksTab })));
 
 const editCharacterTabOptions: Array<{ id: CareerSubtab; label: string }> = [
   { id: "experience", label: "Experience" },
@@ -806,12 +807,22 @@ export function AppComposition() {
     characterData.careerRecord.tier,
     characterData.tier,
   ]);
+  const isSpellcaster = useMemo(
+    () =>
+      characterData.spells.length > 0 ||
+      characterData.skills.some(
+        (skill) => skill.baseName === "Channelling" || skill.baseName === "Pray",
+      ),
+    [characterData.skills, characterData.spells],
+  );
   const displayedMainTabOptions = useMemo(
     () =>
-      mainTabOptions.map((tab) =>
-        tab.id === "spells" ? { ...tab, label: isPrayerCaster ? "Prayers" : "Spells" } : tab,
-      ),
-    [isPrayerCaster],
+      mainTabOptions
+        .filter((tab) => tab.id !== "spells" || isSpellcaster)
+        .map((tab) =>
+          tab.id === "spells" ? { ...tab, label: isPrayerCaster ? "Prayers" : "Spells" } : tab,
+        ),
+    [isPrayerCaster, isSpellcaster],
   );
   const displayedMobileMainViewOptions = useMemo(
     () => [{ id: "characteristics" as const, label: "Characteristics" }, ...displayedMainTabOptions],
@@ -2343,6 +2354,10 @@ export function AppComposition() {
                         backgroundText={backgroundText}
                         setBackgroundText={setBackgroundText}
                       />
+                      )}
+
+                      {activeMainTab === 'books' && (
+                        <BooksTab />
                       )}
 
                       </LazyTabPanel>

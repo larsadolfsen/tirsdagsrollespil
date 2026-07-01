@@ -1,5 +1,6 @@
 export { ActionsTab } from "./ActionsTab";
 export { BackgroundTab } from "./BackgroundTab";
+export { BooksTab } from "./BooksTab";
 export { CareerTab } from "./CareerTab";
 export { InventoryTab } from "./InventoryTab";
 export { JournalTab } from "./JournalTab";

@@ -9,6 +9,7 @@ const tabPreloaders: Record<MainTab, () => Promise<unknown>> = {
   journal: () => import("./JournalTab"),
   dice: () => import("../features/dice/DiceLogSidebar"),
   career: () => import("./CareerTab"),
+  books: () => import("./BooksTab"),
 };
 
 export function preloadTab(tab: MainTab) {
