@@ -85,3 +85,25 @@ test("renaming a character updates the URL and updates the landing page/GM page 
   // The player card on the GM page should also say "Thano Voss The Cool"
   await expect(page.getByText("Thano Voss The Cool")).toBeVisible();
 });
+
+test("mobile breadcrumbs collapse to a path menu, parent, and current page", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/enemy_within/gerhard-lehrmann/skills");
+
+  const breadcrumbs = page.getByRole("navigation", { name: "Breadcrumb" });
+  await expect(breadcrumbs.getByRole("link", { name: "Gerhard Lehrmann" })).toBeVisible();
+  await expect(breadcrumbs.getByText("Skills", { exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(breadcrumbs.getByRole("link", { name: "Enemy Within" })).toHaveCount(0);
+
+  const pathMenuTrigger = breadcrumbs.getByRole("button", { name: "Show breadcrumb path" });
+  await expect(pathMenuTrigger).toBeVisible();
+  await pathMenuTrigger.click();
+
+  const pathMenu = page.getByRole("menu");
+  await expect(pathMenu.getByRole("menuitem", { name: "Enemy Within" })).toBeVisible();
+  await expect(pathMenu.getByRole("menuitem", { name: "Gerhard Lehrmann" })).toBeVisible();
+  await expect(pathMenu.getByRole("menuitem", { name: "Skills" })).toHaveCount(0);
+
+  await pathMenu.getByRole("menuitem", { name: "Enemy Within" }).click();
+  await expect(page).toHaveURL("/");
+});
