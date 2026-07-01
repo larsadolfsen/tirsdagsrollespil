@@ -11,11 +11,11 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("player can browse from the Books tab into a chapter and back", async ({ page }) => {
+test("player can open the Books page from the character menu and browse into a chapter and back", async ({ page }) => {
   await page.goto("/enemy_within/karl-muller/skills");
 
-  const tabStrip = page.getByRole("navigation", { name: "Character sheet sections" });
-  await tabStrip.getByRole("button", { name: "Books" }).click();
+  const characterMenu = page.getByRole("navigation", { name: "Character menu" });
+  await characterMenu.getByRole("button", { name: "Books" }).click();
   await expect(page).toHaveURL(/\/enemy_within\/karl-muller\/books$/);
 
   await page.getByRole("button", { name: "WFRP 4E Core Rulebook" }).click();

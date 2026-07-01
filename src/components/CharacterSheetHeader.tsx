@@ -16,13 +16,14 @@ import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import { UI_LABELS } from "../labels";
 
 type CharacterSheetHeaderProps = {
-  activeMenuItem: "sheet" | "edit" | "dice";
+  activeMenuItem: "sheet" | "edit" | "dice" | "books";
   characterData: ResolvedCharacterRecord;
   isMobilePortraitMenuOpen: boolean;
   onCloseMobilePortraitMenu: () => void;
   onOpenCharacterSheet: () => void;
   onOpenAdvance: () => void;
   onOpenDice: () => void;
+  onOpenBooks: () => void;
   onOpenMobileCharacterActions: () => void;
   onOpenMobileGainExperience: () => void;
   onOpenMobileMenu: () => void;
@@ -39,6 +40,7 @@ export function CharacterSheetHeader({
   onOpenCharacterSheet,
   onOpenAdvance,
   onOpenDice,
+  onOpenBooks,
   onOpenMobileCharacterActions,
   onOpenMobileGainExperience,
   onOpenMobileMenu,
@@ -87,6 +89,7 @@ export function CharacterSheetHeader({
       onOpenCharacterSheet={onOpenCharacterSheet}
       onOpenDice={onOpenDice}
       onOpenAdvance={onOpenAdvance}
+      onOpenBooks={onOpenBooks}
       onOpenXpDialog={openXpDialog}
     />
   );

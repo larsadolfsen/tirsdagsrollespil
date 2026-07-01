@@ -13,6 +13,7 @@ const characterMenuOptions = [
   { id: "sheet", label: "Character Sheet" },
   { id: "edit", label: "Edit Character" },
   { id: "dice", label: "Dice Log" },
+  { id: "books", label: "Books" },
 ] as const;
 
 const readFileAsDataUrl = (file: File) =>
@@ -80,15 +81,17 @@ export function CharacterHeader({
   onOpenCharacterSheet,
   onOpenDice,
   onOpenAdvance,
+  onOpenBooks,
   onOpenXpDialog,
 }: {
-  activeMenuItem: "sheet" | "edit" | "experience" | "dice";
+  activeMenuItem: "sheet" | "edit" | "experience" | "dice" | "books";
   characterData: ResolvedCharacterRecord;
   xpCurrent: number;
   headerResources?: ReactNode;
   onOpenCharacterSheet: () => void;
   onOpenDice: () => void;
   onOpenAdvance: () => void;
+  onOpenBooks: () => void;
   onOpenXpDialog: () => void;
 }) {
   const { portraitDataUrl, setCharacterName, setPortraitDataUrl } = useGameSessionContext();
@@ -268,7 +271,7 @@ export function CharacterHeader({
         )}
 
         <div className="hidden h-12 items-stretch sm:flex">
-          <MainTabMenu<"sheet" | "edit" | "experience" | "dice">
+          <MainTabMenu<"sheet" | "edit" | "experience" | "dice" | "books">
             activeId={activeMenuItem}
             ariaLabel="Character menu"
             options={characterMenuOptions}
@@ -276,6 +279,7 @@ export function CharacterHeader({
               if (item === "sheet") onOpenCharacterSheet();
               if (item === "edit") onOpenAdvance();
               if (item === "dice") onOpenDice();
+              if (item === "books") onOpenBooks();
             }}
           />
           <WfrpStandardIcon

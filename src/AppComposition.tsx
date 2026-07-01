@@ -832,7 +832,7 @@ export function AppComposition() {
     () =>
       displayedMobileMainViewOptions.reduce(
         (titles, option) => ({ ...titles, [option.id]: option.label }),
-        { career: "Edit Character", dice: "Dice Log" } as Record<MobileMainView, string>,
+        { career: "Edit Character", dice: "Dice Log", books: "Books" } as Record<MobileMainView, string>,
       ),
     [displayedMobileMainViewOptions],
   );
@@ -1976,6 +1976,11 @@ export function AppComposition() {
             <MobileMenuSidebar
               isOpen={isMobileMenuSidebarOpen}
               onClose={() => setIsMobileMenuSidebarOpen(false)}
+              onOpenBooks={() => {
+                setIsMobileMenuSidebarOpen(false);
+                setIsMobileGainExperienceOpen(false);
+                selectMainTab("books");
+              }}
               onOpenCharacterSheet={() => {
                 setIsMobileMenuSidebarOpen(false);
                 setIsMobileGainExperienceOpen(false);
@@ -1998,13 +2003,14 @@ export function AppComposition() {
             breadcrumbs={<Breadcrumbs items={breadcrumbItems} />}
             desktopHeader={(
               <CharacterSheetHeader
-                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
+                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : activeMainTab === "books" ? "books" : "sheet"}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
                 onOpenCharacterSheet={() => selectMainTab("skills")}
                 onOpenAdvance={openAdvanceView}
                 onOpenDice={openDiceLog}
+                onOpenBooks={() => selectMainTab("books")}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
                 onOpenMobileGainExperience={openMobileGainExperience}
                 onOpenMobileMenu={openMobileMenuSidebar}
@@ -2015,13 +2021,14 @@ export function AppComposition() {
             )}
             mobileHeader={(
               <CharacterSheetHeader
-                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
+                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : activeMainTab === "books" ? "books" : "sheet"}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
                 onOpenCharacterSheet={() => selectMainTab("skills")}
                 onOpenAdvance={openMobileAdvanceView}
                 onOpenDice={openDiceLog}
+                onOpenBooks={() => selectMainTab("books")}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
                 onOpenMobileGainExperience={openMobileGainExperience}
                 onOpenMobileMenu={openMobileMenuSidebar}
@@ -2030,7 +2037,7 @@ export function AppComposition() {
                 xpCurrent={xpCurrent}
               />
             )}
-            hideMobileNavigation={showMobileGainExperiencePage || activeMainTab === "dice"}
+            hideMobileNavigation={showMobileGainExperiencePage || activeMainTab === "dice" || activeMainTab === "books"}
             mobileTitle={displayedMobilePageTitle}
             onMobileNextView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFrameNext}
             onMobilePreviousView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFramePrevious}
@@ -2150,6 +2157,8 @@ export function AppComposition() {
                 </BottomSheetPaper>
               </section>
             </>
+          ) : activeMainTab === "books" ? (
+            <BooksTab />
           ) : (
             <>
           <div {...mobileMainViewSwipeHandlers}>
@@ -2354,10 +2363,6 @@ export function AppComposition() {
                         backgroundText={backgroundText}
                         setBackgroundText={setBackgroundText}
                       />
-                      )}
-
-                      {activeMainTab === 'books' && (
-                        <BooksTab />
                       )}
 
                       </LazyTabPanel>

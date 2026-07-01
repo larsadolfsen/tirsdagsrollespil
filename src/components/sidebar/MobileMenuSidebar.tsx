@@ -1,9 +1,10 @@
-import { ArrowUpFromLine, Dice5, FileText, Pencil } from "lucide-react";
+import { ArrowUpFromLine, BookOpen, Dice5, FileText, Pencil } from "lucide-react";
 import { AppSidebar } from "./AppSidebar";
 
 export function MobileMenuSidebar({
   isOpen,
   onClose,
+  onOpenBooks,
   onOpenCharacterSheet,
   onOpenDiceLog,
   onOpenEditCharacter,
@@ -11,6 +12,7 @@ export function MobileMenuSidebar({
 }: {
   isOpen: boolean;
   onClose: () => void;
+  onOpenBooks: () => void;
   onOpenCharacterSheet: () => void;
   onOpenDiceLog: () => void;
   onOpenEditCharacter: () => void;
@@ -62,6 +64,14 @@ export function MobileMenuSidebar({
         >
           <Dice5 size={16} aria-hidden="true" />
           Dice Log
+        </button>
+        <button
+          type="button"
+          onClick={onOpenBooks}
+          className="flex w-full cursor-pointer items-center gap-3 px-4 py-4 text-left wfrp-label text-wfrp-muted-text transition-colors hover:bg-wfrp-surface-raised hover:text-white focus-visible:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50"
+        >
+          <BookOpen size={16} aria-hidden="true" />
+          Books
         </button>
       </nav>
     </AppSidebar>

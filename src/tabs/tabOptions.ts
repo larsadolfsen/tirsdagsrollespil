@@ -7,5 +7,4 @@ export const mainTabOptions: Array<TabOption<MainTab>> = [
   { id: "spells", label: "Spells" },
   { id: "features", label: "Talents" },
   { id: "journal", label: "Journal" },
-  { id: "books", label: "Books" },
 ];
