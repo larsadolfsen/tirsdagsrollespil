@@ -41,7 +41,7 @@ Extends the existing manual path-parsing system rather than introducing a router
 ## B. In-content table of contents
 
 - A 280px-wide column lives **inside the chapter content area's own container** (e.g. `grid-cols-[280px_1fr]` on the chapter view wrapper), not as app-level page chrome like `AppSidebar`. It scrolls with the article — it is not pinned/sticky.
-- Lists every H2 (`##`) heading in the current chapter's markdown, in document order.
+- Lists every semantic H2 heading in the current chapter (see the heading table in section C — this is markdown `#`, not `##`). Source files use `#` as the chapter's major groupings (e.g. in `rules.md`: Combat, Fate/Resilience/Fortune/Resolve, Injury, Corruption, Disease and Infection, Psychology) and `##`/`###` for finer subsections beneath them; listing markdown `##` directly would produce an unusably long TOC (30+ entries in `rules.md` alone).
 - Headings are given stable slug ids (a slugger run once per chapter render, in document order, shared between TOC extraction and the rendered heading elements so ids match 1:1).
 - Clicking a TOC entry scrolls to that heading's anchor; it does not change the URL (in-chapter navigation only, no scroll-spy).
 - Chapters with fewer than 2 H2 headings render without the TOC column (nothing useful to show).
@@ -54,12 +54,13 @@ Extends the existing manual path-parsing system rather than introducing a router
 | Source | Current | New |
 |---|---|---|
 | Chapter title (catalog metadata, rendered in `BooksLibrary.tsx`) | `level={2}` | `level={1}` |
-| Markdown `##` (chapter's top sections — what the TOC lists) | `level={4}` | `level={2}` |
-| Markdown `###` | `level={5}` | `level={3}` |
-| Markdown `####` | `level={6}` | `level={4}` |
-| Markdown `#####` | `level={6}` | `level={5}` |
-| Markdown `######` | `level={6}` | `level={6}` |
-| Markdown `#` (unused in source content today) | `level={3}` | `level={2}` (treated as a top section, same as `##`) |
+| Markdown `#` (chapter's major groupings — what the TOC lists; e.g. "Combat", "Ogre") | `level={3}` | `level={2}` |
+| Markdown `##` (subsections within a group; some chapters use this as their outermost level, e.g. `magic.md`) | `level={4}` | `level={3}` |
+| Markdown `###` | `level={5}` | `level={4}` |
+| Markdown `####` | `level={6}` | `level={5}` |
+| Markdown `#####`/`######` | `level={6}` | `level={6}` |
+
+Note: a handful of chapters (`magic.md`, `between-adventures.md`, `religion-and-belief.md`, `the-gamemaster.md`, `bestiary.md`'s opening section) use `##` as their outermost heading with no `#` above it. Those chapters simply have no H2-level TOC entries from their intro content — their first real `#` group (if any) still becomes H2 as normal. This is existing source-content structure, not something this change needs to fix.
 
 ## D. Table striping
 
