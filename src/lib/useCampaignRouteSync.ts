@@ -30,6 +30,8 @@ type SyncRouteOptions = {
   view?: MobileMainView;
   mode?: "push" | "replace";
   omitDefaultView?: boolean;
+  bookId?: string | null;
+  chapterId?: string | null;
 };
 
 const getCurrentPathname = () => window.location.pathname;
@@ -52,12 +54,16 @@ export function useCampaignRouteSync({
   const currentCampaignRoute = useRef<CampaignCharacterRoute | null>(
     parseCampaignCharacterPath(getCurrentPathname()),
   );
+  const [bookId, setBookIdState] = useState<string | null>(null);
+  const [chapterId, setChapterIdState] = useState<string | null>(null);
 
   const syncCampaignRoute = useCallback(({
     characterId = selectedCharacterId,
     view = currentCampaignRoute.current?.view ?? activeMobileMainView,
     mode = "replace",
     omitDefaultView = currentCampaignRoute.current?.hasExplicitView === false,
+    bookId: nextBookId = bookId,
+    chapterId: nextChapterId = chapterId,
   }: SyncRouteOptions = {}) => {
     if (!routeSyncEnabled) return;
 
@@ -68,6 +74,8 @@ export function useCampaignRouteSync({
       view,
       omitDefaultView,
       characterName,
+      bookId: nextBookId,
+      chapterId: nextChapterId,
     });
     const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
     const route = parseCampaignCharacterPath(nextPath);
@@ -86,12 +94,14 @@ export function useCampaignRouteSync({
     }
 
     window.history.replaceState(null, "", nextUrl);
-  }, [activeMobileMainView, routeSyncEnabled, selectedCharacterId, characterName]);
+  }, [activeMobileMainView, routeSyncEnabled, selectedCharacterId, characterName, bookId, chapterId]);
 
   useEffect(() => {
     if (!routeSyncEnabled) {
       setHasAppliedInitialRoute(false);
       currentCampaignRoute.current = null;
+      setBookIdState(null);
+      setChapterIdState(null);
       return;
     }
 
@@ -107,6 +117,8 @@ export function useCampaignRouteSync({
 
       setActiveMainTab(route.tab);
       setActiveMobileMainView(route.view);
+      setBookIdState(route.bookId);
+      setChapterIdState(route.chapterId);
     };
 
     applyRoute(getCurrentPathname());
@@ -134,14 +146,18 @@ export function useCampaignRouteSync({
   }, [hasAppliedInitialRoute, syncCampaignRoute]);
 
   const selectMainTab = useCallback((tab: MainTab) => {
-    syncCampaignRoute({ view: tab, mode: "push", omitDefaultView: false });
+    syncCampaignRoute({ view: tab, mode: "push", omitDefaultView: false, bookId: null, chapterId: null });
     setActiveMainTab(tab);
     setActiveMobileMainView(tab);
+    setBookIdState(null);
+    setChapterIdState(null);
   }, [setActiveMainTab, setActiveMobileMainView, syncCampaignRoute]);
 
   const selectMobileMainView = useCallback((target: MobileMainView) => {
-    syncCampaignRoute({ view: target, mode: "push", omitDefaultView: false });
+    syncCampaignRoute({ view: target, mode: "push", omitDefaultView: false, bookId: null, chapterId: null });
     setActiveMobileMainView(target);
+    setBookIdState(null);
+    setChapterIdState(null);
 
     if (isMainTab(target)) {
       setActiveMainTab(target);
@@ -149,6 +165,17 @@ export function useCampaignRouteSync({
 
     handleMobileMainViewSelect(target);
   }, [handleMobileMainViewSelect, setActiveMainTab, setActiveMobileMainView, syncCampaignRoute]);
+
+  const selectBook = useCallback((nextBookId: string | null) => {
+    syncCampaignRoute({ view: "books", mode: "push", bookId: nextBookId, chapterId: null });
+    setBookIdState(nextBookId);
+    setChapterIdState(null);
+  }, [syncCampaignRoute]);
+
+  const selectChapter = useCallback((nextChapterId: string | null) => {
+    syncCampaignRoute({ view: "books", mode: "push", bookId, chapterId: nextChapterId });
+    setChapterIdState(nextChapterId);
+  }, [syncCampaignRoute, bookId]);
 
   const selectCharacter = useCallback((characterId: string) => {
     syncCampaignRoute({ characterId, mode: "push" });
@@ -163,12 +190,18 @@ export function useCampaignRouteSync({
 
     setActiveMainTab(route.tab);
     setActiveMobileMainView(route.hasExplicitView ? route.view : "characteristics");
+    setBookIdState(route.bookId);
+    setChapterIdState(route.chapterId);
     return true;
   }, [setActiveMainTab, setActiveMobileMainView]);
 
   return {
+    bookId,
+    chapterId,
     restoreRouteForCharacter,
+    selectBook,
     selectCharacter,
+    selectChapter,
     selectMainTab,
     selectMobileMainView,
   };

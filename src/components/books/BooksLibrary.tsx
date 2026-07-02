@@ -1,24 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRight } from "lucide-react";
-import { Button, Heading, Text } from "../ui";
+import { BottomSheetPaper, Button, Heading, Text } from "../ui";
 import { SheetDataButtonRow, SheetDataPanel } from "../wfrp";
 import { bookCatalog, bookCovers, loadChapterContent, type BookMeta } from "../../data/books";
+import { ChapterTableOfContents } from "./ChapterTableOfContents";
+import { extractHeadings } from "./headingSlug";
 import { MarkdownContent } from "./MarkdownContent";
 
 function findChapterIndex(book: BookMeta, chapterId: string): number {
   return book.chapters.findIndex((chapter) => chapter.id === chapterId);
 }
 
-export function BooksLibrary() {
-  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
-  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
+export function BooksLibrary({
+  bookId,
+  chapterId,
+  onSelectBook,
+  onSelectChapter,
+}: {
+  bookId: string | null;
+  chapterId: string | null;
+  onSelectBook: (bookId: string | null) => void;
+  onSelectChapter: (chapterId: string | null) => void;
+}) {
   const [chapterContent, setChapterContent] = useState<string | null>(null);
+  const [isContentsOpen, setIsContentsOpen] = useState(false);
 
-  const selectedBook = selectedBookId
-    ? bookCatalog.find((book) => book.id === selectedBookId)
+  const selectedBook = bookId
+    ? bookCatalog.find((book) => book.id === bookId)
     : undefined;
-  const selectedChapter = selectedBook && selectedChapterId
-    ? selectedBook.chapters.find((chapter) => chapter.id === selectedChapterId)
+  const selectedChapter = selectedBook && chapterId
+    ? selectedBook.chapters.find((chapter) => chapter.id === chapterId)
     : undefined;
 
   useEffect(() => {
@@ -39,34 +50,71 @@ export function BooksLibrary() {
     };
   }, [selectedBook, selectedChapter]);
 
+  useEffect(() => {
+    setIsContentsOpen(false);
+  }, [selectedChapter]);
+
+  const headings = useMemo(
+    () => (chapterContent ? extractHeadings(chapterContent) : []),
+    [chapterContent],
+  );
+
   if (selectedBook && selectedChapter) {
     const chapterIndex = findChapterIndex(selectedBook, selectedChapter.id);
     const previousChapter = selectedBook.chapters[chapterIndex - 1];
     const nextChapter = selectedBook.chapters[chapterIndex + 1];
+    const hasToc = headings.filter((heading) => heading.level === 1).length >= 2;
 
     return (
       <div className="flex flex-col gap-4 p-4">
-        <Button variant="subtabAction" onClick={() => setSelectedChapterId(null)}>
+        <Button variant="subtabAction" onClick={() => onSelectChapter(null)}>
           Back to chapters
         </Button>
-        <Heading level={2} variant="section">{selectedChapter.title}</Heading>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Heading level={1} variant="section">{selectedChapter.title}</Heading>
+          {hasToc ? (
+            <Button variant="subtabAction" className="lg:hidden" onClick={() => setIsContentsOpen(true)}>
+              Contents
+            </Button>
+          ) : null}
+        </div>
         {chapterContent === null ? (
           <Text variant="bodyMuted">Loading…</Text>
+        ) : hasToc ? (
+          <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <aside className="hidden lg:block">
+              <ChapterTableOfContents headings={headings} />
+            </aside>
+            <MarkdownContent content={chapterContent} headings={headings} />
+          </div>
         ) : (
-          <MarkdownContent content={chapterContent} />
+          <MarkdownContent content={chapterContent} headings={headings} />
         )}
+        {hasToc && isContentsOpen ? (
+          <BottomSheetPaper className="lg:hidden" isPullable>
+            <div className="flex w-full flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <Text variant="bodyStrong">Contents</Text>
+                <Button variant="subtabAction" onClick={() => setIsContentsOpen(false)}>
+                  Close
+                </Button>
+              </div>
+              <ChapterTableOfContents headings={headings} onSelect={() => setIsContentsOpen(false)} />
+            </div>
+          </BottomSheetPaper>
+        ) : null}
         <div className="flex flex-wrap justify-between gap-3">
           <Button
             variant="subtabAction"
             disabled={!previousChapter}
-            onClick={() => previousChapter && setSelectedChapterId(previousChapter.id)}
+            onClick={() => previousChapter && onSelectChapter(previousChapter.id)}
           >
             Previous chapter
           </Button>
           <Button
             variant="subtabAction"
             disabled={!nextChapter}
-            onClick={() => nextChapter && setSelectedChapterId(nextChapter.id)}
+            onClick={() => nextChapter && onSelectChapter(nextChapter.id)}
           >
             Next chapter
           </Button>
@@ -78,7 +126,7 @@ export function BooksLibrary() {
   if (selectedBook) {
     return (
       <div className="flex flex-col gap-4 p-4">
-        <Button variant="subtabAction" onClick={() => setSelectedBookId(null)}>
+        <Button variant="subtabAction" onClick={() => onSelectBook(null)}>
           Back to books
         </Button>
         <Heading level={2} variant="section">{selectedBook.title}</Heading>
@@ -87,7 +135,7 @@ export function BooksLibrary() {
             <SheetDataButtonRow
               key={chapter.id}
               className="grid-cols-[1fr_24px] px-4 py-3"
-              onClick={() => setSelectedChapterId(chapter.id)}
+              onClick={() => onSelectChapter(chapter.id)}
             >
               <Text variant="bodyStrong">{chapter.title}</Text>
               <ChevronRight size={16} className="justify-self-end text-wfrp-muted-text" aria-hidden="true" />
@@ -105,7 +153,7 @@ export function BooksLibrary() {
           <button
             key={book.id}
             type="button"
-            onClick={() => setSelectedBookId(book.id)}
+            onClick={() => onSelectBook(book.id)}
             className="wfrp-landing-character-card"
             aria-label={`Open ${book.title}`}
           >

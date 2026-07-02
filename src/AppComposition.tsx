@@ -854,6 +854,10 @@ export function AppComposition() {
     selectCharacter,
     selectMainTab,
     selectMobileMainView,
+    bookId: selectedBooksBookId,
+    chapterId: selectedBooksChapterId,
+    selectBook,
+    selectChapter,
   } = useCampaignRouteSync({
     activeMainTab,
     activeMobileMainView,
@@ -2158,7 +2162,12 @@ export function AppComposition() {
               </section>
             </>
           ) : activeMainTab === "books" ? (
-            <BooksTab />
+            <BooksTab
+              bookId={selectedBooksBookId}
+              chapterId={selectedBooksChapterId}
+              onSelectBook={selectBook}
+              onSelectChapter={selectChapter}
+            />
           ) : (
             <>
           <div {...mobileMainViewSwipeHandlers}>
