@@ -190,7 +190,7 @@ For your Species's Skill list: choose 3 Skills to gain 5 Advances each, and 3 mo
 | High Elves | Cool, Entertain (Sing), Evaluate, Language (Eltharin), Leadership, Melee (Basic), Navigation, Perception, Play (any one), Ranged (Bow), Sail, Swim | Acute Sense (Sight), Coolheaded or Savvy, Night Vision, Second Sight or Sixth Sense, Read/Write |
 | Wood Elves | Athletics, Climb, Endurance, Entertain (Sing), Intimidate, Language (Eltharin), Melee (Basic), Outdoor Survival, Perception, Ranged (Bow), Stealth (Rural), Track | Acute Sense (Sight), Hardy or Second Sight, Night Vision, Read/Write or Very Resilient, Rover |
 
-### Random Talents Table (1d100)
+#### Random Talents Table (1d100)
 
 | Roll | Talent | Roll | Talent |
 | --- | --- | --- | --- |
@@ -248,13 +248,13 @@ Take all Trappings listed for the first level of your Career Path. That Career l
 
 Cosmetic and roleplaying details: name, age, eye/hair colour, height, Psychology, Motivation, and Ambitions. These can be chosen freely or rolled randomly on the tables below.
 
-#### Age
+##### Age
 
 | Human | Dwarf | Elf | Halfling |
 | --- | --- | --- | --- |
 | 15+d10 | 15+10d10 | 30+10d10 | 15+5d10 |
 
-#### Height
+##### Height
 
 | Human | Dwarf | Elf | Halfling |
 | --- | --- | --- | --- |
@@ -331,7 +331,7 @@ The group also sets collective Party Ambitions (short-term and long-term), which
 
 Optional step for fleshing out personality, background, and relationships (e.g. via a set of guided background questions covering origins, family, friends, beliefs, and motivations for adventuring). Any bonus XP earned during character creation should be spent now, before play begins.
 
-## 9) Advancement
+# 9) Advancement
 
 XP is awarded by the GM after sessions (and for good roleplaying, resolving adventures, or defeating key foes) and spent between sessions to raise Characteristics, learn/improve Skills, gain Talents, or change Career. At the start, XP may only be spent on the 3 Characteristics, 8 Skills, and 4 Talents tied to the character's current Career level.
 
