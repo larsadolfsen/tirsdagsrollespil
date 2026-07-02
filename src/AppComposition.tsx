@@ -2071,6 +2071,7 @@ export function AppComposition() {
             />
             <MobileMenuSidebar
               isOpen={isMobileMenuSidebarOpen}
+              campaignId={characterData.campaignId}
               onClose={() => setIsMobileMenuSidebarOpen(false)}
               onOpenCharacterSheet={() => {
                 setIsMobileMenuSidebarOpen(false);
