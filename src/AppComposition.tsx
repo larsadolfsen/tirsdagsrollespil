@@ -71,7 +71,12 @@ import {
   getCharacterSkillKey,
 } from "./lib/gameSession";
 import { useCampaignRouteSync } from "./lib/useCampaignRouteSync";
-import { buildCampaignCharacterPath, parseCampaignCharacterPath } from "./lib/campaignRoutes";
+import {
+  buildCampaignCharacterPath,
+  parseCampaignCharacterPath,
+  buildCampaignLibraryPath,
+  parseCampaignLibraryPath,
+} from "./lib/campaignRoutes";
 import { campaignById } from "./data/campaigns";
 import {
   mainTabButtonActiveClassName,
@@ -126,7 +131,7 @@ const SpellsTab = lazy(() => import("./tabs/SpellsTab").then((module) => ({ defa
 const TalentsTab = lazy(() => import("./tabs/TalentsTab").then((module) => ({ default: module.TalentsTab })));
 const JournalTab = lazy(() => import("./tabs/JournalTab").then((module) => ({ default: module.JournalTab })));
 const CareerTab = lazy(() => import("./tabs/CareerTab").then((module) => ({ default: module.CareerTab })));
-const BooksTab = lazy(() => import("./tabs/BooksTab").then((module) => ({ default: module.BooksTab })));
+const LibraryPage = lazy(() => import("./components/library/LibraryPage").then((module) => ({ default: module.LibraryPage })));
 
 const editCharacterTabOptions: Array<{ id: CareerSubtab; label: string }> = [
   { id: "experience", label: "Experience" },
@@ -241,7 +246,11 @@ export function AppComposition() {
       return false;
     }
 
-    return parseCampaignCharacterPath(window.location.pathname) === null && !window.location.pathname.includes("/campaign");
+    return (
+      parseCampaignCharacterPath(window.location.pathname) === null &&
+      !window.location.pathname.includes("/campaign") &&
+      !window.location.pathname.includes("/library")
+    );
   });
   const [isGameMasterOpen, setIsGameMasterOpen] = useState(() => {
     if (typeof window === "undefined") {
@@ -249,6 +258,13 @@ export function AppComposition() {
     }
 
     return window.location.pathname.includes("/campaign");
+  });
+  const [isLibraryOpen, setIsLibraryOpen] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.location.pathname.includes("/library");
   });
 
   // GM Sessions States
@@ -833,7 +849,7 @@ export function AppComposition() {
     () =>
       displayedMobileMainViewOptions.reduce(
         (titles, option) => ({ ...titles, [option.id]: option.label }),
-        { career: "Edit Character", dice: "Dice Log", books: "Books" } as Record<MobileMainView, string>,
+        { career: "Edit Character", dice: "Dice Log" } as Record<MobileMainView, string>,
       ),
     [displayedMobileMainViewOptions],
   );
@@ -855,16 +871,12 @@ export function AppComposition() {
     selectCharacter,
     selectMainTab,
     selectMobileMainView,
-    bookId: selectedBooksBookId,
-    chapterId: selectedBooksChapterId,
-    selectBook,
-    selectChapter,
   } = useCampaignRouteSync({
     activeMainTab,
     activeMobileMainView,
     availableCharacters,
     handleMobileMainViewSelect,
-    routeSyncEnabled: !isLandingPageOpen && !isGameMasterOpen,
+    routeSyncEnabled: !isLandingPageOpen && !isGameMasterOpen && !isLibraryOpen,
     selectedCharacterId,
     setActiveMainTab,
     setActiveMobileMainView,
@@ -873,12 +885,44 @@ export function AppComposition() {
     characterName: characterData.name,
   });
 
+  const [libraryBookId, setLibraryBookId] = useState<string | null>(null);
+  const [libraryChapterId, setLibraryChapterId] = useState<string | null>(null);
+
+  const selectLibraryBook = useCallback((nextBookId: string | null) => {
+    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: nextBookId, chapterId: null });
+    window.history.pushState(null, "", nextPath);
+    setLibraryBookId(nextBookId);
+    setLibraryChapterId(null);
+  }, [characterData.campaignId]);
+
+  const selectLibraryChapter = useCallback((nextChapterId: string | null) => {
+    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: libraryBookId, chapterId: nextChapterId });
+    window.history.pushState(null, "", nextPath);
+    setLibraryChapterId(nextChapterId);
+  }, [characterData.campaignId, libraryBookId]);
+
+  useEffect(() => {
+    const libraryRoute = parseCampaignLibraryPath(window.location.pathname);
+    if (libraryRoute) {
+      setLibraryBookId(libraryRoute.bookId);
+      setLibraryChapterId(libraryRoute.chapterId);
+    }
+  }, []);
+
   useEffect(() => {
     const handlePopState = () => {
       const isGM = window.location.pathname.includes("/campaign");
-      const isLanding = parseCampaignCharacterPath(window.location.pathname) === null && !isGM;
+      const libraryRoute = parseCampaignLibraryPath(window.location.pathname);
+      const isLibrary = libraryRoute !== null;
+      const isLanding = parseCampaignCharacterPath(window.location.pathname) === null && !isGM && !isLibrary;
       setIsLandingPageOpen(isLanding);
       setIsGameMasterOpen(isGM);
+      setIsLibraryOpen(isLibrary);
+
+      if (isLibrary) {
+        setLibraryBookId(libraryRoute.bookId);
+        setLibraryChapterId(libraryRoute.chapterId);
+      }
 
       if (isGM) {
         const pathParts = window.location.pathname.split("/");
@@ -923,6 +967,14 @@ export function AppComposition() {
     window.history.pushState(null, "", nextUrl);
     setIsLandingPageOpen(false);
     setIsGameMasterOpen(true);
+  }, [characterData.campaignId]);
+
+  const openLibraryFromLanding = useCallback(() => {
+    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId });
+    window.history.pushState(null, "", nextPath);
+    setIsLandingPageOpen(false);
+    setIsGameMasterOpen(false);
+    setIsLibraryOpen(true);
   }, [characterData.campaignId]);
 
   useEffect(() => {
@@ -1734,48 +1786,6 @@ export function AppComposition() {
   const activeCareerSubtabLabel = editCharacterTabOptions.find(
     (option) => option.id === activeCareerSubtab,
   )?.label;
-  const selectedBooksBook = selectedBooksBookId
-    ? bookCatalog.find((book) => book.id === selectedBooksBookId)
-    : undefined;
-  const selectedBooksChapter = selectedBooksBook && selectedBooksChapterId
-    ? selectedBooksBook.chapters.find((chapter) => chapter.id === selectedBooksChapterId)
-    : undefined;
-  const booksSectionBreadcrumbItems = activeMainTab === "books"
-    ? [
-      {
-        label: currentSectionLabel,
-        ...(selectedBooksBook
-          ? {
-            href: buildCampaignCharacterPath({
-              campaignId: characterData.campaignId,
-              characterId: characterData.id,
-              view: "books",
-              characterName: characterData.name,
-            }),
-            onClick: () => selectBook(null),
-          }
-          : {}),
-      },
-      ...(selectedBooksBook
-        ? [{
-          label: selectedBooksBook.title,
-          ...(selectedBooksChapter
-            ? {
-              href: buildCampaignCharacterPath({
-                campaignId: characterData.campaignId,
-                characterId: characterData.id,
-                view: "books",
-                characterName: characterData.name,
-                bookId: selectedBooksBook.id,
-              }),
-              onClick: () => selectChapter(null),
-            }
-            : {}),
-        }]
-        : []),
-      ...(selectedBooksChapter ? [{ label: selectedBooksChapter.title }] : []),
-    ]
-    : [{ label: currentSectionLabel }];
   const breadcrumbItems = [
     {
       label: campaignName,
@@ -1791,7 +1801,7 @@ export function AppComposition() {
       href: characterRootPath,
       onClick: () => selectMobileMainView("characteristics"),
     },
-    ...booksSectionBreadcrumbItems,
+    { label: currentSectionLabel },
     ...(activeMainTab === "career" && activeCareerSubtabLabel
       ? [{ label: activeCareerSubtabLabel }]
       : []),
@@ -1846,6 +1856,7 @@ export function AppComposition() {
         characters={availableCharacters}
         onSelectCharacter={openCharacterFromLanding}
         onSelectGameMaster={openGameMasterFromLanding}
+        onSelectLibrary={openLibraryFromLanding}
       />
     );
   }
@@ -1905,6 +1916,44 @@ export function AppComposition() {
         selectedSessionId={selectedGmSessionId}
         sessions={gmSessions}
       />
+    );
+  }
+
+  if (isLibraryOpen) {
+    const selectedLibraryBook = libraryBookId
+      ? bookCatalog.find((book) => book.id === libraryBookId)
+      : undefined;
+
+    return (
+      <div className="wfrp-landing-shell flex-col gap-6">
+        <Breadcrumbs
+          items={[
+            {
+              label: campaignName,
+              href: "/",
+              onClick: () => {
+                window.history.pushState(null, "", "/");
+                setIsLandingPageOpen(true);
+                setIsLibraryOpen(false);
+              },
+            },
+            {
+              label: "Library",
+              href: buildCampaignLibraryPath({ campaignId: characterData.campaignId }),
+              onClick: () => selectLibraryBook(null),
+            },
+            ...(selectedLibraryBook ? [{ label: selectedLibraryBook.title }] : []),
+          ]}
+        />
+        <Suspense fallback={null}>
+          <LibraryPage
+            bookId={libraryBookId}
+            chapterId={libraryChapterId}
+            onSelectBook={selectLibraryBook}
+            onSelectChapter={selectLibraryChapter}
+          />
+        </Suspense>
+      </div>
     );
   }
 
@@ -2022,12 +2071,8 @@ export function AppComposition() {
             />
             <MobileMenuSidebar
               isOpen={isMobileMenuSidebarOpen}
+              campaignId={characterData.campaignId}
               onClose={() => setIsMobileMenuSidebarOpen(false)}
-              onOpenBooks={() => {
-                setIsMobileMenuSidebarOpen(false);
-                setIsMobileGainExperienceOpen(false);
-                selectMainTab("books");
-              }}
               onOpenCharacterSheet={() => {
                 setIsMobileMenuSidebarOpen(false);
                 setIsMobileGainExperienceOpen(false);
@@ -2050,14 +2095,14 @@ export function AppComposition() {
             breadcrumbs={<Breadcrumbs items={breadcrumbItems} />}
             desktopHeader={(
               <CharacterSheetHeader
-                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : activeMainTab === "books" ? "books" : "sheet"}
+                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
+                campaignId={characterData.campaignId}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
                 onOpenCharacterSheet={() => selectMainTab("skills")}
                 onOpenAdvance={openAdvanceView}
                 onOpenDice={openDiceLog}
-                onOpenBooks={() => selectMainTab("books")}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
                 onOpenMobileGainExperience={openMobileGainExperience}
                 onOpenMobileMenu={openMobileMenuSidebar}
@@ -2068,14 +2113,14 @@ export function AppComposition() {
             )}
             mobileHeader={(
               <CharacterSheetHeader
-                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : activeMainTab === "books" ? "books" : "sheet"}
+                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
+                campaignId={characterData.campaignId}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
                 onOpenCharacterSheet={() => selectMainTab("skills")}
                 onOpenAdvance={openMobileAdvanceView}
                 onOpenDice={openDiceLog}
-                onOpenBooks={() => selectMainTab("books")}
                 onOpenMobileCharacterActions={openMobileCharacterActions}
                 onOpenMobileGainExperience={openMobileGainExperience}
                 onOpenMobileMenu={openMobileMenuSidebar}
@@ -2084,8 +2129,8 @@ export function AppComposition() {
                 xpCurrent={xpCurrent}
               />
             )}
-            hideMobileNavigation={showMobileGainExperiencePage || activeMainTab === "dice" || activeMainTab === "books"}
-            mobileTitle={activeMainTab === "books" ? "" : displayedMobilePageTitle}
+            hideMobileNavigation={showMobileGainExperiencePage || activeMainTab === "dice"}
+            mobileTitle={displayedMobilePageTitle}
             onMobileNextView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFrameNext}
             onMobilePreviousView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFramePrevious}
           >
@@ -2204,13 +2249,6 @@ export function AppComposition() {
                 </BottomSheetPaper>
               </section>
             </>
-          ) : activeMainTab === "books" ? (
-            <BooksTab
-              bookId={selectedBooksBookId}
-              chapterId={selectedBooksChapterId}
-              onSelectBook={selectBook}
-              onSelectChapter={selectChapter}
-            />
           ) : (
             <>
           <div {...mobileMainViewSwipeHandlers}>

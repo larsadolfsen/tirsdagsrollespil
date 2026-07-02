@@ -182,6 +182,8 @@ git commit -m "rename: BooksLibrary -> LibraryPage, drop the BooksTab wrapper"
 
 **Files:**
 - Modify: `src/AppComposition.tsx`
+- Modify: `src/tabs/index.ts`
+- Modify: `src/tabs/preloadTabs.ts`
 
 **Interfaces:**
 - Consumes: `parseCampaignLibraryPath`, `buildCampaignLibraryPath` (Task 1), `LibraryPage` (Task 3).
@@ -393,6 +395,31 @@ if (isLibraryOpen) {
 - Lines 2207-2213: delete the `activeMainTab === "books" ? <BooksTab .../> :` branch entirely, so the `) : (` on line 2214 now directly follows the previous condition's closing.
 - Lines 1737-1794 (the `selectedBooksBook`/`booksSectionBreadcrumbItems` block used for in-character breadcrumbs): delete `selectedBooksBook`, `selectedBooksChapter`, and `booksSectionBreadcrumbItems`, and remove `...booksSectionBreadcrumbItems,` from wherever the final breadcrumb array is assembled (around line 1794).
 
+**Step 9b: Clean up the tab-preloading modules.** Task 3 deleted `src/tabs/BooksTab.tsx`, which two more files still reference (`MainTab` no longer includes `"books"` as of Task 1, so leaving these as-is is also a type error, not just a dead import):
+
+In `src/tabs/index.ts:3`, delete the line:
+
+```ts
+export { BooksTab } from "./BooksTab";
+```
+
+In `src/tabs/preloadTabs.ts`, delete the `books` entry from `tabPreloaders` (line 12):
+
+```ts
+const tabPreloaders: Record<MainTab, () => Promise<unknown>> = {
+  skills: () => import("./SkillsTab"),
+  actions: () => import("./ActionsTab"),
+  inventory: () => import("./InventoryTab"),
+  spells: () => import("./SpellsTab"),
+  features: () => import("./TalentsTab"),
+  journal: () => import("./JournalTab"),
+  dice: () => import("../features/dice/DiceLogSidebar"),
+  career: () => import("./CareerTab"),
+};
+```
+
+(`Record<MainTab, ...>` will no longer accept a `books` key once `MainTab` excludes it, so this deletion is required for the type to compile, not just for tidiness.)
+
 - [ ] **Step 10: Type-check and build**
 
 Run: `npm run lint && npm run build`
@@ -401,7 +428,7 @@ Expected: no errors referencing `books`, `BooksTab`, `selectedBooksBookId`, `sel
 - [ ] **Step 11: Commit**
 
 ```bash
-git add src/AppComposition.tsx
+git add src/AppComposition.tsx src/tabs/index.ts src/tabs/preloadTabs.ts
 git commit -m "feat: add campaign-level library view to AppComposition"
 ```
 
@@ -448,7 +475,13 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
 </header>
 ```
 
-**Card order and Characters heading:** the Library card goes directly after the Game Master card (already the case — Game Master is first at line 106-122); add it there, then a "Characters" heading before the character cards. Replace from the Game Master card's closing `</button>` (line 122) through the `{/* Character Cards */}` comment (line 124) with:
+**Card order and Characters heading:** the Library card goes directly after the Game Master card (already the case — Game Master is first at line 106-122); add it there, then a "Characters" heading before the character cards. A cover image already exists at `src/data/books/library-cover.webp` (committed in a prior commit on this branch) — import it and use it as the card's portrait image, the same way character cards show `portraitDataUrls[character.id]` via `wfrp-landing-portrait-image` (line 142-147). Add the import near the top of the file, alongside the other imports:
+
+```ts
+import libraryCover from "../data/books/library-cover.webp";
+```
+
+Replace from the Game Master card's closing `</button>` (line 122) through the `{/* Character Cards */}` comment (line 124) with:
 
 ```tsx
 </button>
@@ -461,9 +494,11 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
   aria-label="Open Library"
 >
   <div className="wfrp-landing-portrait">
-    <span className="wfrp-landing-initials">
-      LB
-    </span>
+    <img
+      src={libraryCover}
+      alt=""
+      className="wfrp-landing-portrait-image"
+    />
   </div>
   <div className="wfrp-landing-card-body">
     <Heading level={2} variant="card">

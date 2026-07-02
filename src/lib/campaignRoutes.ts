@@ -16,13 +16,11 @@ const characterViewPathSegments: Record<MobileMainView, string> = {
   journal: "journal",
   dice: "dice-log",
   career: "advance",
-  books: "books",
 };
 const viewAliases: Record<string, MobileMainView> = {
   action: "actions",
   actions: "actions",
   advance: "career",
-  books: "books",
   career: "career",
   careers: "career",
   characteristics: "characteristics",
@@ -50,7 +48,6 @@ const mainTabByCharacterView: Record<MobileMainView, MainTab> = {
   journal: "journal",
   dice: "dice",
   career: "career",
-  books: "books",
 };
 
 export type CampaignCharacterRoute = {
@@ -59,8 +56,6 @@ export type CampaignCharacterRoute = {
   view: MobileMainView;
   tab: MainTab;
   hasExplicitView: boolean;
-  bookId: string | null;
-  chapterId: string | null;
 };
 
 export const defaultCampaignCharacterTab: MobileMainView = "characteristics";
@@ -117,7 +112,7 @@ export function parseCampaignCharacterPath(pathname: string): CampaignCharacterR
   const match = campaignCharacterRoutePattern.exec(pathname);
   if (!match) return null;
 
-  const [, campaignIdSegment, characterIdSegment, viewSegment, bookSlugSegment, chapterSlugSegment] = match;
+  const [, campaignIdSegment, characterIdSegment, viewSegment] = match;
   const campaignId = decodePathSegment(campaignIdSegment);
   const routeCharacterId = decodePathSegment(characterIdSegment);
   const decodedViewSegment = viewSegment ? decodePathSegment(viewSegment) : null;
@@ -127,13 +122,9 @@ export function parseCampaignCharacterPath(pathname: string): CampaignCharacterR
   ];
 
   if (!campaignId || !campaignById[campaignId] || !routeCharacterId || !view) return null;
-  if ((bookSlugSegment || chapterSlugSegment) && view !== "books") return null;
 
   const characterId = resolveRouteCharacterId(campaignId, routeCharacterId);
   if (!characterId) return null;
-
-  const bookId = view === "books" && bookSlugSegment ? decodePathSegment(bookSlugSegment) : null;
-  const chapterId = view === "books" && bookId && chapterSlugSegment ? decodePathSegment(chapterSlugSegment) : null;
 
   return {
     campaignId,
@@ -141,8 +132,6 @@ export function parseCampaignCharacterPath(pathname: string): CampaignCharacterR
     view,
     tab: mainTabByCharacterView[view],
     hasExplicitView,
-    bookId,
-    chapterId,
   };
 }
 
@@ -152,16 +141,12 @@ export function buildCampaignCharacterPath({
   view,
   omitDefaultView = false,
   characterName,
-  bookId = null,
-  chapterId = null,
 }: {
   campaignId?: string;
   characterId: string;
   view: MobileMainView;
   omitDefaultView?: boolean;
   characterName?: string;
-  bookId?: string | null;
-  chapterId?: string | null;
 }) {
   const progress = loadCharacterProgress(characterId);
   const character = characterRecords.find((c) => c.id === characterId);
@@ -175,12 +160,43 @@ export function buildCampaignCharacterPath({
   }
 
   const viewPath = `${characterPath}/${characterViewPathSegments[view]}`;
+  return viewPath;
+}
 
-  if (view !== "books" || !bookId) {
-    return viewPath;
-  }
+const campaignLibraryRoutePattern = /^\/([^/]+)\/library(?:\/([^/?#]+)(?:\/([^/?#]+))?)?\/?$/;
 
-  const bookPath = `${viewPath}/${encodePathSegment(bookId)}`;
+export type CampaignLibraryRoute = {
+  campaignId: string;
+  bookId: string | null;
+  chapterId: string | null;
+};
 
+export function parseCampaignLibraryPath(pathname: string): CampaignLibraryRoute | null {
+  const match = campaignLibraryRoutePattern.exec(pathname);
+  if (!match) return null;
+
+  const [, campaignIdSegment, bookSlugSegment, chapterSlugSegment] = match;
+  const campaignId = decodePathSegment(campaignIdSegment);
+  if (!campaignId || !campaignById[campaignId]) return null;
+
+  const bookId = bookSlugSegment ? decodePathSegment(bookSlugSegment) : null;
+  const chapterId = bookId && chapterSlugSegment ? decodePathSegment(chapterSlugSegment) : null;
+
+  return { campaignId, bookId, chapterId };
+}
+
+export function buildCampaignLibraryPath({
+  campaignId = defaultCampaignId,
+  bookId = null,
+  chapterId = null,
+}: {
+  campaignId?: string;
+  bookId?: string | null;
+  chapterId?: string | null;
+}) {
+  const basePath = `/${encodePathSegment(campaignId)}/library`;
+  if (!bookId) return basePath;
+
+  const bookPath = `${basePath}/${encodePathSegment(bookId)}`;
   return chapterId ? `${bookPath}/${encodePathSegment(chapterId)}` : bookPath;
 }

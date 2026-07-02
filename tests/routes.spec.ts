@@ -49,13 +49,13 @@ test("breadcrumbs reflect the current sheet section and navigate up the hierarch
 
   await breadcrumbs.getByRole("link", { name: "Enemy Within" }).click();
   await expect(page).toHaveURL("/");
-  await expect(page.locator(".wfrp-landing-character-card")).toHaveCount(4);
+  await expect(page.locator(".wfrp-landing-character-card")).toHaveCount(5);
 });
 
 test("unknown character urls show the character picker instead of the default sheet", async ({ page }) => {
   await page.goto("/enemy_within/not_a_character/skills");
 
-  await expect(page.locator(".wfrp-landing-character-card")).toHaveCount(4);
+  await expect(page.locator(".wfrp-landing-character-card")).toHaveCount(5);
   await expect(page).toHaveTitle("Enemy Within WFRP 4E");
 });
 
