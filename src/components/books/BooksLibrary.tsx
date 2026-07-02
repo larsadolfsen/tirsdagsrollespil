@@ -9,16 +9,24 @@ function findChapterIndex(book: BookMeta, chapterId: string): number {
   return book.chapters.findIndex((chapter) => chapter.id === chapterId);
 }
 
-export function BooksLibrary() {
-  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
-  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
+export function BooksLibrary({
+  bookId,
+  chapterId,
+  onSelectBook,
+  onSelectChapter,
+}: {
+  bookId: string | null;
+  chapterId: string | null;
+  onSelectBook: (bookId: string | null) => void;
+  onSelectChapter: (chapterId: string | null) => void;
+}) {
   const [chapterContent, setChapterContent] = useState<string | null>(null);
 
-  const selectedBook = selectedBookId
-    ? bookCatalog.find((book) => book.id === selectedBookId)
+  const selectedBook = bookId
+    ? bookCatalog.find((book) => book.id === bookId)
     : undefined;
-  const selectedChapter = selectedBook && selectedChapterId
-    ? selectedBook.chapters.find((chapter) => chapter.id === selectedChapterId)
+  const selectedChapter = selectedBook && chapterId
+    ? selectedBook.chapters.find((chapter) => chapter.id === chapterId)
     : undefined;
 
   useEffect(() => {
@@ -46,7 +54,7 @@ export function BooksLibrary() {
 
     return (
       <div className="flex flex-col gap-4 p-4">
-        <Button variant="subtabAction" onClick={() => setSelectedChapterId(null)}>
+        <Button variant="subtabAction" onClick={() => onSelectChapter(null)}>
           Back to chapters
         </Button>
         <Heading level={2} variant="section">{selectedChapter.title}</Heading>
@@ -59,14 +67,14 @@ export function BooksLibrary() {
           <Button
             variant="subtabAction"
             disabled={!previousChapter}
-            onClick={() => previousChapter && setSelectedChapterId(previousChapter.id)}
+            onClick={() => previousChapter && onSelectChapter(previousChapter.id)}
           >
             Previous chapter
           </Button>
           <Button
             variant="subtabAction"
             disabled={!nextChapter}
-            onClick={() => nextChapter && setSelectedChapterId(nextChapter.id)}
+            onClick={() => nextChapter && onSelectChapter(nextChapter.id)}
           >
             Next chapter
           </Button>
@@ -78,7 +86,7 @@ export function BooksLibrary() {
   if (selectedBook) {
     return (
       <div className="flex flex-col gap-4 p-4">
-        <Button variant="subtabAction" onClick={() => setSelectedBookId(null)}>
+        <Button variant="subtabAction" onClick={() => onSelectBook(null)}>
           Back to books
         </Button>
         <Heading level={2} variant="section">{selectedBook.title}</Heading>
@@ -87,7 +95,7 @@ export function BooksLibrary() {
             <SheetDataButtonRow
               key={chapter.id}
               className="grid-cols-[1fr_24px] px-4 py-3"
-              onClick={() => setSelectedChapterId(chapter.id)}
+              onClick={() => onSelectChapter(chapter.id)}
             >
               <Text variant="bodyStrong">{chapter.title}</Text>
               <ChevronRight size={16} className="justify-self-end text-wfrp-muted-text" aria-hidden="true" />
@@ -105,7 +113,7 @@ export function BooksLibrary() {
           <button
             key={book.id}
             type="button"
-            onClick={() => setSelectedBookId(book.id)}
+            onClick={() => onSelectBook(book.id)}
             className="wfrp-landing-character-card"
             aria-label={`Open ${book.title}`}
           >
