@@ -13,10 +13,10 @@ import {
 } from "../ui";
 
 const components: ComponentProps<typeof ReactMarkdown>["components"] = {
-  h1: ({ children }) => <Heading level={3} variant="subsection">{children}</Heading>,
-  h2: ({ children }) => <Heading level={4} variant="subsection">{children}</Heading>,
-  h3: ({ children }) => <Heading level={5} variant="subsection">{children}</Heading>,
-  h4: ({ children }) => <Heading level={6} variant="subsection">{children}</Heading>,
+  h1: ({ children }) => <Heading level={2} variant="subsection">{children}</Heading>,
+  h2: ({ children }) => <Heading level={3} variant="subsection">{children}</Heading>,
+  h3: ({ children }) => <Heading level={4} variant="subsection">{children}</Heading>,
+  h4: ({ children }) => <Heading level={5} variant="subsection">{children}</Heading>,
   h5: ({ children }) => <Heading level={6} variant="subsection">{children}</Heading>,
   h6: ({ children }) => <Heading level={6} variant="subsection">{children}</Heading>,
   p: ({ children }) => <Text className="mb-3 last:mb-0">{children}</Text>,

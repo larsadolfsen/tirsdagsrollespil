@@ -57,7 +57,7 @@ export function BooksLibrary({
         <Button variant="subtabAction" onClick={() => onSelectChapter(null)}>
           Back to chapters
         </Button>
-        <Heading level={2} variant="section">{selectedChapter.title}</Heading>
+        <Heading level={1} variant="section">{selectedChapter.title}</Heading>
         {chapterContent === null ? (
           <Text variant="bodyMuted">Loading…</Text>
         ) : (
