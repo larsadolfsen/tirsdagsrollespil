@@ -407,7 +407,7 @@ git commit -m "feat: add campaign-level library view to AppComposition"
 
 ---
 
-### Task 5: Landing page Library card
+### Task 5: Landing page Library card, Characters heading, and chapter-style campaign heading
 
 **Files:**
 - Modify: `src/components/LandingPage.tsx`
@@ -433,9 +433,26 @@ Destructure it in the function signature (line 17):
 export function LandingPage({ campaignName, characters, onSelectCharacter, onSelectGameMaster, onSelectLibrary }: LandingPageProps) {
 ```
 
-Add a plain card, right after the Game Master card (after line 122, before `{/* Character Cards */}` at line 124):
+**Campaign name heading:** match the chapter-page H1 treatment (`Heading` with `variant="chapterH1"`, centered, with the red bottom border), the same markup used by `ChapterHeading` in `src/components/books/ChapterDivider.tsx:4-10` (that component isn't imported here — its two-line markup is simple enough to inline, and `LandingPage` always loads eagerly while the library tree is lazy, so keeping them decoupled avoids pulling the library bundle into the landing page). Replace the `<header>` block (line 93-102):
 
 ```tsx
+<header className="flex flex-col items-center text-center select-none">
+  <span className="wfrp-label text-wfrp-muted-text text-[11px] font-semibold uppercase tracking-widest">
+    Campaign
+  </span>
+  <div className="mt-1 flex max-w-full justify-center border-b-2 border-wfrp-red">
+    <Heading level={1} variant="chapterH1">
+      {campaignName}
+    </Heading>
+  </div>
+</header>
+```
+
+**Card order and Characters heading:** the Library card goes directly after the Game Master card (already the case — Game Master is first at line 106-122); add it there, then a "Characters" heading before the character cards. Replace from the Game Master card's closing `</button>` (line 122) through the `{/* Character Cards */}` comment (line 124) with:
+
+```tsx
+</button>
+
 {/* Library Card */}
 <button
   type="button"
@@ -454,14 +471,24 @@ Add a plain card, right after the Game Master card (after line 122, before `{/* 
     </Heading>
   </div>
 </button>
+
+<div className="mt-4">
+  <Heading level={2} variant="sidebarLabel">
+    Characters
+  </Heading>
+</div>
+
+{/* Character Cards */}
 ```
 
-- [ ] **Step 1: Apply the edits above**
+(`Heading` doesn't accept a `className` prop — see `src/components/ui/Heading.tsx:69`, which explicitly omits it from the native `h2` props — so the `mt-4` spacing goes on a wrapping `div` instead. The `sidebarLabel` variant matches how section labels are styled elsewhere in the app: a small uppercase label, distinct from the card headings. If it reads too small once rendered, `variant="subsection"` is the fallback to try instead — verify visually in Task 9's manual smoke check.)
+
+- [ ] **Step 1: Apply the three edits above**
 - [ ] **Step 2: Commit**
 
 ```bash
 git add src/components/LandingPage.tsx
-git commit -m "feat: add Library card to landing page"
+git commit -m "feat: add Library card, Characters heading, and chapter-style campaign heading to landing page"
 ```
 
 ---
