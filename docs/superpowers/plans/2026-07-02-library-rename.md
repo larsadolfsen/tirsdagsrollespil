@@ -448,7 +448,13 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
 </header>
 ```
 
-**Card order and Characters heading:** the Library card goes directly after the Game Master card (already the case — Game Master is first at line 106-122); add it there, then a "Characters" heading before the character cards. Replace from the Game Master card's closing `</button>` (line 122) through the `{/* Character Cards */}` comment (line 124) with:
+**Card order and Characters heading:** the Library card goes directly after the Game Master card (already the case — Game Master is first at line 106-122); add it there, then a "Characters" heading before the character cards. A cover image already exists at `src/data/books/library-cover.webp` (committed in a prior commit on this branch) — import it and use it as the card's portrait image, the same way character cards show `portraitDataUrls[character.id]` via `wfrp-landing-portrait-image` (line 142-147). Add the import near the top of the file, alongside the other imports:
+
+```ts
+import libraryCover from "../data/books/library-cover.webp";
+```
+
+Replace from the Game Master card's closing `</button>` (line 122) through the `{/* Character Cards */}` comment (line 124) with:
 
 ```tsx
 </button>
@@ -461,9 +467,11 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
   aria-label="Open Library"
 >
   <div className="wfrp-landing-portrait">
-    <span className="wfrp-landing-initials">
-      LB
-    </span>
+    <img
+      src={libraryCover}
+      alt=""
+      className="wfrp-landing-portrait-image"
+    />
   </div>
   <div className="wfrp-landing-card-body">
     <Heading level={2} variant="card">
