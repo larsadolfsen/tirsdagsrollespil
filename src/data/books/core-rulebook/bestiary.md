@@ -1,3 +1,5 @@
+# Bestiary
+
 Quick fast-NPC profiles and creature stat blocks for GMs, built entirely from Creature Traits. Traits are almost always present; Optional traits are common variants a GM can add. See the Creature Traits Glossary at the end of this chapter for what each trait does.
 
 ## Fast NPC Profiles: The Peoples of the Reikland
@@ -53,8 +55,8 @@ Two sample Human NPCs built purely from random Characteristics and Creature Trai
 
 | Name | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **Black Bella**  
-Human Brigand | 4 | 32 | 35 | 41 | 45 | 30 | 25 | 29 | 27 | 34 | 33 | 19 |
+| **Black Bella** |  |  |  |  |  |  |  |  |  |  |  |  |
+| Human Brigand | 4 | 32 | 35 | 41 | 45 | 30 | 25 | 29 | 27 | 34 | 33 | 19 |
 
 **Traits:** Animosity (the Rich, Beastmen), Arboreal, Armour (Light 2), Prejudice (Bailiffs, Lawyers), Ranged+8 (50), Brute, Hardy, Weapon+8.
 
@@ -62,12 +64,12 @@ Human Brigand | 4 | 32 | 35 | 41 | 45 | 30 | 25 | 29 | 27 | 34 | 33 | 19 |
 
 | Name | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **Pol Dankels**  
-Human Witch | 4 | 24 | 26 | 27 | 46 | 49 | 26 | 34 | 65 | 47 | 44 | 15 |
+| **Pol Dankels** |  |  |  |  |  |  |  |  |  |  |  |  |
+| Human Witch | 4 | 24 | 26 | 27 | 46 | 49 | 26 | 34 | 65 | 47 | 44 | 15 |
 
 **Traits:** Cunning, Clever, Prejudice (Sigmarites), Spellcaster (Witch), Tough, Weapon+5.
 
-## Ogre  
+## Ogre
 
 A big, loud, food-obsessed mercenary species from the eastern lands, common as hired muscle across the Empire.
 
