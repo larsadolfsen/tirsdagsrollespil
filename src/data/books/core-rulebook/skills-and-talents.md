@@ -1,6 +1,8 @@
+# Skills and Talents
+
 A Skill's rating equals its governing Characteristic plus Advances taken in it. Basic Skills can be Tested untrained at the bare Characteristic value; Advanced Skills require at least one Advance before they can be Tested at all. Grouped Skills (marked below) cover several Specialisations, each tracked and advanced separately (e.g. Language (Bretonnian) vs Language (Reikspiel)).
 
-# Skills
+## Skills
 
 | Skill | Characteristic | Type | Summary |
 | --- | --- | --- | --- |
@@ -50,7 +52,7 @@ A Skill's rating equals its governing Characteristic plus Advances taken in it. 
 | Track | Initiative | Advanced | Follow subtle trails left by people or creatures. |
 | Trade | Dexterity | Advanced, Grouped | Practise a craft or trade, producing goods or services. |
 
-# Talents
+## Talents
 
 | Talent | Max | Effect |
 | --- | --- | --- |

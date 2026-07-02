@@ -1,4 +1,6 @@
-## Tests Overview
+# Rules
+
+### Tests Overview
 
 A Test compares a d100 roll to a Skill or Characteristic (modified by Difficulty). Rolling equal to or under the target succeeds; rolling over fails. Rolling 01–05 is always a success and rolling 96–00 is always a failure, regardless of the modified target number.
 
@@ -6,11 +8,11 @@ A Test compares a d100 roll to a Skill or Characteristic (modified by Difficulty
 - **Dramatic Test**: used when the degree of success or failure matters (e.g. Opposed Tests, magic, combat, pivotal moments). Produces a Success Level rather than a flat yes/no.
 - If the outcome isn't uncertain or dramatic enough to need dice, the GM may simply decide the result without a Test.
 
-## Success Levels (SL)
+### Success Levels (SL)
 
 Subtract the tens digit of the roll from the tens digit of the (modified) target number to get the SL. Positive SL means success; negative (or zero-or-below on a fail) means failure. An automatic success (01–05) scores at least +1 SL; an automatic failure (96–00) scores at least –1 SL.
 
-### Outcomes Table
+#### Outcomes Table
 
 | SL | Result |
 | --- | --- |
@@ -23,11 +25,11 @@ Subtract the tens digit of the roll from the tens digit of the (modified) target
 | –4 to –5 | Impressive Failure |
 | –6 or less | Astounding Failure |
 
-## Difficulty
+### Difficulty
 
 The GM assigns a modifier reflecting how hard a Test is; this is added to (or subtracted from) the Skill/Characteristic before rolling.
 
-### Difficulty Table
+#### Difficulty Table
 
 | Difficulty | Modifier |
 | --- | --- |
@@ -41,23 +43,23 @@ The GM assigns a modifier reflecting how hard a Test is; this is added to (or su
 
 When multiple penalties or multiple bonuses apply to the same Test, add them together but cap the total at Very Hard (–30) or Very Easy (+60). When a penalty and a bonus both apply, add them together normally to find the net Difficulty. Combat Difficulty defaults to Challenging (+0) unless stated otherwise.
 
-## Characteristic Tests
+### Characteristic Tests
 
 If no Skill fits an attempted action, Test the most relevant Characteristic directly instead.
 
-## Opposed Tests
+### Opposed Tests
 
 Both sides make a Dramatic Test of the relevant Skill/Characteristic; whoever scores the higher SL wins. Ties are broken by the higher unmodified Skill/Characteristic; if still tied, the GM either calls it a stalemate or has both sides reroll. Difficulty for an Opposed Test defaults to Challenging (+0) and, unless stated otherwise, applies equally to both sides.
 
-## Extended Tests
+### Extended Tests
 
 Used when a task requires accumulating a target number of SL over multiple rolls (e.g. one roll per Round). SL from each roll is added to a running total; if the running total ever drops below 0, it resets to 0 before the next roll. Reaching the target SL completes the task.
 
-## Combining Skills
+### Combining Skills
 
 Two Skills can be tested together with a single roll compared against each Skill's value separately: passing both is a full success, passing one is a partial success, failing both is a full failure.
 
-## Assistance
+### Assistance
 
 A character may help another who is about to make a Test; the assisted character's Test gains +10 per assisting character. Rules:
 
@@ -66,23 +68,23 @@ A character may help another who is about to make a Test; the assisted character
 - Assistance is not allowed on Tests to resist disease, poison, fear, hazards, or similar (GM's call).
 - The number of characters that can assist you is capped at your relevant Characteristic Bonus.
 
-## Tests Above 100% (Optional)
+### Tests Above 100% (Optional)
 
 A successful Test gains +1 SL for every full 10% the modified Skill/Characteristic exceeds 100%.
 
-## Criticals and Fumbles on Simple Tests (Optional)
+### Criticals and Fumbles on Simple Tests (Optional)
 
 A successful Test that also rolls a double counts as an Astounding Success; a failed Test that rolls a double counts as an Astounding Failure.
 
-# Combat
+## Combat
 
-## Timing Structure
+### Timing Structure
 
 - **Round**: enough time for every combatant to act and reposition.
 - **Turn**: each combatant's individual slice of a Round, containing one Move and one Action.
 - **Initiative Order**: Turns are taken in descending Initiative Characteristic order. Ties are broken by Agility, then by an Opposed Agility Test (winner decides who goes first).
 
-## Combat Sequence
+### Combat Sequence
 
 1. Determine Surprise (normally only on the first Round).
 2. Round begins; any start-of-Round effects trigger.
@@ -90,28 +92,28 @@ A successful Test that also rolls a double counts as an Astounding Success; a fa
 4. Round ends; any end-of-Round effects trigger.
 5. Repeat until the combat is resolved.
 
-## Surprise
+### Surprise
 
 An attacker can try for Surprise via hiding (Stealth, possibly opposed by a defender's Perception), sneaky positioning, distractions, or simply catching unprepared victims unawares. If ambushers might be spotted, roll an Opposed Stealth (weakest Stealth among the ambushers) vs Perception (each potential spotter) Test; ambushers who win give each defeated defender the Surprised Condition. A character can spend a Resolve point to remove the Surprised Condition.
 
-## Turn Structure
+### Turn Structure
 
 Each Turn consists of a Move and an Action, in either order (or either/both skipped). Actions not requiring a Test are generally Free Actions and don't use up the Action for the Turn.
 
-### Defensive Stance (Optional)
+#### Defensive Stance (Optional)
 
 Declaring a Skill as your defensive Action grants +20 to defensive Tests using that Skill until your next Turn.
 
-## Attacking
+### Attacking
 
-### 1. Roll to Hit
+#### 1. Roll to Hit
 
 - **Melee**: an Opposed Melee Test against the defender. The higher SL hits; the winner gains +1 Advantage, the loser (if it's the defender) also gains +1 Advantage if they win instead.
 - **Ranged**: a simple Ranged Test; success hits and grants +1 Advantage; failure ends the Action with no Advantage change.
 - A melee defender may Oppose with Dodge or, with GM approval, another appropriate Skill instead of Melee.
 - Ranged attacks generally cannot be Opposed by Melee Skills unless the defender has a large shield or the attack is at Point Blank range.
 
-### 2. Determine Hit Location
+#### 2. Determine Hit Location
 
 Reverse the digits of the to-hit roll and compare to the Hit Locations table.
 
@@ -124,26 +126,26 @@ Reverse the digits of the to-hit roll and compare to the Hit Locations table.
 | 80–89 | Left Leg |
 | 90–00 | Right Leg |
 
-### 3. Determine Damage
+#### 3. Determine Damage
 
 Damage = the weapon's Weapon Damage rating + the SL scored on the hit.
 
-### 4. Apply Damage
+#### 4. Apply Damage
 
 Wounds lost = Damage – (defender's Toughness Bonus + Armour Points at that location), minimum 1 Wound lost on a successful hit. If this would exceed the defender's remaining Wounds, the defender instead suffers a Critical Wound and gains the Prone Condition.
 
-## Engaged
+### Engaged
 
 Attacking or being attacked in melee makes both parties Engaged; this lasts until a full Round passes without either attacking the other.
 
-## Criticals and Fumbles (Combat)
+### Criticals and Fumbles (Combat)
 
 - **Critical**: any successful Melee/Ranged Test that also rolls a double. The target immediately suffers a Critical Wound in addition to normal SL/damage resolution.
 - **Fumble**: any failed Melee/Ranged Test that also rolls a double. Roll on the Oops! Table.
 - Losing an Opposed Test while fumbling is still possible if your SL is higher than your opponent's.
 - Blackpowder/Engineering/Explosive weapons that Fumble on an even double instead Misfire: the wielder takes full Damage to their Primary Arm (units die as SL) and the weapon is destroyed.
 
-### Oops! Table
+#### Oops! Table
 
 | Roll | Effect |
 | --- | --- |
@@ -155,13 +157,13 @@ Attacking or being attacked in melee makes both parties Engaged; this lasts unti
 | 81–90 | Suffer a Torn Muscle (Minor) injury; counts as a Critical Wound. |
 | 91–00 | Hit a random ally in range (units die as SL) or, if impossible, hit yourself and gain the Stunned Condition. |
 
-## Ranged Combat Notes
+### Ranged Combat Notes
 
 - Cannot make ranged attacks while Engaged unless the weapon has the Pistol Quality.
 - Attacking with Ranged while Engaged lets the target Oppose with any Melee Skill.
 - On a failed Ranged (Throwing) Test, roll 1d10 for Scatter direction (1–8 = direction, then 2d10 yards of distance, capped at half the distance to the target; 9 = lands at the thrower's feet; 10 = lands at the target's feet).
 
-## Combat Difficulty Modifiers
+### Combat Difficulty Modifiers
 
 | Difficulty | Modifier | Common triggers |
 | --- | --- | --- |
@@ -173,7 +175,7 @@ Attacking or being attacked in melee makes both parties Engaged; this lasts unti
 | Hard | –20 | Called shot to a location; fighting an oversized weapon in an enclosed space; fog/mist/shadow; extreme weather; Dodging while Prone or mounted; darkness; a Little-size target; off-hand weapon use; medium cover. |
 | Very Hard | –30 | Fighting in deep snow/water/arduous terrain; a Tiny target; Extreme range; darkness (shooting); hard cover. |
 
-## Size
+### Size
 
 | Size | Height/Length | Examples | Modifier |
 | --- | --- | --- | --- |
@@ -185,7 +187,7 @@ Attacking or being attacked in melee makes both parties Engaged; this lasts unti
 | Enormous | Up to 20 feet | Griffon, Wyvern, Manticore | +40 |
 | Monstrous | 20+ feet | Dragon, Giant, Daemon Prince | +60 |
 
-## Special Combat Cases
+### Special Combat Cases
 
 - **Helpless targets**: melee attacks against a sleeping, unconscious, or otherwise helpless target automatically succeed.
 - **Shooting into a group**: Average (+20) for 3–6 targets, Easy (+40) for 7–12, Very Easy (+60) for 13+; hits are randomised among the group.
@@ -194,7 +196,7 @@ Attacking or being attacked in melee makes both parties Engaged; this lasts unti
 - **Grappling**: an unarmed Melee win lets the attacker declare a Grapple instead of dealing damage; the loser gains the Entangled Condition. While Grappling, breaking free (if you begin your Turn with higher Advantage) needs no Test; otherwise it's an Opposed Strength Test, won by dealing Strength Bonus + SL damage (ignoring Armour) or manipulating Entangled Conditions. Non-grapplers gain +20 to hit the grappler with the lowest Advantage and +10 to hit the one with the highest.
 - **Mounted Combat**: rider's Move uses the mount's Movement; melee attacks against smaller targets gain +20; attackers choosing to hit a mounted rider (while smaller than the mount) suffer –10; an unrestrained mount can act independently; Charging uses the mount's Strength/Size for damage; riders suffer –20 to Dodge unless they have Trick Riding.
 
-## Advantage
+### Advantage
 
 Advantage represents battlefield momentum, tracked as tokens. Each point of Advantage grants +10 to relevant combat and Psychology Tests.
 
@@ -202,9 +204,9 @@ Advantage represents battlefield momentum, tracked as tokens. Each point of Adva
 - Lost: all Advantage is lost when you lose an Opposed Test, suffer a Condition, lose Wounds, when combat ends, or (1 point) when you gain none in a Round or end a Round outnumbered.
 - Advantage can be spent to Disengage (see below).
 
-## Moving
+### Moving
 
-### Movement Table
+#### Movement Table
 
 | Movement | Walk (yards) | Run (yards) |
 | --- | --- | --- |
@@ -228,7 +230,7 @@ Advantage represents battlefield momentum, tracked as tokens. Each point of Adva
 - **Leaping**: leaping your Movement in feet needs no Test. Farther requires an Average (+20) Athletics Test (Challenging +0 without an adequate run-up); each SL beyond 0 adds a foot, and a +0 SL success still adds 6 inches.
 - **Falling**: 1d10 Damage plus 3 Damage per yard fallen, reduced by Toughness Bonus (not Armour). A deliberate fall/jump allows an Average (+20) Athletics Test to reduce the effective fall distance by 1 yard plus 1 per SL; reducing it to 0 or below negates all damage. Falling damage exceeding your Toughness Bonus also inflicts Prone.
 
-## Pursuit
+### Pursuit
 
 1. **Determine Distance**: the GM sets a head-start number (Distance) for the pursued.
 2. **Test**: everyone actively involved rolls a movement-related Test (Drive, Ride, Athletics, etc.) each Round.
@@ -237,11 +239,11 @@ Advantage represents battlefield momentum, tracked as tokens. Each point of Adva
 
 A faster Movement grants bonus SL to the pursuit Test equal to the Movement difference.
 
-## Conditions
+### Conditions
 
 Conditions represent ongoing effects. Any Condition gained immediately removes all Advantage. Multiple copies of the same Condition stack their penalties; different Conditions do not stack with each other (the worse single penalty applies).
 
-### Condition List
+#### Condition List
 
 Ablaze, Bleeding, Blinded, Broken, Deafened, Entangled, Fatigued, Poisoned, Prone, Stunned, Surprised, Unconscious.
 
@@ -260,83 +262,83 @@ Ablaze, Bleeding, Blinded, Broken, Deafened, Entangled, Fatigued, Poisoned, Pron
 | Surprised | No Action or Move; cannot defend in Opposed Tests; melee attackers gain +20 to hit. Does not stack. | Removed at end of Round or after the first attack against you. |
 | Unconscious | No Action; unaware of surroundings; melee hits automatically hit at maximum SL and inflict a Critical Wound (or simply kill, GM's choice); ranged hits at Point Blank do the same. Does not stack. | Depends on cause (see Injury); spending a Resolve point removes it but it returns at end of Round if the cause is unresolved; on recovery, gain Prone and Fatigued. |
 
-# Fate, Resilience, Fortune, Resolve
+## Fate, Resilience, Fortune, Resolve
 
 Fate and Resilience are permanent pools set at character creation; Fortune and Resolve are their refillable "spend" pools.
 
-## Spending Fortune
+### Spending Fortune
 
 Spend 1 Fortune point to: reroll a failed Test, add +1 SL to an already-rolled Test, or choose your place in Initiative order for the Round.
 
-## Spending Fate
+### Spending Fate
 
 Spend 1 permanent Fate point (this also removes a Fortune point from the max pool) to avoid death, choosing either: Die Another Day (character is removed from the encounter but survives) or How Did That Miss? (character avoids the damage and keeps fighting, without a guarantee of surviving later Rounds).
 
-## Regaining Fate and Fortune
+### Regaining Fate and Fortune
 
 Fortune refills to current Fate at the start of each session. Fate is regained only rarely, typically as a GM reward for a significant heroic act.
 
-## Spending Resolve
+### Spending Resolve
 
 Spend 1 Resolve point to: become immune to Psychology until the end of the next Round, ignore all Critical Wound modifiers until the start of the next Round, or remove one Condition (removing Prone this way also restores 1 Wound).
 
-## Spending Resilience
+### Spending Resilience
 
 Spend 1 permanent Resilience point (also reduces the max Resolve pool) to either: decline to develop a rolled mutation (no Corruption point lost for it), or replace a rolled Test result with a chosen result (in an Opposed Test this guarantees winning by at least 1 SL, and can be applied even after a Test has already failed).
 
-## Regaining Resilience and Resolve
+### Regaining Resilience and Resolve
 
 Resolve is regained by acting according to your Motivation, subject to GM approval. Resilience is regained only rarely as a GM reward tied to a Motivation-driven act of major significance.
 
-# Injury
+## Injury
 
-## Wounds
+### Wounds
 
 Each point of Damage suffered removes 1 Wound (after Toughness Bonus/Armour Point reductions where applicable). Reaching 0 Wounds inflicts Prone; if not healed at least 1 Wound within a number of Rounds equal to Toughness Bonus, the character also falls Unconscious. Damage that would take Wounds below 0 instead inflicts a Critical Wound (Wounds never go negative); if the excess is less than the Toughness Bonus, subtract 20 from the Critical Table roll (minimum 01).
 
-## Critical Wounds
+### Critical Wounds
 
 Triggered by a Critical Hit or by Damage exceeding remaining Wounds. Roll 1d100 to find the Hit Location, then 1d100 on the matching Critical Table for the effect. Critical Wound damage ignores Toughness Bonus/Armour and cannot itself trigger a further Critical Wound.
 
-## Death
+### Death
 
 If Unconscious at 0 Wounds, compare total Critical Wounds to Toughness Bonus; exceeding it means death at the end of the Round unless a Critical Wound is healed first. An Unconscious character can also simply be killed by an attacker using a suitable weapon.
 
-## Critical Wound Tables (summary)
+### Critical Wound Tables (summary)
 
 Each Critical Table (Head, Arm, Body, Leg) lists a d100 range with a Wounds value and an effect, escalating in severity; the 00 result on each table is instant death. Common effects include stacking Bleeding/Blinded/Deafened/Stunned Conditions, Broken Bone or Torn Muscle injuries, and Amputation at a stated Difficulty.
 
-### Broken Bones
+#### Broken Bones
 
 - **Minor**: the Hit Location is unusable until healed (limbs are treated as lost for that time; Head hits force a liquid diet and –30 to Language Tests; Body hits cause –30 Strength/Agility and halved Move). Heals in 30+1d10 days; a failed Endurance Test at the end leaves a permanent –5 penalty (to Agility Tests for an arm, to Agility itself for Body/Leg, or to spoken Language for Head). An Average (+20) Heal Test within a week (kept in place with upkeep Tests) can avoid the Endurance Test.
 - **Major**: heals only with medical attention; while healing, suffers double the Minor penalty (–20).
 
-### Torn Muscles
+#### Torn Muscles
 
 - **Minor**: –10 to Tests involving the affected location (halved Movement if a Leg).
 - **Major**: –20 to Tests involving the location; heals to Minor-level penalty after 30 minus Toughness Bonus days, then fully after another equal period.
 
-### Amputated Parts
+#### Amputated Parts
 
 Losing a body part requires an Endurance Test (Difficulty stated with the wound) or gain Prone (plus Stunned on a Failure or worse, plus Unconscious on an Impressive Failure or worse). All amputations require Surgery before the associated lost Wound can be healed. Permanent penalties vary by part (examples: lost hand –20 to two-handed/off-hand Tests; lost eye –30 to sight-based Tests if both are lost, plus Fellowship penalties per visible scar; lost ear –20 to hearing Perception if both lost; lost foot halves Move and –20 to mobility Tests; lost nose –20 Fellowship and –30 to smell-based Tests; lost teeth –1 Fellowship per two teeth; lost toes –1 Agility and Weapon Skill each; lost tongue auto-fails spoken Language Tests).
 
-## Healing
+### Healing
 
 - **Wounds**: an Average (+20) Endurance Test after a full night's rest heals SL + Toughness Bonus Wounds; extra rest days each heal a further Toughness Bonus Wounds. Faster healing needs the Heal skill or medical supplies. Being wounded carries no inherent penalty.
 - **Critical Wounds**: remain "Critically Wounded" (and subject to their listed penalties/Conditions) until all associated Conditions are removed and all temporary penalties resolved; Wounds can still be healed normally in the meantime.
 - **Medical Attention / Surgery**: some Critical Wound results only clear with Heal skill use, bandages/poultices, or magical/divine healing; results marked Surgery require a trained doctor (or magical equivalent) before their penalty ends, and an amputated Wound cannot be healed until surgically treated.
 
-## Other Sources of Damage
+### Other Sources of Damage
 
 - **Drowning/Suffocation**: can hold breath for Toughness Bonus × 10 seconds if prepared; thereafter (or immediately if unprepared) lose 1 Wound per Round, falling Unconscious at 0 Wounds, then dying after Toughness Bonus further Rounds.
 - **Exposure**: an Endurance Test every 4 hours (2 hours in extreme conditions). Cold: 1st failure –10 BS/Agility/Dexterity, 2nd failure –10 to all other Characteristics, 3rd+ failure 1d10 unmodified-by-Armour Damage (min 1), reaching 0 Wounds causes Unconscious. Heat: 1st failure –10 Intelligence/Willpower plus Fatigued, 2nd failure –10 to all other Characteristics plus another Fatigued, 3rd+ failure 1d10 unmodified Damage (min 1); removing heavy clothing cancels one failed Test.
 - **Thirst/Starvation**: Endurance Tests get a cumulative –10 each time; no healing or Fatigue recovery without food and water. Water: daily Test, 1st failure –10 Intelligence/Willpower/Fellowship, 2nd+ failure –10 all Characteristics plus 1d10 unmodified Damage (min 1). Food: Test every 2 days, 1st failure –10 Strength/Toughness, 2nd+ failure –10 all Characteristics plus 1d10 unmodified Damage (min 1).
 
-# Corruption
+## Corruption
 
 Corruption points track a character's slide toward Chaos.
 
-## Gaining Corruption
+### Gaining Corruption
 
 - **Dark Deals**: a character may voluntarily take 1 Corruption point to reroll a Test, even one already rerolled by other means.
 - **Corrupting Influences**: exposure requires an Endurance or Cool Test (GM's choice) to resist; the required SL scales with the strength of the influence.
@@ -344,20 +346,20 @@ Corruption points track a character's slide toward Chaos.
   - Moderate Exposure: failure gains 2, a Marginal Success (0–1 SL) gains 1, a full Success (2+) gains 0.
   - Major Exposure: failure gains 3, Marginal Success gains 2, Success (2–3) gains 1, only an Impressive Success (4+) gains 0.
 
-## Corruption Limits and Mutation
+### Corruption Limits and Mutation
 
 If Corruption points ever exceed Willpower Bonus + Toughness Bonus, attempt a Challenging (+0) Endurance Test; failure means the character mutates. On mutating, lose Corruption points equal to Willpower Bonus, then roll to determine whether the mutation is physical or mental (chance varies by Species, weighted toward Mental for most), and roll on the matching Corruption Table. Gaining more physical mutations than Toughness Bonus, or more mental corruptions than Willpower Bonus, means the character is lost to Chaos and becomes an NPC.
 
-## Losing Corruption
+### Losing Corruption
 
 - **Dark Whispers**: the GM may offer to remove 1 Corruption point in exchange for the character performing a small, corrupt act (e.g. letting a foe escape); declining keeps the point.
 - **Absolution**: removing Corruption outside of mutation requires a significant act (e.g. cleansing a profane site, completing a pilgrimage, destroying an unholy artefact, joining a holy order), at the GM's discretion.
 
-# Disease and Infection
+## Disease and Infection
 
 Each disease is defined by: a Contraction trigger (usually a failed Test), an Incubation period, a Duration, a set of Symptoms, and sometimes a Permanent effect.
 
-## Symptoms (mechanical effects, examples)
+### Symptoms (mechanical effects, examples)
 
 - **Blight**: daily Endurance Test (Difficulty varies by severity) or die.
 - **Buboes**: –10 to physical Tests (and Fellowship if visible); lancing via a Heal (Surgery) Test removes the penalty but a failed lancing attempt causes a Festering Wound.
@@ -374,13 +376,13 @@ Each disease is defined by: a Contraction trigger (usually a failed Test), an In
 
 Most diseases can be treated with remedies of varying cost and a real chance of being fake; a successful Heal Test (and a genuine remedy) generally negates the day's Test or shortens the effect.
 
-# Psychology
+## Psychology
 
-## Psychology Test
+### Psychology Test
 
 Resisting a Psychological trait requires a Cool Test (Difficulty set by the GM) at the start of the Round; success holds off the effect until the end of the encounter (or until circumstances change and a retest is required).
 
-## Common Psychological Traits (mechanical summary)
+### Common Psychological Traits (mechanical summary)
 
 | Trait | Trigger | Effect while active | Ends when |
 | --- | --- | --- | --- |

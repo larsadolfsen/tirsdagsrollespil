@@ -1,3 +1,5 @@
+# Throwing Bones
+
 Games of WFRP use ten-sided dice whenever a random result is required. Ten-sided dice are typically marked from 0–9, where a roll of 0 counts as a result of 10. These dice are called d10s in the rules, and the number you need to roll will always be marked as follows: 1d10 for 1 die, 2d10 for two dice, 3d10 for three dice, and so on.
 
 If you are requested to roll multiple dice like this, the results are always added together. So, if the rules ask you to roll 2d10, you roll two ten-sided dice and add the result of each together; for example: a roll of 0 and 3 would be a result of 13 (10+3=13).

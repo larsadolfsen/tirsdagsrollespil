@@ -302,7 +302,7 @@ A many-headed, lizard-like monster that breathes smoky fire and bites with each 
 **Traits:** Armour 3, Bestial, Breath+10 (Fire), Constrictor, Night Vision, Regeneration, Size (Enormous), Stealthy, Stride, Tracker, Weapon+9.  
 Optional: Belligerent, Territorial, Venom.
 
-# Jabberslythe
+### Jabberslythe
 
 A maddening Chaos creature combining Toad, Sludge-drake, and Insect, whose mere appearance drives onlookers to gibbering madness.
 
@@ -335,7 +335,7 @@ A white, swan-winged flying horse of the high mountains, much sought after as a 
 **Traits:** Flight 100, Size (Large), Stride, Weapon+7.  
 Optional: Trained (Broken, Drive, Magic, Mount, War).
 
-# Troll
+### Troll
 
 A huge, filthy, regenerating Old World monster; extremely stupid but hard to kill, and able to vomit corrosive bile at will. Notable variants include Chaos Trolls (mutated), River Trolls (ambush hunters of the Reik's marshes), and Stone Trolls (armoured, stony hide, found in mountain caves).
 

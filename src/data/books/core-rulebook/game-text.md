@@ -1,3 +1,5 @@
+# Game Text
+
 To help keep the rules clear, this book adopts some standard ways of presenting information:
 
 **Game Terms:** All game terms are capitalised, so you can tell events from Events, and know when a test should be simple and when you should make a Simple Test.

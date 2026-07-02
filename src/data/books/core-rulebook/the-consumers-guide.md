@@ -1,4 +1,6 @@
-# Money
+# The Consumers' Guide
+
+## Money
 
 The Empire mints coins in three denominations: Brass Pennies (d), Silver Shillings (/–), and Gold Crowns (GC).
 
@@ -8,7 +10,7 @@ The Empire mints coins in three denominations: Brass Pennies (d), Silver Shillin
 | 1 Silver Shilling (1/–) | 12 Brass Pennies |
 | 1 Gold Crown | 240 Brass Pennies |
 
-## Availability
+### Availability
 
 Every Trapping has an Availability: Common, Scarce, Rare, or Exotic. Common items are always in stock. Scarce/Rare items require an Availability Test to find locally; Exotic items are only available via GM fiat, Commission, or Crafting.
 
@@ -21,13 +23,13 @@ Every Trapping has an Availability: Common, Scarce, Rare, or Exotic. Common item
 
 Rule of thumb for stock quantity: villages have 1 item, towns have 1d10, cities have as many as the GM deems appropriate (doubled for Common, halved, rounding up, for Rare).
 
-## Buying and Selling
+### Buying and Selling
 
 Evaluate identifies item quality, appraises coins, and estimates Rare/Exotic prices to within +/-10%. Haggle is an Opposed Test; winning reduces price by 10% (up to 20% on an Astounding Success or with Dealmaker).
 
 Selling uses the same Availability procedure, but for a buyer. Base sale price is half the listed price. Each time the seller halves the asking price further, the buyer's Availability improves by one step.
 
-### Bartering Ratios
+#### Bartering Ratios
 
 | Traded Items | vs. Common | vs. Scarce | vs. Rare | vs. Exotic |
 | --- | --- | --- | --- | --- |
@@ -36,14 +38,14 @@ Selling uses the same Availability procedure, but for a buyer. Base sale price i
 | Rare | 1:4 | 1:2 | 1:1 | 2:1 |
 | Exotic | 1:8 | 1:4 | 1:2 | 1:1 |
 
-## Craftsmanship
+### Craftsmanship
 
 A Trapping with more Qualities than Flaws is a Quality Trapping; a Trapping with more Flaws than Qualities is a Flawed Trapping.
 
 - Each Item Quality: double the price, one step less available.
 - Each Item Flaw: halve the price, one step more available (Exotic items keep their Availability regardless of Flaws).
 
-### Item Qualities
+#### Item Qualities
 
 | Quality | Effect |
 | --- | --- |
@@ -52,7 +54,7 @@ A Trapping with more Qualities than Flaws is a Quality Trapping; a Trapping with
 | Lightweight | –1 Encumbrance |
 | Practical | Failed Test with the item gains +1 SL; armour penalties reduced by one level |
 
-### Item Flaws
+#### Item Flaws
 
 | Flaw | Effect |
 | --- | --- |
@@ -61,7 +63,7 @@ A Trapping with more Qualities than Flaws is a Quality Trapping; a Trapping with
 | Unreliable | Failed Test using the item gets –1 SL; wearing Unreliable armour doubles its penalties |
 | Bulky | +1 Encumbrance (worn clothing/armour count as Enc 1 even when worn); armour Fatigue penalties doubled |
 
-## Encumbrance
+### Encumbrance
 
 Items are rated 0–3 Encumbrance points. Carrying capacity without penalty equals Strength Bonus + Toughness Bonus (average humans: about 6).
 
@@ -74,13 +76,13 @@ Items are rated 0–3 Encumbrance points. Carrying capacity without penalty equa
 
 Worn items (armour, clothing, jewellery) drop Enc by 1 (often to 0). Money weighs 1 Enc per 200 coins. Oversized items (barrels, saddlebags) weigh 4+ Enc and usually only one may be carried.
 
-# Weapons
+## Weapons
 
 Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (added to SL to hit), Qualities/Flaws. Strength Bonus is abbreviated SB.
 
-## Melee Weapons
+### Melee Weapons
 
-### Basic
+#### Basic
 
 | Weapon | Price | Enc | Availability | Reach | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -92,7 +94,7 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 | Shield | 2GC | 1 | Common | Very Short | +SB+2 | Shield 2, Defensive, Undamaging |
 | Shield (Large) | 3GC | 3 | Common | Very Short | +SB+3 | Shield 3, Defensive, Undamaging |
 
-### Cavalry
+#### Cavalry
 
 | Weapon | Price | Enc | Availability | Reach | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -101,21 +103,21 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 
 \* Lances count as Improvised Weapons in any round without a Charge.
 
-### Fencing
+#### Fencing
 
 | Weapon | Price | Enc | Availability | Reach | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
 | Foil | 5GC | 1 | Scarce | Medium | +SB+3 | Fast, Impale, Precise, Undamaging |
 | Rapier | 5GC | 1 | Scarce | Long | +SB+4 | Fast, Impale |
 
-### Brawling
+#### Brawling
 
 | Weapon | Price | Enc | Availability | Reach | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
 | Unarmed | N/A | 0 | – | Personal | +SB+0 | Undamaging |
 | Knuckledusters | 2/6 | 0 | Common | Personal | +SB+2 | – |
 
-### Flail
+#### Flail
 
 | Weapon | Price | Enc | Availability | Reach | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -123,14 +125,14 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 | Flail | 2GC | 1 | Scarce | Average | +SB+5 | Distract, Wrap |
 | Military Flail (2H) | 3GC | 2 | Rare | Long | +SB+6 | Distract, Impact, Tiring, Wrap |
 
-### Parry
+#### Parry
 
 | Weapon | Price | Enc | Availability | Reach | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
 | Main Gauche | 1GC | 0 | Rare | Very Short | +SB+2 | Defensive |
 | Swordbreaker | 1GC 2/6 | 1 | Scarce | Short | +SB+3 | Defensive, Trap-blade |
 
-### Polearm
+#### Polearm
 
 | Weapon | Price | Enc | Availability | Reach | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -139,7 +141,7 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 | Pike (2H) | 18/– | 4 | Rare | Massive | +SB+4 | Impale |
 | Quarter Staff (2H) | 3/– | 2 | Common | Long | +SB+4 | Defensive, Pummel |
 
-### Two-Handed
+#### Two-Handed
 
 | Weapon | Price | Enc | Availability | Reach | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -149,9 +151,9 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 | Warhammer (2H) | 3GC | 3 | Common | Average | +SB+6 | Damaging, Pummel |
 | Zweihänder (2H) | 10GC | 3 | Scarce | Long | +SB+5 | Damaging, Hack |
 
-## Ranged Weapons
+### Ranged Weapons
 
-### Blackpowder*
+#### Blackpowder*
 
 | Weapon | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -162,7 +164,7 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 
 \* All Blackpowder and Engineering weapons also have the Blackpowder and Damaging Qualities.
 
-### Bow
+#### Bow
 
 | Weapon | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -171,7 +173,7 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 | Bow (2H) | 4GC | 2 | Common | 50 | +SB+3 | – |
 | Shortbow (2H) | 3GC | 1 | Common | 20 | +SB+2 | – |
 
-### Crossbow
+#### Crossbow
 
 | Weapon | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -179,14 +181,14 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 | Heavy Crossbow (2H) | 7GC | 3 | Rare | 100 | +9 | Damaging, Reload 2 |
 | Crossbow (2H) | 5GC | 2 | Common | 60 | +9 | Reload 1 |
 
-### Engineering*
+#### Engineering*
 
 | Weapon | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
 | Repeater Handgun (2H) | 10GC | 3 | Rare | 30 | +9 | Dangerous, Reload 5, Repeater 4 |
 | Repeater Pistol | 15GC | 1 | Rare | 10 | +8 | Dangerous, Repeater, Reload 4, Repeater 4 |
 
-### Entangling**
+#### Entangling**
 
 | Weapon | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -195,7 +197,7 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 
 \*\* Entangling weapons have no range bands, just the listed range.
 
-### Explosives
+#### Explosives
 
 | Weapon | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -204,14 +206,14 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 
 \*\*\* An Incendiary inflicts 1+SL Ablaze Conditions on every affected target.
 
-### Sling
+#### Sling
 
 | Weapon | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
 | Sling | 1/– | 0 | Common | 60 | +6 | – |
 | Staff Sling (2H) | 4/– | 2 | Scarce | 100 | +7 | – |
 
-### Throwing
+#### Throwing
 
 | Weapon | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -222,9 +224,9 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 | Throwing Axe | 1GC | 1 | Average | SB×2 | +SB+3 | Hack |
 | Throwing Knife | 18/– | 0 | Common | SB×2 | +SB+2 | – |
 
-## Ammunition
+### Ammunition
 
-### Blackpowder and Engineering
+#### Blackpowder and Engineering
 
 | Ammunition | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -232,20 +234,20 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 | Improvised Shot and Powder | 3d | 0 | Common | Half weapon | – | – |
 | Small Shot and Powder (12) | 3/3 | 0 | Common | As weapon | – | Blast +1 |
 
-### Bow
+#### Bow
 
 | Ammunition | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
 | Arrow (12) | 5/– | 0 | Common | As weapon | – | Impale |
 | Elf Arrow | 6/– | 0 | Exotic | +50 | +1 | Accurate, Impale, Penetrating |
 
-### Crossbow
+#### Crossbow
 
 | Ammunition | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
 | Bolt (12) | 5/– | 0 | Common | As weapon | – | Impale |
 
-### Sling
+#### Sling
 
 | Ammunition | Price | Enc | Availability | Range | Damage | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -254,7 +256,7 @@ Format per weapon: Weapon Group, Price, Enc, Availability, Reach/Range, Damage (
 
 Weapons can be fixed by an Artisan for 10% of cost per Damage point; weapons reduced to Improvised Weapons cannot be fixed.
 
-## Weapon Reach
+### Weapon Reach
 
 | Reach | Description |
 | --- | --- |
@@ -266,7 +268,7 @@ Weapons can be fixed by an Artisan for 10% of cost per Damage point; weapons red
 | Very Long | Up to 10 feet; Engages enemies up to 4 yards away |
 | Massive | Over 10 feet; Engages enemies up to 6 yards away |
 
-## Weapon Range
+### Weapon Range
 
 A weapon's listed range is its Medium range in yards.
 
@@ -277,7 +279,7 @@ A weapon's listed range is its Medium range in yards.
 | Long | Range × 2 |
 | Extreme | Range × 3 |
 
-### Sample Weapon Ranges
+#### Sample Weapon Ranges
 
 | Weapon | Point Blank | Short | Medium | Long | Extreme |
 | --- | --- | --- | --- | --- | --- |
@@ -286,7 +288,7 @@ A weapon's listed range is its Medium range in yards.
 | Pistol | 2 | 10 | 20 | 40 | 60 |
 | Sling | 6 | 30 | 60 | 120 | 180 |
 
-## Weapon Qualities
+### Weapon Qualities
 
 | Quality | Effect |
 | --- | --- |
@@ -311,7 +313,7 @@ A weapon's listed range is its Medium range in yards.
 | Unbreakable | Will not break, corrode, or dull under almost any circumstance |
 | Wrap | Opposing Melee Tests suffer –1 SL |
 
-## Weapon Flaws
+### Weapon Flaws
 
 | Flaw | Effect |
 | --- | --- |
@@ -332,13 +334,13 @@ Melee weapons are further grouped by skill (Melee (Flail), Melee (Polearm), etc.
 - **Engineering**: usable with Ranged (Blackpowder), but lose all Qualities while keeping Flaws.
 - Ranged (Crossbow) or Ranged (Throwing) can be attempted at Ballistic Skill even without the specialism, losing Qualities but keeping Flaws. Ranged (Engineering) can use Blackpowder and Explosive weapons without penalty.
 
-# Armour
+## Armour
 
 Format: Armour Type (material), Price, Enc, Availability, Penalty (besides Encumbrance), Locations protected, APs, Qualities/Flaws.
 
-## Armour
+### Armour
 
-### Soft Leather*
+#### Soft Leather*
 
 | Armour | Price | Enc | Availability | Penalty | Locations | APs | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -349,13 +351,13 @@ Format: Armour Type (material), Price, Enc, Availability, Penalty (besides Encum
 
 \* Soft Leather can be worn without penalty under any other armour.
 
-### Boiled Leather
+#### Boiled Leather
 
 | Armour | Price | Enc | Availability | Penalty | Locations | APs | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Breastplate | 18/– | 2 | Scarce | – | Body | 2 | Weakpoints |
 
-### Mail**
+#### Mail**
 
 | Armour | Price | Enc | Availability | Penalty | Locations | APs | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -364,7 +366,7 @@ Format: Armour Type (material), Price, Enc, Availability, Penalty (besides Encum
 | Mail Coif | 1GC | 2 | Scarce | –10% Perception | Head | 2 | Flexible, Partial |
 | Mail Shirt | 2GC | 2 | Scarce | – | Body | 2 | Flexible |
 
-### Plate**
+#### Plate**
 
 | Armour | Price | Enc | Availability | Penalty | Locations | APs | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -378,21 +380,21 @@ Format: Armour Type (material), Price, Enc, Availability, Penalty (besides Encum
 
 Repairing armour costs 10% of its base price per AP lost (30% if a section is fully broken).
 
-## Armour Qualities
+### Armour Qualities
 
 | Quality | Effect |
 | --- | --- |
 | Flexible | Can be worn under non-Flexible armour, gaining the benefit of both |
 | Impenetrable | Critical Wounds caused by an odd to-hit number (e.g. 11, 33) are ignored |
 
-## Armour Flaws
+### Armour Flaws
 
 | Flaw | Effect |
 | --- | --- |
 | Partial | An even to-hit roll, or a Critical Hit, ignores this armour's APs |
 | Weakpoints | An Impale weapon scoring a Critical ignores this armour's APs |
 
-### Quick Armour (optional, band system)
+#### Quick Armour (optional, band system)
 
 | Armour | Price | Enc | Availability | Penalty | Locations | APs | Qualities and Flaws |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -400,7 +402,7 @@ Repairing armour costs 10% of its base price per AP lost (30% if a section is fu
 | Medium Armour | 5GC | 5 | Scarce | –10% Perception, –10 Stealth | All | 2 | Flexible |
 | Heavy Armour | 30GC | 6 | Rare | –20% Perception, –20 Stealth | All | 3 | Impenetrable, Weakpoints |
 
-# Packs and Containers
+## Packs and Containers
 
 Enc is the container's own Encumbrance; Carries is how much Encumbrance it can hold. Only the Enc value counts toward what you carry.
 
@@ -422,7 +424,7 @@ Enc is the container's own Encumbrance; Carries is how much Encumbrance it can h
 
 Notes: Backpack and Sling Bag count as "worn" when carried as intended. Barrel holds 32 gallons, Cask 10 gallons, Flask 1 pint, Jug and Waterskin 1 gallon. Sacks require at least 1 hand to carry.
 
-# Clothing and Accessories
+## Clothing and Accessories
 
 | Item | Cost | Enc | Availability |
 | --- | --- | --- | --- |
@@ -450,7 +452,7 @@ Notes: Backpack and Sling Bag count as "worn" when carried as intended. Barrel h
 
 Notes: Cloak and Coat protect against weather (Coat also against extreme cold). Courtly Garb worn by servants costs half price. Jewellery price varies by craftsmanship, metal, and gems — a plain ring costs roughly 10 coins of its metal type, a necklace roughly 20. Signet Rings and Sceptres mark noble/official status.
 
-# Food, Drink, and Lodging
+## Food, Drink, and Lodging
 
 Poor quality costs half the listed price; fine quality costs double. Poor food/drink carries a 10% risk of the Galloping Trots.
 
@@ -471,7 +473,7 @@ Poor quality costs half the listed price; fine quality costs double. Poor food/d
 
 Notes: an Ale keg holds 3 gallons (refill 18d empty). Bugman's counts as 4 mugs for intoxication purposes and grants 1d10 hours of Fear immunity. Inn rooms accommodate 2 guests (large rooms: double price, 4 guests).
 
-# Tools and Kits
+## Tools and Kits
 
 Most tools count as Improvised Weapons in combat (GMs may allow heavy/sharp tools as Hand Weapons).
 
@@ -520,7 +522,7 @@ Most tools count as Improvised Weapons in combat (GMs may allow heavy/sharp tool
 
 Notes: Antitoxin Kit removes all Poisoned Conditions with a successful Heal Test (2+ Rounds). Disguise Kit supports 4 disguises. Lock Picks are required to use Pick Lock without penalty. Manacled prisoners breaking free take 1 Wound and need a Very Hard (-30) Strength Test. Reading Lens gives +20 to relevant Read/Write and Perception Tests. Writing Kit contains a quill, inkpot, and blotter.
 
-# Books and Documents
+## Books and Documents
 
 All prices are loose suggestions; contents and quality vary.
 
@@ -542,7 +544,7 @@ All prices are loose suggestions; contents and quality vary.
 
 Notes: Guild Licenses aren't purchased — granted per guild tradition. Book, Magic grimoires are often locked or warded, and possession without a Colleges of Magic license is heresy.
 
-# Trade Tools and Workshops
+## Trade Tools and Workshops
 
 | Item | Cost | Enc | Availability |
 | --- | --- | --- | --- |
@@ -553,7 +555,7 @@ Sample Artisan tool sets: Apothecary (pestle and mortar, spoons, jars, scales �
 
 Other Artisan trades: Armourer, Bowyer, Brewer, Candlemaker, Calligrapher, Cartographer, Cobbler, Cook, Cooper, Embalmer, Gem Cutter, Glassblower, Goldsmith, Gunsmith, Jeweller, Leatherworker, Mason, Painter, Potter, Shipwright, Stoneworker, Tailor, Tanner, Vintner, Weaver, Weaponsmith, Woodcarver.
 
-# Animals and Vehicles
+## Animals and Vehicles
 
 Vehicles list Encumbrance for their own weight and Carries for how much they can transport.
 
@@ -581,7 +583,7 @@ Vehicles list Encumbrance for their own weight and Carries for how much they can
 
 Notes: Cart needs 1 driver + 1 draft animal; Coach needs 2 drivers + 4 horses; Coracle carries 1 person, portable; Destrier is a warhorse; River Barge crews 3; Row Boat needs 1 rower; Wagon needs 1 driver + 2 horses.
 
-# Drugs and Poisons
+## Drugs and Poisons
 
 | Item | Cost | Enc | Availability |
 | --- | --- | --- | --- |
@@ -605,7 +607,7 @@ Effects summary:
 - **Spit**: powerful hallucinogen; requires a Very Hard (-30) Toughness Test or the user becomes lost in a vivid fantasy.
 - **Weirdroot**: common street drug; +10 Toughness and Willpower, –10 Agility/Initiative/Intelligence while active.
 
-# Herbs and Draughts
+## Herbs and Draughts
 
 | Item | Cost | Enc | Availability |
 | --- | --- | --- | --- |
@@ -629,7 +631,7 @@ Effects summary:
 - **Salwort**: removes 1 Stunned Condition when inhaled (1 dose per encounter).
 - **Vitality Draught**: instantly removes all Fatigued Conditions.
 
-# Prosthetics
+## Prosthetics
 
 All Prosthetics have Encumbrance 0 when worn.
 
@@ -645,7 +647,7 @@ All Prosthetics have Encumbrance 0 when worn.
 
 Notes: False Leg (False Foot: half price) recovers 1 Movement point immediately; 100 XP recovers the remaining Movement point, 200 XP relearns Dodge. Gilded Nose removes the Fellowship penalty for missing a nose. Hook can buy back the two-handed-task penalty (100 XP per 5 points, 400 XP to remove entirely) and counts as a Dagger in Close Combat. Engineering Marvel fully replaces an ear, hand, arm, or leg, but breaks down if it takes a Critical Wound and needs costly repair. Wooden Teeth remove penalties for lost teeth.
 
-# Miscellaneous Trappings
+## Miscellaneous Trappings
 
 | Item | Cost | Enc | Availability |
 | --- | --- | --- | --- |
@@ -683,11 +685,11 @@ Notes: False Leg (False Foot: half price) recovers 1 Movement point immediately;
 
 Notes: Bandage adds +1 extra Bleeding recovery on a successful Heal Test. Bedroll gives +20 to cold-exposure Endurance Tests while resting. Candle illuminates 10 yards. Davrich Lamp is a safety lamp that ignites firedamp gas after 1d10 rounds of exposure. Grappling Hook is used with rope to climb unscalable surfaces. Instrument pricing shown is for medium instruments (mandolin, coach horn, small drum); small instruments (flute, recorder, tambourine) are half price/0 Enc, large ones (harp, lute, large drum) are double price/2 Enc. Lamp Oil fuels 4 hours standard or 8 hours low flame. Lantern illuminates 20 yards; Storm Lantern illuminates 20 yards (30 when directed) and can be shuttered. Tent shown accommodates 4 (small: 2 people, half price, 1 Enc; large: 8 people, double price, 4 Enc).
 
-# Hirelings
+## Hirelings
 
 Hirelings are NPCs hired for coin; any Career can be hired with GM permission. Pay equals their Social Status for a quick job, or triple that for a full day. Dangerous jobs demand double pay unless a Leadership Test succeeds (also required for complex independent tasks or good reason to flee). Quick Hireling profiles: add 5 Advances to every Career Characteristic/Skill per Career level hired, and 1 Talent per level.
 
-## Sample Hirelings
+### Sample Hirelings
 
 | Hireling | Quick Job | Daily Cost | Weekly Cost | Notes |
 | --- | --- | --- | --- | --- |
@@ -698,6 +700,6 @@ Hirelings are NPCs hired for coin; any Career can be hired with GM permission. P
 | Scribe | 2/– | 6/– | 2GC 8/– | Also translates 1-2 other common languages |
 | Doktor | 5/– | 15/– | 5GC | A single visit costs 4-6 shillings for medical attention |
 
-## Henchmen
+### Henchmen
 
 Henchmen are permanent party companions (hirelings, friends, or pets) with full character sheets, tied to one player. A Henchman earns half its attached player's XP (rounded down), spent by that player, and can serve as a replacement character if the original PC dies.
