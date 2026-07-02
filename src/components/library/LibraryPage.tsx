@@ -11,7 +11,7 @@ function findChapterIndex(book: BookMeta, chapterId: string): number {
   return book.chapters.findIndex((chapter) => chapter.id === chapterId);
 }
 
-export function BooksLibrary({
+export function LibraryPage({
   bookId,
   chapterId,
   onSelectBook,
