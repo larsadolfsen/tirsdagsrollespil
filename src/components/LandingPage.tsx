@@ -5,6 +5,7 @@ import {
   subscribeToProgressUpdates,
 } from "../data/persistence";
 import { loadResolvedCharacter, type CharacterSummary } from "../data/repository";
+import libraryCover from "../data/books/library-cover.webp";
 import { Heading } from "./ui";
 
 type LandingPageProps = {
@@ -12,9 +13,10 @@ type LandingPageProps = {
   characters: CharacterSummary[];
   onSelectCharacter: (characterId: string) => void;
   onSelectGameMaster: () => void;
+  onSelectLibrary: () => void;
 };
 
-export function LandingPage({ campaignName, characters, onSelectCharacter, onSelectGameMaster }: LandingPageProps) {
+export function LandingPage({ campaignName, characters, onSelectCharacter, onSelectGameMaster, onSelectLibrary }: LandingPageProps) {
   const resolvedCharacters = characters.map((character) => loadResolvedCharacter(character.id));
   const [portraitDataUrls, setPortraitDataUrls] = useState<Record<string, string>>({});
   const [characterNames, setCharacterNames] = useState<Record<string, string>>({});
@@ -94,8 +96,8 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
         <span className="wfrp-label text-wfrp-muted-text text-[11px] font-semibold uppercase tracking-widest">
           Campaign
         </span>
-        <div className="mt-1">
-          <Heading level={1} variant="pageDisplay">
+        <div className="mt-1 flex max-w-full justify-center border-b-2 border-wfrp-red">
+          <Heading level={1} variant="chapterH1">
             {campaignName}
           </Heading>
         </div>
@@ -120,6 +122,33 @@ export function LandingPage({ campaignName, characters, onSelectCharacter, onSel
             </Heading>
           </div>
         </button>
+
+        {/* Library Card */}
+        <button
+          type="button"
+          onClick={onSelectLibrary}
+          className="wfrp-landing-character-card"
+          aria-label="Open Library"
+        >
+          <div className="wfrp-landing-portrait">
+            <img
+              src={libraryCover}
+              alt=""
+              className="wfrp-landing-portrait-image"
+            />
+          </div>
+          <div className="wfrp-landing-card-body">
+            <Heading level={2} variant="card">
+              Library
+            </Heading>
+          </div>
+        </button>
+
+        <div className="mt-4">
+          <Heading level={2} variant="sidebarLabel">
+            Characters
+          </Heading>
+        </div>
 
         {/* Character Cards */}
         {resolvedCharacters.map((character) => {
