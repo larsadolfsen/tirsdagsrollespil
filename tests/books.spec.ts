@@ -111,3 +111,15 @@ test("a chapter with fewer than 2 major sections has no table of contents", asyn
   await expect(page.getByRole("navigation", { name: "Chapter contents" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Contents" })).toHaveCount(0);
 });
+
+test("tables have alternating row background colors", async ({ page }) => {
+  await page.goto("/enemy_within/karl-muller/books/core-rulebook/rules");
+
+  const table = page.locator("table").filter({ hasText: "Astounding Success" });
+  const rows = table.locator("tbody tr");
+
+  const firstColor = await rows.nth(0).evaluate((el) => getComputedStyle(el).backgroundColor);
+  const secondColor = await rows.nth(1).evaluate((el) => getComputedStyle(el).backgroundColor);
+
+  expect(firstColor).not.toBe(secondColor);
+});
