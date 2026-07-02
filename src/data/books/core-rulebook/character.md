@@ -16,7 +16,7 @@ Character creation runs through nine steps: 
 
 In several steps you may choose an option outright, or roll for a random result instead. Accepting a random result usually grants bonus XP, spendable once character creation is finished.
 
-### 1) Species
+## 1) Species
 
 Choose Human, Dwarf, Halfling, High Elf, or Wood Elf, or roll 1d100 on the table below and gain +20 XP for accepting the result.
 
@@ -28,7 +28,7 @@ Choose Human, Dwarf, Halfling, High Elf, or Wood Elf, or roll 1d100 on the table
 | 99 | High Elf |
 | 00 | Wood Elf |
 
-### 2) Class and Career
+## 2) Class and Career
 
 Class sets your general place in society and which Careers are open to you; Career is your current job and sets your Status (and so your starting income).
 
@@ -38,7 +38,7 @@ Random selection procedure:
 2.  Roll twice more (3 results total). Pick any of the three for +25 XP, or continue.
 3.  Freely choose, or keep rerolling, for no XP bonus.
 
-#### Random Class and Career Table (1d100 by Species)
+### Random Class and Career Table (1d100 by Species)
 
 | Class | Career | Human | Dwarf | Halfling | High Elf | Wood Elf |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -107,7 +107,7 @@ Random selection procedure:
 | Warriors | Slayer | – | 97–100 | – | – | – |
 | Warriors | Warrior Priest | 100 | – | – | – | – |
 
-#### Classes
+### Classes
 
 Each Class groups 8 Careers of similar social standing:
 
@@ -122,17 +122,17 @@ Each Class groups 8 Careers of similar social standing:
 
 Career availability is restricted by Species per the table above. A GM may allow an otherwise-excluded Species/Career combination by agreement.
 
-### 3) Attributes
+## 3) Attributes
 
 Attributes cover Movement, the ten Characteristics, Wounds, Fate, and Resilience. Human Characteristics average 30; 40+ is skilled, 60+ is exceptional.
 
-#### Determining Characteristics
+### Determining Characteristics
 
 1.  Roll 2d10 for each of the 10 Characteristics. Keep the results as rolled (applied to their matching Characteristic) for +50 XP.
 2.  Or, reassign the ten rolled numbers freely across the Characteristics for +25 XP.
 3.  Or, reroll and rearrange with no XP bonus, or abandon rolling and allocate 100 points across the 10 Characteristics (min 4, max 18 per Characteristic) with no XP bonus. In all cases, add the Species modifier from the Attributes Table afterward.
 
-#### Attributes Table
+### Attributes Table
 
 | Characteristic | Human | Dwarf | Halfling | Elf |
 | --- | :-: | :-: | :-: | :-: |
@@ -154,15 +154,15 @@ Attributes cover Movement, the ten Characteristics, Wounds, Fate, and Resilience
 
 Notes: High Elves and Wood Elves both use the "Elf" column. Halflings have the Small Talent automatically, reducing starting Wounds. The Elf column's Extra Points are split freely between Fate and Resilience.
 
-#### Characteristic Bonus
+### Characteristic Bonus
 
 The tens digit of a Characteristic score is its Bonus (e.g. Strength 39 → Strength Bonus 3; Willpower 51 → Willpower Bonus 5). Bonuses feed into Wounds, Talent limits, and Spell effects.
 
-#### Fortune, Resolve, Motivation
+### Fortune, Resolve, Motivation
 
 Starting Fortune equals starting Fate; starting Resolve equals starting Resilience. Every character also picks one Motivation (a short phrase capturing what drives them), used to help regain Resolve.
 
-#### Movement
+### Movement
 
 | Movement | Walk | Run |
 | --- | --- | --- |
@@ -170,15 +170,15 @@ Starting Fortune equals starting Fate; starting Resolve equals starting Resilien
 | 4 | 8 | 16 |
 | 5 | 10 | 20 |
 
-#### Advance Characteristics
+### Advance Characteristics
 
 Each Career's Advance Scheme marks three Characteristics without a brass/silver/gold background; allocate 5 Advances total across those three.
 
 Characteristic Advances add directly to the base Characteristic score (e.g. Dexterity 25 + 5 Advances = 30). Skill Advances similarly add to the Skill's governing Characteristic. Basic Skills can be used untrained at the governing Characteristic's value; Advanced Skills require at least one Advance to use at all.
 
-### 4) Skills and Talents
+## 4) Skills and Talents
 
-#### Species Skills and Talents
+### Species Skills and Talents
 
 For your Species's Skill list: choose 3 Skills to gain 5 Advances each, and 3 more Skills to gain 3 Advances each. Where a Talent entry offers a choice, pick one. Random Talents are rolled on the Random Talents table (reroll duplicates). All characters are assumed fluent in Reikspiel at no cost.
 
@@ -190,7 +190,7 @@ For your Species's Skill list: choose 3 Skills to gain 5 Advances each, and 3 mo
 | High Elves | Cool, Entertain (Sing), Evaluate, Language (Eltharin), Leadership, Melee (Basic), Navigation, Perception, Play (any one), Ranged (Bow), Sail, Swim | Acute Sense (Sight), Coolheaded or Savvy, Night Vision, Second Sight or Sixth Sense, Read/Write |
 | Wood Elves | Athletics, Climb, Endurance, Entertain (Sing), Intimidate, Language (Eltharin), Melee (Basic), Outdoor Survival, Perception, Ranged (Bow), Stealth (Rural), Track | Acute Sense (Sight), Hardy or Second Sight, Night Vision, Read/Write or Very Resilient, Rover |
 
-#### Random Talents Table (1d100)
+### Random Talents Table (1d100)
 
 | Roll | Talent | Roll | Talent |
 | --- | --- | --- | --- |
@@ -211,15 +211,15 @@ For your Species's Skill list: choose 3 Skills to gain 5 Advances each, and 3 mo
 | 45–47 | Night Vision | 95–97 | Very Strong |
 | 48–50 | Nimble Fingered | 98–00 | Warrior Born |
 
-#### Career Skills and Talents
+### Career Skills and Talents
 
 Your starting Career level lists 8 Skills and 4 Talents. Allocate 40 Advances across the 8 Skills, maximum 10 Advances to any single Skill at this stage (this allocation limit doesn't apply later). Also choose 1 Talent from the 4 listed.
 
-### 5) Trappings
+## 5) Trappings
 
 Starting equipment comes from Class (general gear) and Career (specific gear for the first Career level).
 
-#### Class Trappings
+### Class Trappings
 
 | Class | Trappings |
 | --- | --- |
@@ -232,7 +232,7 @@ Starting equipment comes from Class (general gear) and Career (specific gear for
 | Rogues | Clothing, Dagger, Pouch, Sling Bag containing 2 Candles, 1d10 Matches, a Hood or Mask |
 | Warriors | Clothing, Hand Weapon, Dagger, Pouch |
 
-#### Career Trappings and Starting Wealth
+### Career Trappings and Starting Wealth
 
 Take all Trappings listed for the first level of your Career Path. That Career level also lists a Status Tier (Brass/Silver/Gold) and Status Level, which set starting wealth:
 
@@ -244,17 +244,17 @@ Take all Trappings listed for the first level of your Career Path. That Career l
 
 (E.g. Brass 3 = 6d10 pennies; Silver 3 = 3d10 shillings; Gold 3 = 3 crowns.)
 
-### 6) Adding Detail
+## 6) Adding Detail
 
 Cosmetic and roleplaying details: name, age, eye/hair colour, height, Psychology, Motivation, and Ambitions. These can be chosen freely or rolled randomly on the tables below.
 
-##### Age
+#### Age
 
 | Human | Dwarf | Elf | Halfling |
 | --- | --- | --- | --- |
 | 15+d10 | 15+10d10 | 30+10d10 | 15+5d10 |
 
-##### Height
+#### Height
 
 | Human | Dwarf | Elf | Halfling |
 | --- | --- | --- | --- |
@@ -262,7 +262,7 @@ Cosmetic and roleplaying details: name, age, eye/hair colour, height, Psychology
 
 For Humans, if either height die rolls a 10, roll one more die and add it to the total.
 
-#### Eye Colour (2d10)
+### Eye Colour (2d10)
 
 | 2d10 | Reikland Human | Dwarf | Halfling | High Elf | Wood Elf |
 | --- | --- | --- | --- | --- | --- |
@@ -279,7 +279,7 @@ For Humans, if either height die rolls a 10, roll one more die and add it to the
 
 Elves may roll twice on the Eye Colour table, combining both results.
 
-#### Hair Colour (2d10)
+### Hair Colour (2d10)
 
 | 2d10 | Reikland Human | Dwarf | Halfling | High Elf | Wood Elf |
 | --- | --- | --- | --- | --- | --- |
@@ -294,7 +294,7 @@ Elves may roll twice on the Eye Colour table, combining both results.
 | 19 | Red | Reddish Brown | Chocolate | Red | Ebony |
 | 20 | Grey | Black | Liquorice | Black | Blue-Black |
 
-#### Elf Name Generator (1d10 per component)
+### Elf Name Generator (1d10 per component)
 
 | 1d10 | First Component | Second Component | High Elf Ending | Wood Elf Ending |
 | --- | --- | --- | --- | --- |
@@ -309,33 +309,33 @@ Elves may roll twice on the Eye Colour table, combining both results.
 | 9 | Mor | sor | ric | stra |
 | 10 | Ullia | than | wing | wyth |
 
-#### Ambitions
+### Ambitions
 
 Every character has a Short-Term Ambition (achievable within a few sessions) and a Long-Term Ambition (achievable over months/years, possibly never). The GM has final say on acceptability.
 
 -   Achieving a Short-Term Ambition: +50 XP, choose a new one.
 -   Achieving a Long-Term Ambition: either +500 XP and choose a new one, or retire the character (becomes an NPC) and gain half the character's earned XP toward a new character.
 
-#### Psychology
+### Psychology
 
 A character may take a Psychology trait (e.g. Love, Animosity, Hatred) with GM agreement to represent strong emotional drives.
 
-### 7) Party
+## 7) Party
 
 The group also sets collective Party Ambitions (short-term and long-term), which can change between sessions.
 
 -   Party achieves Short-Term Ambition: each member gets +50 XP; choose a new one.
 -   Party achieves Long-Term Ambition: either all members get +500 XP and choose a new one, or any willing players retire their characters (becoming NPCs) and gain half their current XP toward a new character.
 
-### 8) Bringing Your Character to Life
+## 8) Bringing Your Character to Life
 
 Optional step for fleshing out personality, background, and relationships (e.g. via a set of guided background questions covering origins, family, friends, beliefs, and motivations for adventuring). Any bonus XP earned during character creation should be spent now, before play begins.
 
-### 9) Advancement
+## 9) Advancement
 
 XP is awarded by the GM after sessions (and for good roleplaying, resolving adventures, or defeating key foes) and spent between sessions to raise Characteristics, learn/improve Skills, gain Talents, or change Career. At the start, XP may only be spent on the 3 Characteristics, 8 Skills, and 4 Talents tied to the character's current Career level.
 
-#### Characteristic and Skill Improvement XP Costs
+### Characteristic and Skill Improvement XP Costs
 
 | Advances so far | XP per Advance (Characteristic) | XP per Advance (Skill) |
 | --- | --- | --- |
@@ -350,7 +350,7 @@ XP is awarded by the GM after sessions (and for good roleplaying, resolving adve
 | 41–45 | 190 | 140 |
 | 46–50 | 230 | 180 |
 
-#### Other Improvement Costs
+### Other Improvement Costs
 
 | Improvement | XP Cost |
 | --- | --- |

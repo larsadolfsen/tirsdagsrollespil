@@ -2085,7 +2085,7 @@ export function AppComposition() {
               />
             )}
             hideMobileNavigation={showMobileGainExperiencePage || activeMainTab === "dice" || activeMainTab === "books"}
-            mobileTitle={displayedMobilePageTitle}
+            mobileTitle={activeMainTab === "books" ? "" : displayedMobilePageTitle}
             onMobileNextView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFrameNext}
             onMobilePreviousView={showMobileGainExperiencePage ? () => setIsMobileGainExperienceOpen(false) : navigateMobileFramePrevious}
           >

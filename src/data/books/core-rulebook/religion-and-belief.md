@@ -1,12 +1,12 @@
 # Religion and Belief
 
-### Overview
+## Overview
 
 The Old World pantheon is grouped into the Old Gods (five primal deities: Ulric, Taal, Rhya, Manann, Morr), the Classical Gods (imported via trade, e.g. Verena, Myrmidia, Shallya, Ranald, and the outlawed Khaine), the Provincial Gods (many small local/regional cults), and Sigmar, patron of the Empire as a whole. Ten cults are recognised as primary and meet at the Grand Conclave: Manann, Morr, Myrmidia, Ranald, Rhya, Shallya, Sigmar, Taal, Ulric, and Verena.
 
 Non-Human species have their own pantheons: Dwarfs venerate Ancestor Gods (notably Grimnir, Grungni, Valaya) and represent devotion through Career choice rather than Priest Careers; Elves recognise the Cadai and Cytharai courts (e.g. Asuryan, Isha, Kurnous, Hoeth, Atharti, Khaine, Mathlann) plus the unaligned Morai-Heg, and represent priesthood through Wizard careers and Lores rather than Blessings/Miracles; Halflings have practical hearth-and-home deities (Esmerelda, Hyacinth, Josias, Quinsberry) and generally lack dedicated priests. The four Chaos Gods (Khorne, Nurgle, Tzeentch, Slaanesh) are worshipped only by outlawed cultists.
 
-### Primary Gods of the Empire
+## Primary Gods of the Empire
 
 | God | Domain | Notable Worshippers |
 | --- | --- | --- |
@@ -21,7 +21,7 @@ Non-Human species have their own pantheons: Dwarfs venerate Ancestor Gods (notab
 | Ulric | War, winter, wolves | Warriors, Middenlanders |
 | Verena | Learning, justice, wisdom | Scribes, lawyers, scholars |
 
-### Provincial and Other Gods (Selected Examples)
+## Provincial and Other Gods (Selected Examples)
 
 | God | Domain |
 | --- | --- |
@@ -48,11 +48,11 @@ Non-Human species have their own pantheons: Dwarfs venerate Ancestor Gods (notab
 | Josias | Halfling farming |
 | Quinsberry | Halfling knowledge and ancestry |
 
-### The Cults
+## The Cults
 
 Each major cult is organised into orders (monastic, templar, priestly, or mendicant), each pursuing a different aspect of the god's concerns, and answers to its own cult leadership rather than local nobility.
 
-#### Cult of Manann, God of the Sea
+### Cult of Manann, God of the Sea
 
 Domain: the sea, storms, and those who live or travel by water.
 
@@ -61,7 +61,7 @@ Domain: the sea, storms, and those who live or travel by water.
 - Orders: Order of the Albatross (priests, largest order), Order of the Mariner (templar-marines).
 - Strictures: no whistling or swearing at sea/holy ground; never harm an albatross; first catch belongs to Manann; give a silver coin and fish at any Manannite shrine; hunt down followers of Stromfels.
 
-#### Cult of Morr, God of Death
+### Cult of Morr, God of Death
 
 Domain: death, dreams, and the passage of souls.
 
@@ -70,7 +70,7 @@ Domain: death, dreams, and the passage of souls.
 - Orders: Order of the Shroud (controls burials and the Mourners' Guild), Order of the Black Guard (templars, hunt the Undead), Order of the Augurs (foretellings; oversees the wandering Order of Doomsayers).
 - Strictures: respect and protect the dead; hunt Necromancers and the Undead; heed dreams; never refuse a funeral; never help raise the dead without Morr's sanction.
 
-#### Cult of Myrmidia, Goddess of Strategy
+### Cult of Myrmidia, Goddess of Strategy
 
 Domain: strategic and disciplined warfare.
 
@@ -79,7 +79,7 @@ Domain: strategic and disciplined warfare.
 - Orders: Order of the Eagle (priests, led from Nuln), Order of the Righteous Spear (templars attached to Eagle temples), Order of the Blazing Sun (independent templars).
 - Strictures: act with honour and dignity; respect prisoners of war and never kill one who surrenders; show no mercy to the unrepentant enemies of Humanity; obey honourable orders; protect the weak from war.
 
-#### Cult of Ranald, God of Trickery
+### Cult of Ranald, God of Trickery
 
 Domain: trickery, luck, and the downtrodden.
 
@@ -88,7 +88,7 @@ Domain: trickery, luck, and the downtrodden.
 - Orders: The Crosses (public-facing priesthood running gambling dens for the poor), The Brotherhood (secretive merchant network), The Crooked Fingers (thieves and rogues, most numerous and least trusted).
 - Strictures: one coin in ten belongs to Ranald; never inform on another to the authorities; violence only in self-defence; better to live free and die than live oppressed; honour exists among Ranaldans even if not among thieves generally.
 
-#### Cult of Rhya, Goddess of Fertility
+### Cult of Rhya, Goddess of Fertility
 
 Domain: fertility, life, and summer.
 
@@ -97,7 +97,7 @@ Domain: fertility, life, and summer.
 - Orders: none formal.
 - Strictures: defend families, children, and crops; feel no shame for the flesh Rhya gave you; life is sacred, harm only to prevent greater harm; never judge whom another loves; oppose the Prince of Excess.
 
-#### Cult of Shallya, Goddess of Mercy
+### Cult of Shallya, Goddess of Mercy
 
 Domain: healing, mercy, and compassion.
 
@@ -106,7 +106,7 @@ Domain: healing, mercy, and compassion.
 - Orders: Order of the Bleeding Heart (runs temples and hospices), Order of the Chalice (smaller, fights plague and disease).
 - Strictures: render aid without judgement; never kill except in self-defence or against followers of the Fly Lord; hunt down followers of the Fly Lord; never indulge in self-satisfaction while suffering remains; never take up arms.
 
-#### Cult of Sigmar, God of the Empire
+### Cult of Sigmar, God of the Empire
 
 Domain: the Empire and its people.
 
@@ -115,7 +115,7 @@ Domain: the Empire and its people.
 - Orders: Order of the Torch (largest, local priests), Order of the Cleansing Flame (inquisitors and witch hunters), Order of the Silver Hammer (warrior priests and witch hunters), Order of the Anvil (monastic, preserves Sigmar's lore). Notable templar orders: Knights of Sigmar's Blood, Knights of the Fiery Heart, Knights Griffon.
 - Strictures: obey your orders; aid Dwarf-folk; promote the unity of the Empire; bear true allegiance to the imperial throne; root out Greenskins, Chaos worshippers, and witches without mercy.
 
-#### Cult of Taal, God of the Wild
+### Cult of Taal, God of the Wild
 
 Domain: wild places, nature, and animals.
 
@@ -124,7 +124,7 @@ Domain: wild places, nature, and animals.
 - Orders: Order of the Antler (priests, teach and protect wild places), The Longshanks (wandering warrior-priest/templars who cleanse corruption from the wild).
 - Strictures: offer thanks for every animal taken; spend a week alone in the wilderness each year; wear no metal armour; rely on skill rather than gunpowder or advanced technology; never harm an animal except for self-defence, food, or sacrifice.
 
-#### Cult of Ulric, God of War
+### Cult of Ulric, God of War
 
 Domain: war, winter, and wolves.
 
@@ -133,7 +133,7 @@ Domain: war, winter, and wolves.
 - Orders: Order of the Howling Wolf (priests), Order of the Knights of the White Wolf (the largest and oldest templar order in the Old World).
 - Strictures: obey your betters; defend your honour and never refuse a challenge; be honest and direct (trickery forbidden outside ambush); wear only pelts from wolves you killed yourself; shun blackpowder, helmets, crossbows, and similar technology.
 
-#### Cult of Verena, Goddess of Wisdom
+### Cult of Verena, Goddess of Wisdom
 
 Domain: learning, justice, and wisdom.
 
@@ -142,13 +142,13 @@ Domain: learning, justice, and wisdom.
 - Orders: Order of Lorekeepers (preserve and share knowledge), Order of Scalebearers (judges and arbitrators), Order of Mysteries (smaller, warrior-priests who seek lost lore), Knights of the Everlasting Light (templars).
 - Strictures: never refuse to arbitrate a dispute; always tell the truth; protect knowledge at all costs; combat only as a last resort; never serve injustice or heresy.
 
-### Prayer Mechanics
+## Prayer Mechanics
 
-#### The Blessed
+### The Blessed
 
 Two Talents mark a character as Blessed: **Bless** grants all six Blessings of the character's cult; **Invoke** grants access to that cult's Miracles.
 
-#### Enacting a Blessing or Miracle
+### Enacting a Blessing or Miracle
 
 Make a Challenging (+0) Pray Test.
 
@@ -156,20 +156,20 @@ Make a Challenging (+0) Pray Test.
 - **Failure**: nothing happens; the god simply does not answer.
 - **Fumble**: roll on the Wrath of the Gods table.
 
-#### Limitations
+### Limitations
 
 - You must be able to speak/chant to enact a Blessing or Miracle.
 - Each of your own Blessings/Miracles can only be active once at a time; you must wait for the current casting to end before repeating it.
 - Multiple casters using the same Blessing on a target do not stack; effects don't add cumulatively.
 - Blessings are subtle and imperceptible without the Holy Visions Talent; Miracles are always overt, accompanied by signs fitting the deity.
 
-#### Success Levels
+### Success Levels
 
 **Blessings**: every +2 SL grants one bonus of +6 yards Range, +1 Target, or +6 Rounds Duration (choosable multiple times; Duration cannot be extended if the Blessing is Instant).
 
 **Miracles**: every +2 SL adds another increment of the Miracle's own listed Range, Duration, or Targets (e.g. a 50-yard Miracle gains +50 yards per +2 SL). Miracles with Range/Target of "You" cannot be extended in range or targets; Miracles with no duration gain no benefit from extending duration. Some Miracles list their own unique SL bonus options instead.
 
-#### Sin Points and Wrath of the Gods
+### Sin Points and Wrath of the Gods
 
 - Breaking one of your cult's Strictures earns 1–3 Sin Points at the GM's discretion, scaled to the severity of the infraction.
 - Whenever you make a Pray Test, if the Units digit of the roll is less than or equal to your current Sin Points, you suffer the Wrath of the Gods regardless of whether the Test succeeded.
@@ -177,7 +177,7 @@ Make a Challenging (+0) Pray Test.
 - The only ways to remove Sin Points are rolling on the Wrath of the Gods table, or a GM-permitted successful Pray Test after an act of significant piety (itself risking a further Wrath of the Gods roll).
 - Some Wrath results impose a Penance: a task assigned by the GM (or chosen by the character, subject to GM approval) to atone.
 
-#### Wrath of the Gods Table (Summary by Severity)
+### Wrath of the Gods Table (Summary by Severity)
 
 | Roll Range | Approximate Effect |
 | --- | --- |
@@ -187,11 +187,11 @@ Make a Challenging (+0) Pray Test.
 | 96–150 | Grave: mandatory Penance, Unconsciousness, loss of trappings, loss of the Bless/Invoke Talents (temporary or permanent), a Divine Servant intervening directly, custom trauma-based Psychology |
 | 151+ | Called to Account: summoned before your god for judgement; without a Fate Point the character never returns; spending a Fate Point returns them but still applies the effects of losing Bless and Invoke permanently |
 
-#### Divine Servants
+### Divine Servants
 
 Supernatural minions gods may send to intervene, usually a favoured animal (e.g. a white wolf for Ulric, a golden eagle for Myrmidia) or the spirit of a departed devotee. Built as modified animals, Humans, or Daemons using the Bestiary rules.
 
-### Blessings by Cult
+## Blessings by Cult
 
 Each cult's Bless Talent grants all six of its listed Blessings.
 
@@ -210,7 +210,7 @@ Each cult's Bless Talent grants all six of its listed Blessings.
 
 Note: cults use their own names for these Blessings in play (e.g. Sigmar's Blessing of Battle may be called "The Litany of Sigmar's Wrath"); the underlying mechanical effect is identical regardless of the name used.
 
-### Blessing Effects
+## Blessing Effects
 
 All Blessings below have Range 6 yards (or Touch), Target 1, and Duration 6 Rounds unless noted otherwise.
 
@@ -236,11 +236,11 @@ All Blessings below have Range 6 yards (or Touch), Target 1, and Duration 6 Roun
 | Wisdom | 6 yards | 6 Rounds | +10 Intelligence |
 | Wit | 6 yards | 6 Rounds | +10 Initiative |
 
-### Miracles
+## Miracles
 
 Miracles are overt, dramatic manifestations of divine will available to characters with the Invoke Talent.
 
-#### Miracles of Manann
+### Miracles of Manann
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |
@@ -250,7 +250,7 @@ Miracles are overt, dramatic manifestations of divine will available to characte
 | Sea Legs | Fellowship yards / 1 | Fellowship Bonus Rounds | Target is drenched and disoriented: gains Blinded, Deafened, and Fatigued; must pass Average (+20) Agility to Move or also falls Prone |
 | Waterwalk | You / You | Fellowship Bonus minutes | Walk across open water at least 10 yards wide as if solid ground |
 
-#### Miracles of Morr
+### Miracles of Morr
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |
@@ -261,7 +261,7 @@ Miracles are overt, dramatic manifestations of divine will available to characte
 | Portal's Threshold | Touch / Area of Effect | Special (until dawn) | Draws an 8-yard barrier line; Undead creatures must pass a Challenging (+0) Willpower Test to cross it; Undead+Construct creatures cannot cross at all |
 | Stay Morr's Hand | Touch / 1 | Fellowship Bonus Hours (Special) | A willing target at 0 Wounds is held in stasis (Unconscious, no deterioration) until healed or given last rites, the latter making the eventual corpse immune to Necromancy |
 
-#### Miracles of Myrmidia
+### Miracles of Myrmidia
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |
@@ -272,7 +272,7 @@ Miracles are overt, dramatic manifestations of divine will available to characte
 | Shield of Myrmidia | Fellowship yards / Intelligence Bonus allies | Fellowship Bonus Rounds | Allies gain +1 AP on all locations |
 | Spear of Myrmidia | You / You | Fellowship Bonus Rounds | Your wielded spear gains Impact and counts as Magical |
 
-#### Miracles of Ranald
+### Miracles of Ranald
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |
@@ -283,7 +283,7 @@ Miracles are overt, dramatic manifestations of divine will available to characte
 | Stay Lucky | You / You | Special | Gain +1 Fortune point (+1 more per +2 SL, can exceed normal maximum); cannot be invoked again until Fortune reaches 0 |
 | You Ain't Seen Me, Right? | Fellowship yards / 1 | Fellowship Bonus Rounds | Target goes unnoticed unless they draw attention (touching, attacking, shouting, casting, loud noise); requires no one is currently looking at you to cast |
 
-#### Miracles of Rhya
+### Miracles of Rhya
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |
@@ -294,7 +294,7 @@ Miracles are overt, dramatic manifestations of divine will available to characte
 | Rhya's Touch | Touch / 1 | Special | Choose: heal Fellowship Bonus Wounds, or cure 1 natural disease; repeatable choice per +2 SL; takes 10+ minutes, ruined if interrupted |
 | Rhya's Union | Touch / Special | Fellowship Bonus Hours | Blesses a union; the couple conceives a child if biologically possible while active |
 
-#### Miracles of Shallya
+### Miracles of Shallya
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |
@@ -305,7 +305,7 @@ Miracles are overt, dramatic manifestations of divine will available to characte
 | Shallya's Tears | Touch / 1 | Special | After praying for 10 minus Fellowship Bonus Rounds, heal 1 Critical Wound (+1 more per +2 SL); no effect on amputations; interrupted prayer wastes the Miracle |
 | Unblemished Innocence | Touch / 1 | Instant | Removes 1 Corruption point (+1 more per +2 SL); must be cast within an hour of gaining it; Fumble inflicts 1d10 Corruption on both you and target |
 
-#### Miracles of Sigmar
+### Miracles of Sigmar
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |
@@ -316,7 +316,7 @@ Miracles are overt, dramatic manifestations of divine will available to characte
 | Twin-tailed Comet | Fellowship yards / Area of Effect | Instant | Outdoor-only strike dealing 1d10+SL Damage (ignoring Toughness/AP) and Ablaze within Fellowship Bonus yards of impact; only targets those hostile to Sigmar |
 | Vanquish the Unrighteous | Fellowship yards / Fellowship Bonus allies | Fellowship Bonus Rounds | Allies gain Hatred Psychology toward Greenskins, Undead, and Chaos |
 
-#### Miracles of Taal
+### Miracles of Taal
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |
@@ -327,7 +327,7 @@ Miracles are overt, dramatic manifestations of divine will available to characte
 | Tooth and Claw | You / You | Fellowship Bonus Rounds | Gain Bite (SB+3) and Weapon (SB+4) Creature Traits, both Magical |
 | Tanglefoot | Fellowship yards / Area of Effect | Instant | Targets within Fellowship Bonus yards gain Entangled (Strength equal to your Willpower to break free); per +2 SL, extend area or add another Entangled |
 
-#### Miracles of Ulric
+### Miracles of Ulric
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |
@@ -338,7 +338,7 @@ Miracles are overt, dramatic manifestations of divine will available to characte
 | The Snow King's Judgement | Fellowship yards / 1 | Instant | Target suffers 1d10 Wounds (ignoring Toughness/AP) if judged weak, cowardly, or deceitful by the GM; otherwise you suffer the Wounds instead |
 | Winter's Bite | You / You | Fellowship Bonus Rounds | Your wielded axe counts as Magical, deals +SL Damage, forces a Challenging (+0) Endurance Test or Stunned on living targets struck, and neither inflicts nor allows Bleeding Conditions |
 
-#### Miracles of Verena
+### Miracles of Verena
 
 | Miracle | Range / Target | Duration | Effect |
 | --- | --- | --- | --- |

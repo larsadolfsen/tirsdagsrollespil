@@ -29,6 +29,10 @@ function MobileTitlePager({
 }) {
   const swipeHandlers = useHorizontalSwipePager({ onNext, onPrevious });
 
+  if (!title) {
+    return null;
+  }
+
   if (hideNavigation) {
     return (
       <div className="md:hidden">

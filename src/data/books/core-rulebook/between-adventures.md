@@ -1,6 +1,6 @@
 # Between Adventures
 
-### Overview
+## Overview
 
 Between adventures, roll one Event, spend money from the last adventure, then undertake Endeavours (downtime activities), before your funds run out and the next adventure begins.
 
@@ -9,7 +9,7 @@ Between adventures, roll one Event, spend money from the last adventure, then un
 - Elves must spend one Endeavour maintaining ties with their own kind (only applies if downtime is at least 3 weeks).
 - High-ranking characters (top two Career tiers) who skip the Income Endeavour drop one Career level (free downward Career change, no XP cost, Advances kept).
 
-### Events Table (1d100)
+## Events Table (1d100)
 
 A short table summary; each Event applies GM-adjudicated bonuses/penalties to specific Endeavours, Classes, or Careers for the current downtime or next adventure.
 
@@ -48,15 +48,15 @@ A short table summary; each Event applies GM-adjudicated bonuses/penalties to sp
 | 95–97 | Unexpected Esteem | GM-determined reward from a past NPC |
 | 98–00 | Unusual Mercenaries | Training/Unusual Learning cost −20% for martial Skills/Talents; Combat Training gets +20 |
 
-### Money to Burn
+## Money to Burn
 
 Money from the previous adventure can be spent normally; any money remaining after Endeavours are resolved is automatically lost (spent, stolen, or otherwise gone) unless preserved via the Banking Endeavour.
 
-### Duties & Responsibilities
+## Duties & Responsibilities
 
 Reaching the top two Career tiers without performing an Income Endeavour causes an automatic, free downward Career change (one level), reducing Status and future Income Endeavour earnings; Advances are retained, and the lost level can be reclaimed later by paying its XP cost again.
 
-### General Endeavours
+## General Endeavours
 
 | Endeavour | Test / procedure | Outcome |
 | --- | --- | --- |
@@ -73,7 +73,7 @@ Reaching the top two Career tiers without performing an Income Endeavour causes 
 | Training | Pay XP cost + fee (Basic Skill/Characteristic: XP+1d10 brass; Advanced Skill: double); then a Hard (−20) Test | Success trains an out-of-Career Skill/Characteristic as if in-Career |
 | Unusual Learning | Requires a tutor; pay 2d10 shillings per 100 XP, then a Hard (−20) Test on the relevant Characteristic/Skill | Success learns an out-of-Career Talent; failure allows retrying later with +10 per prior failure |
 
-### Class Endeavours
+## Class Endeavours
 
 | Endeavour | Classes | Test / procedure | Outcome |
 | --- | --- | --- | --- |
@@ -84,7 +84,7 @@ Reaching the top two Career tiers without performing an Income Endeavour causes 
 | Foment Dissent | Burghers, Peasants | Costs 2 Endeavours; Gossip Average (+20) Test, then Charm Test (Difficulty by target's popularity) | Success lets you rally a mob against the target during the next adventure with a further Charm Test |
 | Study a Mark | Rogues | Perception Challenging (+0) Test (Difficulty varies by target) | Success lets you reverse one Test concerning the mark during the next adventure; can be repeated |
 
-### Favours (Do Me a Favour!)
+## Favours (Do Me a Favour!)
 
 Favours are debts owed for assistance; refusing one owed by you costs 1 Status and may bring worse consequences.
 

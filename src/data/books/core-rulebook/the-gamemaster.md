@@ -1,27 +1,27 @@
 # The Gamemaster
 
-### Running the Game
+## Running the Game
 
 Prepare descriptive phrases for locations in advance to speed up improvised scenes, and give a single memorable trait (accent, catchphrase, tic) to minor NPCs instead of full detail.
 
 A session loop repeats four beats: recap and set the scene, resolve what the Players do, describe the consequences, and periodically inject plot events to nudge things forward without railroading.
 
-#### Rules Reminders
+### Rules Reminders
 
 - Opposed Tests always produce a winner by comparing SL, even when both sides fail their roll.
 - A combatant who refuses to defend themselves in an Opposed Test counts as Helpless.
 - Advantage gained in combat is lost entirely when a round is lost, or when the holder is hit by a ranged or magical attack. Spending a Resilience point automatically wins a round and clears the opponents' Advantage.
 - Encourage players to spend Fortune points during play rather than hoard them.
 
-### Character Creation Guidance
+## Character Creation Guidance
 
 Devote a session to character creation with new groups, encourage a spread of Classes, and agree on the group's shared motivation and any content to avoid before play begins.
 
-### Travel
+## Travel
 
 Overland travel by road (common, tolled, faster coach network) or river (barge/ferry, availability-dependent) is the main way parties cover distance between adventures.
 
-#### Travel Costs (per mile, loose guide)
+### Travel Costs (per mile, loose guide)
 
 | Transport | Movement | Cost | Distance unit |
 | --- | --- | --- | --- |
@@ -34,11 +34,11 @@ Overland travel by road (common, tolled, faster coach network) or river (barge/f
 
 Faster vehicles cost roughly double and gain +1 Movement; slower ones cost about half and lose 1 Movement. Barge speed varies ±30% for downstream/upstream travel. High-class travel can cost ten times or more the listed price. Listed prices exclude meals, lodging, and fodder unless bundled.
 
-#### Travel Times
+### Travel Times
 
 A party travels at its slowest member's Movement score in miles per hour. Accounting for rests and stops, a party can cover about 6 hours of travel per day without needing Endurance Tests. Travelling faster or longer requires an Endurance Test; failure gives a Fatigued Condition (worse if Encumbered).
 
-#### Travel Events
+### Travel Events
 
 For notable journeys, roll 1d10 once per day of travel; an event occurs on a roll of 8 (or at the GM's discretion for any result).
 
@@ -57,13 +57,13 @@ For notable journeys, roll 1d10 once per day of travel; an event occurs on a rol
 
 A relevant Test (Perception, Outdoor Survival, or similar) can let the party avoid or lessen a bad event; paid transportation can grant an advantage against it. Good roleplaying during travel can earn a bonus of 25–50 XP.
 
-### Rewards
+## Rewards
 
-#### Recovering Fate and Resilience
+### Recovering Fate and Resilience
 
 Fate and Resilience points are rare rewards, not routine grants. A Fate point suits the conclusion of a major adventure or campaign; a Resilience point suits a character achieving something of extraordinary personal significance.
 
-#### Awarding Experience Points
+### Awarding Experience Points
 
 Award XP at the end of every session for cooperation, good roleplaying, and fun — reward good play rather than punish poor play.
 

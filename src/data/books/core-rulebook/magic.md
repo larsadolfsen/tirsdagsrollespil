@@ -1,19 +1,19 @@
 # Magic
 
-### Winds of Magic Overview
+## Winds of Magic Overview
 
 Magic in the Empire is drawn from eight colour-coded Winds of Magic, each governed by one of the Colleges of Magic. Most Human spellcasters bind themselves to a single Wind (via an Arcane Magic Talent); mixing Winds without Elf-level training is unstable and is treated as Dark Magic. Elves can train in multiple Lores, and High Elves/Wood Elves may progress to the multi-Wind High Magic (Qhaysh); Dark Magic (Dhar) is the dangerous, corruption-prone equivalent used by Necromancers, evil sorcerers, and Chaos-touched casters.
 
 The Second Sight Talent lets a character perceive the Winds of Magic directly and apply Intuition, Perception, or Track Tests to aethyric traces.
 
-### Spell Types
+## Spell Types
 
 - **Petty spells**: minor cantrips, CN 0, learned early and outside College training; technically illegal Witchcraft.
 - **Arcane spells**: generic spells available to any Lore (including Witch, Dark, and Chaos Lores); count as Lore spells for all purposes.
 - **Lore spells**: require the matching Arcane Magic Talent for that Lore.
 - **Chaos spells**: practiced by casters given over to Chaos.
 
-### Memorising and Casting
+## Memorising and Casting
 
 Transcribing a spell into a grimoire does not teach it. To memorise a spell (cast it without the grimoire) costs XP as set by the caster's spellcasting Talent. Casting directly from a grimoire (unmemorised) requires both hands and doubles the spell's CN.
 
@@ -23,11 +23,11 @@ To cast, make a Language (Magick) Test. Success with SL at or above the spell's 
 - **Fumbled Casting**: roll on the Minor Miscast Table.
 - **Advantage**: casting (not Channelling) gains +1 Advantage if a target already had a spell from the same Lore cast on it that Round.
 
-#### Overcasting
+### Overcasting
 
 For every +2 SL above the CN, add one increment of Range, Area of Effect, Duration, or Targets equal to the spell's listed value. This may be chosen repeatedly and in any combination. "You"-range spells can't be retargeted; "Touch" range can't be extended; spells without a Duration can't have Duration extended.
 
-### Channelling
+## Channelling
 
 Channelling powers spells beyond ambient casting via an Extended Channelling Test using the Channelling Skill. When accumulated SL reaches the spell's CN, the spell can be cast next Round at CN 0. A failed casting after channelling loses all accumulated magic and inflicts a Minor Miscast.
 
@@ -35,15 +35,15 @@ Channelling powers spells beyond ambient casting via an Extended Channelling Tes
 - **Fumble**: any double, or any roll ending in 0 at/over your Skill (00, 99, 90, 88, etc.), is a Fumble; roll on the Major Miscast Table.
 - **Interruptions**: if distracted while channelling (loud noise, damage, etc.), pass a Hard (-20) Cool Test or suffer a Minor Miscast and lose all accrued SL.
 
-### Malignant Influences
+## Malignant Influences
 
 Within range of a Corrupting Influence, any roll of an 8 on the units die of a Language (Magick) or Channelling Test causes a Minor Miscast; if a Minor Miscast is already indicated for another reason, it escalates to a Major Miscast.
 
-### Ingredients
+## Ingredients
 
 Casting with an appropriate consumed ingredient downgrades any Major Miscast to a Minor Miscast, and negates any Minor Miscast entirely; the ingredient is used up regardless of whether a Miscast occurred. Ingredients cost the spell's CN in silver shillings (Arcane/Lore spells) and are tied to one specific spell.
 
-### Other Casting Rules
+## Other Casting Rules
 
 - You must be able to speak to cast; being gagged, strangled, or underwater increases the Test's Difficulty, at the GM's discretion.
 - Each of your own spells can only be in effect once at a time; you must wait for it to end or be dispelled before recasting.
@@ -57,15 +57,15 @@ Casting with an appropriate consumed ingredient downgrades any Major Miscast to 
 - **The Swirling Winds (optional)**: GM may roll 1d10 per scene to set a Casting/Channelling modifier: 1 = -30, 2-3 = -10, 4-7 = none, 8-9 = +10, 10 = +30. A caster with Second Sight can spot the disturbance with an Easy (+40) Perception Test.
 - **Warpstone**: using warpstone while Casting or Channelling doubles the SL scored for that Test, but counts as a Corrupting Influence.
 
-### Dispelling
+## Dispelling
 
 If a spell targets you (or a point you can see within Willpower yards), you may oppose the Casting Test with your own Language (Magick) Test. Winning dispels the incoming spell; losing means the original caster's SL (from the Opposed Test) is used to determine if the spell succeeds. Only one dispel attempt is allowed per Round.
 
 To dispel an already-active persistent spell, make an Extended Language (Magick) Test as your Action; the spell ends once accumulated SL reaches its CN. Multiple casters may each roll separately, or make an Assisted Test if sharing the same Lore.
 
-### Miscast Tables
+## Miscast Tables
 
-#### Minor Miscast Table (1d100)
+### Minor Miscast Table (1d100)
 
 | Roll | Effect |
 | --- | --- |
@@ -90,7 +90,7 @@ To dispel an already-active persistent spell, make an Extended Language (Magick)
 | 91–95 | Multiplying Misfortune: roll twice more on this table (reroll 91-00). |
 | 96–00 | Cascading Chaos: roll instead on the Major Miscast Table. |
 
-#### Major Miscast Table (1d100)
+### Major Miscast Table (1d100)
 
 | Roll | Effect |
 | --- | --- |
@@ -115,7 +115,7 @@ To dispel an already-active persistent spell, make an Extended Language (Magick)
 | 91–95 | Power Drain: cannot use the Talent used to cast the spell for 1d10 minutes. |
 | 96–00 | Aethyric Feedback: everyone within Willpower Bonus yards suffers 1d10 Wounds (ignoring Toughness Bonus/Armour) and gains Prone; if no targets in range, you die instantly. |
 
-### Petty Spells
+## Petty Spells
 
 Petty spells all have CN 0 and are learned outside College training.
 
@@ -147,7 +147,7 @@ Petty spells all have CN 0 and are learned outside College training.
 | Twitch | Willpower Bonus yards | Special | Instant | Moves a small object slightly; if held, an Average (+20) Dexterity Test is needed to avoid dropping it. |
 | Warning | 1 yard | Special | Instant | Reveals whether a touched object is poisoned or trapped. |
 
-### Arcane Spells
+## Arcane Spells
 
 Arcane spells are available to any Lore and count as Lore spells for all purposes. Entries marked "+" allow extending Duration by 1 Round via a Willpower Test when the spell would otherwise end.
 
@@ -177,7 +177,7 @@ Arcane spells are available to any Lore and count as Lore spells for all purpose
 | Terrifying | 7 | You | You | WP Bonus Rounds | You gain the Terror (1) Creature Trait. |
 | Ward | 5 | You | You | WP Bonus Rounds | You gain the Ward (9+) Creature Trait. |
 
-### The Lore of Beasts
+## The Lore of Beasts
 
 Casting any Lore of Beasts spell lets you also gain Fear (1) for 1d10 Rounds. Ingredients: animal remains such as fur, bone, claws, feathers.
 
@@ -192,7 +192,7 @@ Casting any Lore of Beasts spell lets you also gain Fear (1) for 1d10 Rounds. In
 | The Amber Spear | 8 | Willpower yards | Special | Instant | Magic missile, Damage +12, ignores leather/fur Armour Points, hits and pierces through targets in a line (-1 Damage per additional target, minimum 1 Wound on first hit); inflicts +1 Bleeding Condition; stops if it deals no Wounds. |
 | Wyssan's Wildform | 8 | You | You | WP Bonus Rounds | Gain Arboreal, Armour (2), Belligerent, Big, Bite (SB+1), Fear (1), Fury, Magical, Weapon (SB+2) Creature Traits; cannot use Language or Lore Skills. |
 
-### The Lore of Death
+## The Lore of Death
 
 Any Lore of Death spell may inflict +1 Fatigued Condition on a living target (only one such Condition active per target at a time). Ingredients: bones, coffin fragments, grave dirt, purple gems/flowers.
 
@@ -207,7 +207,7 @@ Any Lore of Death spell may inflict +1 Fatigued Condition on a living target (on
 | Steal Life | 7 | Willpower yards | 1 | Instant | Magic missile, Damage +6, ignores Armour, inflicts +1 Fatigued; removes all your own Fatigued Conditions and heals you up to half the target's Wounds suffered (round up). |
 | Swift Passing | 6 | Touch | Special | Instant | A touched target at 0 Wounds with 2+ Critical Wounds dies instantly and cannot be raised as Undead. |
 
-### The Lore of Fire
+## The Lore of Fire
 
 Lore of Fire spells may inflict +1 Ablaze Condition unless the target has Arcane Magic (Fire); every Ablaze Condition within Willpower Bonus yards adds +10 to Channel/Cast attempts with Aqshy. Ingredients: coal, oils, fire-resistant trinkets.
 
@@ -222,7 +222,7 @@ Lore of Fire spells may inflict +1 Ablaze Condition unless the target has Arcane
 | Flaming Sword of Rhuin | 8 | Willpower yards | 1 | WP Bonus Rounds | Weapon gains +6 Damage, Impact Quality, and inflicts +1 Ablaze on hit; non-Fire-Talent wielders who fumble an attack gain +1 Ablaze themselves. |
 | Purge | 10 | Willpower yards | AoE (WP Bonus yards) | WP Bonus Rounds | Ignites flammables and inflicts +SL Ablaze Conditions on creatures present; can burn away Corrupting Influences over time (maintained via a Challenging (+0) Channelling Test each Round); duration needed set by the GM based on the Influence's potency. |
 
-### The Lore of Heavens
+## The Lore of Heavens
 
 Damage-dealing Lore of Heavens spells ignore metal Armour Points and arc to all others within 2 yards (except Arcane Magic (Heavens) holders), dealing a Damage = Willpower Bonus magic-missile hit. Ingredients: astronomical instruments, mirrors, feathers, carved metal.
 
@@ -237,7 +237,7 @@ Damage-dealing Lore of Heavens spells ignore metal Armour Points and arc to all 
 | The Second Portent of Amul | 6 | You | You | Initiative Bonus Rounds | Gain +SL Fortune Points; +2 SL grants +1 more; unused points lost at Duration's end. |
 | The Third Portent of Amul | 12 | You | You | Initiative Bonus Rounds | Gain +1 Fate Point; lost if unused by Duration's end. |
 
-### The Lore of Metal
+## The Lore of Metal
 
 Damage-dealing Lore of Metal spells ignore metal Armour Points and deal bonus Damage equal to the metal armour's Armour Points on the location hit. Ingredients: worked metals, forge fragments.
 
@@ -252,7 +252,7 @@ Damage-dealing Lore of Metal spells ignore metal Armour Points and deal bonus Da
 | Mutable Metal | 5 | Touch | 1 | WP Bonus Rounds | A touched metal object can be bent/mangled with an Average (+20) Strength Test, or reshaped precisely with an Average (+20) Trade Test. |
 | Transmutation of Chamon | 12 | Willpower yards | AoE (WP Bonus yards) | WP Bonus Rounds | Magic missile, Damage = Willpower Bonus, ignoring Toughness Bonus, inflicts +1 Blinded/Deafened/Stunned; targets gain +1 Armour Point but suffer Suffocation; those who die remain permanently encased in metal. |
 
-### The Lore of Life
+## The Lore of Life
 
 Grants +10 to Casting/Channelling in rural/wilderness settings. Arcane spells from this Lore remove all Fatigued and Bleeding Conditions from living targets (after other effects apply); Undead targets instead take extra Damage = Willpower Bonus, ignoring Toughness Bonus/Armour. Ingredients: seeds, saps, fertile loam, living plants/small animals.
 
@@ -267,7 +267,7 @@ Grants +10 to Casting/Channelling in rural/wilderness settings. Arcane spells fr
 | Lifebloom | 8 | WP Bonus yards | Special | Special | Restores a dry riverbed, polluted well, blighted field/crops, or sick animal to full vitality/health. |
 | Regenerate | 6 | Touch | 1 | WP Bonus Rounds | Target gains the Regenerate Creature Trait. |
 
-### The Lore of Light
+## The Lore of Light
 
 Lore of Light spells may inflict 1 Blinded Condition unless the target has Arcane Magic (Light); against Daemonic/Undead targets, they also deal an extra hit, Damage = Intelligence Bonus, ignoring Toughness Bonus/Armour. Ingredients: holy artefacts, crystals, white candles.
 
@@ -282,7 +282,7 @@ Lore of Light spells may inflict 1 Blinded Condition unless the target has Arcan
 | Phâ's Protection | 10 | You | AoE (WP Bonus yards) | WP Bonus Rounds | Profane creatures (Undead, Daemonic, mutated, or high-Corruption) cannot enter the area; those already inside gain Broken until they leave; no Corruption can be gained within. |
 | Speed of Thought | 8 | You | You | WP Bonus Rounds | +20 Intelligence and Initiative. |
 
-### The Lore of Shadows
+## The Lore of Shadows
 
 Damage-dealing Lore of Shadows spells ignore all non-magical Armour Points. Ingredients: cosmetics, mirrors, diplomatic trinkets.
 
@@ -297,7 +297,7 @@ Damage-dealing Lore of Shadows spells ignore all non-magical Armour Points. Ingr
 | Shadowstep | 8 | Willpower yards | You | Instant | Teleport up to Willpower yards; engaged enemies gain Surprised on your departure/arrival. |
 | Shroud of Invisibility | 8 | Touch | 1 | WP Bonus Rounds | Target becomes invisible; fools non-Second Sight observers automatically; Second Sight holders need a Challenging (+0) Perception Test to sense (not locate) presence, must dispel to see; ends if the target makes loud noise or attacks. |
 
-### Witch Magic: Lore of Hedgecraft
+## Witch Magic: Lore of Hedgecraft
 
 Hedgecraft spells cannot be cast without an ingredient. Ingredients are gathered via foraging (1+SL from a successful Lore (Herbalism) Test) or bought for 5 brass pennies each.
 
@@ -310,7 +310,7 @@ Hedgecraft spells cannot be cast without an ingredient. Ingredients are gathered
 | Part the Branches | 0 | You | You | Willpower minutes | Lets you perceive invisible creatures, spirits, and Daemons. |
 | Protective Charm | 0 | Touch | Special | WP Bonus days | Imbued charm grants the bearer Magic Resistance Talent (no effect if they already have it). |
 
-### Witch Magic: Lore of Witchcraft
+## Witch Magic: Lore of Witchcraft
 
 Every Miscast roll from this Lore also grants 1 Corruption point. Witchcraft spells may inflict 1 Bleeding Condition on their target. Casting or channelling from this Lore always triggers a Minor Miscast roll unless an ingredient is used (the ingredient gives no further protection against that roll). Ingredients cost the spell's CN in brass pennies, or can be foraged via Outdoor Survival (1+SL per success).
 
@@ -323,7 +323,7 @@ Every Miscast roll from this Lore also grants 1 Corruption point. Witchcraft spe
 | Haunting Horror | 8 | Touch | AoE (single location) | Willpower days | Non-Arcane Magic (Witchcraft) creatures entering gain +1 Fatigued; failing an Average (+0) Cool Test also adds +1 Fatigued and Broken, both removed only on leaving. |
 | The Evil Eye | 6 | Willpower yards | Special | Instant | Opposed Intimidate/Cool Test (add casting SL to your result); winning by every +2 SL inflicts 1 Fatigued Condition; winning by 6+ SL also inflicts Broken. |
 
-### Dark Magic: Lore of Daemonology
+## Dark Magic: Lore of Daemonology
 
 | Spell | CN | Range | Target | Duration | Effect |
 | --- | --- | --- | --- | --- | --- |
@@ -332,7 +332,7 @@ Every Miscast roll from this Lore also grants 1 Corruption point. Witchcraft spe
 | Manifest Lesser Daemon | 8 | WP Bonus yards | Special | WP Bonus Rounds | Summons a Lesser Daemon; an Opposed Channel (Dhar)/Willpower Test decides if it obeys one command before vanishing, or attacks immediately on a failure. |
 | Octagram | 10 | Touch | AoE (max WP Bonus yards across) | Willpower minutes | Wards an area; Daemonic creatures cannot cross unless their Willpower exceeds twice yours. |
 
-### Dark Magic: Lore of Necromancy
+## Dark Magic: Lore of Necromancy
 
 | Spell | CN | Range | Target | Duration | Effect |
 | --- | --- | --- | --- | --- | --- |
@@ -341,7 +341,7 @@ Every Miscast roll from this Lore also grants 1 Corruption point. Witchcraft spe
 | Screaming Skull | 8 | Willpower yards | Special | Instant | Magic missile (non-Undead targets only), Damage = Willpower Bonus, travelling in a line through obstacles; those hit must pass a Challenging (+0) Cool Test or gain Broken. |
 | Vanhel's Call | 6 | Willpower yards | Special | Instant | Grants Intelligence Bonus Undead targets a free Move or Action immediately; +2 SL affects an extra Intelligence Bonus targets. |
 
-### Chaos Magic
+## Chaos Magic
 
 One representative spell is given for each of the three Chaos Lores tied to a Chaos God (Khorne has none of his own).
 
