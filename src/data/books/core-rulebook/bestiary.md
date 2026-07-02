@@ -2,13 +2,13 @@
 
 Quick fast-NPC profiles and creature stat blocks for GMs, built entirely from Creature Traits. Traits are almost always present; Optional traits are common variants a GM can add. See the Creature Traits Glossary at the end of this chapter for what each trait does.
 
-## Fast NPC Profiles: The Peoples of the Reikland
+To randomise any People or Bestiary profile, treat its round Characteristics as a base of (value − 10) and add 2d10 (or 1d10 if the base is 5).  
+
+## The Peoples of the Reikland
 
 Standard quick profiles for the main playable peoples, for when a full character isn't needed.
 
-To randomise any Bestiary profile, treat its round Characteristics as a base of (value − 10) and add 2d10 (or 1d10 if the base is 5).
-
-### NPC Templates
+NPC Templates  
 
 #### Humans
 
@@ -54,8 +54,8 @@ Two sample Human NPCs built purely from random Characteristics and Creature Trai
 #### Black Bella
 
 | Name | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
-**Black Bella** (Human Brigand) | 4 | 32 | 35 | 41 | 45 | 30 | 25 | 29 | 27 | 34 | 33 | 19 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **Black Bella** (Human Brigand) | 4 | 32 | 35 | 41 | 45 | 30 | 25 | 29 | 27 | 34 | 33 | 19 |
 
 **Traits:** Animosity (the Rich, Beastmen), Arboreal, Armour (Light 2), Prejudice (Bailiffs, Lawyers), Ranged+8 (50), Brute, Hardy, Weapon+8.
 
@@ -63,11 +63,13 @@ Two sample Human NPCs built purely from random Characteristics and Creature Trai
 
 | Name | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **Pol Dankels** (Human Witch)| 4 | 24 | 26 | 27 | 46 | 49 | 26 | 34 | 65 | 47 | 44 | 15 |
+| **Pol Dankels** (Human Witch) | 4 | 24 | 26 | 27 | 46 | 49 | 26 | 34 | 65 | 47 | 44 | 15 |
 
 **Traits:** Cunning, Clever, Prejudice (Sigmarites), Spellcaster (Witch), Tough, Weapon+5.
 
-## Ogre
+## Ogres
+
+### Ogre
 
 A big, loud, food-obsessed mercenary species from the eastern lands, common as hired muscle across the Empire.
 
@@ -78,7 +80,7 @@ A big, loud, food-obsessed mercenary species from the eastern lands, common as h
 **Traits:** Armour 1, Hungry, Prejudice (Thin People), Night Vision, Size (Large), Weapon+8.  
 Optional: Belligerent, Infected, Tracker.
 
-## Beasts
+## The Beast of the Reikland
 
 ### Bear
 
@@ -178,6 +180,8 @@ A pack-hunting predator with great endurance; Giant Wolves are bred by Goblins a
 
 **Traits:** Armour 1, Bestial, Night Vision, Skittish, Stride, Tracker, Weapon+6.  
 Optional: Frenzy, Infected, Size (Large), Territorial, Trained (Broken, Drive, Fetch, Guard, Magic, Mount, War).
+
+### The Monstrous Beasts of the Reikland
 
 ### Basilisk
 
@@ -355,6 +359,8 @@ A cowardly, foul-smelling, weak-sighted scavenger often mistaken for a Dragon; i
 **Traits:** Armour 2, Bestial, Flight 90, Size (Enormous), Venom, Weapon+10.  
 Optional: Breath (Venom), Horns, Mount, Tail+9, Trained (Broken, Guard, Magic, Mount, War).
 
+## The Greenskin Hordes
+
 ### Orc
 
 A nasty, brutal, pain-resistant Greenskin, built for fighting and quick to pick a scrap with anyone, including its own kind.
@@ -387,6 +393,8 @@ A tiny, pea-brained Greenskin scavenger and mimic that fights in overwhelming, f
 
 **Traits:** Bestial, Infected, Night Vision, Size (Small), Weapon+4.  
 Optional: Broken, Swarm, Trained (Broken, Fetch, Guard), Venom.
+
+## The Restless Dead
 
 ### Skeleton
 
@@ -489,7 +497,9 @@ The spirit of a soul who died with unfinished business, sometimes summoned in sw
 **Traits:** Dark Vision, Ethereal, Fear 2, Undead, Unstable, Weapon+6.  
 Optional: Bestial, Fury, Hatred, Swarm, Territorial.
 
-### Gor
+## Beastmen, the Children of Chaos
+
+### Gors
 
 The most common Beastman, a Human/animal hybrid marked by large horns that denote status in the herd; the largest Gors are Bestigors.
 
@@ -544,6 +554,8 @@ A Human twisted by Chaos's mutating influence, often born deformed and abandoned
 Traits: Corruption (Minor), Mutation, Weapon+7.  
 Optional: All Creature Traits.
 
+## Cultist, the Lost and the Dammed
+
 ### Cultist
 
 An ordinary member of society secretly seduced by Chaos, sometimes granted mutating "gifts" by their patron god.
@@ -567,6 +579,8 @@ A heavily armoured, spike-adorned marauder who has given up all Human life to se
 
 **Traits:** Armoured 5, Champion, Corruption (Minor), Weapon+8.  
 Optional: Belligerent, Disease, Distracting, Frenzy, Mental Corruption, Mutation, Spellcaster (Chaos).
+
+## Daemons, the Gibbering Hosts
 
 ### Bloodletter of Khorne
 
