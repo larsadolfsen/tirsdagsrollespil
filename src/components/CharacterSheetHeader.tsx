@@ -16,14 +16,14 @@ import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import { UI_LABELS } from "../labels";
 
 type CharacterSheetHeaderProps = {
-  activeMenuItem: "sheet" | "edit" | "dice" | "books";
+  activeMenuItem: "sheet" | "edit" | "dice";
+  campaignId: string;
   characterData: ResolvedCharacterRecord;
   isMobilePortraitMenuOpen: boolean;
   onCloseMobilePortraitMenu: () => void;
   onOpenCharacterSheet: () => void;
   onOpenAdvance: () => void;
   onOpenDice: () => void;
-  onOpenBooks: () => void;
   onOpenMobileCharacterActions: () => void;
   onOpenMobileGainExperience: () => void;
   onOpenMobileMenu: () => void;
@@ -34,13 +34,13 @@ type CharacterSheetHeaderProps = {
 
 export function CharacterSheetHeader({
   activeMenuItem,
+  campaignId,
   characterData,
   isMobilePortraitMenuOpen,
   onCloseMobilePortraitMenu,
   onOpenCharacterSheet,
   onOpenAdvance,
   onOpenDice,
-  onOpenBooks,
   onOpenMobileCharacterActions,
   onOpenMobileGainExperience,
   onOpenMobileMenu,
@@ -84,12 +84,12 @@ export function CharacterSheetHeader({
   ) : (
     <CharacterHeader
       activeMenuItem={isXpDialogOpen ? "experience" : activeMenuItem}
+      campaignId={campaignId}
       characterData={characterData}
       xpCurrent={xpCurrent}
       onOpenCharacterSheet={onOpenCharacterSheet}
       onOpenDice={onOpenDice}
       onOpenAdvance={onOpenAdvance}
-      onOpenBooks={onOpenBooks}
       onOpenXpDialog={openXpDialog}
     />
   );

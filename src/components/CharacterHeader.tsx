@@ -2,6 +2,7 @@ import { type ChangeEvent, type ReactNode, useEffect, useRef, useState } from "r
 import { ArrowUpFromLine, Check, X } from "lucide-react";
 import type { ResolvedCharacterRecord } from "../data/characters/resolved";
 import { useGameSessionContext } from "../context/GameSessionContext";
+import { LibraryHeaderMenu } from "./LibraryHeaderMenu";
 import {
   WfrpStandardIcon,
   MainTabMenu,
@@ -13,7 +14,6 @@ const characterMenuOptions = [
   { id: "sheet", label: "Character Sheet" },
   { id: "edit", label: "Edit Character" },
   { id: "dice", label: "Dice Log" },
-  { id: "books", label: "Books" },
 ] as const;
 
 const readFileAsDataUrl = (file: File) =>
@@ -75,23 +75,23 @@ const optimizePortraitFile = async (file: File) => {
 
 export function CharacterHeader({
   activeMenuItem,
+  campaignId,
   characterData,
   xpCurrent,
   headerResources,
   onOpenCharacterSheet,
   onOpenDice,
   onOpenAdvance,
-  onOpenBooks,
   onOpenXpDialog,
 }: {
-  activeMenuItem: "sheet" | "edit" | "experience" | "dice" | "books";
+  activeMenuItem: "sheet" | "edit" | "experience" | "dice";
+  campaignId: string;
   characterData: ResolvedCharacterRecord;
   xpCurrent: number;
   headerResources?: ReactNode;
   onOpenCharacterSheet: () => void;
   onOpenDice: () => void;
   onOpenAdvance: () => void;
-  onOpenBooks: () => void;
   onOpenXpDialog: () => void;
 }) {
   const { portraitDataUrl, setCharacterName, setPortraitDataUrl } = useGameSessionContext();
@@ -271,7 +271,7 @@ export function CharacterHeader({
         )}
 
         <div className="hidden h-12 items-stretch sm:flex">
-          <MainTabMenu<"sheet" | "edit" | "experience" | "dice" | "books">
+          <MainTabMenu<"sheet" | "edit" | "experience" | "dice">
             activeId={activeMenuItem}
             ariaLabel="Character menu"
             options={characterMenuOptions}
@@ -279,9 +279,9 @@ export function CharacterHeader({
               if (item === "sheet") onOpenCharacterSheet();
               if (item === "edit") onOpenAdvance();
               if (item === "dice") onOpenDice();
-              if (item === "books") onOpenBooks();
             }}
           />
+          <LibraryHeaderMenu campaignId={campaignId} />
           <WfrpStandardIcon
             label="Gain Experience"
             icon={<ArrowUpFromLine />}

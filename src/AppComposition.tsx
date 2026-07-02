@@ -2095,6 +2095,7 @@ export function AppComposition() {
             desktopHeader={(
               <CharacterSheetHeader
                 activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
+                campaignId={characterData.campaignId}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
@@ -2112,6 +2113,7 @@ export function AppComposition() {
             mobileHeader={(
               <CharacterSheetHeader
                 activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
+                campaignId={characterData.campaignId}
                 characterData={characterData}
                 isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
                 onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
