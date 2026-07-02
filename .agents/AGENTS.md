@@ -129,6 +129,9 @@ Her er den komplette liste over fælles komponenter i projektet. Alle nye fælle
 
 ## 6. Aflevering og Workflow for AI Agenter
 
+- **Brainstorm før implementering**:
+  - Før der skrives eller ændres kode til en ny feature, komponent eller adfærdsændring, skal agenten først brainstorme (afklare intention, krav og design) med brugeren.
+  - Rene bugfixes eller trivielle ændringer kræver ikke brainstorming.
 - **Push og Test**:
   - Efter at have løst en opgave skal agenten altid køre test-kommandoerne for at veriifcere, at alt fungerer.
   - Når testene er bestået, skal ændringerne altid pushes til remote repository (`git push`).
