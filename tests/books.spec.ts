@@ -73,9 +73,9 @@ test("an unknown book slug falls back to the book catalog", async ({ page }) => 
 });
 
 test("chapter heading levels form a correct outline (H1 chapter title, H2 major sections, H3 subsections)", async ({ page }) => {
-  await page.goto("/enemy_within/karl-muller/books/core-rulebook/character");
+  await page.goto("/enemy_within/karl-muller/books/core-rulebook/rules");
 
-  await expect(page.getByRole("heading", { level: 1, name: "Character" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 3, name: "Character Creation Overview" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 4, name: "Random Class and Career Table (1d100 by Species)" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Rules" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Combat" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 3, name: "Timing Structure" })).toBeVisible();
 });
