@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRight } from "lucide-react";
-import { Button, Heading, Text } from "../ui";
+import { BottomSheetPaper, Button, Heading, Text } from "../ui";
 import { SheetDataButtonRow, SheetDataPanel } from "../wfrp";
 import { bookCatalog, bookCovers, loadChapterContent, type BookMeta } from "../../data/books";
+import { ChapterTableOfContents } from "./ChapterTableOfContents";
+import { extractHeadings } from "./headingSlug";
 import { MarkdownContent } from "./MarkdownContent";
 
 function findChapterIndex(book: BookMeta, chapterId: string): number {
@@ -21,6 +23,7 @@ export function BooksLibrary({
   onSelectChapter: (chapterId: string | null) => void;
 }) {
   const [chapterContent, setChapterContent] = useState<string | null>(null);
+  const [isContentsOpen, setIsContentsOpen] = useState(false);
 
   const selectedBook = bookId
     ? bookCatalog.find((book) => book.id === bookId)
@@ -47,22 +50,59 @@ export function BooksLibrary({
     };
   }, [selectedBook, selectedChapter]);
 
+  useEffect(() => {
+    setIsContentsOpen(false);
+  }, [selectedChapter]);
+
+  const headings = useMemo(
+    () => (chapterContent ? extractHeadings(chapterContent) : []),
+    [chapterContent],
+  );
+
   if (selectedBook && selectedChapter) {
     const chapterIndex = findChapterIndex(selectedBook, selectedChapter.id);
     const previousChapter = selectedBook.chapters[chapterIndex - 1];
     const nextChapter = selectedBook.chapters[chapterIndex + 1];
+    const hasToc = headings.filter((heading) => heading.level === 1).length >= 2;
 
     return (
       <div className="flex flex-col gap-4 p-4">
         <Button variant="subtabAction" onClick={() => onSelectChapter(null)}>
           Back to chapters
         </Button>
-        <Heading level={1} variant="section">{selectedChapter.title}</Heading>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Heading level={1} variant="section">{selectedChapter.title}</Heading>
+          {hasToc ? (
+            <Button variant="subtabAction" className="lg:hidden" onClick={() => setIsContentsOpen(true)}>
+              Contents
+            </Button>
+          ) : null}
+        </div>
         {chapterContent === null ? (
           <Text variant="bodyMuted">Loading…</Text>
+        ) : hasToc ? (
+          <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <aside className="hidden lg:block">
+              <ChapterTableOfContents headings={headings} />
+            </aside>
+            <MarkdownContent content={chapterContent} headings={headings} />
+          </div>
         ) : (
-          <MarkdownContent content={chapterContent} />
+          <MarkdownContent content={chapterContent} headings={headings} />
         )}
+        {hasToc && isContentsOpen ? (
+          <BottomSheetPaper className="lg:hidden" isPullable>
+            <div className="flex w-full flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <Text variant="bodyStrong">Contents</Text>
+                <Button variant="subtabAction" onClick={() => setIsContentsOpen(false)}>
+                  Close
+                </Button>
+              </div>
+              <ChapterTableOfContents headings={headings} onSelect={() => setIsContentsOpen(false)} />
+            </div>
+          </BottomSheetPaper>
+        ) : null}
         <div className="flex flex-wrap justify-between gap-3">
           <Button
             variant="subtabAction"

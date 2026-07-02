@@ -79,3 +79,35 @@ test("chapter heading levels form a correct outline (H1 chapter title, H2 major 
   await expect(page.getByRole("heading", { level: 2, name: "Combat" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 3, name: "Timing Structure" })).toBeVisible();
 });
+
+test("chapter table of contents lists H2 sections and scrolls to them (desktop)", async ({ page }) => {
+  await page.goto("/enemy_within/karl-muller/books/core-rulebook/rules");
+
+  const toc = page.getByRole("navigation", { name: "Chapter contents" });
+  await expect(toc.getByRole("link", { name: "Combat" })).toBeVisible();
+
+  await toc.getByRole("link", { name: "Combat" }).click();
+  await expect(page.locator("#combat")).toBeInViewport();
+});
+
+test("chapter table of contents opens as a bottom sheet on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/enemy_within/karl-muller/books/core-rulebook/rules");
+
+  await expect(page.getByRole("navigation", { name: "Chapter contents" })).toBeHidden();
+  await page.getByRole("button", { name: "Contents" }).click();
+
+  const sheet = page.locator('[data-bottom-sheet-paper="true"]');
+  await expect(sheet.getByRole("link", { name: "Combat" })).toBeVisible();
+
+  await sheet.getByRole("link", { name: "Combat" }).click();
+  await expect(sheet).toBeHidden();
+  await expect(page.locator("#combat")).toBeInViewport();
+});
+
+test("a chapter with fewer than 2 major sections has no table of contents", async ({ page }) => {
+  await page.goto("/enemy_within/karl-muller/books/core-rulebook/throwing-bones");
+
+  await expect(page.getByRole("navigation", { name: "Chapter contents" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Contents" })).toHaveCount(0);
+});
