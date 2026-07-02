@@ -2,6 +2,8 @@ import { useMemo, type ComponentProps, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
+import { visit } from "unist-util-visit";
+import type { Element } from "hast";
 import {
   Heading,
   Table,
@@ -9,10 +11,24 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
   Text,
 } from "../ui";
+import { ChapterHeading } from "./ChapterDivider";
 import type { ExtractedHeading } from "./headingSlug";
+
+// react-markdown drops the deprecated HTML `align` attribute that remark-gfm
+// puts on table cells, so convert it to an inline `text-align` style before
+// it reaches the renderer.
+function rehypeTableAlignToStyle() {
+  return (tree: Element) => {
+    visit(tree, "element", (node: Element) => {
+      if ((node.tagName === "th" || node.tagName === "td") && typeof node.properties.align === "string") {
+        node.properties.style = `text-align: ${node.properties.align}`;
+        delete node.properties.align;
+      }
+    });
+  };
+}
 
 function nodeText(node: ReactNode): string {
   if (node === null || node === undefined || typeof node === "boolean") return "";
@@ -62,27 +78,29 @@ export function MarkdownContent({
   };
 
   const components: ComponentProps<typeof ReactMarkdown>["components"] = {
-    h1: ({ children }) => <Heading id={resolveHeadingId(children)} level={2} variant="subsection">{children}</Heading>,
-    h2: ({ children }) => <Heading id={resolveHeadingId(children)} level={3} variant="subsection">{children}</Heading>,
-    h3: ({ children }) => <Heading id={resolveHeadingId(children)} level={4} variant="subsection">{children}</Heading>,
-    h4: ({ children }) => <Heading id={resolveHeadingId(children)} level={5} variant="subsection">{children}</Heading>,
-    h5: ({ children }) => <Heading id={resolveHeadingId(children)} level={6} variant="subsection">{children}</Heading>,
-    h6: ({ children }) => <Heading id={resolveHeadingId(children)} level={6} variant="subsection">{children}</Heading>,
-    p: ({ children }) => <Text className="mb-3 last:mb-0">{children}</Text>,
+    h1: ({ children }) => <ChapterHeading id={resolveHeadingId(children)}>{children}</ChapterHeading>,
+    h2: ({ children }) => <Heading id={resolveHeadingId(children)} level={2} variant="chapterH2">{children}</Heading>,
+    h3: ({ children }) => <Heading id={resolveHeadingId(children)} level={3} variant="chapterH3">{children}</Heading>,
+    h4: ({ children }) => <Heading id={resolveHeadingId(children)} level={4} variant="chapterH4">{children}</Heading>,
+    h5: ({ children }) => <Heading id={resolveHeadingId(children)} level={5} variant="chapterH5">{children}</Heading>,
+    h6: ({ children }) => <Heading id={resolveHeadingId(children)} level={6} variant="chapterH6">{children}</Heading>,
+    p: ({ children }) => <Text className="mb-3 max-w-[620px] text-base last:mb-0">{children}</Text>,
     table: ({ children }) => <Table className="mb-3">{children}</Table>,
     thead: ({ children }) => <TableHeader>{children}</TableHeader>,
-    tbody: ({ children }) => <TableBody>{children}</TableBody>,
-    tr: ({ children }) => <TableRow>{children}</TableRow>,
-    th: ({ children }) => <TableHead>{children}</TableHead>,
-    td: ({ children }) => <TableCell className="align-top">{children}</TableCell>,
+    tbody: ({ children }) => <TableBody className="[&>tr:nth-child(odd)]:bg-card">{children}</TableBody>,
+    tr: ({ children }) => <tr className="border-b border-border transition-colors">{children}</tr>,
+    th: ({ children, style }) => <TableHead style={style}>{children}</TableHead>,
+    td: ({ children, style }) => <TableCell className="align-top" style={style}>{children}</TableCell>,
     ul: ({ children }) => <ul className="mb-3 list-disc space-y-1 pl-5 wfrp-text text-gray-200">{children}</ul>,
     ol: ({ children }) => <ol className="mb-3 list-decimal space-y-1 pl-5 wfrp-text text-gray-200">{children}</ol>,
     li: ({ children }) => <li>{children}</li>,
   };
 
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={components}>
-      {content}
-    </ReactMarkdown>
+    <div className="min-w-0">
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, rehypeTableAlignToStyle]} components={components}>
+        {content}
+      </ReactMarkdown>
+    </div>
   );
 }

@@ -125,7 +125,7 @@ Attributes cover Movement, the ten Characteristics, Wounds, Fate, and Resilience
 ##### Attributes Table
 
 | Characteristic | Human | Dwarf | Halfling | Elf |
-| --- | --- | --- | --- | --- |
+| --- | :---: | :---: | :---: | :---: |
 | Weapon Skill | 2d10+20 | 2d10+30 | 2d10+10 | 2d10+30 |
 | Ballistic Skill | 2d10+20 | 2d10+20 | 2d10+30 | 2d10+30 |
 | Strength | 2d10+20 | 2d10+20 | 2d10+10 | 2d10+20 |

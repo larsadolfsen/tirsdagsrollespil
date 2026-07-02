@@ -4,77 +4,48 @@ Quick fast-NPC profiles and creature stat blocks for GMs, built entirely from Cr
 
 To randomise any People or Bestiary profile, treat its round Characteristics as a base of (value − 10) and add 2d10 (or 1d10 if the base is 5).  
 
-## The Peoples of the Reikland
+## The People of the Reikland
 
 Standard quick profiles for the main playable peoples, for when a full character isn't needed.
 
-NPC Templates  
-
-#### Humans
+### Humans
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 12 |
 
 **Traits:** Prejudice (choose one), Weapon+7. Optional: Disease, Ranged+8 (50), Spellcaster.
 
-#### Dwarfs
+### Dwarfs
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 3 | 40 | 30 | 30 | 40 | 30 | 20 | 30 | 50 | 20 | 10 | 16 |
 
 **Traits:** Animosity (choose one), Hatred (Greenskins), Night Vision, Prejudice (choose one), Weapon+7. Optional: Fury, Ranged+8 (50)
 
-#### Halflings
+### Halflings
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 5 | 20 | 30 | 20 | 30 | 30 | 30 | 40 | 30 | 40 | 40 | 10 |
 
 **Traits:** Night Vision, Size (Small), Weapon+5. Optional: Ranged+7 (25), Stealthy.
 
-#### Elves (High and Wood)
+### Elves (High and Wood)
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 40 | 40 | 30 | 30 | 50 | 40 | 40 | 40 | 40 | 30 | 13 |
 
 **Traits:** Animosity (choose one), Prejudice (choose two), Night Vision, Weapon+7. Optional: Arboreal, Magical, Magical Resistance, Ranged+9 (150), Stealthy, Spellcaster (any one), Tracker.
 
-### Example NPCs
-
-Two sample Human NPCs built purely from random Characteristics and Creature Traits, showing the technique GMs can reuse for any NPC.
-
-| Name | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Black Bella (Human Brigand) | 4 | 32 | 35 | 41 | 45 | 30 | 25 | 29 | 27 | 34 | 33 | 19 |
-| Pol Dankels (Human Witch) | 4 | 24 | 26 | 27 | 46 | 49 | 26 | 34 | 65 | 47 | 44 | 15 |
-
-#### Black Bella
-
-| Name | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **Black Bella** (Human Brigand) | 4 | 32 | 35 | 41 | 45 | 30 | 25 | 29 | 27 | 34 | 33 | 19 |
-
-**Traits:** Animosity (the Rich, Beastmen), Arboreal, Armour (Light 2), Prejudice (Bailiffs, Lawyers), Ranged+8 (50), Brute, Hardy, Weapon+8.
-
-#### Pol Dankels
-
-| Name | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **Pol Dankels** (Human Witch) | 4 | 24 | 26 | 27 | 46 | 49 | 26 | 34 | 65 | 47 | 44 | 15 |
-
-**Traits:** Cunning, Clever, Prejudice (Sigmarites), Spellcaster (Witch), Tough, Weapon+5.
-
-## Ogres
-
-### Ogre
+### Ogre  
 
 A big, loud, food-obsessed mercenary species from the eastern lands, common as hired muscle across the Empire.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 30 | 20 | 45 | 45 | 10 | 25 | 20 | 20 | 30 | 20 | 28 |
 
 **Traits:** Armour 1, Hungry, Prejudice (Thin People), Night Vision, Size (Large), Weapon+8.  
@@ -87,7 +58,7 @@ Optional: Belligerent, Infected, Tracker.
 A solitary forest predator, usually shy but dangerous when wounded or protecting cubs.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 35 | – | 55 | 45 | 20 | 25 | 15 | 10 | 15 | – | 28 |
 
 **Traits:** Armour 1, Bestial, Bite+9, Night Vision, Size (Large), Skittish, Stride, Weapon+8.  
@@ -98,7 +69,7 @@ Optional: Hungry, Infected, Infestation, Size (Enormous), Territorial, Trained (
 A tusked forest scavenger, reclusive but fierce when cornered; the largest are used by Orcs as war mounts.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 7 | 35 | – | 33 | 35 | 33 | 35 | – | 10 | 10 | – | 10 |
 
 **Traits:** Armour 1, Bestial, Horns (Tusks), Night Vision, Skittish, Stride, Weapon+6.  
@@ -109,7 +80,7 @@ Optional: Belligerent, Frenzy, Infected, Infestation, Size (Large), Territorial,
 A domesticated canine bred for many purposes, from lapdog to war hound.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 25 | – | 20 | 20 | 35 | 30 | – | 15 | 10 | 15 | 5 |
 
 **Traits:** Bestial, Night Vision, Skittish, Size (Small), Stride, Weapon+5.  
@@ -120,7 +91,7 @@ Optional: Armour 1, Frenzy, Infected, Size (Little to Average), Territorial, Tra
 An oversized city-dwelling rat, often disease-ridden, that can grow to alarming size in the right conditions.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 25 | – | 30 | 25 | 25 | 35 | – | 15 | 15 | – | 5 |
 
 **Traits:** Bestial, Infected, Night Vision, Size (Small), Skittish, Stride, Weapon+4.  
@@ -131,7 +102,7 @@ Optional: Armour 1, Disease (Ratte Fever or Black Plague), Size (Little to Avera
 A web-spinning, venomous forest- and cave-dweller; larger specimens are captured by Forest Goblins as mounts.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 5 | 35 | 25 | 15 | 25 | 10 | 35 | 30 | 5 | 25 | – | 2 |
 
 **Traits:** Bestial, Night Vision, Size (Little), Wallcrawler, Web 40, Weapon+3.  
@@ -142,7 +113,7 @@ Optional: Armour 1, Arboreal, Bite, Size (Little to Enormous), Swarm, Venom (Ave
 A working and riding animal bred across the Reikland for speed, hauling, or war.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 7 | 25 | – | 45 | 35 | 15 | 30 | – | 10 | 10 | 10 | 22 |
 
 **Traits:** Bestial, Size (Large), Skittish, Stride, Weapon+7.  
@@ -153,7 +124,7 @@ Optional: Armour, Trained (Broken, Drive, Entertain, Magic, Mount, War).
 A message-carrying bird, occasionally repurposed by engineers to deliver small explosives.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 2 | 15 | – | 5 | 15 | 25 | 40 | – | 10 | 20 | 10 | 1 |
 
 **Traits:** Bestial, Fly 100, Size (Tiny), Skittish, Weapon+0.  
@@ -164,7 +135,7 @@ Optional: Size (Small), Trained (Broken, Home).
 A reptile found throughout the Empire, ranging from harmless to lethally venomous or constricting; some grow to gigantic size.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 3 | 40 | – | 30 | 25 | 25 | 40 | – | 5 | 45 | – | 6 |
 
 **Traits:** Armour 1, Bestial, Cold-blooded, Fast, Size (Small), Weapon+5.  
@@ -175,20 +146,20 @@ Optional: Constrictor, Size (Tiny to Enormous), Swamp-strider, Swarm, Venom (Ver
 A pack-hunting predator with great endurance; Giant Wolves are bred by Goblins as mounts and guards.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 35 | – | 35 | 30 | 35 | 30 | – | 15 | 15 | – | 10 |
 
 **Traits:** Armour 1, Bestial, Night Vision, Skittish, Stride, Tracker, Weapon+6.  
 Optional: Frenzy, Infected, Size (Large), Territorial, Trained (Broken, Drive, Fetch, Guard, Magic, Mount, War).
 
-### The Monstrous Beasts of the Reikland
+## The Monstrous Beasts of the Reikland
 
 ### Basilisk
 
 An ancient, solitary eight-legged reptile of Chaos, feared for its venomous bite and petrifying gaze.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 45 | 35 | 55 | 55 | 25 | 15 | – | 15 | 15 | – | 64 |
 
 **Traits:** Armour 2, Bestial, Bite+9, Cold-blooded, Immunity (Poison), Infected, Night Vision, Petrifying Gaze, Size (Enormous), Stride, Tail+8, Venom, Weapon+9.  
@@ -199,7 +170,7 @@ Optional: Mutant, Territorial.
 A camouflaged, tentacled ambush predator of marshes and swamps that grapples and drowns prey.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 3 | 35 | – | 80 | 75 | 15 | 55 | – | 5 | 65 | 0 | 56 |
 
 **Traits:** Amphibious, Bestial, Constrictor, Size (Large), Stealthy, Swamp-strider, 8×Tentacles+9.  
@@ -210,7 +181,7 @@ Optional: Size (Enormous–Monstrous), Territorial.
 A round, fungoid cave-dweller with a huge toothy maw, bred and kept by Goblins.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 45 | – | 50 | 30 | 10 | 40 | – | 5 | 15 | – | 12 |
 
 **Traits:** Bestial, Bounce, Infected, Night Vision, Weapon+9.  
@@ -221,7 +192,7 @@ Optional: Aquatic, Breath (Acid or Gas), Dark Vision, Frenzy, Fury, Horns, Size 
 A noble, eagle-headed, lion-bodied beast of forests and grasslands, prized as a knightly war mount once captured.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 7 | 35 | – | 55 | 40 | 30 | 45 | – | 15 | 25 | – | 30 |
 
 **Traits:** Armour 1, Bestial, Bite+9, Night Vision, Size (Large), Stride, Weapon+9.  
@@ -232,7 +203,7 @@ Optional: Trained (Broken, Drive, Guard, Mount, War).
 An immense, ancient, and immensely powerful winged reptile, among the mightiest creatures still living in the world.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 65 | 60 | 65 | 65 | 60 | 25 | 15 | 45 | 85 | 25 | 104 |
 
 **Traits:** Armour 5, Bite+10, Breath+15 (various), Flight 80, Night Vision, Size (Enormous), Tail+9, Weapon+10.  
@@ -243,7 +214,7 @@ Optional: Arboreal, Immunity (choose one), Infestation, Magical, Mental Corrupti
 A mindless, vaguely humanoid automaton of mud, bone, and slime, animated and held together by a spellcaster's magic.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 5 | 35 | – | 50 | 55 | 10 | 15 | 10 | – | – | – | 40 |
 
 **Traits:** Construct, Dark Vision, Die Hard, Infected, Regenerate, Size (Large), Stupidity, Swamp-strider, Unstable, Weapon+8.  
@@ -254,7 +225,7 @@ Optional: Frenzy, Hungry, Infestation, Territorial.
 A secretive, one-eyed reptilian creature of western Reikland's swamps, whose matriarchal clans traffic with Daemons.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 35 | 20 | 45 | 40 | 30 | 20 | 20 | 30 | 30 | 15 | 30 |
 
 **Traits:** Armour 2, Cold-blooded, Night Vision, Size (Large), Swamp-strider, Weapon+8.  
@@ -265,7 +236,7 @@ Optional: Tail+7, Spellcaster (Daemonology).
 A huge, solitary, long-lived creature that shuns civilisation, living in remote caves and ruins.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 30 | 30 | 65 | 55 | 30 | 20 | 15 | 25 | 25 | 20 | 92 |
 
 **Traits:** Armour 1, Night Vision, Size (Enormous), Stride, Tough, Weapon+10.  
@@ -276,7 +247,7 @@ Optional: Bestial, Breath (Drunken Vomit), Hungry, Infected, Infestation, Size (
 A noble, swift-killing beast with an eagle's forequarters and wings and a great cat's hindquarters, nesting in high mountains.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 50 | – | 50 | 50 | 45 | 60 | – | 20 | 40 | – | 76 |
 
 **Traits:** Armour 1, Bestial, Bite+9, Flight 80, Night Vision, Size (Enormous), Weapon+9.  
@@ -287,7 +258,7 @@ Optional: Trained (Broken, Guard, Magic, Mount, War).
 An extremely ferocious and territorial eagle/horse hybrid that attacks with reckless, indiscriminate fury.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 7 | 45 | – | 55 | 50 | 20 | 55 | – | 5 | 35 | – | 72 |
 
 **Traits:** Animosity (Everything), Belligerent, Bestial, Bite+9, Flight 120, Night Vision, Size (Large), Stride, Territorial, Weapon+9.  
@@ -298,7 +269,7 @@ Optional: Broken, Frenzy, Fury, Hatred (Everything), Trained (Broken, Mount).
 A many-headed, lizard-like monster that breathes smoky fire and bites with each of its many heads.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 45 | – | 50 | 55 | 15 | 35 | – | 15 | 25 | – | 68 |
 
 **Traits:** Armour 3, Bestial, Breath+10 (Fire), Constrictor, Night Vision, Regeneration, Size (Enormous), Stealthy, Stride, Tracker, Weapon+9.  
@@ -309,7 +280,7 @@ Optional: Belligerent, Territorial, Venom.
 A maddening Chaos creature combining Toad, Sludge-drake, and Insect, whose mere appearance drives onlookers to gibbering madness.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 7 | 45 | 40 | 55 | 50 | 20 | 35 | – | 10 | 20 | – | 68 |
 
 **Traits:** Armour 3, Bestial, Bite+9, Bounce, Corrosive Blood, Distracting, Infected, Night Vision, Size (Enormous), Tail+8, Tongue Attack+5 (12), Venom, Weapon+9.  
@@ -320,7 +291,7 @@ Optional: Mutant, Territorial.
 A rare, extremely territorial predator with the head and body of a great cat, bat-like wings, and a barbed, thrashing tail.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 55 | – | 55 | 55 | 50 | 65 | – | 10 | 35 | – | 72 |
 
 **Traits:** Armour 2, Bestial, Bite+9, Flight 80, Size (Enormous), Tail+8, Territorial, Venom, Weapon+9.  
@@ -331,7 +302,7 @@ Optional: Hatred (Predators), Mutant, Trained (Broken, Magic, Mount).
 A white, swan-winged flying horse of the high mountains, much sought after as a mount.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 8 | 35 | – | 45 | 40 | 30 | 45 | – | 20 | 25 | – | 28 |
 
 **Traits:** Flight 100, Size (Large), Stride, Weapon+7.  
@@ -342,7 +313,7 @@ Optional: Trained (Broken, Drive, Magic, Mount, War).
 A huge, filthy, regenerating Old World monster; extremely stupid but hard to kill, and able to vomit corrosive bile at will. Notable variants include Chaos Trolls (mutated), River Trolls (ambush hunters of the Reik's marshes), and Stone Trolls (armoured, stony hide, found in mountain caves).
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 30 | 15 | 55 | 45 | 10 | 15 | 15 | 10 | 20 | 5 | 38 |
 
 **Traits:** Armour 2, Bite+8, Die Hard, Infected, Regenerate, Size (Large), Stupid, Tough, Vomit, Weapon+9.  
@@ -353,7 +324,7 @@ Optional: Aquatic, Bestial, Frenzy, Hungry, Infestation, Magic Resistance, Mutat
 A cowardly, foul-smelling, weak-sighted scavenger often mistaken for a Dragon; it avoids combat and preys on livestock.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 55 | – | 60 | 55 | 15 | 45 | – | 10 | 50 | – | 84 |
 
 **Traits:** Armour 2, Bestial, Flight 90, Size (Enormous), Venom, Weapon+10.  
@@ -366,7 +337,7 @@ Optional: Breath (Venom), Horns, Mount, Tail+9, Trained (Broken, Guard, Magic, M
 A nasty, brutal, pain-resistant Greenskin, built for fighting and quick to pick a scrap with anyone, including its own kind.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 35 | 30 | 35 | 45 | 20 | 25 | 20 | 25 | 35 | 20 | 14 |
 
 **Traits:** Armour 3, Belligerent, Die Hard, Infected, Night Vision, Weapon+8.  
@@ -377,7 +348,7 @@ Optional: Painless, Ranged+8 (50), Size (Large).
 A scrawny, spiteful, and cunning Greenskin, cowardly alone but dangerous in numbers.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 25 | 35 | 30 | 30 | 20 | 35 | 30 | 30 | 20 | 20 | 11 |
 
 **Traits:** Animosity, Armour 1, Afraid (Elves), Infected, Night Vision, Weapon+7.  
@@ -388,7 +359,7 @@ Optional: Arboreal, Hatred (Dwarfs), Night Vision, Ranged+7 (25), Venom.
 A tiny, pea-brained Greenskin scavenger and mimic that fights in overwhelming, filth-hurling swarms when pushed to it.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 25 | 15 | 25 | 20 | 20 | 30 | – | 15 | 30 | – | 6 |
 
 **Traits:** Bestial, Infected, Night Vision, Size (Small), Weapon+4.  
@@ -401,7 +372,7 @@ Optional: Broken, Swarm, Trained (Broken, Fetch, Guard), Venom.
 A mindless, fleshless corpse animated by Necromancy, feeling no fear and fighting until physically destroyed.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 25 | 25 | 30 | 30 | 20 | 20 | 25 | – | – | – | 12 |
 
 **Traits:** Armour 2, Construct, Dark Vision, Fear 2, Painless, Undead, Unstable, Weapon+7.  
@@ -414,7 +385,7 @@ Optional: Corruption (Minor), Infected, Territorial.
 A recently-dead, rotting corpse bound together by Necromancy, sloughing flesh and stinking as it fights.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 15 | – | 30 | 30 | 5 | 10 | 15 | – | – | – | 12 |
 
 **Traits:** Construct, Dark Vision, Fear 2, Painless, Undead, Unstable, Weapon+7.  
@@ -425,7 +396,7 @@ Optional: Armoured, Corruption (Minor), Diseased, Distracting, Infected, Infesta
 A rotting, glowing-eyed undead parody of a Giant Wolf, serving necromantic masters and roaming haunted forests.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 9 | 30 | – | 35 | 35 | 30 | 30 | – | – | – | – | 24 |
 
 **Traits:** Armour 1, Construct, Dark Vision, Fear 2, Size (Large), Stride, Tracker, Undead, Unstable, Weapon+6.  
@@ -436,7 +407,7 @@ Optional: Corruption (Minor), Distracting, Infected, Painless, Territorial.
 A pitiable, sallow-skinned scavenger of graveyards and battlefields, tearing flesh with sharp yellow teeth.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 30 | – | 35 | 30 | 30 | 35 | 25 | 20 | 20 | 5 | 11 |
 
 **Traits:** Bite+5, Infected, Night Vision, Weapon+6.  
@@ -447,7 +418,7 @@ Optional: Bestial, Painless, Venom.
 A bloated, bat-like Vampire that has abandoned all human pretence, given over entirely to bestial bloodlust.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 8 | 55 | – | 55 | 55 | 30 | 50 | 20 | 10 | 60 | – | 42 |
 
 **Traits:** Armour 1, Bestial, Bite+8, Fear 4, Dark Vision, Hatred (Living), Hungry, Regeneration, Size (Large), Terror 3, Undead, Vampiric, Weapon+9.  
@@ -458,7 +429,7 @@ Optional: Corruption (Minor), Flight, Frenzy, Fury, Territorial, Tracker.
 A potent, malevolent spirit of a necromancer who once sought to prolong life through dark magic, now haunting misty cairns.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 35 | – | 35 | 30 | 15 | 30 | 25 | 25 | 50 | 15 | 14 |
 
 **Traits:** Chill Grasp, Dark Vision, Ethereal, Terror 3, Undead, Unstable, Weapon+9.  
@@ -469,7 +440,7 @@ Optional: Bestial, Champion, Painless, Territorial.
 The spectral remains of a once-powerful witch, whose grief-fuelled howl can drive listeners insane or stop their hearts.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 30 | – | 30 | 30 | 20 | 30 | 30 | 25 | 40 | 20 | 13 |
 
 Traits: Dark Vision, Ethereal, Ghostly Howl, Terror 3, Undead, Unstable, Weapon+7.  
@@ -480,7 +451,7 @@ Optional: Bestial, Flight, Fury, Painless, Territorial.
 An undead aristocrat descended from ancient southern bloodlines, thirsting for blood behind an often flawless human facade.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 60 | 40 | 50 | 40 | 50 | 70 | 40 | 40 | 60 | 40 | 21 |
 
 **Traits:** Bite+8, Night Vision, Undead, Vampiric, Weapon+9.  
@@ -491,7 +462,7 @@ Optional: Bestial, Champion, Corruption (Minor), Dark Vision, Die Hard, Distract
 The spirit of a soul who died with unfinished business, sometimes summoned in swarming Spirit Hosts by Necromancers or Vampires.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 30 | – | 30 | 30 | 10 | 30 | 20 | 15 | 15 | – | 10 |
 
 **Traits:** Dark Vision, Ethereal, Fear 2, Undead, Unstable, Weapon+6.  
@@ -504,7 +475,7 @@ Optional: Bestial, Fury, Hatred, Swarm, Territorial.
 The most common Beastman, a Human/animal hybrid marked by large horns that denote status in the herd; the largest Gors are Bestigors.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 45 | 30 | 35 | 45 | 30 | 35 | 25 | 25 | 30 | 25 | 14 |
 
 **Traits:** Arboreal, Armour 1, Fury, Horns+6, Night Vision, Weapon+7.  
@@ -515,7 +486,7 @@ Optional: Armour 2, Corruption (Minor), Disease (Packer's Pox), Infected, Infest
 A stunted, barely-horned Beastman looked down on by Gors, often bitter and prone to Human-like features that make good infiltrators.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 35 | 30 | 30 | 35 | 30 | 35 | 25 | 25 | 35 | 25 | 12 |
 
 **Traits:** Arboreal, Night Vision, Weapon+6.  
@@ -526,7 +497,7 @@ Optional: Armour 1, Corruption (Minor), Disease (Packer's Pox), Infected, Infest
 A massive, bull-like Beastman towering over Bestigors, rallying herds around its imposing, favoured presence.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 6 | 45 | 25 | 44 | 45 | 20 | 35 | 25 | 20 | 30 | 15 | 32 |
 
 **Traits:** Horns+9, Hungry, Night Vision, Size (Large), Weapon+9.  
@@ -537,7 +508,7 @@ Optional: Arboreal, Belligerent, Corruption (Minor), Disease (Packer's Pox), Fur
 A Beastman born with an instinctive, feared gift for Chaos magic, untouchable by its own herd.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 40 | – | 30 | 45 | 40 | 35 | 25 | 30 | 50 | 30 | 16 |
 
 Traits: Arboreal, Corruption (Minor), Fury, Horns+6, Night Vision, Spellcaster (Beasts, Any Chaos, Death, or Shadow), Weapon+7.  
@@ -548,7 +519,7 @@ Optional: Disease (Packer's Pox), Infected, Infestation, Mutation, Size (Large).
 A Human twisted by Chaos's mutating influence, often born deformed and abandoned to the wilds, feared by common folk.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 12 |
 
 Traits: Corruption (Minor), Mutation, Weapon+7.  
@@ -561,7 +532,7 @@ Optional: All Creature Traits.
 An ordinary member of society secretly seduced by Chaos, sometimes granted mutating "gifts" by their patron god.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 30 | 12 |
 
 **Traits:** Weapon+6.  
@@ -574,7 +545,7 @@ Optional: Armour 1, Corruption (Minor), Mutation, Spellcaster (Chaos).
 A heavily armoured, spike-adorned marauder who has given up all Human life to serve a Dark God; a few are gifted permanent Chaos Armour.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 55 | 30 | 45 | 45 | 45 | 55 | 30 | 35 | 55 | 25 | 19 |
 
 **Traits:** Armoured 5, Champion, Corruption (Minor), Weapon+8.  
@@ -587,7 +558,7 @@ Optional: Belligerent, Disease, Distracting, Frenzy, Mental Corruption, Mutation
 A lesser Daemon of the Blood God, brass-skinned and needle-toothed, wielding a gore-steeped Hellblade in reckless slaughter.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 5 | 55 | 35 | 45 | 35 | 60 | 40 | 30 | 25 | 70 | 15 | 19 |
 
 **Traits:** Armour 5, Champion, Claws, Corruption (Moderate), Daemonic 8+, Fear 3, Frenzy, Horns+8, Painless, Unstable, Weapon+9.
@@ -597,7 +568,7 @@ A lesser Daemon of the Blood God, brass-skinned and needle-toothed, wielding a g
 A lesser Daemon of Slaanesh, unnaturally beautiful and horrifying at once, with crab-like claws in place of hands.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 4 | 60 | 50 | 40 | 30 | 65 | 60 | 35 | 30 | 70 | 45 | 17 |
 
 **Traits:** Champion, Corruption (Moderate), Daemonic 8+, Distracting, Fear 2, Night Vision, Unstable, Weapon+9.
@@ -607,7 +578,7 @@ A lesser Daemon of Slaanesh, unnaturally beautiful and horrifying at once, with 
 The apotheosis of a Chaos champion, ascended to Daemonhood; a mighty, unique servant of its patron god. Two named examples:
 
 | Name | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | Slenderthigh Whiptongue (Slaanesh) | 6 | 95 | 110 | 115 | 120 | 100 | 95 | 40 | 70 | 85 | 85 | 86 |
 | Fr'hough Mournbreath (Nurgle) | 4 | 70 | 35 | 120 | 150 | 50 | 20 | 30 | 85 | 120 | 50 | 108 |
 
@@ -619,7 +590,7 @@ The apotheosis of a Chaos champion, ascended to Daemonhood; a mighty, unique ser
 The common rank-and-file Skaven, drawn from bickering clans, usually raiding or scouting in scavenged armour.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 5 | 30 | 30 | 30 | 30 | 40 | 35 | 30 | 30 | 20 | 20 | 11 |
 
 **Traits:** Armour 2, Infected, Night Vision, Weapon+7.  
@@ -630,7 +601,7 @@ Optional: Disease (Ratte Fever), Mutation, Skittish, Stealthy, Tracker.
 The elite, better-armed and armoured Skaven, serving as bodyguards and shock troops for important clan members.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 5 | 45 | 35 | 35 | 35 | 55 | 50 | 30 | 30 | 25 | 20 | 11 |
 
 **Traits:** Armour 4, Infected, Night Vision, Weapon+8.  
@@ -641,7 +612,7 @@ Optional: Disease (Ratte Fever), Mutation, Tracker.
 A hulking, stupid brute bred by Clan Moulder's packmasters, fearless in combat when directed by Skaven handlers.
 
 | M | WS | BS | S | T | I | Ag | Dex | Int | WP | Fel | W |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | 5 | 35 | 10 | 55 | 45 | 35 | 45 | 25 | 10 | 25 | 15 | 30 |
 
 **Traits:** Armour 1, Infected, Night Vision, Size (Large), Stupid, Weapon+9.  

@@ -1,4 +1,4 @@
-import { ChevronRight, EllipsisVertical } from "lucide-react";
+import { ChevronRight, Ellipsis } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
 
@@ -17,7 +17,7 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
     <nav aria-label="Breadcrumb">
       <ol className="flex min-w-0 items-center gap-1 text-sm text-wfrp-muted-text">
         {ancestorItems.length > 0 ? (
-          <li className="flex shrink-0 items-center md:hidden">
+          <li className="-mx-3.5 flex shrink-0 items-center md:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger
                 aria-label="Show breadcrumb path"
@@ -25,7 +25,7 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
                 className="wfrp-standard-icon cursor-pointer"
               >
                 <span className="wfrp-standard-icon__glyph" aria-hidden="true">
-                  <EllipsisVertical />
+                  <Ellipsis />
                 </span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">

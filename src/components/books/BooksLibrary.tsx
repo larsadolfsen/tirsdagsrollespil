@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronRight } from "lucide-react";
-import { BottomSheetPaper, Button, Heading, Text } from "../ui";
+import { BottomSheetPaper, Button, Card, Heading, Text } from "../ui";
 import { SheetDataButtonRow, SheetDataPanel } from "../wfrp";
 import { bookCatalog, bookCovers, loadChapterContent, type BookMeta } from "../../data/books";
 import { ChapterTableOfContents } from "./ChapterTableOfContents";
@@ -63,15 +63,14 @@ export function BooksLibrary({
     const chapterIndex = findChapterIndex(selectedBook, selectedChapter.id);
     const previousChapter = selectedBook.chapters[chapterIndex - 1];
     const nextChapter = selectedBook.chapters[chapterIndex + 1];
-    const hasToc = headings.filter((heading) => heading.level === 1).length >= 2;
+    const hasToc = headings.filter((heading) => heading.level === 2).length >= 2;
 
     return (
       <div className="flex flex-col gap-4 p-4">
-        <Button variant="subtabAction" onClick={() => onSelectChapter(null)}>
-          Back to chapters
-        </Button>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Heading level={1} variant="section">{selectedChapter.title}</Heading>
+          <Button variant="subtabAction" onClick={() => onSelectChapter(null)}>
+            Back to chapters
+          </Button>
           {hasToc ? (
             <Button variant="subtabAction" className="lg:hidden" onClick={() => setIsContentsOpen(true)}>
               Contents
@@ -82,8 +81,12 @@ export function BooksLibrary({
           <Text variant="bodyMuted">Loading…</Text>
         ) : hasToc ? (
           <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-            <aside className="hidden lg:block">
-              <ChapterTableOfContents headings={headings} />
+            <aside className="hidden self-start lg:block lg:sticky lg:top-4">
+              <Card>
+                <div className="p-4">
+                  <ChapterTableOfContents headings={headings} title={selectedChapter.title} />
+                </div>
+              </Card>
             </aside>
             <MarkdownContent content={chapterContent} headings={headings} />
           </div>
@@ -99,7 +102,11 @@ export function BooksLibrary({
                   Close
                 </Button>
               </div>
-              <ChapterTableOfContents headings={headings} onSelect={() => setIsContentsOpen(false)} />
+              <ChapterTableOfContents
+                headings={headings}
+                title={selectedChapter.title}
+                onSelect={() => setIsContentsOpen(false)}
+              />
             </div>
           </BottomSheetPaper>
         ) : null}

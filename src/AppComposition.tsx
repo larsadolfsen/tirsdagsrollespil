@@ -54,6 +54,7 @@ import type {
   ResolvedCharacterTalent,
 } from "./data/characters/resolved";
 import { listCharacters, loadCharacterProgress } from "./data/repository";
+import { bookCatalog } from "./data/books";
 import {
   loadCampaignSessions,
   saveCampaignSession,
@@ -1733,6 +1734,48 @@ export function AppComposition() {
   const activeCareerSubtabLabel = editCharacterTabOptions.find(
     (option) => option.id === activeCareerSubtab,
   )?.label;
+  const selectedBooksBook = selectedBooksBookId
+    ? bookCatalog.find((book) => book.id === selectedBooksBookId)
+    : undefined;
+  const selectedBooksChapter = selectedBooksBook && selectedBooksChapterId
+    ? selectedBooksBook.chapters.find((chapter) => chapter.id === selectedBooksChapterId)
+    : undefined;
+  const booksSectionBreadcrumbItems = activeMainTab === "books"
+    ? [
+      {
+        label: currentSectionLabel,
+        ...(selectedBooksBook
+          ? {
+            href: buildCampaignCharacterPath({
+              campaignId: characterData.campaignId,
+              characterId: characterData.id,
+              view: "books",
+              characterName: characterData.name,
+            }),
+            onClick: () => selectBook(null),
+          }
+          : {}),
+      },
+      ...(selectedBooksBook
+        ? [{
+          label: selectedBooksBook.title,
+          ...(selectedBooksChapter
+            ? {
+              href: buildCampaignCharacterPath({
+                campaignId: characterData.campaignId,
+                characterId: characterData.id,
+                view: "books",
+                characterName: characterData.name,
+                bookId: selectedBooksBook.id,
+              }),
+              onClick: () => selectChapter(null),
+            }
+            : {}),
+        }]
+        : []),
+      ...(selectedBooksChapter ? [{ label: selectedBooksChapter.title }] : []),
+    ]
+    : [{ label: currentSectionLabel }];
   const breadcrumbItems = [
     {
       label: campaignName,
@@ -1748,7 +1791,7 @@ export function AppComposition() {
       href: characterRootPath,
       onClick: () => selectMobileMainView("characteristics"),
     },
-    { label: currentSectionLabel },
+    ...booksSectionBreadcrumbItems,
     ...(activeMainTab === "career" && activeCareerSubtabLabel
       ? [{ label: activeCareerSubtabLabel }]
       : []),

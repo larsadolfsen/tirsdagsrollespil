@@ -13,6 +13,12 @@ export type HeadingVariant =
   | "sectionEditorial"
   | "sectionProminent"
   | "subsection"
+  | "chapterH1"
+  | "chapterH2"
+  | "chapterH3"
+  | "chapterH4"
+  | "chapterH5"
+  | "chapterH6"
   | "panel"
   | "panelStrong"
   | "sidebar"
@@ -38,6 +44,12 @@ const variantClasses: Record<HeadingVariant, string> = {
   sectionEditorial: "font-display text-lg font-semibold leading-tight tracking-wide text-gray-100",
   sectionProminent: "font-serif text-2xl font-semibold leading-tight text-gray-100",
   subsection: "font-serif text-lg font-semibold leading-tight text-gray-100",
+  chapterH1: "font-serif text-[45px] font-normal leading-[52px] tracking-normal text-gray-100 pt-0",
+  chapterH2: "font-serif text-[36px] font-normal leading-[44px] tracking-normal text-gray-100 pt-[22px]",
+  chapterH3: "font-serif text-[28px] font-normal leading-[36px] tracking-normal text-gray-100 pt-[18px]",
+  chapterH4: "font-sans text-[22px] font-normal leading-[28px] tracking-normal text-gray-100 pt-[14px]",
+  chapterH5: "font-sans text-[16px] font-medium leading-[24px] tracking-normal text-gray-100 pt-3",
+  chapterH6: "font-sans text-[14px] font-medium leading-[20px] tracking-normal text-gray-100 pt-2.5",
   panel: "wfrp-label flex items-center gap-2 text-wfrp-muted-text",
   panelStrong: "wfrp-label flex items-center gap-2 text-gray-100",
   sidebar: "wfrp-sidebar-title",
