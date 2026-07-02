@@ -1,5 +1,7 @@
 # Rules
 
+## Tests
+
 ### Tests Overview
 
 A Test compares a d100 roll to a Skill or Characteristic (modified by Difficulty). Rolling equal to or under the target succeeds; rolling over fails. Rolling 01–05 is always a success and rolling 96–00 is always a failure, regardless of the modified target number.

@@ -2,7 +2,17 @@
 
 ## Character Creation Overview
 
-Character creation runs through nine steps: 1) Species, 2) Class and Career, 3) Attributes, 4) Skills and Talents, 5) Trappings, 6) Adding Detail, 7) Party, 8) Bringing Your Character to Life, 9) Advancement.
+Character creation runs through nine steps: 
+
+1.  Species
+2.  Class and Career
+3.  Attributes
+4.  Skills and Talents
+5.  Trappings
+6.  Adding Detail
+7.  Party
+8.  Bringing Your Character to Life
+9.  Advancement.
 
 In several steps you may choose an option outright, or roll for a random result instead. Accepting a random result usually grants bonus XP, spendable once character creation is finished.
 
