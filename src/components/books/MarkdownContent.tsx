@@ -1,5 +1,6 @@
 import { useMemo, type ComponentProps, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import {
   Heading,
@@ -73,14 +74,14 @@ export function MarkdownContent({
     tbody: ({ children }) => <TableBody>{children}</TableBody>,
     tr: ({ children }) => <TableRow>{children}</TableRow>,
     th: ({ children }) => <TableHead>{children}</TableHead>,
-    td: ({ children }) => <TableCell>{children}</TableCell>,
+    td: ({ children }) => <TableCell className="align-top">{children}</TableCell>,
     ul: ({ children }) => <ul className="mb-3 list-disc space-y-1 pl-5 wfrp-text text-gray-200">{children}</ul>,
     ol: ({ children }) => <ol className="mb-3 list-decimal space-y-1 pl-5 wfrp-text text-gray-200">{children}</ol>,
     li: ({ children }) => <li>{children}</li>,
   };
 
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={components}>
       {content}
     </ReactMarkdown>
   );

@@ -22,29 +22,25 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:** ** Strength, Agility, Intelligence (level 1); +Weapon Skill (level 2); +Willpower (level 3); +Ballistic Skill (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Apothecary's Apprentice|Brass 3|Consume Alcohol, Heal, Language (Classical), Lore (Chemistry), Lore (Medicine), Lore (Plants), Trade (Apothecary), Trade (Poisoner)|Concoct, Craftsman (Apothecary), Etiquette (Scholar), Read/Write|Book (Blank), Healing Draught, Leather Jerkin, Pestle and Mortar|
-|Apothecary|Silver 1|Charm, Haggle, Lore (Science), Gossip, Language (Guilder), Perception|Criminal, Dealmaker, Etiquette (Guilder), Pharmacist|Guild Licence, Trade Tools|
-|Master Apothecary|Silver 3|Intuition, Leadership, Research, Secret Signs (Guilder)|Bookish, Master Tradesman (Apothecary), Resistance (Poison), Savvy|Book (Apothecary), Apprentice, Workshop|
-|Apothecary-General|Gold 1|Intimidate, Ride (Horse)|Acute Sense (Taste), Coolheaded, Master Tradesman (Poisoner), Savant (Apothecary)|Commission Papers, Large Workshop|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Apothecary's Apprentice|Brass 3|Agility<br>Intelligence<br>Strength|Consume Alcohol<br>Heal<br>Language (Classical)<br>Lore (Chemistry)<br>Lore (Medicine)<br>Lore (Plants)<br>Trade (Apothecary)<br>Trade (Poisoner)|Concoct, Craftsman (Apothecary), Etiquette (Scholar), Read/Write|Book (Blank)<br>Healing Draught<br>Leather Jerkin<br>Pestle and Mortar|
+|2|Apothecary|Silver 1|Agility<br>Intelligence<br>Strength<br>Weapon Skill|Charm<br>Gossip<br>Haggle<br>Language (Guilder)<br>Lore (Science)<br>Perception|Criminal, Dealmaker, Etiquette (Guilder), Pharmacist|Guild Licence<br>Trade Tools|
+|3|Master Apothecary|Silver 3|Agility<br>Intelligence<br>Strength<br>Weapon Skill<br>Willpower|Intuition<br>Leadership<br>Research<br>Secret Signs (Guilder)|Bookish, Master Tradesman (Apothecary), Resistance (Poison), Savvy|Apprentice<br>Book (Apothecary)<br>Workshop|
+|4|Apothecary-General|Gold 1|Agility<br>Ballistic Skill<br>Intelligence<br>Strength<br>Weapon Skill<br>Willpower|Intimidate<br>Ride (Horse)|Acute Sense (Taste), Coolheaded, Master Tradesman (Poisoner), Savant (Apothecary)|Commission Papers<br>Large Workshop|
 
 ### Engineer
 
 *Designs and builds machines, structures, and war engines.*
 
-\*\***Species:** \*\*Dwarf, Halfling, Human
+**Species:** Dwarf, Halfling, Human
 
-\*\***Advance Scheme:**  \*\*Ballistic Skill, Intelligence, Willpower (level 1); +Strength (level 2); +Agility (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Student Engineer|Brass 4|Consume Alcohol, Cool, Endurance, Language (Classical), Lore (Engineer), Perception, Ranged (Blackpowder), Trade (Engineer)|Artistic, Gunner, Read/Write, Tinker|Book (Engineer), Hammer and Spikes|
-|Engineer|Silver 2|Drive, Dodge, Navigation, Ranged (Engineering), Research, Language (Guilder)|Craftsman (Engineer), Etiquette (Guilder), Marksman, Orientation|Guild Licence, Trade Tools|
-|Master Engineer|Silver 4|Language (Khazalid), Leadership, Ride (Horse), Secret Signs (Guilder)|Etiquette (Scholar), Master Tradesman (Engineering), Sniper, Super Numerate|Workshop|
-|Chartered Engineer|Gold 2|Language (Any), Lore (Any)|Magnum Opus, Rapid Reload, Savant (Engineering), Unshakeable|Guild License, Library (Engineer), Quality Trade Tools (Engineer), Large Workshop (Engineer)|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Student Engineer|Brass 4|Ballistic Skill<br>Intelligence<br>Willpower|Consume Alcohol<br>Cool<br>Endurance<br>Language (Classical)<br>Lore (Engineer)<br>Perception<br>Ranged (Blackpowder)<br>Trade (Engineer)|Artistic, Gunner, Read/Write, Tinker|Book (Engineer)<br>Hammer and Spikes|
+|2|Engineer|Silver 2|Ballistic Skill<br>Intelligence<br>Strength<br>Willpower|Dodge<br>Drive<br>Language (Guilder)<br>Navigation<br>Ranged (Engineering)<br>Research|Craftsman (Engineer), Etiquette (Guilder), Marksman, Orientation|Guild Licence<br>Trade Tools|
+|3|Master Engineer|Silver 4|Agility<br>Ballistic Skill<br>Intelligence<br>Strength<br>Willpower|Language (Khazalid)<br>Leadership<br>Ride (Horse)<br>Secret Signs (Guilder)|Etiquette (Scholar), Master Tradesman (Engineering), Sniper, Super Numerate|Workshop|
+|4|Chartered Engineer|Gold 2|Agility<br>Ballistic Skill<br>Fellowship<br>Intelligence<br>Strength<br>Willpower|Language (Any)<br>Lore (Any)|Magnum Opus, Rapid Reload, Savant (Engineering), Unshakeable|Guild License<br>Large Workshop (Engineer)<br>Library (Engineer)<br>Quality Trade Tools (Engineer)|
 
 ### Lawyer
 
@@ -52,14 +48,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:**  Toughness, Agility, Intelligence (level 1); +Weapon Skill (level 2); +Ballistic Skill (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Student Lawyer|Brass 4|Consume Alcohol, Endurance, Haggle, Language (Classical), Lore (Law), Lore (Theology), Perception, Research|Blather, Etiquette (Scholar), Read/Write, Speedreader|Book (Law), Magnifying Glass|
-|Lawyer|Silver 3|Bribery, Charm, Gossip, Intuition, Language (Guilder), Secret Signs (Guilder)|Argumentative, Criminal, Etiquette (Guilder), Suave|Court Robes, Guild Licence, Writing Kit|
-|Barrister|Gold 1|Art (Writing), Entertain (Speeches), Intimidate, Lore (Any)|Bookish, Cat-tongued, Impassioned Zeal, Savvy|Office, Assistant (Student or Servant)|
-|Judge|Gold 2|Cool, Lore (Any)|Commanding Presence, Kingpin, Savant (Law), Wealthy|Gavel, Ostentatious Wig|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Student Lawyer|Brass 4|Agility<br>Intelligence<br>Toughness|Consume Alcohol<br>Endurance<br>Haggle<br>Language (Classical)<br>Lore (Law)<br>Lore (Theology)<br>Perception<br>Research|Blather, Etiquette (Scholar), Read/Write, Speedreader|Book (Law)<br>Magnifying Glass|
+|2|Lawyer|Silver 3|Agility<br>Intelligence<br>Toughness<br>Weapon Skill|Bribery<br>Charm<br>Gossip<br>Intuition<br>Language (Guilder)<br>Secret Signs (Guilder)|Argumentative, Criminal, Etiquette (Guilder), Suave|Court Robes<br>Guild Licence<br>Writing Kit|
+|3|Barrister|Gold 1|Agility<br>Ballistic Skill<br>Intelligence<br>Toughness<br>Weapon Skill|Art (Writing)<br>Entertain (Speeches)<br>Intimidate<br>Lore (Any)|Bookish, Cat-tongued, Impassioned Zeal, Savvy|Assistant (Student or Servant)<br>Office|
+|4|Judge|Gold 2|Agility<br>Ballistic Skill<br>Intelligence<br>Strength<br>Toughness<br>Weapon Skill|Cool<br>Lore (Any)|Commanding Presence, Kingpin, Savant (Law), Wealthy|Gavel<br>Ostentatious Wig|
 
 ### Nun
 
@@ -67,29 +61,25 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Human
 
-**Advance Scheme:**  Agility, Dexterity, Fellowship (level 1); +Toughness (level 2); +Willpower (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Novitiate|Brass 1|Art (Calligraphy), Cool, Endurance, Entertain (Storyteller), Gossip, Heal, Lore (Theology), Pray|Bless (Any), Stone Soup, Panhandle, Read/Write|Religious Symbol, Robes|
-|Nun|Brass 4|Charm, Melee (Any), Research, Trade (Brewer), Trade (Herbalist), Trade (Vintner)|Etiquette (Cultists), Field Dressing, Holy Visions, Invoke (Any)|Book (Religion), Religious Relic, Trade Tools (Any)|
-|Abbess|Silver 2|Leadership, Lore (Local), Lore (Politics), Perception|Resistance (Any), Robust, Savant (Theology), Stout-hearted|Abbey, Library (Theology)|
-|Prioress General|Silver 5|Language (Any), Lore (Any)|Commanding Presence, Iron Will, Pure Soul, Strong-minded|Religious Order|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Novitiate|Brass 1|Agility<br>Dexterity<br>Fellowship|Art (Calligraphy)<br>Cool<br>Endurance<br>Entertain (Storyteller)<br>Gossip<br>Heal<br>Lore (Theology)<br>Pray|Bless (Any), Stone Soup, Panhandle, Read/Write|Religious Symbol<br>Robes|
+|2|Nun|Brass 4|Agility<br>Dexterity<br>Fellowship<br>Toughness|Charm<br>Melee (Any)<br>Research<br>Trade (Brewer)<br>Trade (Herbalist)<br>Trade (Vintner)|Etiquette (Cultists), Field Dressing, Holy Visions, Invoke (Any)|Book (Religion)<br>Religious Relic<br>Trade Tools (Any)|
+|3|Abbess|Silver 2|Agility<br>Dexterity<br>Fellowship<br>Toughness<br>Willpower|Leadership<br>Lore (Local)<br>Lore (Politics)<br>Perception|Resistance (Any), Robust, Savant (Theology), Stout-hearted|Abbey<br>Library (Theology)|
+|4|Prioress General|Silver 5|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Language (Any)<br>Lore (Any)|Commanding Presence, Iron Will, Pure Soul, Strong-minded|Religious Order|
 
 ### Physician
 
 *Diagnoses illness and performs surgery, licensed or otherwise.*
 
-\*\***Species:** \*\*Dwarf, Halfling, High Elf, Human
+**Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme**: Agility, Dexterity, Intelligence (level 1); +Toughness (level 2); +Fellowship (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Physician's Apprentice|Brass 4|Bribery, Cool, Drive, Endurance, Gossip, Heal, Perception, Sleight of Hand|Bookish, Field Dressing, Read/Write, Strike to Stun|Bandages, Healing Draught|
-|Physician|Silver 3|Charm, Haggle, Language (Guilder), Lore (Anatomy), Lore (Medicine), Trade (Barber)|Coolheaded, Criminal, Etiquette (Guilder), Surgery|Book (Medicine), Guild Licence, Trade Tools (Medicine)|
-|Doktor|Silver 5|Consume Alcohol, Intimidate, Leadership, Research|Etiquette (Scholars), Resistance (Disease), Savvy, Strike to Injure|Apprentice, Workshop (Medicine)|
-|Court Physician|Gold 1|Lore (Noble), Perform (Dancing)|Etiquette (Nobles), Nimble Fingered, Savant (Medicine), Strong-minded|Courtly Attire, Letter of Appointment|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Physician's Apprentice|Brass 4|Agility<br>Dexterity<br>Intelligence|Bribery<br>Cool<br>Drive<br>Endurance<br>Gossip<br>Heal<br>Perception<br>Sleight of Hand|Bookish, Field Dressing, Read/Write, Strike to Stun|Bandages<br>Healing Draught|
+|2|Physician|Silver 3|Agility<br>Dexterity<br>Intelligence<br>Toughness|Charm<br>Haggle<br>Language (Guilder)<br>Lore (Anatomy)<br>Lore (Medicine)<br>Trade (Barber)|Coolheaded, Criminal, Etiquette (Guilder), Surgery|Book (Medicine)<br>Guild Licence<br>Trade Tools (Medicine)|
+|3|Doktor|Silver 5|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness|Consume Alcohol<br>Intimidate<br>Leadership<br>Research|Etiquette (Scholars), Resistance (Disease), Savvy, Strike to Injure|Apprentice<br>Workshop (Medicine)|
+|4|Court Physician|Gold 1|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Lore (Noble)<br>Perform (Dancing)|Etiquette (Nobles), Nimble Fingered, Savant (Medicine), Strong-minded|Courtly Attire<br>Letter of Appointment|
 
 ### Priest
 
@@ -97,14 +87,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Human
 
-**Advance Scheme:** ** Strength, Agility, Willpower (level 1); +Toughness (level 2); +Intelligence (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Initiate|Brass 2|Athletics, Cool, Endurance, Intuition, Lore (Theology), Perception, Pray, Research|Bless (Any), Holy Visions, Read/Write, Suave|Religious Symbol, Robes|
-|Priest|Silver 1|Charm, Entertain (Storytelling), Gossip, Heal, Intimidate, Melee (Basic)|Blather, Bookish, Etiquette (Cultists), Invoke (Any)|Book (Religion), Ceremonial Robes|
-|High Priest|Gold 1|Art (Writing), Entertain (Speeches), Leadership, Lore (Heraldry)|Acute Sense (Any), Hatred (Any), Impassioned Zeal, Strong-minded|Quality Robes, Religious Relic, Subordinate Priests, Temple|
-|Lector|Gold 2|Language (Any), Lore (Politics)|Master Orator, Pure Soul, Resistance (Any), Savant (Theology)|Library (Theology), Subordinate High Priests|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Initiate|Brass 2|Agility<br>Strength<br>Willpower|Athletics<br>Cool<br>Endurance<br>Intuition<br>Lore (Theology)<br>Perception<br>Pray<br>Research|Bless (Any), Holy Visions, Read/Write, Suave|Religious Symbol<br>Robes|
+|2|Priest|Silver 1|Agility<br>Strength<br>Toughness<br>Willpower|Charm<br>Entertain (Storytelling)<br>Gossip<br>Heal<br>Intimidate<br>Melee (Basic)|Blather, Bookish, Etiquette (Cultists), Invoke (Any)|Book (Religion)<br>Ceremonial Robes|
+|3|High Priest|Gold 1|Agility<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Art (Writing)<br>Entertain (Speeches)<br>Leadership<br>Lore (Heraldry)|Acute Sense (Any), Hatred (Any), Impassioned Zeal, Strong-minded|Quality Robes<br>Religious Relic<br>Subordinate Priests<br>Temple|
+|4|Lector|Gold 2|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Language (Any)<br>Lore (Politics)|Master Orator, Pure Soul, Resistance (Any), Savant (Theology)|Library (Theology)<br>Subordinate High Priests|
 
 ### Scholar
 
@@ -112,14 +100,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Strength, Intelligence, Willpower (level 1); +Toughness (level 2); +Fellowship (level 3); +Agility (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Student|Brass 3|Consume Alcohol, Entertain (Storytelling), Gamble, Gossip, Haggle, Language (Classical), Lore (Any), Research|Carouser, Read/Write, Savvy, Super Numerate|Alcohol, Book, Opinions, Writing Kit|
-|Scholar|Silver 2|Art (Writing), Intuition, Language (Any), Lore (Any), Perception, Trade (Any)|Bookish, Etiquette (Scholars), Speedreader, Suave|Access to a Library, Degree|
-|Fellow|Silver 5|Entertain (Lecture), Intimidate, Language (Any), Lore (Any)|Linguistics, Public Speaker, Savant (Any), Tower of Memories|Mortarboard, Robes|
-|Professor|Gold 1|Entertain (Rhetoric), Lore (Any)|Magnum Opus, Master Orator, Savant (Any), Sharp|Study|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Student|Brass 3|Intelligence<br>Strength<br>Willpower|Consume Alcohol<br>Entertain (Storytelling)<br>Gamble<br>Gossip<br>Haggle<br>Language (Classical)<br>Lore (Any)<br>Research|Carouser, Read/Write, Savvy, Super Numerate|Alcohol<br>Book<br>Opinions<br>Writing Kit|
+|2|Scholar|Silver 2|Intelligence<br>Strength<br>Toughness<br>Willpower|Art (Writing)<br>Intuition<br>Language (Any)<br>Lore (Any)<br>Perception<br>Trade (Any)|Bookish, Etiquette (Scholars), Speedreader, Suave|Access to a Library<br>Degree|
+|3|Fellow|Silver 5|Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Entertain (Lecture)<br>Intimidate<br>Language (Any)<br>Lore (Any)|Linguistics, Public Speaker, Savant (Any), Tower of Memories|Mortarboard<br>Robes|
+|4|Professor|Gold 1|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Entertain (Rhetoric)<br>Lore (Any)|Magnum Opus, Master Orator, Savant (Any), Sharp|Study|
 
 ### Wizard
 
@@ -127,14 +113,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Intelligence, Willpower (level 1); +Fellowship (level 2); +Toughness (level 3); +Agility (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Wizard's Apprentice|Brass 3|Channelling (Any Colour), Dodge, Intuition, Language (Magick), Lore (Magic), Melee (Basic), Melee (Polearm), Perception|Aethyric Attunement, Petty Magic, Read/Write, Second Sight|Grimoire, Staff|
-|Wizard|Silver 3|Charm, Cool, Gossip, Intimidate, Language (Battle), Language (Any)|Arcane Magic (Any Arcane Lore), Detect Artefact, Fast Hands, Sixth Sense|Magical License|
-|Master Wizard|Gold 1|Animal Care, Evaluate, Lore (Warfare), Ride (Horse)|Dual Wielder, Instinctive Diction, Magical Sense, Menacing|Apprentice, Light Warhorse, Magical Item|
-|Wizard Lord|Gold 2|Language (Any), Lore (Any)|Combat Aware, Frightening, Iron Will, War Wizard|Apprentice, Library (Magic), Workshop (Magic)|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Wizard's Apprentice|Brass 3|Intelligence<br>Weapon Skill<br>Willpower|Channelling (Any Colour)<br>Dodge<br>Intuition<br>Language (Magick)<br>Lore (Magic)<br>Melee (Basic)<br>Melee (Polearm)<br>Perception|Aethyric Attunement, Petty Magic, Read/Write, Second Sight|Grimoire<br>Staff|
+|2|Wizard|Silver 3|Fellowship<br>Intelligence<br>Weapon Skill<br>Willpower|Charm<br>Cool<br>Gossip<br>Intimidate<br>Language (Any)<br>Language (Battle)|Arcane Magic (Any Arcane Lore), Detect Artefact, Fast Hands, Sixth Sense|Magical License|
+|3|Master Wizard|Gold 1|Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Animal Care<br>Evaluate<br>Lore (Warfare)<br>Ride (Horse)|Dual Wielder, Instinctive Diction, Magical Sense, Menacing|Apprentice<br>Light Warhorse<br>Magical Item|
+|4|Wizard Lord|Gold 2|Agility<br>Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Language (Any)<br>Lore (Any)|Combat Aware, Frightening, Iron Will, War Wizard|Apprentice<br>Library (Magic)<br>Workshop (Magic)|
 
 ## Burghers
 
@@ -144,14 +128,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Ballistic Skill, Agility, Fellowship (level 1); +Intelligence (level 2); +Willpower (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Pamphleteer|Brass 1|Art (Writing), Bribery, Charm, Consume Alcohol, Gossip, Haggle, Lore (Politics), Trade (Printing)|Blather, Gregarious, Panhandle, Read/Write|Writing Kit, Hammer and Nails, Pile of Leaflets|
-|Agitator|Brass 2|Cool, Dodge, Entertain (Storytelling), Gamble, Intuition, Leadership|Alley Cat, Argumentative, Impassioned Zeal, Public Speaker|Leather Jack|
-|Rabble Rouser|Brass 3|Athletics, Intimidate, Melee (Fist), Perception|Cat-tongued, Dirty Fighting, Flee!, Step Aside|Hand Weapon, Pamphleteer|
-|Demagogue|Brass 5|Lore (Heraldry), Ride (Horse)|Etiquette (Any), Master Orator, Schemer, Suave|3 Pamphleteers, Patron, Printing Press, Impressive Hat|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Pamphleteer|Brass 1|Agility<br>Ballistic Skill<br>Fellowship|Art (Writing)<br>Bribery<br>Charm<br>Consume Alcohol<br>Gossip<br>Haggle<br>Lore (Politics)<br>Trade (Printing)|Blather, Gregarious, Panhandle, Read/Write|Hammer and Nails<br>Pile of Leaflets<br>Writing Kit|
+|2|Agitator|Brass 2|Agility<br>Ballistic Skill<br>Fellowship<br>Intelligence|Cool<br>Dodge<br>Entertain (Storytelling)<br>Gamble<br>Intuition<br>Leadership|Alley Cat, Argumentative, Impassioned Zeal, Public Speaker|Leather Jack|
+|3|Rabble Rouser|Brass 3|Agility<br>Ballistic Skill<br>Fellowship<br>Intelligence<br>Willpower|Athletics<br>Intimidate<br>Melee (Fist)<br>Perception|Cat-tongued, Dirty Fighting, Flee!, Step Aside|Hand Weapon<br>Pamphleteer|
+|4|Demagogue|Brass 5|Agility<br>Ballistic Skill<br>Fellowship<br>Intelligence<br>Strength<br>Willpower|Lore (Heraldry)<br>Ride (Horse)|Etiquette (Any), Master Orator, Schemer, Suave|3 Pamphleteers<br>Impressive Hat<br>Patron<br>Printing Press|
 
 ### Artisan
 
@@ -159,14 +141,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Strength, Toughness, Agility (level 1); +Fellowship (level 2); +Intelligence (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Apprentice Artisan|Brass 2|Athletics, Cool, Consume Alcohol, Dodge, Endurance, Evaluate, Stealth (Urban), Trade (Any)|Artistic, Craftsman (any), Strong Back, Very Strong|Chalk, Leather Jerkin, d10 rags|
-|Artisan|Silver 1|Charm, Haggle, Lore (Local), Gossip, Language (Guilder), Perception|Dealmaker, Etiquette (Guilder), Nimble Fingered, Sturdy|Guild Licence, Trade Tools|
-|Master Artisan|Silver 3|Intuition, Leadership, Research, Secret Signs (Guilder)|Acute Sense (Taste or Touch), Master Tradesman (Any), Read/Write, Tinker|Apprentice, Workshop|
-|Guildmaster|Gold 1|Bribery, Intimidate|Briber, Magnum Opus, Public Speaker, Schemer|Guild, Quality Clothing|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Apprentice Artisan|Brass 2|Agility<br>Strength<br>Toughness|Athletics<br>Consume Alcohol<br>Cool<br>Dodge<br>Endurance<br>Evaluate<br>Stealth (Urban)<br>Trade (Any)|Artistic, Craftsman (any), Strong Back, Very Strong|Chalk<br>d10 rags<br>Leather Jerkin|
+|2|Artisan|Silver 1|Agility<br>Fellowship<br>Strength<br>Toughness|Charm<br>Gossip<br>Haggle<br>Language (Guilder)<br>Lore (Local)<br>Perception|Dealmaker, Etiquette (Guilder), Nimble Fingered, Sturdy|Guild Licence<br>Trade Tools|
+|3|Master Artisan|Silver 3|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness|Intuition<br>Leadership<br>Research<br>Secret Signs (Guilder)|Acute Sense (Taste or Touch), Master Tradesman (Any), Read/Write, Tinker|Apprentice<br>Workshop|
+|4|Guildmaster|Gold 1|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Bribery<br>Intimidate|Briber, Magnum Opus, Public Speaker, Schemer|Guild<br>Quality Clothing|
 
 ### Beggar
 
@@ -174,14 +154,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Toughness, Agility, Fellowship (level 1); +Intelligence (level 2); +Willpower (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Pauper|Brass 0|Athletics, Charm, Consume Alcohol, Cool, Dodge, Endurance, Intuition, Stealth (Urban)|Panhandle, Resistance (Disease), Stone Soup, Very Resilient|Poor Quality Blanket, Cup|
-|Beggar|Brass 2|Entertain (Acting), Entertain (Any), Gossip, Haggle, Perception, Sleight of Hand|Alley Cat, Beneath Notice, Criminal, Etiquette (Criminals)|Crutch, Bowl|
-|Master Beggar|Brass 4|Charm Animal, Leadership, Lore (Local), Secret Signs (Vagabond)|Blather, Dirty Fighting, Hardy, Step Aside|Disguise Kit, Hiding Place, Pauper Follower|
-|Beggar King|Silver 2|Bribery, Intimidate|Cat-tongued, Fearless (Watchmen), Kingpin, Suave|Lair, Large Group of Beggar Followers|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Pauper|Brass 0|Agility<br>Fellowship<br>Toughness|Athletics<br>Charm<br>Consume Alcohol<br>Cool<br>Dodge<br>Endurance<br>Intuition<br>Stealth (Urban)|Panhandle, Resistance (Disease), Stone Soup, Very Resilient|Cup<br>Poor Quality Blanket|
+|2|Beggar|Brass 2|Agility<br>Fellowship<br>Intelligence<br>Toughness|Entertain (Acting)<br>Entertain (Any)<br>Gossip<br>Haggle<br>Perception<br>Sleight of Hand|Alley Cat, Beneath Notice, Criminal, Etiquette (Criminals)|Bowl<br>Crutch|
+|3|Master Beggar|Brass 4|Agility<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Charm Animal<br>Leadership<br>Lore (Local)<br>Secret Signs (Vagabond)|Blather, Dirty Fighting, Hardy, Step Aside|Disguise Kit<br>Hiding Place<br>Pauper Follower|
+|4|Beggar King|Silver 2|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Bribery<br>Intimidate|Cat-tongued, Fearless (Watchmen), Kingpin, Suave|Lair<br>Large Group of Beggar Followers|
 
 ### Investigator
 
@@ -189,14 +167,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:**  Toughness, Intelligence, Agility (level 1); +Dexterity (level 2); +Willpower (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Sleuth|Silver 1|Charm, Climb, Cool, Gossip, Intuition, Perception, Stealth (Urban), Track|Alley Cat, Beneath Notice, Read/Write, Sharp|Lantern, Lamp Oil, Journal, Quill and Ink|
-|Investigator|Silver 2|Consume Alcohol, Dodge, Lore (Law), Melee (Brawling), Pick Lock, Sleight of Hand|Etiquette (Any), Savvy, Shadow, Tenacious|Leather Jack, Hand Weapon, Magnifying Glass, Lockpick|
-|Master Investigator|Silver 3|Bribery, Evaluate, Leadership, Lore (Any)|Bookish, Break and Enter, Sixth Sense, Suave|Assistant, Office|
-|Detective|Silver 5|Intimidate, Lore (any)|Acute Sense (Any), Savant (Any), Speedreader, Tower of Memories|Network of Informants, Spyglass|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Sleuth|Silver 1|Agility<br>Intelligence<br>Toughness|Charm<br>Climb<br>Cool<br>Gossip<br>Intuition<br>Perception<br>Stealth (Urban)<br>Track|Alley Cat, Beneath Notice, Read/Write, Sharp|Journal<br>Lamp Oil<br>Lantern<br>Quill and Ink|
+|2|Investigator|Silver 2|Agility<br>Dexterity<br>Intelligence<br>Toughness|Consume Alcohol<br>Dodge<br>Lore (Law)<br>Melee (Brawling)<br>Pick Lock<br>Sleight of Hand|Etiquette (Any), Savvy, Shadow, Tenacious|Hand Weapon<br>Leather Jack<br>Lockpick<br>Magnifying Glass|
+|3|Master Investigator|Silver 3|Agility<br>Dexterity<br>Intelligence<br>Toughness<br>Willpower|Bribery<br>Evaluate<br>Leadership<br>Lore (Any)|Bookish, Break and Enter, Sixth Sense, Suave|Assistant<br>Office|
+|4|Detective|Silver 5|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Intimidate<br>Lore (any)|Acute Sense (Any), Savant (Any), Speedreader, Tower of Memories|Network of Informants<br>Spyglass|
 
 ### Merchant
 
@@ -204,14 +180,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:**  Weapon Skill, Toughness, Fellowship (level 1); +Intelligence (level 2); +Willpower (level 3); +Agility (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Trader|Silver 2|Animal Care, Bribery, Charm, Consume Alcohol, Drive, Gamble, Gossip, Haggle|Blather, Dealmaker, Read/Write, Suave|Abacus, Mule and Cart, Canvas Tarpaulin, 3d10 Silver Shillings|
-|Merchant|Silver 5|Evaluate, Intuition, Language (Any), Language (Guilder), Lore (Local), Perception|Briber, Embezzle, Etiquette (Guilder), Savvy|Riverboat or 2 Wagons, Guild License, 20 GC|
-|Master Merchant|Gold 1|Cool, Language (Classical), Navigation, Secret Signs (Guilder)|Cat-tongued, Etiquette (Any), Numismatics, Sharp|Town House with Servants, Warehouse, 100 GC|
-|Merchant Prince|Gold 3|Lore (Any), Intimidate|Iron Will, Luck, Schemer, Wealthy|2 Riverboats or 4 Wagons, Large Town Estate, 2 Warehouses, 1000 GC, Quality Clothing|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Trader|Silver 2|Fellowship<br>Toughness<br>Weapon Skill|Animal Care<br>Bribery<br>Charm<br>Consume Alcohol<br>Drive<br>Gamble<br>Gossip<br>Haggle|Blather, Dealmaker, Read/Write, Suave|3d10 Silver Shillings<br>Abacus<br>Canvas Tarpaulin<br>Mule and Cart|
+|2|Merchant|Silver 5|Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill|Evaluate<br>Intuition<br>Language (Any)<br>Language (Guilder)<br>Lore (Local)<br>Perception|Briber, Embezzle, Etiquette (Guilder), Savvy|20 GC<br>Guild License<br>Riverboat or 2 Wagons|
+|3|Master Merchant|Gold 1|Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Cool<br>Language (Classical)<br>Navigation<br>Secret Signs (Guilder)|Cat-tongued, Etiquette (Any), Numismatics, Sharp|100 GC<br>Town House with Servants<br>Warehouse|
+|4|Merchant Prince|Gold 3|Agility<br>Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Intimidate<br>Lore (Any)|Iron Will, Luck, Schemer, Wealthy|1000 GC<br>2 Riverboats or 4 Wagons<br>2 Warehouses<br>Large Town Estate<br>Quality Clothing|
 
 ### Rat Catcher
 
@@ -219,14 +193,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Weapon Skill, Ballistic Skill, Willpower (level 1); +Toughness (level 2); +Agility (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Rat Hunter|Brass 3|Athletics, Animal Training (Dog), Charm Animal, Consume Alcohol, Endurance, Melee (Basic), Ranged (Sling), Stealth (Underground or Urban)|Night Vision, Resistance (Disease), Strike Mighty Blow, Strike to Stun|Sling with Ammunition, Sack, Small but Vicious Dog|
-|Rat Catcher|Silver 1|Animal Care, Gossip, Haggle, Lore (Poison), Perception, Set Trap|Enclosed Fighter, Etiquette (Guilder), Fearless (Rats), Very Resilient|Animal Traps, Pole for Dead Rats|
-|Sewer Jack|Silver 2|Climb, Cool, Dodge, Ranged (Crossbow Pistol)|Hardy, Stout-hearted, Strong Legs, Tunnel Rat|Davrich Lantern, Hand Weapon, Leather Jack|
-|Exterminator|Silver 3|Leadership, Track|Fearless (Skaven), Menacing, Robust, Strong-minded|Assistant, Large and Vicious Dog, Sack of Poisoned Bait (10 doses of Heartkill)|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Rat Hunter|Brass 3|Ballistic Skill<br>Weapon Skill<br>Willpower|Animal Training (Dog)<br>Athletics<br>Charm Animal<br>Consume Alcohol<br>Endurance<br>Melee (Basic)<br>Ranged (Sling)<br>Stealth (Underground or Urban)|Night Vision, Resistance (Disease), Strike Mighty Blow, Strike to Stun|Sack<br>Sling with Ammunition<br>Small but Vicious Dog|
+|2|Rat Catcher|Silver 1|Ballistic Skill<br>Toughness<br>Weapon Skill<br>Willpower|Animal Care<br>Gossip<br>Haggle<br>Lore (Poison)<br>Perception<br>Set Trap|Enclosed Fighter, Etiquette (Guilder), Fearless (Rats), Very Resilient|Animal Traps<br>Pole for Dead Rats|
+|3|Sewer Jack|Silver 2|Agility<br>Ballistic Skill<br>Toughness<br>Weapon Skill<br>Willpower|Climb<br>Cool<br>Dodge<br>Ranged (Crossbow Pistol)|Hardy, Stout-hearted, Strong Legs, Tunnel Rat|Davrich Lantern<br>Hand Weapon<br>Leather Jack|
+|4|Exterminator|Silver 3|Agility<br>Ballistic Skill<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Leadership<br>Track|Fearless (Skaven), Menacing, Robust, Strong-minded|Assistant<br>Large and Vicious Dog<br>Sack of Poisoned Bait (10 doses of Heartkill)|
 
 ### Townsman
 
@@ -234,14 +206,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:**  Agility, Intelligence, Fellowship (level 1); +Toughness (level 2); +Willpower (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Clerk|Silver 1|Charm, Climb, Consume Alcohol, Drive, Dodge, Gamble, Gossip, Haggle|Alley Cat, Beneath Notice, Etiquette (Servants), Sturdy|Lodgings, Sturdy Boots|
-|Townsman|Silver 2|Bribery, Evaluate, Intuition, Lore (Local), Melee (Brawling), Play (Any)|Dealmaker, Embezzle, Etiquette (Any), Gregarious|Modest Townhouse, Servant, Quill and Ink|
-|Town Councillor|Silver 5|Cool, Lore (Law), Perception, Research|Briber, Public Speaker, Read/Write, Supportive|Coach and Driver, Townhouse|
-|Burgomeister|Gold 1|Lore (Politics), Intimidate|Commanding Presence, Master Orator, Schemer, Suave|Chains of Office, Coach and Footman, Quality Clothing, Large Townhouse with Gardens and Servants|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Clerk|Silver 1|Agility<br>Fellowship<br>Intelligence|Charm<br>Climb<br>Consume Alcohol<br>Dodge<br>Drive<br>Gamble<br>Gossip<br>Haggle|Alley Cat, Beneath Notice, Etiquette (Servants), Sturdy|Lodgings<br>Sturdy Boots|
+|2|Townsman|Silver 2|Agility<br>Fellowship<br>Intelligence<br>Toughness|Bribery<br>Evaluate<br>Intuition<br>Lore (Local)<br>Melee (Brawling)<br>Play (Any)|Dealmaker, Embezzle, Etiquette (Any), Gregarious|Modest Townhouse<br>Quill and Ink<br>Servant|
+|3|Town Councillor|Silver 5|Agility<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Cool<br>Lore (Law)<br>Perception<br>Research|Briber, Public Speaker, Read/Write, Supportive|Coach and Driver<br>Townhouse|
+|4|Burgomeister|Gold 1|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Intimidate<br>Lore (Politics)|Commanding Presence, Master Orator, Schemer, Suave|Chains of Office<br>Coach and Footman<br>Large Townhouse with Gardens and Servants<br>Quality Clothing|
 
 ### Watchman
 
@@ -249,14 +219,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:**  Weapon Skill, Strength, Fellowship (level 1); +Toughness (level 2); +Agility (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Watch Recruit|Brass 3|Athletics, Climb, Consume Alcohol, Dodge, Endurance, Gamble, Melee (Any), Perception|Drilled, Hardy, Strike to Stun, Tenacious|Hand Weapon, Leather Jack, Uniform|
-|Watchman|Silver 1|Charm, Cool, Gossip, Intimidate, Intuition, Lore (Local)|Break and Enter, Criminal, Night Vision, Sprinter|Lantern and Pole, Lamp Oil, Copper Badge|
-|Watch Sergeant|Silver 3|Entertain (Storytelling), Haggle, Leadership, Lore (Law)|Disarm, Etiquette (Soldiers), Fearless (Criminals), Nose for Trouble|Breastplate, Helm, Symbol of Rank|
-|Watch Captain|Gold 1|Lore (Politics), Ride (Horse)|Public Speaker, Robust, Kingpin, Schemer|Riding Horse with Saddle and Tack, Quality Hat, Quality Hand Weapon, Quality Symbol of Rank|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Watch Recruit|Brass 3|Fellowship<br>Strength<br>Weapon Skill|Athletics<br>Climb<br>Consume Alcohol<br>Dodge<br>Endurance<br>Gamble<br>Melee (Any)<br>Perception|Drilled, Hardy, Strike to Stun, Tenacious|Hand Weapon<br>Leather Jack<br>Uniform|
+|2|Watchman|Silver 1|Fellowship<br>Strength<br>Toughness<br>Weapon Skill|Charm<br>Cool<br>Gossip<br>Intimidate<br>Intuition<br>Lore (Local)|Break and Enter, Criminal, Night Vision, Sprinter|Copper Badge<br>Lamp Oil<br>Lantern and Pole|
+|3|Watch Sergeant|Silver 3|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill|Entertain (Storytelling)<br>Haggle<br>Leadership<br>Lore (Law)|Disarm, Etiquette (Soldiers), Fearless (Criminals), Nose for Trouble|Breastplate<br>Helm<br>Symbol of Rank|
+|4|Watch Captain|Gold 1|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Lore (Politics)<br>Ride (Horse)|Public Speaker, Robust, Kingpin, Schemer|Quality Hand Weapon<br>Quality Hat<br>Quality Symbol of Rank<br>Riding Horse with Saddle and Tack|
 
 ## Courtiers
 
@@ -266,14 +234,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Toughness, Intelligence, Willpower (level 1); +Agility (level 2); +Fellowship (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Aide|Silver 2|Bribery, Consume Alcohol, Endurance, Gossip, Haggle, Language (Classical), Lore (Politics), Perception|Beneath Notice, Etiquette (Any), Gregarious, Read/Write|Writing Kit|
-|Advisor|Silver 4|Charm, Cool, Evaluate, Gamble, Intuition, Lore (Local)|Blather, Criminal, Schemer, Supportive|Livery|
-|Counsellor|Gold 1|Entertain (Storytelling), Leadership, Language (Any), Lore (Any)|Argumentative, Briber, Carouser, Cat-tongued|Quality Clothing, Aide|
-|Chancellor|Gold 3|Lore (Heraldry), Ride (Horse)|Commanding Presence, Embezzle, Kingpin, Suave|Riding Horse with Saddle and Harness, Quality Courtly Garb, Staff of Advisors and Aides|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Aide|Silver 2|Intelligence<br>Toughness<br>Willpower|Bribery<br>Consume Alcohol<br>Endurance<br>Gossip<br>Haggle<br>Language (Classical)<br>Lore (Politics)<br>Perception|Beneath Notice, Etiquette (Any), Gregarious, Read/Write|Writing Kit|
+|2|Advisor|Silver 4|Agility<br>Intelligence<br>Toughness<br>Willpower|Charm<br>Cool<br>Evaluate<br>Gamble<br>Intuition<br>Lore (Local)|Blather, Criminal, Schemer, Supportive|Livery|
+|3|Counsellor|Gold 1|Agility<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Entertain (Storytelling)<br>Language (Any)<br>Leadership<br>Lore (Any)|Argumentative, Briber, Carouser, Cat-tongued|Aide<br>Quality Clothing|
+|4|Chancellor|Gold 3|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Lore (Heraldry)<br>Ride (Horse)|Commanding Presence, Embezzle, Kingpin, Suave|Quality Courtly Garb<br>Riding Horse with Saddle and Harness<br>Staff of Advisors and Aides|
 
 ### Artist
 
@@ -281,14 +247,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Toughness, Intelligence, Fellowship (level 1); +Agility (level 2); +Dexterity (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Apprentice Artist|Silver 1|Art (Any), Cool, Consume Alcohol, Evaluate, Endurance, Gossip, Perception, Stealth (Urban)|Artistic, Sharp, Strong Back, Tenacious|Brush or Chisel or Quill Pen|
-|Artist|Silver 3|Climb, Gamble, Haggle, Intuition, Language (Classical), Sleight of Hand, Trade (Art Supplies)|Carouser, Criminal, Gregarious, Nimble Fingered|Sling Bag containing Trade Tools (Artist)|
-|Master Artist|Silver 5|Charm, Leadership, Lore (Art), Lore (Heraldry)|Acute Sense (Any), Dealmaker, Etiquette (any), Nose for Trouble|Apprentice, Patron, Workshop (Artist)|
-|Maestro|Gold 2|Research, Ride (Horse)|Ambidextrous, Kingpin, Magnum Opus, Read/Write|Large Workshop (Artist), Library (Art), 3 Apprentices|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Apprentice Artist|Silver 1|Fellowship<br>Intelligence<br>Toughness|Art (Any)<br>Consume Alcohol<br>Cool<br>Endurance<br>Evaluate<br>Gossip<br>Perception<br>Stealth (Urban)|Artistic, Sharp, Strong Back, Tenacious|Brush or Chisel or Quill Pen|
+|2|Artist|Silver 3|Agility<br>Fellowship<br>Intelligence<br>Toughness|Climb<br>Gamble<br>Haggle<br>Intuition<br>Language (Classical)<br>Sleight of Hand<br>Trade (Art Supplies)|Carouser, Criminal, Gregarious, Nimble Fingered|Sling Bag containing Trade Tools (Artist)|
+|3|Master Artist|Silver 5|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness|Charm<br>Leadership<br>Lore (Art)<br>Lore (Heraldry)|Acute Sense (Any), Dealmaker, Etiquette (any), Nose for Trouble|Apprentice<br>Patron<br>Workshop (Artist)|
+|4|Maestro|Gold 2|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Research<br>Ride (Horse)|Ambidextrous, Kingpin, Magnum Opus, Read/Write|3 Apprentices<br>Large Workshop (Artist)<br>Library (Art)|
 
 ### Duellist
 
@@ -296,14 +260,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, High Elf, Human
 
-**Advance Scheme:**  Weapon Skill, Toughness, Agility (level 1); +Dexterity (level 2); +Intelligence (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Fencer|Silver 3|Athletics, Dodge, Endurance, Heal, Intuition, Language (Classical), Melee (Any), Perception|Beat Blade, Distract, Feint, Step Aside|Basic Weapon or Rapier, Sling Bag containing Clothing and 1d10 Bandages|
-|Duellist|Silver 5|Charm, Cool, Gamble, Melee (Parry), Ranged (Blackpowder), Trade (Gunsmith)|Combat Reflexes, Etiquette (Any), Fast Shot, Reversal|Main Gauche or Sword-breaker, Pistol with Gunpowder and Ammunition|
-|Duelmaster|Gold 1|Intimidate, Leadership, Melee (Basic), Perform (Acrobatics)|Ambidextrous, Disarm, Dual Wielder, Riposte|Quality Rapier, Hand Weapon, Trusty Second, 2 Wooden Training Swords|
-|Judicial Champion|Gold 3|Lore (Law), Melee (Any)|Combat Master, Menacing, Reaction Strike, Strike to Injure|2 Quality Weapons|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Fencer|Silver 3|Agility<br>Toughness<br>Weapon Skill|Athletics<br>Dodge<br>Endurance<br>Heal<br>Intuition<br>Language (Classical)<br>Melee (Any)<br>Perception|Beat Blade, Distract, Feint, Step Aside|Basic Weapon or Rapier<br>Sling Bag containing Clothing and 1d10 Bandages|
+|2|Duellist|Silver 5|Agility<br>Dexterity<br>Toughness<br>Weapon Skill|Charm<br>Cool<br>Gamble<br>Melee (Parry)<br>Ranged (Blackpowder)<br>Trade (Gunsmith)|Combat Reflexes, Etiquette (Any), Fast Shot, Reversal|Main Gauche or Sword-breaker<br>Pistol with Gunpowder and Ammunition|
+|3|Duelmaster|Gold 1|Agility<br>Dexterity<br>Intelligence<br>Toughness<br>Weapon Skill|Intimidate<br>Leadership<br>Melee (Basic)<br>Perform (Acrobatics)|Ambidextrous, Disarm, Dual Wielder, Riposte|2 Wooden Training Swords<br>Hand Weapon<br>Quality Rapier<br>Trusty Second|
+|4|Judicial Champion|Gold 3|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill|Lore (Law)<br>Melee (Any)|Combat Master, Menacing, Reaction Strike, Strike to Injure|2 Quality Weapons|
 
 ### Envoy
 
@@ -311,14 +273,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Toughness, Dexterity, Fellowship (level 1); +Agility (level 2); +Willpower (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Herald|Silver 2|Athletics, Charm, Drive, Dodge, Endurance, Intuition, Ride (Horse), Row|Blather, Etiquette (Nobles), Read/Write, Suave|Leather Jack, Livery, Scroll Case|
-|Envoy|Silver 4|Art (Writing), Bribe, Cool, Gossip, Haggle, Lore (Politics)|Attractive, Cat-tongued, Etiquette (any), Seasoned Traveller|Quill and Ink, 10 sheets of parchment|
-|Diplomat|Gold 2|Intimidate, Language (Any), Leadership, Navigation|Carouser, Dealmaker, Gregarious, Schemer|Aide, Quality Clothes, Map|
-|Ambassador|Gold 5|Language (Any), Lore (Any)|Briber, Commanding Presence, Noble Blood, Savvy|Aide, Best Quality Courtly Clothes, Staff of Diplomats, Herald|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Herald|Silver 2|Dexterity<br>Fellowship<br>Toughness|Athletics<br>Charm<br>Dodge<br>Drive<br>Endurance<br>Intuition<br>Ride (Horse)<br>Row|Blather, Etiquette (Nobles), Read/Write, Suave|Leather Jack<br>Livery<br>Scroll Case|
+|2|Envoy|Silver 4|Agility<br>Dexterity<br>Fellowship<br>Toughness|Art (Writing)<br>Bribe<br>Cool<br>Gossip<br>Haggle<br>Lore (Politics)|Attractive, Cat-tongued, Etiquette (any), Seasoned Traveller|10 sheets of parchment<br>Quill and Ink|
+|3|Diplomat|Gold 2|Agility<br>Dexterity<br>Fellowship<br>Toughness<br>Willpower|Intimidate<br>Language (Any)<br>Leadership<br>Navigation|Carouser, Dealmaker, Gregarious, Schemer|Aide<br>Map<br>Quality Clothes|
+|4|Ambassador|Gold 5|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Language (Any)<br>Lore (Any)|Briber, Commanding Presence, Noble Blood, Savvy|Aide<br>Best Quality Courtly Clothes<br>Herald<br>Staff of Diplomats|
 
 ### Noble
 
@@ -326,14 +286,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Toughness, Dexterity (level 1); +Fellowship (level 2); +Willpower (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Scion|Gold 1|Bribery, Consume Alcohol, Gamble, Intimidate, Leadership, Lore (Heraldry), Melee (Fencing), Play (Any)|Etiquette (Nobles), Luck, Noble Blood, Read/Write|Courtly Garb, Foil or Hand Mirror, Jewellery worth 3d10 gc, Personal Servant|
-|Noble|Gold 3|Charm, Gossip, Language (Classical), Lore (Local), Ride (Horse), Melee (Parry)|Attractive, Briber, Carouser, Suave|4 Household Servants, Quality Courtly Garb, Courtly Garb, Riding Horse with Saddle and Harness or Coach, Main Gauche or Quality Cloak, Jewellery worth 50 gc|
-|Magnate|Gold 5|Language (Any), Intuition, Lore (Politics), Perception|Coolheaded, Dealmaker, Public Speaker, Schemer|2 sets of Quality Courtly Garb, 200 gc, Fiefdom, Jewellery worth 200 gc, Signet Ring|
-|Noble Lord|Gold 7|Lore (Any), Track|Commanding Presence, Iron Will, Warleader, Wealthy|4 sets of Best Quality Courtly Garb, Quality Foil or Hand Mirror, 500 gc, Jewellery worth 500 gc, Province|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Scion|Gold 1|Dexterity<br>Toughness<br>Weapon Skill|Bribery<br>Consume Alcohol<br>Gamble<br>Intimidate<br>Leadership<br>Lore (Heraldry)<br>Melee (Fencing)<br>Play (Any)|Etiquette (Nobles), Luck, Noble Blood, Read/Write|Courtly Garb<br>Foil or Hand Mirror<br>Jewellery worth 3d10 gc<br>Personal Servant|
+|2|Noble|Gold 3|Dexterity<br>Fellowship<br>Toughness<br>Weapon Skill|Charm<br>Gossip<br>Language (Classical)<br>Lore (Local)<br>Melee (Parry)<br>Ride (Horse)|Attractive, Briber, Carouser, Suave|4 Household Servants<br>Courtly Garb<br>Jewellery worth 50 gc<br>Main Gauche or Quality Cloak<br>Quality Courtly Garb<br>Riding Horse with Saddle and Harness or Coach|
+|3|Magnate|Gold 5|Dexterity<br>Fellowship<br>Toughness<br>Weapon Skill<br>Willpower|Intuition<br>Language (Any)<br>Lore (Politics)<br>Perception|Coolheaded, Dealmaker, Public Speaker, Schemer|2 sets of Quality Courtly Garb<br>200 gc<br>Fiefdom<br>Jewellery worth 200 gc<br>Signet Ring|
+|4|Noble Lord|Gold 7|Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Lore (Any)<br>Track|Commanding Presence, Iron Will, Warleader, Wealthy|4 sets of Best Quality Courtly Garb<br>500 gc<br>Jewellery worth 500 gc<br>Province<br>Quality Foil or Hand Mirror|
 
 ### Servant
 
@@ -341,14 +299,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Toughness, Agility, Willpower (level 1); +Dexterity (level 2); +Strength (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Menial|Silver 1|Athletics, Climb, Drive, Dodge, Endurance, Intuition, Perception, Stealth (Any)|Beneath Notice, Strong Back, Strong-minded, Sturdy|Floor Brush|
-|Servant|Silver 3|Animal Care, Consume Alcohol, Evaluate, Gamble, Gossip, Haggle|Etiquette (Servants), Shadow, Tenacious, Well-prepared|Livery|
-|Attendant|Silver 5|Charm, Cool, Intimidate, Lore (Local)|Embezzle, Resistance (Poison), Suave, Supportive|Quality Livery, Storm Lantern, Tinderbox, Lamp Oil|
-|Steward|Gold 1|Leadership, Melee (Basic)|Etiquette (any), Numismatics, Read/Write, Savvy|Hand Weapon, Fine Clothes, Servant|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Menial|Silver 1|Agility<br>Toughness<br>Willpower|Athletics<br>Climb<br>Dodge<br>Drive<br>Endurance<br>Intuition<br>Perception<br>Stealth (Any)|Beneath Notice, Strong Back, Strong-minded, Sturdy|Floor Brush|
+|2|Servant|Silver 3|Agility<br>Dexterity<br>Toughness<br>Willpower|Animal Care<br>Consume Alcohol<br>Evaluate<br>Gamble<br>Gossip<br>Haggle|Etiquette (Servants), Shadow, Tenacious, Well-prepared|Livery|
+|3|Attendant|Silver 5|Agility<br>Dexterity<br>Strength<br>Toughness<br>Willpower|Charm<br>Cool<br>Intimidate<br>Lore (Local)|Embezzle, Resistance (Poison), Suave, Supportive|Lamp Oil<br>Quality Livery<br>Storm Lantern<br>Tinderbox|
+|4|Steward|Gold 1|Agility<br>Dexterity<br>Fellowship<br>Strength<br>Toughness<br>Willpower|Leadership<br>Melee (Basic)|Etiquette (any), Numismatics, Read/Write, Savvy|Fine Clothes<br>Hand Weapon<br>Servant|
 
 ### Spy
 
@@ -356,14 +312,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Agility, Intelligence, Willpower (level 1); +Fellowship (level 2); +Dexterity (level 3); +Toughness (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Informer|Brass 3|Bribery, Charm, Cool, Gamble, Gossip, Haggle, Perception, Stealth (Any)|Blather, Carouser, Gregarious, Shadow|Charcoal stick, Sling Bag containing 2 different sets of clothing and Hooded Cloak|
-|Spy|Silver 3|Climb, Entertain (Act), Intuition, Melee (Basic), Secret Signs (Any), Sleight of Hand|Etiquette (Any), Lip Reading, Read/Write, Secret Identity|Informer, Hand Weapon, Disguise Kit, Ring of Informers, Telescope|
-|Agent|Gold 1|Animal Care, Animal Training (Pigeon), Language (Any), Leadership|Attractive, Cat-tongued, Master of Disguise, Mimic|Book (Cryptography), Ring of Spies and Informers, Loft of Homing Pigeons, Quill and Ink|
-|Spymaster|Gold 4|Lore (Any), Research|Briber, Schemer, Suave, Tower of Memories|Office and Staff, Large Spy Ring of Agents, Spies, and Informers|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Informer|Brass 3|Agility<br>Intelligence<br>Willpower|Bribery<br>Charm<br>Cool<br>Gamble<br>Gossip<br>Haggle<br>Perception<br>Stealth (Any)|Blather, Carouser, Gregarious, Shadow|Charcoal stick<br>Sling Bag containing 2 different sets of clothing and Hooded Cloak|
+|2|Spy|Silver 3|Agility<br>Fellowship<br>Intelligence<br>Willpower|Climb<br>Entertain (Act)<br>Intuition<br>Melee (Basic)<br>Secret Signs (Any)<br>Sleight of Hand|Etiquette (Any), Lip Reading, Read/Write, Secret Identity|Disguise Kit<br>Hand Weapon<br>Informer<br>Ring of Informers<br>Telescope|
+|3|Agent|Gold 1|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Willpower|Animal Care<br>Animal Training (Pigeon)<br>Language (Any)<br>Leadership|Attractive, Cat-tongued, Master of Disguise, Mimic|Book (Cryptography)<br>Loft of Homing Pigeons<br>Quill and Ink<br>Ring of Spies and Informers|
+|4|Spymaster|Gold 4|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Lore (Any)<br>Research|Briber, Schemer, Suave, Tower of Memories|and Informers<br>Large Spy Ring of Agents<br>Office and Staff<br>Spies|
 
 ### Warden
 
@@ -371,14 +325,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:**  Toughness, Strength, Willpower (level 1); +Agility (level 2); +Intelligence (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Custodian|Silver 1|Athletics, Charm Animal, Consume Alcohol, Cool, Endurance, Intuition, Lore (Local), Perception|Menacing, Night Vision, Sharp, Strike to Stun|Keys, Lantern, Lamp Oil, Livery|
-|Warden|Silver 3|Animal Care, Melee (Basic), Outdoor Survival, Ranged (Bow), Ride (Horse), Swim|Animal Affinity, Etiquette (Servants), Strider (any), Rover|Hand Weapon or Bow with 10 arrows, Riding Horse with Saddle and Harness, Leather Jack|
-|Seneschal|Gold 1|Bribery, Charm, Gossip, Leadership|Embezzle, Numismatics, Read/Write, Supportive|Breastplate, Ceremonial Staff of Office, Staff of Wardens and Custodians|
-|Governor|Gold 3|Evaluate, Language (Any)|Commanding Presence, Etiquette (any), Savant (local), Suave|Aide, Governor's Residence, Servant|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Custodian|Silver 1|Strength<br>Toughness<br>Willpower|Athletics<br>Charm Animal<br>Consume Alcohol<br>Cool<br>Endurance<br>Intuition<br>Lore (Local)<br>Perception|Menacing, Night Vision, Sharp, Strike to Stun|Keys<br>Lamp Oil<br>Lantern<br>Livery|
+|2|Warden|Silver 3|Agility<br>Strength<br>Toughness<br>Willpower|Animal Care<br>Melee (Basic)<br>Outdoor Survival<br>Ranged (Bow)<br>Ride (Horse)<br>Swim|Animal Affinity, Etiquette (Servants), Strider (any), Rover|Hand Weapon or Bow with 10 arrows<br>Leather Jack<br>Riding Horse with Saddle and Harness|
+|3|Seneschal|Gold 1|Agility<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Bribery<br>Charm<br>Gossip<br>Leadership|Embezzle, Numismatics, Read/Write, Supportive|Breastplate<br>Ceremonial Staff of Office<br>Staff of Wardens and Custodians|
+|4|Governor|Gold 3|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Evaluate<br>Language (Any)|Commanding Presence, Etiquette (any), Savant (local), Suave|Aide<br>Governor's Residence<br>Servant|
 
 ## Peasants
 
@@ -388,14 +340,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Weapon Skill, Toughness, Willpower (level 1); +Intelligence (level 2); +Fellowship (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Tax Collector|Silver 1|Cool, Dodge, Endurance, Gossip, Haggle, Intimidate, Melee, Perception|Embezzle, Numismatics, Strong Back, Tenacious|Hand weapon, small lock box|
-|Bailiff|Silver 5|Bribery, Charm, Evaluate, Intuition, Leadership, Lore (Local)|Break and Enter, Criminal, Public Speaking, Strike to Stun|Leather Jack, 3 Tax Collectors|
-|Reeve|Gold 1|Animal Care, Lore (Heraldry), Navigation, Ride (Horse)|Kingpin, Menacing, Nose for Trouble, Read/Write|Horse with Saddle and Tack, Breastplate, Bailiff|
-|Magistrate|Gold 3|Language (Classical), Lore (Law)|Commanding Presence, Iron Will, Savvy, Schemer|Library (Law), Quality Robes, Seal of Office|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Tax Collector|Silver 1|Toughness<br>Weapon Skill<br>Willpower|Cool<br>Dodge<br>Endurance<br>Gossip<br>Haggle<br>Intimidate<br>Melee<br>Perception|Embezzle, Numismatics, Strong Back, Tenacious|Hand weapon<br>small lock box|
+|2|Bailiff|Silver 5|Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Bribery<br>Charm<br>Evaluate<br>Intuition<br>Leadership<br>Lore (Local)|Break and Enter, Criminal, Public Speaking, Strike to Stun|3 Tax Collectors<br>Leather Jack|
+|3|Reeve|Gold 1|Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Animal Care<br>Lore (Heraldry)<br>Navigation<br>Ride (Horse)|Kingpin, Menacing, Nose for Trouble, Read/Write|Bailiff<br>Breastplate<br>Horse with Saddle and Tack|
+|4|Magistrate|Gold 3|Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Language (Classical)<br>Lore (Law)|Commanding Presence, Iron Will, Savvy, Schemer|Library (Law)<br>Quality Robes<br>Seal of Office|
 
 ### Hedge Witch
 
@@ -403,14 +353,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Human
 
-**Advance Scheme:**  Toughness, Intelligence, Willpower (level 1); +Agility (level 2); +Strength (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Hedge Apprentice|Brass 1|Channelling, Endurance, Intuition, Language (Magick), Lore (Folklore), Lore (Herbs), Outdoor Survival, Perception|Fast Hands, Petty Magic, Rover, Strider (Woodlands)|1d10 Lucky Charms, Quarterstaff, Backpack|
-|Hedge Witch|Brass 2|Cool, Gossip, Heal, Lore (Local), Trade (Charms), Trade (Herbalist)|Aethyric Attunement, Animal Affinity, Arcane Magic (Hedgecraft), Sixth Sense|Antitoxin Kit, Healing Poultice, Trade Tools (Herbalist)|
-|Hedge Master|Brass 3|Haggle, Lore (Genealogy), Lore (Magic), Lore (Spirits)|Craftsman (Herbalist), Magical Sense, Pure Soul, Resistance (Disease)|Isolated Hut, Apprentice|
-|Hedgewise|Brass 5|Intimidate, Pray|Acute Sense (Any), Master Craftsman (Herbalist), Night Vision, Strong-minded|Assortment of Animal Skulls, Ceremonial Cloak and Garland|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Hedge Apprentice|Brass 1|Intelligence<br>Toughness<br>Willpower|Channelling<br>Endurance<br>Intuition<br>Language (Magick)<br>Lore (Folklore)<br>Lore (Herbs)<br>Outdoor Survival<br>Perception|Fast Hands, Petty Magic, Rover, Strider (Woodlands)|1d10 Lucky Charms<br>Backpack<br>Quarterstaff|
+|2|Hedge Witch|Brass 2|Agility<br>Intelligence<br>Toughness<br>Willpower|Cool<br>Gossip<br>Heal<br>Lore (Local)<br>Trade (Charms)<br>Trade (Herbalist)|Aethyric Attunement, Animal Affinity, Arcane Magic (Hedgecraft), Sixth Sense|Antitoxin Kit<br>Healing Poultice<br>Trade Tools (Herbalist)|
+|3|Hedge Master|Brass 3|Agility<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Haggle<br>Lore (Genealogy)<br>Lore (Magic)<br>Lore (Spirits)|Craftsman (Herbalist), Magical Sense, Pure Soul, Resistance (Disease)|Apprentice<br>Isolated Hut|
+|4|Hedgewise|Brass 5|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Intimidate<br>Pray|Acute Sense (Any), Master Craftsman (Herbalist), Night Vision, Strong-minded|Assortment of Animal Skulls<br>Ceremonial Cloak and Garland|
 
 ### Herbalist
 
@@ -418,14 +366,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Toughness, Intelligence, Willpower (level 1); +Agility (level 2); +Fellowship (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Herb Gatherer|Brass 2|Charm Animal, Climb, Endurance, Lore (Herbs), Outdoor Survival, Perception, Swim, Trade (Herbalist)|Acute Sense (Taste), Orientation, Rover, Strider (any)|Boots, Cloak, Sling Bag containing Assortment of Herbs|
-|Herbalist|Brass 4|Consume Alcohol, Cool, Gossip, Haggle, Heal, Lore (Local)|Dealmaker, Nimble Fingered, Sharp, Sturdy|Hand Weapon (Sickle), Healing Poultice, Trade Tools (Herbalist)|
-|Herb Master|Silver 1|Intuition, Leadership, Lore (Medicine), Trade (Poisons)|Craftsman (Herbalist), Field Dressing, Hardy, Savvy|Herb Gatherer, 3 Healing Poultices, Healing Draught, Workshop (Herbalist)|
-|Herbwise|Silver 3|Drive, Navigation|Concoct, Master Tradesman (Herbalist), Resistance (Poison), Savant (Herbs)|Pony and Cart|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Herb Gatherer|Brass 2|Intelligence<br>Toughness<br>Willpower|Charm Animal<br>Climb<br>Endurance<br>Lore (Herbs)<br>Outdoor Survival<br>Perception<br>Swim<br>Trade (Herbalist)|Acute Sense (Taste), Orientation, Rover, Strider (any)|Boots<br>Cloak<br>Sling Bag containing Assortment of Herbs|
+|2|Herbalist|Brass 4|Agility<br>Intelligence<br>Toughness<br>Willpower|Consume Alcohol<br>Cool<br>Gossip<br>Haggle<br>Heal<br>Lore (Local)|Dealmaker, Nimble Fingered, Sharp, Sturdy|Hand Weapon (Sickle)<br>Healing Poultice<br>Trade Tools (Herbalist)|
+|3|Herb Master|Silver 1|Agility<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Intuition<br>Leadership<br>Lore (Medicine)<br>Trade (Poisons)|Craftsman (Herbalist), Field Dressing, Hardy, Savvy|3 Healing Poultices<br>Healing Draught<br>Herb Gatherer<br>Workshop (Herbalist)|
+|4|Herbwise|Silver 3|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Drive<br>Navigation|Concoct, Master Tradesman (Herbalist), Resistance (Poison), Savant (Herbs)|Pony and Cart|
 
 ### Hunter
 
@@ -433,14 +379,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Ballistic Skill, Strength, Agility (level 1); +Toughness (level 2); +Intelligence (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Trapper|Brass 2|Charm Animal, Climb, Endurance, Lore (Beasts), Outdoor Survival, Perception, Ranged (Bow), Set Trap|Hardy, Rover, Strider (any), Trapper|Selection of Animal Traps, Hand Weapon, Sturdy Boots and Cloak|
-|Hunter|Brass 4|Cool, Intuition, Melee (Basic), Ranged (Sling), Secret Signs (Hunter), Stealth (Rural)|Accurate Shot, Fast Shot, Hunter's Eye, Marksman|Bow with 10 arrows, Sling with Ammunition|
-|Tracker|Silver 1|Navigation, Ride (Horse), Swim, Track|Acute Sense (any), Deadeye Shot, Fearless (Animals), Sharpshooter|Backpack, Bedroll, Tent|
-|Huntsmaster|Silver 3|Animal Care, Animal Training (Any)|Fearless (Monsters), Robust, Sniper, Sure Shot|Riding Horse with Saddle and Tack, Kennel of Hunting Dogs|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Trapper|Brass 2|Agility<br>Ballistic Skill<br>Strength|Charm Animal<br>Climb<br>Endurance<br>Lore (Beasts)<br>Outdoor Survival<br>Perception<br>Ranged (Bow)<br>Set Trap|Hardy, Rover, Strider (any), Trapper|Hand Weapon<br>Selection of Animal Traps<br>Sturdy Boots and Cloak|
+|2|Hunter|Brass 4|Agility<br>Ballistic Skill<br>Strength<br>Toughness|Cool<br>Intuition<br>Melee (Basic)<br>Ranged (Sling)<br>Secret Signs (Hunter)<br>Stealth (Rural)|Accurate Shot, Fast Shot, Hunter's Eye, Marksman|Bow with 10 arrows<br>Sling with Ammunition|
+|3|Tracker|Silver 1|Agility<br>Ballistic Skill<br>Intelligence<br>Strength<br>Toughness|Navigation<br>Ride (Horse)<br>Swim<br>Track|Acute Sense (any), Deadeye Shot, Fearless (Animals), Sharpshooter|Backpack<br>Bedroll<br>Tent|
+|4|Huntsmaster|Silver 3|Agility<br>Ballistic Skill<br>Fellowship<br>Intelligence<br>Strength<br>Toughness|Animal Care<br>Animal Training (Any)|Fearless (Monsters), Robust, Sniper, Sure Shot|Kennel of Hunting Dogs<br>Riding Horse with Saddle and Tack|
 
 ### Miner
 
@@ -448,14 +392,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Strength, Toughness, Willpower (level 1); +Agility (level 2); +Intelligence (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Prospector|Brass 2|Cool, Endurance, Intuition, Lore (Local), Melee (Two-handed), Outdoor Survival, Perception, Swim|Rover, Strider (Rocky), Sturdy, Tenacious|Charcoal Stick, Crude Map, Pan, Spade|
-|Miner|Brass 4|Climb, Consume Alcohol, Evaluate, Melee (Basic), Secret Signs (Miner), Trade (Explosives)|Night Vision, Strike Mighty Blow, Strong Back, Very Strong|Davrich Lamp, Hand Weapon (Pick), Lamp Oil, Leather Jack|
-|Master Miner|Brass 5|Gossip, Lore (Geology), Stealth (Underground), Trade (Engineer)|Careful Strike, Craftsman (Explosives), Tinker, Tunnel Rat|Great Weapon (Two-handed Pick), Helmet, Trade Tools (Engineer)|
-|Mine Foreman|Silver 4|Charm, Leadership|Argumentative, Strong-minded, Embezzle, Read/Write|Crew of Miners, Writing Kit|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Prospector|Brass 2|Strength<br>Toughness<br>Willpower|Cool<br>Endurance<br>Intuition<br>Lore (Local)<br>Melee (Two-handed)<br>Outdoor Survival<br>Perception<br>Swim|Rover, Strider (Rocky), Sturdy, Tenacious|Charcoal Stick<br>Crude Map<br>Pan<br>Spade|
+|2|Miner|Brass 4|Agility<br>Strength<br>Toughness<br>Willpower|Climb<br>Consume Alcohol<br>Evaluate<br>Melee (Basic)<br>Secret Signs (Miner)<br>Trade (Explosives)|Night Vision, Strike Mighty Blow, Strong Back, Very Strong|Davrich Lamp<br>Hand Weapon (Pick)<br>Lamp Oil<br>Leather Jack|
+|3|Master Miner|Brass 5|Agility<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Gossip<br>Lore (Geology)<br>Stealth (Underground)<br>Trade (Engineer)|Careful Strike, Craftsman (Explosives), Tinker, Tunnel Rat|Great Weapon (Two-handed Pick)<br>Helmet<br>Trade Tools (Engineer)|
+|4|Mine Foreman|Silver 4|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Charm<br>Leadership|Argumentative, Strong-minded, Embezzle, Read/Write|Crew of Miners<br>Writing Kit|
 
 ### Mystic
 
@@ -463,14 +405,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Human, Wood Elf
 
-**Advance Scheme:**  Intelligence, Willpower, Fellowship (level 1); +Agility (level 2); +Toughness (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Fortune Teller|Brass 1|Charm, Entertain (Fortune Telling), Dodge, Gossip, Haggle, Intuition, Perception, Sleight of Hand|Attractive, Luck, Second Sight, Suave|Deck of Cards or Dice, Cheap Jewellery|
-|Mystic|Brass 2|Bribery, Cool, Entertain (Prophecy), Evaluate, Intimidate, Lore (Astrology)|Detect Artefact, Holy Visions, Sixth Sense, Well-prepared|Selection of Amulets|
-|Sage|Brass 3|Charm Animal, Entertain (Storytelling), Language (Any), Trade (Writing)|Nose for Trouble, Petty Magic, Read/Write, Witch!|Trade Tools (Writing)|
-|Seer|Brass 4|Lore (Prophecy), Channelling (Azyr)|Arcane Magic (Celestial), Magical Sense, Menacing, Strong-minded|Trade Tools (Astrology)|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Fortune Teller|Brass 1|Fellowship<br>Intelligence<br>Willpower|Charm<br>Dodge<br>Entertain (Fortune Telling)<br>Gossip<br>Haggle<br>Intuition<br>Perception<br>Sleight of Hand|Attractive, Luck, Second Sight, Suave|Cheap Jewellery<br>Deck of Cards or Dice|
+|2|Mystic|Brass 2|Agility<br>Fellowship<br>Intelligence<br>Willpower|Bribery<br>Cool<br>Entertain (Prophecy)<br>Evaluate<br>Intimidate<br>Lore (Astrology)|Detect Artefact, Holy Visions, Sixth Sense, Well-prepared|Selection of Amulets|
+|3|Sage|Brass 3|Agility<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Charm Animal<br>Entertain (Storytelling)<br>Language (Any)<br>Trade (Writing)|Nose for Trouble, Petty Magic, Read/Write, Witch!|Trade Tools (Writing)|
+|4|Seer|Brass 4|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Channelling (Azyr)<br>Lore (Prophecy)|Arcane Magic (Celestial), Magical Sense, Menacing, Strong-minded|Trade Tools (Astrology)|
 
 ### Scout
 
@@ -478,14 +418,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Toughness, Intelligence, Agility (level 1); +Strength (level 2); +Willpower (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Guide|Brass 3|Charm Animal, Climb, Endurance, Gossip, Lore (Local), Melee (Basic), Outdoor Survival, Perception|Orientation, Rover, Sharp, Strider (any)|Hand Weapon, Leather Jack, Sturdy Boots and Cloak, Rope|
-|Scout|Brass 5|Athletics, Navigation, Ranged (Bow), Ride (Horse), Stealth (Rural), Track|Combat Aware, Night Vision, Nose for Trouble, Seasoned Traveller|Bow and 10 Arrows, Mail Shirt|
-|Pathfinder|Silver 1|Animal Care, Haggle, Secret Signs (Hunter), Swim|Acute Sense (Sight), Sixth Sense, Strong Legs, Very Resilient|Map, Riding Horse with Saddle and Tack, Saddlebags with 2 weeks' Rations, Tent|
-|Explorer|Silver 5|Language (any), Trade (Cartographer)|Hardy, Linguistics, Savant (Local), Tenacious|Selection of Maps, Trade Tools (Cartographer)|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Guide|Brass 3|Agility<br>Intelligence<br>Toughness|Charm Animal<br>Climb<br>Endurance<br>Gossip<br>Lore (Local)<br>Melee (Basic)<br>Outdoor Survival<br>Perception|Orientation, Rover, Sharp, Strider (any)|Hand Weapon<br>Leather Jack<br>Rope<br>Sturdy Boots and Cloak|
+|2|Scout|Brass 5|Agility<br>Intelligence<br>Strength<br>Toughness|Athletics<br>Navigation<br>Ranged (Bow)<br>Ride (Horse)<br>Stealth (Rural)<br>Track|Combat Aware, Night Vision, Nose for Trouble, Seasoned Traveller|Bow and 10 Arrows<br>Mail Shirt|
+|3|Pathfinder|Silver 1|Agility<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Animal Care<br>Haggle<br>Secret Signs (Hunter)<br>Swim|Acute Sense (Sight), Sixth Sense, Strong Legs, Very Resilient|Map<br>Riding Horse with Saddle and Tack<br>Saddlebags with 2 weeks' Rations<br>Tent|
+|4|Explorer|Silver 5|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Language (any)<br>Trade (Cartographer)|Hardy, Linguistics, Savant (Local), Tenacious|Selection of Maps<br>Trade Tools (Cartographer)|
 
 ### Villager
 
@@ -493,14 +431,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Toughness, Strength, Agility (level 1); +Intelligence (level 2); +Willpower (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Peasant|Brass 2|Animal Care, Athletics, Consume Alcohol, Endurance, Gossip, Melee (Brawling), Lore (Local), Outdoor Survival|Rover, Strong Back, Strong-minded, Stone Soup|None|
-|Villager|Brass 3|Drive, Entertain (Storytelling), Haggle, Melee (Basic), Trade (Any)|Animal Affinity, Hardy, Tenacious, Very Strong|Leather Jerkin, Hand Weapon (Axe), Trade Tools (as Trade)|
-|Councillor|Brass 4|Bribery, Charm, Intimidate, Leadership|Craftsman (Any), Dealmaker, Stout-hearted, Very Resilient|Mule and Cart, Village Home and Workshop|
-|Village Elder|Silver 2|Intuition, Lore (History)|Master Tradesman (Any), Nimble Fingered, Public Speaker, Savant (Local)|The Respect of the Village|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Peasant|Brass 2|Agility<br>Strength<br>Toughness|Animal Care<br>Athletics<br>Consume Alcohol<br>Endurance<br>Gossip<br>Lore (Local)<br>Melee (Brawling)<br>Outdoor Survival|Rover, Strong Back, Strong-minded, Stone Soup|None|
+|2|Villager|Brass 3|Agility<br>Intelligence<br>Strength<br>Toughness|Drive<br>Entertain (Storytelling)<br>Haggle<br>Melee (Basic)<br>Trade (Any)|Animal Affinity, Hardy, Tenacious, Very Strong|Hand Weapon (Axe)<br>Leather Jerkin<br>Trade Tools (as Trade)|
+|3|Councillor|Brass 4|Agility<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Bribery<br>Charm<br>Intimidate<br>Leadership|Craftsman (Any), Dealmaker, Stout-hearted, Very Resilient|Mule and Cart<br>Village Home and Workshop|
+|4|Village Elder|Silver 2|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Intuition<br>Lore (History)|Master Tradesman (Any), Nimble Fingered, Public Speaker, Savant (Local)|The Respect of the Village|
 
 ## Rangers
 
@@ -510,14 +446,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Toughness, Agility (level 1); +Ballistic Skill (level 2); +Intelligence (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Thief-taker|Silver 1|Bribery, Charm, Gossip, Haggle, Intuition, Melee (Basic), Outdoor Survival, Perception|Break and Enter, Shadow, Strike to Stun, Suave|Hand Weapon, Leather Jerkin, Rope|
-|Bounty Hunter|Silver 3|Athletics, Endurance, Intimidate, Ranged (Crossbow), Ranged (Entangling), Track|Marksman, Relentless, Seasoned Traveller, Strong Back|Crossbow and 10 bolts, Leather Skullcap, Manacles, Net, Warrant Papers|
-|Master Bounty Hunter|Silver 5|Animal Care, Climb, Ride (Horse), Swim|Accurate Shot, Careful Strike, Dual Wielder, Sprinter|Mail Shirt, Riding Horse and Saddle|
-|Bounty Hunter General|Gold 1|Drive, Lore (Law)|Deadeye Shot, Fearless (Bounties), Hardy, Sure Shot|Draught Horse and Cart, Mail Shirt, 4 Pairs of Manacles|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Thief-taker|Silver 1|Agility<br>Toughness<br>Weapon Skill|Bribery<br>Charm<br>Gossip<br>Haggle<br>Intuition<br>Melee (Basic)<br>Outdoor Survival<br>Perception|Break and Enter, Shadow, Strike to Stun, Suave|Hand Weapon<br>Leather Jerkin<br>Rope|
+|2|Bounty Hunter|Silver 3|Agility<br>Ballistic Skill<br>Toughness<br>Weapon Skill|Athletics<br>Endurance<br>Intimidate<br>Ranged (Crossbow)<br>Ranged (Entangling)<br>Track|Marksman, Relentless, Seasoned Traveller, Strong Back|Crossbow and 10 bolts<br>Leather Skullcap<br>Manacles<br>Net<br>Warrant Papers|
+|3|Master Bounty Hunter|Silver 5|Agility<br>Ballistic Skill<br>Intelligence<br>Toughness<br>Weapon Skill|Animal Care<br>Climb<br>Ride (Horse)<br>Swim|Accurate Shot, Careful Strike, Dual Wielder, Sprinter|Mail Shirt<br>Riding Horse and Saddle|
+|4|Bounty Hunter General|Gold 1|Agility<br>Ballistic Skill<br>Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill|Drive<br>Lore (Law)|Deadeye Shot, Fearless (Bounties), Hardy, Sure Shot|4 Pairs of Manacles<br>Draught Horse and Cart<br>Mail Shirt|
 
 ### Coachman
 
@@ -525,14 +459,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Ballistic Skill, Strength, Willpower (level 1); +Toughness (level 2); +Fellowship (level 3); +Agility (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Postilion|Silver 1|Animal Care, Charm Animal, Climb, Drive, Endurance, Perception, Ranged (Entangling), Ride (Horse)|Animal Affinity, Seasoned Traveller, Trick-Riding, Tenacious|Warm Coat and Gloves, Whip|
-|Coachman|Silver 2|Consume Alcohol, Gossip, Intuition, Lore (Local), Navigation, Ranged (Blackpowder)|Coolheaded, Crack the Whip, Gunner, Strong-minded|Blunderbuss with 10 Shots, Coach Horn, Leather Jack, Hat|
-|Coach Master|Silver 3|Animal Training (Horse), Intimidation, Language (any), Lore (Routes)|Accurate Shot, Dealmaker, Fearless (Outlaws), Nose for Trouble|Mail Shirt, Pistol, Quality Cloak|
-|Route Master|Silver 5|Charm, Leadership|Fearless (Beastmen), Marksman, Orientation, Rapid Reload|Fleet of Coaches and Horses, Maps|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Postilion|Silver 1|Ballistic Skill<br>Strength<br>Willpower|Animal Care<br>Charm Animal<br>Climb<br>Drive<br>Endurance<br>Perception<br>Ranged (Entangling)<br>Ride (Horse)|Animal Affinity, Seasoned Traveller, Trick-Riding, Tenacious|Warm Coat and Gloves<br>Whip|
+|2|Coachman|Silver 2|Ballistic Skill<br>Strength<br>Toughness<br>Willpower|Consume Alcohol<br>Gossip<br>Intuition<br>Lore (Local)<br>Navigation<br>Ranged (Blackpowder)|Coolheaded, Crack the Whip, Gunner, Strong-minded|Blunderbuss with 10 Shots<br>Coach Horn<br>Hat<br>Leather Jack|
+|3|Coach Master|Silver 3|Ballistic Skill<br>Fellowship<br>Strength<br>Toughness<br>Willpower|Animal Training (Horse)<br>Intimidation<br>Language (any)<br>Lore (Routes)|Accurate Shot, Dealmaker, Fearless (Outlaws), Nose for Trouble|Mail Shirt<br>Pistol<br>Quality Cloak|
+|4|Route Master|Silver 5|Agility<br>Ballistic Skill<br>Fellowship<br>Strength<br>Toughness<br>Willpower|Charm<br>Leadership|Fearless (Beastmen), Marksman, Orientation, Rapid Reload|Fleet of Coaches and Horses<br>Maps|
 
 ### Entertainer
 
@@ -540,14 +472,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Agility, Dexterity, Fellowship (level 1); +Toughness (level 2); +Strength (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Busker|Brass 3|Athletics, Charm, Entertain (Any), Gossip, Haggle, Perform (Any), Play (any), Sleight of Hand|Attractive, Mimic, Public-Speaking, Suave|Bowl, Instrument|
-|Entertainer|Brass 5|Entertain (Any), Ride (Any), Melee (Basic), Perform (Any), Play (Any), Ranged (Throwing)|Contortionist, Jump Up, Sharpshooter, Trick Riding|Costume, Instrument, Selection of Scripts (that you can't yet read), Throwing Weapons|
-|Troubadour|Silver 3|Animal Care, Animal Training, Art (Writing), Language (Any)|Blather, Master of Disguise, Perfect Pitch, Read/Write|Trained Animal, Writing Kit|
-|Troupe Leader|Gold 1|Drive, Leadership|Dealmaker, Etiquette (Any), Seasoned Traveller, Sharp|Draught Horses and Wagon (Stage), Wardrobe of Costumes and Props, Troupe of Entertainers|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Busker|Brass 3|Agility<br>Dexterity<br>Fellowship|Athletics<br>Charm<br>Entertain (Any)<br>Gossip<br>Haggle<br>Perform (Any)<br>Play (any)<br>Sleight of Hand|Attractive, Mimic, Public-Speaking, Suave|Bowl<br>Instrument|
+|2|Entertainer|Brass 5|Agility<br>Dexterity<br>Fellowship<br>Toughness|Entertain (Any)<br>Melee (Basic)<br>Perform (Any)<br>Play (Any)<br>Ranged (Throwing)<br>Ride (Any)|Contortionist, Jump Up, Sharpshooter, Trick Riding|Costume<br>Instrument<br>Selection of Scripts (that you can't yet read)<br>Throwing Weapons|
+|3|Troubadour|Silver 3|Agility<br>Dexterity<br>Fellowship<br>Strength<br>Toughness|Animal Care<br>Animal Training<br>Art (Writing)<br>Language (Any)|Blather, Master of Disguise, Perfect Pitch, Read/Write|Trained Animal<br>Writing Kit|
+|4|Troupe Leader|Gold 1|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Strength<br>Toughness|Drive<br>Leadership|Dealmaker, Etiquette (Any), Seasoned Traveller, Sharp|Draught Horses and Wagon (Stage)<br>Troupe of Entertainers<br>Wardrobe of Costumes and Props|
 
 ### Flagellant
 
@@ -555,14 +485,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Human
 
-**Advance Scheme:**  Weapon Skill, Strength, Toughness (level 1); +Willpower (level 2); +Fellowship (level 3); +Agility (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Zealot|Brass 0|Dodge, Endurance, Heal, Intimidate, Intuition, Lore (Sigmar), Melee (Flail), Outdoor Survival|Berserk Charge, Frenzy, Read/Write, Stone Soup|Flail, Tattered Robes|
-|Flagellant|Brass 0|Art (Icons), Athletics, Cool, Language (Classical), Lore (The Empire), Ranged (Sling)|Hardy, Hatred (Heretics), Flagellant, Implacable|Placard, Religious Symbol, Sling|
-|Penitent|Brass 0|Charm, Language (any), Lore (Theology), Perception|Field Dressing, Furious Assault, Menacing, Seasoned Traveller|Religious Relic|
-|Prophet of Doom|Brass 0|Entertain (Speeches), Leadership|Battle Rage, Fearless (Heretics), Frightening, Impassioned Zeal|Book (Religion), Followers (including Penitents, Flagellants, and Zealots)|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Zealot|Brass 0|Strength<br>Toughness<br>Weapon Skill|Dodge<br>Endurance<br>Heal<br>Intimidate<br>Intuition<br>Lore (Sigmar)<br>Melee (Flail)<br>Outdoor Survival|Berserk Charge, Frenzy, Read/Write, Stone Soup|Flail<br>Tattered Robes|
+|2|Flagellant|Brass 0|Strength<br>Toughness<br>Weapon Skill<br>Willpower|Art (Icons)<br>Athletics<br>Cool<br>Language (Classical)<br>Lore (The Empire)<br>Ranged (Sling)|Hardy, Hatred (Heretics), Flagellant, Implacable|Placard<br>Religious Symbol<br>Sling|
+|3|Penitent|Brass 0|Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Charm<br>Language (any)<br>Lore (Theology)<br>Perception|Field Dressing, Furious Assault, Menacing, Seasoned Traveller|Religious Relic|
+|4|Prophet of Doom|Brass 0|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Entertain (Speeches)<br>Leadership|Battle Rage, Fearless (Heretics), Frightening, Impassioned Zeal|and Zealots)<br>Book (Religion)<br>Flagellants<br>Followers (including Penitents|
 
 ### Messenger
 
@@ -570,14 +498,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Toughness, Intelligence, Agility (level 1); +Fellowship (level 2); +Strength (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Runner|Brass 3|Athletics, Climb, Dodge, Endurance, Gossip, Navigation, Perception, Melee (Brawling)|Flee!, Fleet Footed, Sprinter, Step Aside|Scroll Case|
-|Messenger|Silver 1|Animal Care, Charm, Cool, Lore (Local), Melee (Basic), Ride (Horse)|Crack the Whip, Criminal, Orientation, Seasoned Traveller|Hand Weapon, Leather Jack, Riding Horse with Saddle and Tack|
-|Courier|Silver 3|Charm Animal, Bribery, Consume Alcohol, Outdoor Survival|Nose for Trouble, Relentless, Tenacious, Trick Rider|Backpack, Saddlebags, Shield|
-|Courier-Captain|Silver 5|Intimidate, Leadership|Dealmaker, Hatred (Outlaws), Kingpin, Very Resilient|Couriers, Mail Shirt, Writing Kit|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Runner|Brass 3|Agility<br>Intelligence<br>Toughness|Athletics<br>Climb<br>Dodge<br>Endurance<br>Gossip<br>Melee (Brawling)<br>Navigation<br>Perception|Flee!, Fleet Footed, Sprinter, Step Aside|Scroll Case|
+|2|Messenger|Silver 1|Agility<br>Fellowship<br>Intelligence<br>Toughness|Animal Care<br>Charm<br>Cool<br>Lore (Local)<br>Melee (Basic)<br>Ride (Horse)|Crack the Whip, Criminal, Orientation, Seasoned Traveller|Hand Weapon<br>Leather Jack<br>Riding Horse with Saddle and Tack|
+|3|Courier|Silver 3|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness|Bribery<br>Charm Animal<br>Consume Alcohol<br>Outdoor Survival|Nose for Trouble, Relentless, Tenacious, Trick Rider|Backpack<br>Saddlebags<br>Shield|
+|4|Courier-Captain|Silver 5|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Intimidate<br>Leadership|Dealmaker, Hatred (Outlaws), Kingpin, Very Resilient|Couriers<br>Mail Shirt<br>Writing Kit|
 
 ### Pedlar
 
@@ -585,14 +511,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Toughness, Agility, Fellowship (level 1); +Intelligence (level 2); +Strength (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Vagabond|Brass 1|Charm, Endurance, Entertain (Storytelling), Gossip, Haggle, Intuition, Outdoor Survival, Stealth (Rural or Urban)|Fisherman, Flee!, Rover, Tinker|Backpack, Bedroll, Goods worth 2d10 Brass, Tent|
-|Pedlar|Brass 4|Animal Care, Charm Animal, Consume Alcohol, Evaluate, Ride (Horse), Trade (Tinker)|Dealmaker, Orientation, Seasoned Traveller, Strong Back|Mule and Saddlebags, Goods worth 2d10 Silver, Selection of Pots and Pans, Trade Tools (Tinker)|
-|Master Pedlar|Silver 1|Drive, Intimidate, Language (any), Perception|Numismatics, Sharp, Sturdy, Well-prepared, Very Resilient|Cart, Goods worth at least 2d10 Gold|
-|Wandering Trader|Silver 3|Lore (Local), Lore (Geography)|Cat-tongued, Strong-minded, Suave, Tenacious|Draught Horse and Wagon, Goods worth at least 5d10 Gold, 50 Silver in Coin|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Vagabond|Brass 1|Agility<br>Fellowship<br>Toughness|Charm<br>Endurance<br>Entertain (Storytelling)<br>Gossip<br>Haggle<br>Intuition<br>Outdoor Survival<br>Stealth (Rural or Urban)|Fisherman, Flee!, Rover, Tinker|Backpack<br>Bedroll<br>Goods worth 2d10 Brass<br>Tent|
+|2|Pedlar|Brass 4|Agility<br>Fellowship<br>Intelligence<br>Toughness|Animal Care<br>Charm Animal<br>Consume Alcohol<br>Evaluate<br>Ride (Horse)<br>Trade (Tinker)|Dealmaker, Orientation, Seasoned Traveller, Strong Back|Goods worth 2d10 Silver<br>Mule and Saddlebags<br>Selection of Pots and Pans<br>Trade Tools (Tinker)|
+|3|Master Pedlar|Silver 1|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness|Drive<br>Intimidate<br>Language (any)<br>Perception|Numismatics, Sharp, Sturdy, Well-prepared, Very Resilient|Cart<br>Goods worth at least 2d10 Gold|
+|4|Wandering Trader|Silver 3|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Lore (Geography)<br>Lore (Local)|Cat-tongued, Strong-minded, Suave, Tenacious|50 Silver in Coin<br>Draught Horse and Wagon<br>Goods worth at least 5d10 Gold|
 
 ### Road Warden
 
@@ -600,14 +524,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Halfling, Human
 
-**Advance Scheme:**  Ballistic Skill, Toughness, Agility (level 1); +Intelligence (level 2); +Fellowship (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Toll Keeper|Brass 5|Bribery, Consume Alcohol, Gamble, Gossip, Haggle, Melee (Basic), Perception, Ranged (Crossbow)|Coolheaded, Embezzle, Marksman, Numismatics|Crossbow with 10 Bolts, Leather Jack|
-|Road Warden|Silver 2|Animal Care, Endurance, Intimidate, Intuition, Outdoor Survival, Ride (Horse)|Crack the Whip, Criminal, Roughrider, Seasoned Traveller|Hand Weapon, Mail Shirt, Riding Horse with Saddle and Harness, Rope|
-|Road Sergeant|Silver 4|Athletics, Charm, Leadership, Ranged (Blackpowder)|Etiquette (Soldiers), Fearless (Outlaws), Hatred (any), Nose for Trouble|Squad of Road Wardens, Pistol with 10 Shots, Shield, Symbol of Rank|
-|Road Captain|Gold 1|Lore (Empire), Navigation|Combat Aware, Commanding Presence, Kingpin, Public Speaker|Light Warhorse, Pistol with 10 Shots, Quality Hat and Cloak, Unit of Road Wardens|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Toll Keeper|Brass 5|Agility<br>Ballistic Skill<br>Toughness|Bribery<br>Consume Alcohol<br>Gamble<br>Gossip<br>Haggle<br>Melee (Basic)<br>Perception<br>Ranged (Crossbow)|Coolheaded, Embezzle, Marksman, Numismatics|Crossbow with 10 Bolts<br>Leather Jack|
+|2|Road Warden|Silver 2|Agility<br>Ballistic Skill<br>Intelligence<br>Toughness|Animal Care<br>Endurance<br>Intimidate<br>Intuition<br>Outdoor Survival<br>Ride (Horse)|Crack the Whip, Criminal, Roughrider, Seasoned Traveller|Hand Weapon<br>Mail Shirt<br>Riding Horse with Saddle and Harness<br>Rope|
+|3|Road Sergeant|Silver 4|Agility<br>Ballistic Skill<br>Fellowship<br>Intelligence<br>Toughness|Athletics<br>Charm<br>Leadership<br>Ranged (Blackpowder)|Etiquette (Soldiers), Fearless (Outlaws), Hatred (any), Nose for Trouble|Pistol with 10 Shots<br>Shield<br>Squad of Road Wardens<br>Symbol of Rank|
+|4|Road Captain|Gold 1|Agility<br>Ballistic Skill<br>Fellowship<br>Intelligence<br>Strength<br>Toughness|Lore (Empire)<br>Navigation|Combat Aware, Commanding Presence, Kingpin, Public Speaker|Light Warhorse<br>Pistol with 10 Shots<br>Quality Hat and Cloak<br>Unit of Road Wardens|
 
 ### Witch Hunter
 
@@ -615,14 +537,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Human
 
-**Advance Scheme:**  Weapon Skill, Toughness, Willpower (level 1); +Agility (level 2); +Fellowship (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Interrogator|Silver 1|Charm, Consume Alcohol, Heal, Intimidate, Intuition, Lore (Torture), Melee (Fist), Perception|Coolheaded, Menacing, Read/Write, Resolute|Hand Weapon, Instruments of Torture|
-|Witch Hunter|Silver 3|Cool, Dodge, Gossip, Lore (Witches), Ranged (Any), Ride (Horse)|Dual Wielder, Marksman, Seasoned Traveller, Shadow|Crossbow Pistol or Pistol, Hat (Henin), Leather Jack, Riding Horse with Saddle and Tack, Rope, Silvered Sword|
-|Inquisitor|Silver 5|Endurance, Leadership, Lore (Law), Lore (Local)|Fearless (Witches), Nose for Trouble, Relentless, Strong-minded|Quality Clothing, Subordinate Interrogators|
-|Witchfinder General|Gold 1|Lore (Chaos), Lore (Politics)|Frightening, Iron Will, Magical Sense, Pure Soul|Best Quality Courtly Garb, Subordinate Witch Hunters|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Interrogator|Silver 1|Toughness<br>Weapon Skill<br>Willpower|Charm<br>Consume Alcohol<br>Heal<br>Intimidate<br>Intuition<br>Lore (Torture)<br>Melee (Fist)<br>Perception|Coolheaded, Menacing, Read/Write, Resolute|Hand Weapon<br>Instruments of Torture|
+|2|Witch Hunter|Silver 3|Agility<br>Toughness<br>Weapon Skill<br>Willpower|Cool<br>Dodge<br>Gossip<br>Lore (Witches)<br>Ranged (Any)<br>Ride (Horse)|Dual Wielder, Marksman, Seasoned Traveller, Shadow|Crossbow Pistol or Pistol<br>Hat (Henin)<br>Leather Jack<br>Riding Horse with Saddle and Tack<br>Rope<br>Silvered Sword|
+|3|Inquisitor|Silver 5|Agility<br>Fellowship<br>Toughness<br>Weapon Skill<br>Willpower|Endurance<br>Leadership<br>Lore (Law)<br>Lore (Local)|Fearless (Witches), Nose for Trouble, Relentless, Strong-minded|Quality Clothing<br>Subordinate Interrogators|
+|4|Witchfinder General|Gold 1|Agility<br>Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Lore (Chaos)<br>Lore (Politics)|Frightening, Iron Will, Magical Sense, Pure Soul|Best Quality Courtly Garb<br>Subordinate Witch Hunters|
 
 ## Riverfolk
 
@@ -632,14 +552,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:**  Toughness, Intelligence, Agility (level 1); +Strength (level 2); +Fellowship (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Boat-hand|Silver 1|Consume Alcohol, Dodge, Endurance, Gossip, Melee (Basic), Row, Sail, Swim|Dirty Fighting, Fisherman, Strong Back, Strong Swimmer|Hand Weapon (Boat Hook), Leather Jack, Pole|
-|Boatman|Silver 2|Athletics, Entertain (Storytelling), Haggle, Intuition, Lore (Riverways), Perception|Etiquette (Guilder), Seasoned Traveller, Very Strong, Waterman|Rope, Rowboat|
-|Bargeswain|Silver 3|Climb, Entertain (Singing), Heal, Trade (Boatbuilding)|Dealmaker, Embezzle, Nose for Trouble, Strike Mighty Blow|Backpack, Trade Tools (Carpenter)|
-|Barge Master|Silver 5|Leadership, Navigation|Menacing, Orientation, Pilot, Public Speaker|Hat, Riverboat and Crew|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Boat-hand|Silver 1|Agility<br>Intelligence<br>Toughness|Consume Alcohol<br>Dodge<br>Endurance<br>Gossip<br>Melee (Basic)<br>Row<br>Sail<br>Swim|Dirty Fighting, Fisherman, Strong Back, Strong Swimmer|Hand Weapon (Boat Hook)<br>Leather Jack<br>Pole|
+|2|Boatman|Silver 2|Agility<br>Intelligence<br>Strength<br>Toughness|Athletics<br>Entertain (Storytelling)<br>Haggle<br>Intuition<br>Lore (Riverways)<br>Perception|Etiquette (Guilder), Seasoned Traveller, Very Strong, Waterman|Rope<br>Rowboat|
+|3|Bargeswain|Silver 3|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness|Climb<br>Entertain (Singing)<br>Heal<br>Trade (Boatbuilding)|Dealmaker, Embezzle, Nose for Trouble, Strike Mighty Blow|Backpack<br>Trade Tools (Carpenter)|
+|4|Barge Master|Silver 5|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Leadership<br>Navigation|Menacing, Orientation, Pilot, Public Speaker|Hat<br>Riverboat and Crew|
 
 ### Huffer
 
@@ -647,14 +565,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Weapon Skill, Toughness, Initiative (level 1); +Agility (level 2); +Fellowship (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Riverguide|Brass 4|Consume Alcohol, Gossip, Intuition, Lore (Local), Lore (Riverways), Perception, Row, Swim|Fisherman, Night Vision, Orientation, Waterman|Hand Weapon (Boat Hook), Storm Lantern and Oil|
-|Huffer|Silver 1|Charm, Cool, Entertain (Storytelling), Language (Any), Melee (Basic), Navigation|Dealmaker, Etiquette (Guilder), Nose for Trouble, River Guide|Leather Jerkin, Rope, Row Boat|
-|Pilot|Silver 3|Haggle, Intimidate, Lore (Local), Lore (Wrecks)|Acute Sense (Sight), Pilot, Sea Legs, Very Strong|Pole, Storm Lantern and Oil|
-|Master Pilot|Silver 5|Leadership, Sail|Sixth Sense, Sharp, Strong Swimmer, Tenacious|Boathand, Small Riverboat|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Riverguide|Brass 4|Initiative<br>Toughness<br>Weapon Skill|Consume Alcohol<br>Gossip<br>Intuition<br>Lore (Local)<br>Lore (Riverways)<br>Perception<br>Row<br>Swim|Fisherman, Night Vision, Orientation, Waterman|Hand Weapon (Boat Hook)<br>Storm Lantern and Oil|
+|2|Huffer|Silver 1|Agility<br>Initiative<br>Toughness<br>Weapon Skill|Charm<br>Cool<br>Entertain (Storytelling)<br>Language (Any)<br>Melee (Basic)<br>Navigation|Dealmaker, Etiquette (Guilder), Nose for Trouble, River Guide|Leather Jerkin<br>Rope<br>Row Boat|
+|3|Pilot|Silver 3|Agility<br>Fellowship<br>Initiative<br>Toughness<br>Weapon Skill|Haggle<br>Intimidate<br>Lore (Local)<br>Lore (Wrecks)|Acute Sense (Sight), Pilot, Sea Legs, Very Strong|Pole<br>Storm Lantern and Oil|
+|4|Master Pilot|Silver 5|Agility<br>Fellowship<br>Initiative<br>Intelligence<br>Toughness<br>Weapon Skill|Leadership<br>Sail|Sixth Sense, Sharp, Strong Swimmer, Tenacious|Boathand<br>Small Riverboat|
 
 ### Riverwarden
 
@@ -662,14 +578,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Halfling, Human
 
-**Advance Scheme:**  Ballistic Skill, Strength, Fellowship (level 1); +Toughness (level 2); +Agility (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|River Recruit|Silver 1|Athletics, Dodge, Endurance, Melee (Basic), Perception, Row, Sail, Swim|Strong Swimmer, Strong Back, Very Strong, Waterman|Hand Weapon (Sword), Leather Jack, Uniform|
-|Riverwarden|Silver 2|Bribery, Charm, Intimidate, Gossip, Lore (Riverways), Ranged (Blackpowder)|Criminal, Gunner, Fisherman, Seasoned Traveller|Lantern and Oil, Pistol with 10 shot, Shield|
-|Shipsword|Silver 4|Climb, Cool, Intuition, Leadership|Fearless (Wreckers), Hatred (Any), Pilot, Sea Legs|Grappling Hook, Helmet, Mail Shirt|
-|Shipsword Master|Gold 1|Lore (Law), Navigation|Commanding Presence, Kingpin, Menacing, Orientation|Patrol Boats and Crew, Symbol of Rank|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|River Recruit|Silver 1|Ballistic Skill<br>Fellowship<br>Strength|Athletics<br>Dodge<br>Endurance<br>Melee (Basic)<br>Perception<br>Row<br>Sail<br>Swim|Strong Swimmer, Strong Back, Very Strong, Waterman|Hand Weapon (Sword)<br>Leather Jack<br>Uniform|
+|2|Riverwarden|Silver 2|Ballistic Skill<br>Fellowship<br>Strength<br>Toughness|Bribery<br>Charm<br>Gossip<br>Intimidate<br>Lore (Riverways)<br>Ranged (Blackpowder)|Criminal, Gunner, Fisherman, Seasoned Traveller|Lantern and Oil<br>Pistol with 10 shot<br>Shield|
+|3|Shipsword|Silver 4|Agility<br>Ballistic Skill<br>Fellowship<br>Strength<br>Toughness|Climb<br>Cool<br>Intuition<br>Leadership|Fearless (Wreckers), Hatred (Any), Pilot, Sea Legs|Grappling Hook<br>Helmet<br>Mail Shirt|
+|4|Shipsword Master|Gold 1|Agility<br>Ballistic Skill<br>Fellowship<br>Strength<br>Toughness<br>Willpower|Lore (Law)<br>Navigation|Commanding Presence, Kingpin, Menacing, Orientation|Patrol Boats and Crew<br>Symbol of Rank|
 
 ### Riverwoman
 
@@ -677,14 +591,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Toughness, Agility, Dexterity (level 1); +Strength (level 2); +Fellowship (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Greenfish|Brass 2|Athletics, Consume Alcohol, Dodge, Endurance, Gossip, Outdoor Survival, Row, Swim|Fisherman, Gregarious, Strider (Marshes), Strong Swimmer|Bucket, Fishing Rod and Bait, Leather Leggings|
-|Riverwoman|Brass 3|Gamble, Lore (Local), Lore (Riverways), Ranged (Entangling), Ranged (Throwing), Set Trap|Craftsman (Boatbuilder), Rover, Strong Back, Waterman|Eel Trap, Leather Jerkin, Net, Spear|
-|Riverwise|Brass 5|Charm, Intuition, Melee (Polearm), Perception|Savant (Riverways), Stout-hearted, Tenacious, Very Strong|Row Boat, Storm Lantern and Oil|
-|River Elder|Silver 2|Entertain (Storytelling), Lore (Folklore)|Master Craftsman (Boatbuilder), Public Speaker, Sharp, Strong-minded|Hut or Riverboat|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Greenfish|Brass 2|Agility<br>Dexterity<br>Toughness|Athletics<br>Consume Alcohol<br>Dodge<br>Endurance<br>Gossip<br>Outdoor Survival<br>Row<br>Swim|Fisherman, Gregarious, Strider (Marshes), Strong Swimmer|Bucket<br>Fishing Rod and Bait<br>Leather Leggings|
+|2|Riverwoman|Brass 3|Agility<br>Dexterity<br>Strength<br>Toughness|Gamble<br>Lore (Local)<br>Lore (Riverways)<br>Ranged (Entangling)<br>Ranged (Throwing)<br>Set Trap|Craftsman (Boatbuilder), Rover, Strong Back, Waterman|Eel Trap<br>Leather Jerkin<br>Net<br>Spear|
+|3|Riverwise|Brass 5|Agility<br>Dexterity<br>Fellowship<br>Strength<br>Toughness|Charm<br>Intuition<br>Melee (Polearm)<br>Perception|Savant (Riverways), Stout-hearted, Tenacious, Very Strong|Row Boat<br>Storm Lantern and Oil|
+|4|River Elder|Silver 2|Agility<br>Dexterity<br>Fellowship<br>Strength<br>Toughness<br>Willpower|Entertain (Storytelling)<br>Lore (Folklore)|Master Craftsman (Boatbuilder), Public Speaker, Sharp, Strong-minded|Hut or Riverboat|
 
 ### Seaman
 
@@ -692,14 +604,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:**  Toughness, Agility, Fellowship (level 1); +Strength (level 2); +Intelligence (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Landsman|Silver 1|Climb, Consume Alcohol, Gamble, Gossip, Row, Melee (Brawling), Sail, Swim|Fisherman, Strider (Coastal), Strong Back, Strong Swimmer|Bucket, Brush, Mop|
-|Seaman|Silver 3|Athletics, Dodge, Endurance, Entertain (Singing), Language (any), Melee (Basic)|Catfall, Sea Legs, Seasoned Traveller, Strong Legs|Hand Weapon (Boat Hook), Leather Jerkin|
-|Boatswain|Silver 5|Cool, Leadership, Perception, Trade (Carpenter)|Old Salt, Strike Mighty Blow, Tenacious, Very Strong|Trade Tools (Carpenter)|
-|Ship's Master|Gold 2|Charm, Navigation|Orientation, Pilot, Public Speaking, Savvy|Shipping Charts, Sailing Ship and Crew, Sextant, Spyglass|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Landsman|Silver 1|Agility<br>Fellowship<br>Toughness|Climb<br>Consume Alcohol<br>Gamble<br>Gossip<br>Melee (Brawling)<br>Row<br>Sail<br>Swim|Fisherman, Strider (Coastal), Strong Back, Strong Swimmer|Brush<br>Bucket<br>Mop|
+|2|Seaman|Silver 3|Agility<br>Fellowship<br>Strength<br>Toughness|Athletics<br>Dodge<br>Endurance<br>Entertain (Singing)<br>Language (any)<br>Melee (Basic)|Catfall, Sea Legs, Seasoned Traveller, Strong Legs|Hand Weapon (Boat Hook)<br>Leather Jerkin|
+|3|Boatswain|Silver 5|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness|Cool<br>Leadership<br>Perception<br>Trade (Carpenter)|Old Salt, Strike Mighty Blow, Tenacious, Very Strong|Trade Tools (Carpenter)|
+|4|Ship's Master|Gold 2|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Charm<br>Navigation|Orientation, Pilot, Public Speaking, Savvy|Sailing Ship and Crew<br>Sextant<br>Shipping Charts<br>Spyglass|
 
 ### Smuggler
 
@@ -707,14 +617,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human
 
-**Advance Scheme:**  Agility, Dexterity, Fellowship (level 1); +Toughness (level 2); +Intelligence (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|River Runner|Brass 2|Athletics, Bribery, Cool, Consume Alcohol, Row, Sail, Stealth (Rural or Urban), Swim|Criminal, Fisherman, Strider (Marshes), Strong Back|Large Sack, Mask or Scarves, Tinderbox, Storm Lantern and Oil|
-|Smuggler|Brass 3|Haggle, Charm, Gossip, Lore (Local), Melee (Basic), Perception, Secret Signs (Smuggler)|Dealmaker, Etiquette (Criminals), Waterman, Very Strong|2 Barrels, Hand Weapon, Leather Jack, Row Boat|
-|Master Smuggler|Brass 5|Evaluate, Intimidate, Intuition, Lore (Riverways)|Briber, Fearless (Riverwardens), Pilot, Strong Swimmer|River Runner, Speedy Riverboat|
-|Smuggler King|Silver 2|Language (Any), Leadership|Kingpin, Savvy, Strider (Coastal), Sea Legs|Disguise Kit, Small Fleet of Riverboats|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|River Runner|Brass 2|Agility<br>Dexterity<br>Fellowship|Athletics<br>Bribery<br>Consume Alcohol<br>Cool<br>Row<br>Sail<br>Stealth (Rural or Urban)<br>Swim|Criminal, Fisherman, Strider (Marshes), Strong Back|Large Sack<br>Mask or Scarves<br>Storm Lantern and Oil<br>Tinderbox|
+|2|Smuggler|Brass 3|Agility<br>Dexterity<br>Fellowship<br>Toughness|Charm<br>Gossip<br>Haggle<br>Lore (Local)<br>Melee (Basic)<br>Perception<br>Secret Signs (Smuggler)|Dealmaker, Etiquette (Criminals), Waterman, Very Strong|2 Barrels<br>Hand Weapon<br>Leather Jack<br>Row Boat|
+|3|Master Smuggler|Brass 5|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness|Evaluate<br>Intimidate<br>Intuition<br>Lore (Riverways)|Briber, Fearless (Riverwardens), Pilot, Strong Swimmer|River Runner<br>Speedy Riverboat|
+|4|Smuggler King|Silver 2|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Strength<br>Toughness|Language (Any)<br>Leadership|Kingpin, Savvy, Strider (Coastal), Sea Legs|Disguise Kit<br>Small Fleet of Riverboats|
 
 ### Stevedore
 
@@ -722,14 +630,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Weapon Skill, Strength, Toughness (level 1); +Fellowship (level 2); +Intelligence (level 3); +Agility (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Dockhand|Brass 3|Athletics, Climb, Consume Alcohol, Dodge, Endurance, Gossip, Melee (Basic), Swim|Dirty Fighting, Strong Back, Sturdy, Very Strong|Hand Weapon (Boat Hook), Leather Gloves|
-|Stevedore|Silver 1|Bribery, Entertain (Storytelling), Gamble, Intimidate, Perception, Stealth (Urban)|Criminal, Etiquette (Guilders), Strong Legs, Tenacious|Guild Licence, Leather Jerkin, Pipe and Tobacco, Porter Cap|
-|Foreman|Silver 3|Cool, Evaluate, Intuition, Leadership|Dealmaker, Embezzle, Etiquette (Criminals), Public Speaking|Gang of Stevedores, Whistle|
-|Dock Master|Silver 5|Charm, Lore (Taxes)|Kingpin, Menacing, Numismatics, Read/Write|Office and Staff, Writing Kit|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Dockhand|Brass 3|Strength<br>Toughness<br>Weapon Skill|Athletics<br>Climb<br>Consume Alcohol<br>Dodge<br>Endurance<br>Gossip<br>Melee (Basic)<br>Swim|Dirty Fighting, Strong Back, Sturdy, Very Strong|Hand Weapon (Boat Hook)<br>Leather Gloves|
+|2|Stevedore|Silver 1|Fellowship<br>Strength<br>Toughness<br>Weapon Skill|Bribery<br>Entertain (Storytelling)<br>Gamble<br>Intimidate<br>Perception<br>Stealth (Urban)|Criminal, Etiquette (Guilders), Strong Legs, Tenacious|Guild Licence<br>Leather Jerkin<br>Pipe and Tobacco<br>Porter Cap|
+|3|Foreman|Silver 3|Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Weapon Skill|Cool<br>Evaluate<br>Intuition<br>Leadership|Dealmaker, Embezzle, Etiquette (Criminals), Public Speaking|Gang of Stevedores<br>Whistle|
+|4|Dock Master|Silver 5|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Weapon Skill|Charm<br>Lore (Taxes)|Kingpin, Menacing, Numismatics, Read/Write|Office and Staff<br>Writing Kit|
 
 ### Wrecker
 
@@ -737,14 +643,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Strength, Fellowship (level 1); +Toughness (level 2); +Agility (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Cargo Scavenger|Brass 2|Climb, Consume Alcohol, Dodge, Endurance, Row, Melee (Basic), Outdoor Survival, Swim|Break and Enter, Criminal, Fisherman, Strong Back|Crowbar, Large Sack, Leather Gloves|
-|Wrecker|Brass 3|Bribery, Cool, Intuition, Navigation, Perception, Set Traps|Flee!, Rover, Strong Swimmer, Trapper|Hand Weapon (Boat Hook), Leather Jack, Storm Lantern and Oil|
-|River Pirate|Brass 5|Gossip, Intimidate, Ranged (Crossbow), Stealth (Rural)|Dirty Fighting, Etiquette (Criminals), Menacing, Waterman|Crossbow with 10 Bolts, Grappling Hook and Rope, Riverboat|
-|Wrecker Captain|Silver 2|Leadership, Lore (Riverways)|Furious Assault, In-fighter, Pilot, Warrior Born|Fleet of Riverboats and Wrecker Crew, Keg of Ale, Manacles|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Cargo Scavenger|Brass 2|Fellowship<br>Strength<br>Weapon Skill|Climb<br>Consume Alcohol<br>Dodge<br>Endurance<br>Melee (Basic)<br>Outdoor Survival<br>Row<br>Swim|Break and Enter, Criminal, Fisherman, Strong Back|Crowbar<br>Large Sack<br>Leather Gloves|
+|2|Wrecker|Brass 3|Fellowship<br>Strength<br>Toughness<br>Weapon Skill|Bribery<br>Cool<br>Intuition<br>Navigation<br>Perception<br>Set Traps|Flee!, Rover, Strong Swimmer, Trapper|Hand Weapon (Boat Hook)<br>Leather Jack<br>Storm Lantern and Oil|
+|3|River Pirate|Brass 5|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill|Gossip<br>Intimidate<br>Ranged (Crossbow)<br>Stealth (Rural)|Dirty Fighting, Etiquette (Criminals), Menacing, Waterman|Crossbow with 10 Bolts<br>Grappling Hook and Rope<br>Riverboat|
+|4|Wrecker Captain|Silver 2|Agility<br>Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Weapon Skill|Leadership<br>Lore (Riverways)|Furious Assault, In-fighter, Pilot, Warrior Born|Fleet of Riverboats and Wrecker Crew<br>Keg of Ale<br>Manacles|
 
 ## Rogues
 
@@ -754,14 +658,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Halfling, High Elf, Human
 
-**Advance Scheme:**  Agility, Dexterity, Fellowship (level 1); +Toughness (level 2); +Intelligence (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Hustler|Brass 1|Bribery, Charm, Consume Alcohol, Entertain (Any), Gamble, Gossip, Haggle, Intimidate|Attractive, Alley Cat, Blather, Gregarious|Flask of Spirits|
-|Bawd|Brass 3|Dodge, Endurance, Intuition, Lore (Local), Melee (Basic), Perception|Ambidextrous, Carouser, Criminal, Resistant (Disease)|Dose of Weirdroot, Quality Clothing|
-|Procurer|Silver 1|Cool, Evaluate, Language (any), Lore (Law)|Dealmaker, Embezzle, Etiquette (Any), Suave|A Ring of Hustlers|
-|Ringleader|Silver 3|Leadership, Lore (Heraldry)|Briber, Kingpin, Numismatics, Savvy|Townhouse with Discreet Back Entrance, a Ring of Bawds|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Hustler|Brass 1|Agility<br>Dexterity<br>Fellowship|Bribery<br>Charm<br>Consume Alcohol<br>Entertain (Any)<br>Gamble<br>Gossip<br>Haggle<br>Intimidate|Attractive, Alley Cat, Blather, Gregarious|Flask of Spirits|
+|2|Bawd|Brass 3|Agility<br>Dexterity<br>Fellowship<br>Toughness|Dodge<br>Endurance<br>Intuition<br>Lore (Local)<br>Melee (Basic)<br>Perception|Ambidextrous, Carouser, Criminal, Resistant (Disease)|Dose of Weirdroot<br>Quality Clothing|
+|3|Procurer|Silver 1|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness|Cool<br>Evaluate<br>Language (any)<br>Lore (Law)|Dealmaker, Embezzle, Etiquette (Any), Suave|A Ring of Hustlers|
+|4|Ringleader|Silver 3|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Leadership<br>Lore (Heraldry)|Briber, Kingpin, Numismatics, Savvy|a Ring of Bawds<br>Townhouse with Discreet Back Entrance|
 
 ### Charlatan
 
@@ -769,14 +671,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Halfling, High Elf, Human
 
-**Advance Scheme:**  Intelligence, Fellowship, Dexterity (level 1); +Agility (level 2); +Toughness (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Swindler|Brass 3|Bribery, Consume Alcohol, Charm, Entertain (Storytelling), Gamble, Gossip, Haggle, Sleight of Hand|Cardsharp, Diceman, Etiquette (Any), Luck|Backpack, 2 Sets of Clothing, Deck of Cards, Dice|
-|Charlatan|Brass 5|Cool, Dodge, Entertain (Acting), Evaluate, Intuition, Perception|Blather, Criminal, Fast Hands, Secret Identity|1 Forged Document, 2 Sets of Quality Clothing, Selection of Coloured Powders and Water, Selection of Trinkets and Charms|
-|Con Artist|Silver 2|Language (Thief), Lore (Heraldry), Pick Lock, Secret Signs (Thief)|Attractive, Cat-tongued, Dealmaker, Read/Write|Disguise Kit, Lock Picks, Multiple Forged Documents|
-|Scoundrel|Silver 4|Lore (Genealogy), Research|Gregarious, Master of Disguise, Nose for Trouble, Suave|Forged Seal, Writing Kit|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Swindler|Brass 3|Dexterity<br>Fellowship<br>Intelligence|Bribery<br>Charm<br>Consume Alcohol<br>Entertain (Storytelling)<br>Gamble<br>Gossip<br>Haggle<br>Sleight of Hand|Cardsharp, Diceman, Etiquette (Any), Luck|2 Sets of Clothing<br>Backpack<br>Deck of Cards<br>Dice|
+|2|Charlatan|Brass 5|Agility<br>Dexterity<br>Fellowship<br>Intelligence|Cool<br>Dodge<br>Entertain (Acting)<br>Evaluate<br>Intuition<br>Perception|Blather, Criminal, Fast Hands, Secret Identity|1 Forged Document<br>2 Sets of Quality Clothing<br>Selection of Coloured Powders and Water<br>Selection of Trinkets and Charms|
+|3|Con Artist|Silver 2|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness|Language (Thief)<br>Lore (Heraldry)<br>Pick Lock<br>Secret Signs (Thief)|Attractive, Cat-tongued, Dealmaker, Read/Write|Disguise Kit<br>Lock Picks<br>Multiple Forged Documents|
+|4|Scoundrel|Silver 4|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Lore (Genealogy)<br>Research|Gregarious, Master of Disguise, Nose for Trouble, Suave|Forged Seal<br>Writing Kit|
 
 ### Fence
 
@@ -784,14 +684,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Toughness, Intelligence, Fellowship (level 1); +Agility (level 2); +Dexterity (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Broker|Silver 1|Charm, Consume Alcohol, Dodge, Evaluate, Gamble, Gossip, Haggle, Melee (Basic)|Alley Cat, Cardsharp, Dealmaker, Gregarious|Hand Weapon, Stolen Goods worth 3d10 Shillings|
-|Fence|Silver 2|Cool, Intimidate, Intuition, Perception, Secret Signs (Thief), Trade (Engraver)|Criminal, Etiquette (Criminals), Numismatics, Savvy|Eye-glass, Trade Tools (Engraver), Writing Kit|
-|Master Fence|Silver 3|Bribery, Entertain (Storytelling), Lore (Art), Lore (Local)|Kingpin, Strike to Stun, Suave, Super Numerate|Pawnbroker's Shop|
-|Black Marketeer|Silver 4|Lore (Heraldry), Research|Dirty Fighting, Iron Will, Menacing, Briber|Hired Muscle, Network of Informants, Warehouse|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Broker|Silver 1|Fellowship<br>Intelligence<br>Toughness|Charm<br>Consume Alcohol<br>Dodge<br>Evaluate<br>Gamble<br>Gossip<br>Haggle<br>Melee (Basic)|Alley Cat, Cardsharp, Dealmaker, Gregarious|Hand Weapon<br>Stolen Goods worth 3d10 Shillings|
+|2|Fence|Silver 2|Agility<br>Fellowship<br>Intelligence<br>Toughness|Cool<br>Intimidate<br>Intuition<br>Perception<br>Secret Signs (Thief)<br>Trade (Engraver)|Criminal, Etiquette (Criminals), Numismatics, Savvy|Eye-glass<br>Trade Tools (Engraver)<br>Writing Kit|
+|3|Master Fence|Silver 3|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness|Bribery<br>Entertain (Storytelling)<br>Lore (Art)<br>Lore (Local)|Kingpin, Strike to Stun, Suave, Super Numerate|Pawnbroker's Shop|
+|4|Black Marketeer|Silver 4|Agility<br>Dexterity<br>Fellowship<br>Intelligence<br>Toughness<br>Willpower|Lore (Heraldry)<br>Research|Dirty Fighting, Iron Will, Menacing, Briber|Hired Muscle<br>Network of Informants<br>Warehouse|
 
 ### Grave Robber
 
@@ -799,14 +697,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Halfling, Human
 
-**Advance Scheme:**  Toughness, Agility, Intelligence (level 1); +Dexterity (level 2); +Strength (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Body Snatcher|Brass 2|Climb, Cool, Dodge, Endurance, Gossip, Intuition, Perception, Stealth (Any)|Alley Cat, Criminal, Flee!, Strong Back|Crowbar, Handcart, Hooded Cloak, Tarpaulin|
-|Grave Robber|Brass 3|Bribery, Endurance, Evaluate, Haggle, Lore (Medicine), Melee (Basic)|Break and Enter, Night Vision, Resistance (Disease), Very Strong|Backpack, Hand Weapon, Spade, Storm Lantern and Oil|
-|Tomb Robber|Silver 1|Drive, Lore (History), Pick Lock, Set Trap|Read/Write, Strike Mighty Blow, Tenacious, Tunnel Rat|Hand Weapon (Pick), Horse and Cart, Leather Jack, Rope, Trade Tools (Thief)|
-|Treasure Hunter|Silver 5|Navigation, Trade (Engineer)|Fearless (Undead), Sixth Sense, Strong-minded, Trapper|Bedroll, Maps, Tent, Trade Tools (Engineer), Writing Kit|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Body Snatcher|Brass 2|Agility<br>Intelligence<br>Toughness|Climb<br>Cool<br>Dodge<br>Endurance<br>Gossip<br>Intuition<br>Perception<br>Stealth (Any)|Alley Cat, Criminal, Flee!, Strong Back|Crowbar<br>Handcart<br>Hooded Cloak<br>Tarpaulin|
+|2|Grave Robber|Brass 3|Agility<br>Dexterity<br>Intelligence<br>Toughness|Bribery<br>Endurance<br>Evaluate<br>Haggle<br>Lore (Medicine)<br>Melee (Basic)|Break and Enter, Night Vision, Resistance (Disease), Very Strong|Backpack<br>Hand Weapon<br>Spade<br>Storm Lantern and Oil|
+|3|Tomb Robber|Silver 1|Agility<br>Dexterity<br>Intelligence<br>Strength<br>Toughness|Drive<br>Lore (History)<br>Pick Lock<br>Set Trap|Read/Write, Strike Mighty Blow, Tenacious, Tunnel Rat|Hand Weapon (Pick)<br>Horse and Cart<br>Leather Jack<br>Rope<br>Trade Tools (Thief)|
+|4|Treasure Hunter|Silver 5|Agility<br>Dexterity<br>Intelligence<br>Strength<br>Toughness<br>Willpower|Navigation<br>Trade (Engineer)|Fearless (Undead), Sixth Sense, Strong-minded, Trapper|Bedroll<br>Maps<br>Tent<br>Trade Tools (Engineer)<br>Writing Kit|
 
 ### Outlaw
 
@@ -814,14 +710,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Strength, Toughness (level 1); +Intelligence (level 2); +Fellowship (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Brigand|Brass 1|Athletics, Consume Alcohol, Cool, Endurance, Gamble, Intimidate, Melee (Basic), Outdoor Survival|Combat Aware, Criminal, Rover, Flee!|Bedroll, Hand Weapon, Leather Jerkin, Tinderbox|
-|Outlaw|Brass 2|Dodge, Heal, Lore (Local), Perception, Ranged (Bow), Stealth (Rural)|Dirty Fighting, Marksman, Strike to Stun, Trapper|Bow with 10 Arrows, Shield, Tent|
-|Outlaw Chief|Brass 4|Gossip, Intuition, Leadership, Ride (Horse)|Rapid Reload, Roughrider, Menacing, Very Resilient|Helmet, Riding Horse with Saddle and Tack, Sleeved Mail Shirt, Band of Outlaws|
-|Bandit King|Silver 2|Charm, Lore (Empire)|Deadeye Shot, Fearless (Road Wardens), Iron Will, Robust|'Fiefdom' of Outlaw Chiefs, Lair|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Brigand|Brass 1|Strength<br>Toughness<br>Weapon Skill|Athletics<br>Consume Alcohol<br>Cool<br>Endurance<br>Gamble<br>Intimidate<br>Melee (Basic)<br>Outdoor Survival|Combat Aware, Criminal, Rover, Flee!|Bedroll<br>Hand Weapon<br>Leather Jerkin<br>Tinderbox|
+|2|Outlaw|Brass 2|Intelligence<br>Strength<br>Toughness<br>Weapon Skill|Dodge<br>Heal<br>Lore (Local)<br>Perception<br>Ranged (Bow)<br>Stealth (Rural)|Dirty Fighting, Marksman, Strike to Stun, Trapper|Bow with 10 Arrows<br>Shield<br>Tent|
+|3|Outlaw Chief|Brass 4|Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Weapon Skill|Gossip<br>Intuition<br>Leadership<br>Ride (Horse)|Rapid Reload, Roughrider, Menacing, Very Resilient|Band of Outlaws<br>Helmet<br>Riding Horse with Saddle and Tack<br>Sleeved Mail Shirt|
+|4|Bandit King|Silver 2|Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Charm<br>Lore (Empire)|Deadeye Shot, Fearless (Road Wardens), Iron Will, Robust|'Fiefdom' of Outlaw Chiefs<br>Lair|
 
 ### Racketeer
 
@@ -829,14 +723,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Weapon Skill, Strength, Toughness (level 1); +Willpower (level 2); +Fellowship (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Thug|Brass 3|Consume Alcohol, Cool, Dodge, Endurance, Intimidate, Lore (Local), Melee (Brawling), Stealth (Urban)|Criminal, Etiquette (Criminals), Menacing, Strike Mighty Blow|Knuckledusters, Leather Jack|
-|Racketeer|Brass 5|Bribery, Charm, Evaluate, Gossip, Language (Estalian or Tilean), Melee (Basic)|Embezzle, Street Fighting, Strike to Stun, Warrior Born|Hand Weapon, Hat, Mail Shirt|
-|Gang Boss|Silver 3|Intuition, Leadership, Perception, Ranged (Crossbow)|Fearless (Watchmen), Iron Will, Resistance (Poison), Robust|Crossbow Pistol with 10 Bolts, Gang of Thugs and Racketeers, Lair|
-|Crime Lord|Silver 5|Lore (Law), Lore (Politics)|Commanding Presence, Kingpin, Frightening, Wealthy|Network of Informers, Quality Clothing and Hat, Subordinate Gang Bosses|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Thug|Brass 3|Strength<br>Toughness<br>Weapon Skill|Consume Alcohol<br>Cool<br>Dodge<br>Endurance<br>Intimidate<br>Lore (Local)<br>Melee (Brawling)<br>Stealth (Urban)|Criminal, Etiquette (Criminals), Menacing, Strike Mighty Blow|Knuckledusters<br>Leather Jack|
+|2|Racketeer|Brass 5|Strength<br>Toughness<br>Weapon Skill<br>Willpower|Bribery<br>Charm<br>Evaluate<br>Gossip<br>Language (Estalian or Tilean)<br>Melee (Basic)|Embezzle, Street Fighting, Strike to Stun, Warrior Born|Hand Weapon<br>Hat<br>Mail Shirt|
+|3|Gang Boss|Silver 3|Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Intuition<br>Leadership<br>Perception<br>Ranged (Crossbow)|Fearless (Watchmen), Iron Will, Resistance (Poison), Robust|Crossbow Pistol with 10 Bolts<br>Gang of Thugs and Racketeers<br>Lair|
+|4|Crime Lord|Silver 5|Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Lore (Law)<br>Lore (Politics)|Commanding Presence, Kingpin, Frightening, Wealthy|Network of Informers<br>Quality Clothing and Hat<br>Subordinate Gang Bosses|
 
 ### Thief
 
@@ -844,14 +736,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, Human
 
-**Advance Scheme:**  Agility, Dexterity, Fellowship (level 1); +Toughness (level 2); +Strength (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Prowler|Brass 1|Athletics, Climb, Cool, Dodge, Endurance, Intuition, Perception, Stealth (Urban)|Alley Cat, Criminal, Flee!, Strike to Stun|Crowbar, Leather Jerkin, Sack|
-|Thief|Brass 3|Evaluate, Gossip, Lore (Local), Pick Lock, Secret Signs (Thief), Sleight of Hand|Break and Enter, Etiquette (Criminals), Fast Hands, Shadow|Trade Tools (Thief), Rope|
-|Master Thief|Brass 5|Bribery, Gamble, Intimidate, Ranged (Crossbow)|Night Vision, Nimble Fingered, Step Aside, Trapper|Crossbow Pistol with 10 Bolts, Throwing Knives|
-|Cat Burglar|Silver 3|Charm, Set Trap|Catfall, Scale Sheer Surface, Strong Legs, Wealthy|Dark Clothing, Grappling Hook, Mask or Scarves|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Prowler|Brass 1|Agility<br>Dexterity<br>Fellowship|Athletics<br>Climb<br>Cool<br>Dodge<br>Endurance<br>Intuition<br>Perception<br>Stealth (Urban)|Alley Cat, Criminal, Flee!, Strike to Stun|Crowbar<br>Leather Jerkin<br>Sack|
+|2|Thief|Brass 3|Agility<br>Dexterity<br>Fellowship<br>Toughness|Evaluate<br>Gossip<br>Lore (Local)<br>Pick Lock<br>Secret Signs (Thief)<br>Sleight of Hand|Break and Enter, Etiquette (Criminals), Fast Hands, Shadow|Rope<br>Trade Tools (Thief)|
+|3|Master Thief|Brass 5|Agility<br>Dexterity<br>Fellowship<br>Strength<br>Toughness|Bribery<br>Gamble<br>Intimidate<br>Ranged (Crossbow)|Night Vision, Nimble Fingered, Step Aside, Trapper|Crossbow Pistol with 10 Bolts<br>Throwing Knives|
+|4|Cat Burglar|Silver 3|Agility<br>Dexterity<br>Fellowship<br>Strength<br>Toughness<br>Willpower|Charm<br>Set Trap|Catfall, Scale Sheer Surface, Strong Legs, Wealthy|Dark Clothing<br>Grappling Hook<br>Mask or Scarves|
 
 ### Witch
 
@@ -859,14 +749,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Human
 
-**Advance Scheme:**  Weapon Skill, Toughness, Willpower (level 1); +Agility (level 2); +Intelligence (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Hexer|Brass 1|Channelling, Cool, Endurance, Gossip, Intimidate, Language (Magick), Sleight of Hand, Stealth (Rural)|Criminal, Instinctive Diction, Menacing, Petty Magic|Candles, Chalk, Doll, Pins|
-|Witch|Brass 2|Charm Animal, Dodge, Intuition, Melee (Polearm), Perception, Trade (Herbalist)|Arcane Magic (Witchery), Attractive, Sixth Sense, Witch!|Quarterstaff, Sack, Selection of Herbs, Trade Tools (Herbalist)|
-|Wyrd|Brass 3|Bribery, Charm, Haggle, Lore (Dark Magic)|Animal Affinity, Fast Hands, Frightening, Magical Sense|Backpack, Cloak with Several Pockets, Lucky Charm|
-|Warlock|Brass 5|Lore (Daemonology), Lore (Magic)|Aethyric Attunement, Luck, Strong-minded, Very Resilient|Robes, Skull|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Hexer|Brass 1|Toughness<br>Weapon Skill<br>Willpower|Channelling<br>Cool<br>Endurance<br>Gossip<br>Intimidate<br>Language (Magick)<br>Sleight of Hand<br>Stealth (Rural)|Criminal, Instinctive Diction, Menacing, Petty Magic|Candles<br>Chalk<br>Doll<br>Pins|
+|2|Witch|Brass 2|Agility<br>Toughness<br>Weapon Skill<br>Willpower|Charm Animal<br>Dodge<br>Intuition<br>Melee (Polearm)<br>Perception<br>Trade (Herbalist)|Arcane Magic (Witchery), Attractive, Sixth Sense, Witch!|Quarterstaff<br>Sack<br>Selection of Herbs<br>Trade Tools (Herbalist)|
+|3|Wyrd|Brass 3|Agility<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Bribery<br>Charm<br>Haggle<br>Lore (Dark Magic)|Animal Affinity, Fast Hands, Frightening, Magical Sense|Backpack<br>Cloak with Several Pockets<br>Lucky Charm|
+|4|Warlock|Brass 5|Agility<br>Fellowship<br>Intelligence<br>Toughness<br>Weapon Skill<br>Willpower|Lore (Daemonology)<br>Lore (Magic)|Aethyric Attunement, Luck, Strong-minded, Very Resilient|Robes<br>Skull|
 
 ## Warriors
 
@@ -876,14 +764,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Strength, Agility (level 1); +Toughness (level 2); +Fellowship (level 3); +Willpower (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Horseman|Silver 2|Animal Care, Charm Animal, Endurance, Language (Battle), Melee (Basic), Outdoor Survival, Perception, Ride (Horse)|Combat Aware, Crack the Whip, Lightning Reflexes, Roughrider|Leather Jack, Riding Horse with Saddle and Tack|
-|Cavalryman|Silver 4|Charm, Consume Alcohol, Cool, Gossip, Melee (Cavalry), Ranged (Blackpowder)|Etiquette (Soldiers), Gunner, Seasoned Traveller, Trick Riding|Breastplate, Demilance, Helmet, Light Warhorse with Saddle and Tack, Pistol with 10 Shots, Shield|
-|Cavalry Sergeant|Gold 1|Intimidate, Intuition, Leadership, Lore (Warfare)|Combat Reflexes, Fast Shot, Hatred (Any), Warleader|Sash|
-|Cavalry Officer|Gold 2|Gamble, Lore (Heraldry)|Accurate Shot, Inspiring, Reaction Strike, Robust|Deck of Cards, Quality Clothing|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Horseman|Silver 2|Agility<br>Strength<br>Weapon Skill|Animal Care<br>Charm Animal<br>Endurance<br>Language (Battle)<br>Melee (Basic)<br>Outdoor Survival<br>Perception<br>Ride (Horse)|Combat Aware, Crack the Whip, Lightning Reflexes, Roughrider|Leather Jack<br>Riding Horse with Saddle and Tack|
+|2|Cavalryman|Silver 4|Agility<br>Strength<br>Toughness<br>Weapon Skill|Charm<br>Consume Alcohol<br>Cool<br>Gossip<br>Melee (Cavalry)<br>Ranged (Blackpowder)|Etiquette (Soldiers), Gunner, Seasoned Traveller, Trick Riding|Breastplate<br>Demilance<br>Helmet<br>Light Warhorse with Saddle and Tack<br>Pistol with 10 Shots<br>Shield|
+|3|Cavalry Sergeant|Gold 1|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill|Intimidate<br>Intuition<br>Leadership<br>Lore (Warfare)|Combat Reflexes, Fast Shot, Hatred (Any), Warleader|Sash|
+|4|Cavalry Officer|Gold 2|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Gamble<br>Lore (Heraldry)|Accurate Shot, Inspiring, Reaction Strike, Robust|Deck of Cards<br>Quality Clothing|
 
 ### Guard
 
@@ -891,14 +777,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Toughness, Agility (level 1); +Initiative (level 2); +Willpower (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Sentry|Silver 1|Consume Alcohol, Endurance, Entertain (Storytelling), Gamble, Gossip, Intuition, Melee (Basic), Perception|Diceman, Etiquette (Servants), Strike to Stun, Tenacious|Buckler, Leather Jerkin, Storm Lantern with Oil|
-|Guard|Silver 2|Athletics, Cool, Dodge, Intimidate, Melee (Polearm), Ranged (Bow)|Relentless, Reversal, Shieldsman, Strike Mighty Blow|Bow with 10 Arrows, Sleeved Mail Shirt, Shield, Spear|
-|Honour Guard|Silver 3|Heal, Language (Battle), Lore (Etiquette), Melee (Two-handed)|Fearless (Intruders), Jump Up, Stout-hearted, Unshakeable|Great Weapon or Halberd, Helmet, Uniform|
-|Guard Officer|Silver 5|Leadership, Lore (Warfare)|Combat Master, Furious Assault, Iron Will, Robust|Breastplate|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Sentry|Silver 1|Agility<br>Toughness<br>Weapon Skill|Consume Alcohol<br>Endurance<br>Entertain (Storytelling)<br>Gamble<br>Gossip<br>Intuition<br>Melee (Basic)<br>Perception|Diceman, Etiquette (Servants), Strike to Stun, Tenacious|Buckler<br>Leather Jerkin<br>Storm Lantern with Oil|
+|2|Guard|Silver 2|Agility<br>Initiative<br>Toughness<br>Weapon Skill|Athletics<br>Cool<br>Dodge<br>Intimidate<br>Melee (Polearm)<br>Ranged (Bow)|Relentless, Reversal, Shieldsman, Strike Mighty Blow|Bow with 10 Arrows<br>Shield<br>Sleeved Mail Shirt<br>Spear|
+|3|Honour Guard|Silver 3|Agility<br>Initiative<br>Toughness<br>Weapon Skill<br>Willpower|Heal<br>Language (Battle)<br>Lore (Etiquette)<br>Melee (Two-handed)|Fearless (Intruders), Jump Up, Stout-hearted, Unshakeable|Great Weapon or Halberd<br>Helmet<br>Uniform|
+|4|Guard Officer|Silver 5|Agility<br>Fellowship<br>Initiative<br>Toughness<br>Weapon Skill<br>Willpower|Leadership<br>Lore (Warfare)|Combat Master, Furious Assault, Iron Will, Robust|Breastplate|
 
 ### Knight
 
@@ -906,14 +790,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Toughness, Fellowship (level 1); +Agility (level 2); +Willpower (level 3); +Strength (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Squire|Silver 3|Athletics, Animal Care, Charm Animal, Heal, Lore (Heraldry), Melee (Cavalry), Ride (Horse), Trade (Farrier)|Etiquette (any), Roughrider, Sturdy, Warrior Born|Leather Jack, Mail Shirt, Riding Horse with Saddle and Tack, Shield, Trade Tools (Farrier)|
-|Knight|Silver 5|Cool, Dodge, Endurance, Intimidate, Language (Battle), Melee (Any)|Menacing, Seasoned Traveller, Shieldsman, Strike Mighty Blow|Destrier with Saddle and Tack, Melee Weapon (Any), Lance, Plate Armour and Helm|
-|First Knight|Gold 2|Charm, Consume Alcohol, Leadership, Lore (Warfare)|Fearless (Any), Stout-hearted, Unshakeable, Warleader|Barding, Small Unit of Knights|
-|Knight of the Inner Circle|Gold 4|Lore (Any), Secret Signs (Knightly Order)|Disarm, Inspiring, Iron Will, Strike to Injure|Plumed Great Helm, Squire, Large Unit of Knights or Several Small Units of Knights|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Squire|Silver 3|Fellowship<br>Toughness<br>Weapon Skill|Animal Care<br>Athletics<br>Charm Animal<br>Heal<br>Lore (Heraldry)<br>Melee (Cavalry)<br>Ride (Horse)<br>Trade (Farrier)|Etiquette (any), Roughrider, Sturdy, Warrior Born|Leather Jack<br>Mail Shirt<br>Riding Horse with Saddle and Tack<br>Shield<br>Trade Tools (Farrier)|
+|2|Knight|Silver 5|Agility<br>Fellowship<br>Toughness<br>Weapon Skill|Cool<br>Dodge<br>Endurance<br>Intimidate<br>Language (Battle)<br>Melee (Any)|Menacing, Seasoned Traveller, Shieldsman, Strike Mighty Blow|Destrier with Saddle and Tack<br>Lance<br>Melee Weapon (Any)<br>Plate Armour and Helm|
+|3|First Knight|Gold 2|Agility<br>Fellowship<br>Toughness<br>Weapon Skill<br>Willpower|Charm<br>Consume Alcohol<br>Leadership<br>Lore (Warfare)|Fearless (Any), Stout-hearted, Unshakeable, Warleader|Barding<br>Small Unit of Knights|
+|4|Knight of the Inner Circle|Gold 4|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Lore (Any)<br>Secret Signs (Knightly Order)|Disarm, Inspiring, Iron Will, Strike to Injure|Large Unit of Knights or Several Small Units of Knights<br>Plumed Great Helm<br>Squire|
 
 ### Pit Fighter
 
@@ -921,14 +803,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Strength, Toughness (level 1); +Agility (level 2); +Willpower (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Pugilist|Brass 4|Athletics, Cool, Dodge, Endurance, Gamble, Intimidate, Melee (Any), Melee (Brawling)|Dirty Fighter, In-fighter, Iron Jaw, Reversal|Bandages, Knuckledusters, Leather Jack|
-|Pit Fighter|Silver 2|Haggle, Intuition, Melee (Basic), Melee (Flail or Two-handed), Perception, Ranged (Entangling)|Ambidextrous, Combat Reflexes, Dual Wielder, Shieldsman|Flail or Great Weapon, Hand Weapon, Net or Whip, Shield or Buckler|
-|Pit Champion|Silver 5|Consume Alcohol, Gossip, Lore (Anatomy), Perform (Fight)|Combat Master, Disarm, Menacing, Robust|Breast Plate, Helmet|
-|Pit Legend|Gold 2|Charm, Ranged (Any)|Frightening, Furious Assault, Implacable, Reaction Strike|Quality Helmet|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Pugilist|Brass 4|Strength<br>Toughness<br>Weapon Skill|Athletics<br>Cool<br>Dodge<br>Endurance<br>Gamble<br>Intimidate<br>Melee (Any)<br>Melee (Brawling)|Dirty Fighter, In-fighter, Iron Jaw, Reversal|Bandages<br>Knuckledusters<br>Leather Jack|
+|2|Pit Fighter|Silver 2|Agility<br>Strength<br>Toughness<br>Weapon Skill|Haggle<br>Intuition<br>Melee (Basic)<br>Melee (Flail or Two-handed)<br>Perception<br>Ranged (Entangling)|Ambidextrous, Combat Reflexes, Dual Wielder, Shieldsman|Flail or Great Weapon<br>Hand Weapon<br>Net or Whip<br>Shield or Buckler|
+|3|Pit Champion|Silver 5|Agility<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Consume Alcohol<br>Gossip<br>Lore (Anatomy)<br>Perform (Fight)|Combat Master, Disarm, Menacing, Robust|Breast Plate<br>Helmet|
+|4|Pit Legend|Gold 2|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Charm<br>Ranged (Any)|Frightening, Furious Assault, Implacable, Reaction Strike|Quality Helmet|
 
 ### Protagonist
 
@@ -936,14 +816,12 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf, High Elf, Human
 
-**Advance Scheme:**  Weapon Skill, Strength, Toughness (level 1); +Agility (level 2); +Willpower (level 3); +Fellowship (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Braggart|Brass 2|Athletics, Dodge, Endurance, Entertain (Taunt), Gossip, Haggle, Intimidate, Melee (Any)|In-fighter, Dirty Fighting, Menacing, Warrior Born|Hood or Mask, Knuckledusters, Leather Jack|
-|Protagonist|Silver 1|Bribery, Charm, Intuition, Melee (Basic), Perception, Ride (Horse)|Combat Reflexes, Criminal, Reversal, Strike to Stun|Hand Weapon, Mail Shirt, Riding Horse with Saddle and Tack, Shield|
-|Hitman|Silver 4|Climb, Cool, Navigation, Ranged (Thrown)|Careful Strike, Disarm, Marksman, Relentless|Cloak, Garotte, Poison, Throwing Knives|
-|Assassin|Gold 1|Entertain (Acting), Ranged (Crossbow)|Accurate Shot, Ambidextrous, Furious Assault, Strike to Injure|Crossbow with 10 shots, Disguise Kit|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Braggart|Brass 2|Strength<br>Toughness<br>Weapon Skill|Athletics<br>Dodge<br>Endurance<br>Entertain (Taunt)<br>Gossip<br>Haggle<br>Intimidate<br>Melee (Any)|In-fighter, Dirty Fighting, Menacing, Warrior Born|Hood or Mask<br>Knuckledusters<br>Leather Jack|
+|2|Protagonist|Silver 1|Agility<br>Strength<br>Toughness<br>Weapon Skill|Bribery<br>Charm<br>Intuition<br>Melee (Basic)<br>Perception<br>Ride (Horse)|Combat Reflexes, Criminal, Reversal, Strike to Stun|Hand Weapon<br>Mail Shirt<br>Riding Horse with Saddle and Tack<br>Shield|
+|3|Hitman|Silver 4|Agility<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Climb<br>Cool<br>Navigation<br>Ranged (Thrown)|Careful Strike, Disarm, Marksman, Relentless|Cloak<br>Garotte<br>Poison<br>Throwing Knives|
+|4|Assassin|Gold 1|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Entertain (Acting)<br>Ranged (Crossbow)|Accurate Shot, Ambidextrous, Furious Assault, Strike to Injure|Crossbow with 10 shots<br>Disguise Kit|
 
 ### Slayer (Troll Slayer)
 
@@ -951,16 +829,14 @@ Status is a Tier (Brass, Silver, or Gold) and a Standing (usually 1–5), set by
 
 **Species:** Dwarf
 
-**Advance Scheme:**  Weapon Skill, Strength, Willpower (level 1); +Agility (level 2); +Toughness (level 3); +Fellowship (level 4)
-
 All 4 levels of this Career share Status Brass 2; a Dwarf progresses through them by facing progressively more dangerous foes rather than by social advancement.
 
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Troll Slayer|Brass 2|Consume Alcohol, Cool, Dodge, Endurance, Gamble, Heal, Lore (Trolls), Melee (Basic)|Dual Wielder, Fearless (Everything), Frenzy, Slayer|Axe, Flask of Spirits, Shame, Tattoos|
-|Giant Slayer|Brass 2|Evaluate, Intimidate, Language (Battle), Lore (Giants), Melee (Two-handed), Outdoor Survival|Hardy, Implacable, Menacing, Reversal|Great Axe, Jewellery, Troll's Head|
-|Dragon Slayer|Brass 2|Entertain (Storytelling), Lore (Dragons), Perception, Ranged (Thrown)|Ambidextrous, Furious Assault, Relentless, Robust|Giant's Head, Throwing Axes|
-|Daemon Slayer|Brass 2|Intuition, Lore (Chaos)|Combat Master, Frightening, Strike Mighty Blow, Very Strong|Dragon's Head|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Troll Slayer|Brass 2|Strength<br>Weapon Skill<br>Willpower|Consume Alcohol<br>Cool<br>Dodge<br>Endurance<br>Gamble<br>Heal<br>Lore (Trolls)<br>Melee (Basic)|Dual Wielder, Fearless (Everything), Frenzy, Slayer|Axe<br>Flask of Spirits<br>Shame<br>Tattoos|
+|2|Giant Slayer|Brass 2|Agility<br>Strength<br>Weapon Skill<br>Willpower|Evaluate<br>Intimidate<br>Language (Battle)<br>Lore (Giants)<br>Melee (Two-handed)<br>Outdoor Survival|Hardy, Implacable, Menacing, Reversal|Great Axe<br>Jewellery<br>Troll's Head|
+|3|Dragon Slayer|Brass 2|Agility<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Entertain (Storytelling)<br>Lore (Dragons)<br>Perception<br>Ranged (Thrown)|Ambidextrous, Furious Assault, Relentless, Robust|Giant's Head<br>Throwing Axes|
+|4|Daemon Slayer|Brass 2|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Intuition<br>Lore (Chaos)|Combat Master, Frightening, Strike Mighty Blow, Very Strong|Dragon's Head|
 
 ### Soldier
 
@@ -968,14 +844,12 @@ All 4 levels of this Career share Status Brass 2; a Dwarf progresses through the
 
 **Species:** Dwarf, Halfling, High Elf, Human, Wood Elf
 
-**Advance Scheme:**  Weapon Skill, Toughness, Willpower (level 1); +Strength (level 2); +Fellowship (level 3); +Agility (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Recruit|Silver 1|Athletics, Climb, Cool, Dodge, Endurance, Language (Battle), Melee (Basic), Play (Drum or Fife)|Diceman, Marksman, Strong Back, Warrior Born|Dagger, Leather Breastplate, Uniform|
-|Soldier|Silver 3|Consume Alcohol, Gamble, Gossip, Melee (Any), Ranged (Any), Outdoor Survival|Drilled, Etiquette (Soldiers), Rapid Reload, Shieldsman|Breastplate, Helmet, Weapon (Any)|
-|Sergeant|Silver 5|Heal, Intuition, Leadership, Perception|Combat Aware, Enclosed Fighter, Unshakeable, Warleader|Symbol of Rank, Unit of Troops|
-|Officer|Gold 1|Lore (Warfare), Navigation|Inspiring, Public Speaking, Seasoned Traveller, Stout-hearted|Letter of Commission, Light Warhorse with Saddle and Tack, Map, Orders, Unit of Soldiers, Quality Uniform, Symbol of Rank|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Recruit|Silver 1|Toughness<br>Weapon Skill<br>Willpower|Athletics<br>Climb<br>Cool<br>Dodge<br>Endurance<br>Language (Battle)<br>Melee (Basic)<br>Play (Drum or Fife)|Diceman, Marksman, Strong Back, Warrior Born|Dagger<br>Leather Breastplate<br>Uniform|
+|2|Soldier|Silver 3|Strength<br>Toughness<br>Weapon Skill<br>Willpower|Consume Alcohol<br>Gamble<br>Gossip<br>Melee (Any)<br>Outdoor Survival<br>Ranged (Any)|Drilled, Etiquette (Soldiers), Rapid Reload, Shieldsman|Breastplate<br>Helmet<br>Weapon (Any)|
+|3|Sergeant|Silver 5|Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Heal<br>Intuition<br>Leadership<br>Perception|Combat Aware, Enclosed Fighter, Unshakeable, Warleader|Symbol of Rank<br>Unit of Troops|
+|4|Officer|Gold 1|Agility<br>Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Lore (Warfare)<br>Navigation|Inspiring, Public Speaking, Seasoned Traveller, Stout-hearted|Letter of Commission<br>Light Warhorse with Saddle and Tack<br>Map<br>Orders<br>Quality Uniform<br>Symbol of Rank<br>Unit of Soldiers|
 
 ### Warrior Priest
 
@@ -983,14 +857,12 @@ All 4 levels of this Career share Status Brass 2; a Dwarf progresses through the
 
 **Species:** Human
 
-**Advance Scheme:**  Weapon Skill, Toughness, Willpower (level 1); +Strength (level 2); +Fellowship (level 3); +Intelligence (level 4)
-
-|Level|Status|Skills|Talents|Trappings|
-|-|-|-|-|-|
-|Novitiate|Brass 2|Cool, Dodge, Endurance, Heal, Leadership, Lore (Theology), Melee (Any), Pray|Bless (Any), Etiquette (Cultists), Read/Write, Strong-minded|Book (Religion), Leather Jerkin, Religious Symbol, Robes, Weapon (Any Melee)|
-|Warrior Priest|Silver 2|Charm, Entertain (Speeches), Intimidate, Language (Battle), Melee (Any), Ranged (Any)|Dual Wielder, Inspiring, Invoke (Any), Seasoned Traveller|Breastplate, Weapon (Any)|
-|Priest Sergeant|Silver 3|Animal Care, Intuition, Perception, Ride (Horse)|Combat Aware, Holy Visions, Pure Soul, Stout-hearted|Light Warhorse with Saddle and Tack|
-|Priest Captain|Silver 4|Consume Alcohol, Lore (Warfare)|Fearless (Any), Furious Assault, Holy Hatred, Warleader|Religious Relic|
+|Tier|Title|Status|Characteristics|Skills|Talents|Trappings|
+|-|-|-|-|-|-|-|
+|1|Novitiate|Brass 2|Toughness<br>Weapon Skill<br>Willpower|Cool<br>Dodge<br>Endurance<br>Heal<br>Leadership<br>Lore (Theology)<br>Melee (Any)<br>Pray|Bless (Any), Etiquette (Cultists), Read/Write, Strong-minded|Book (Religion)<br>Leather Jerkin<br>Religious Symbol<br>Robes<br>Weapon (Any Melee)|
+|2|Warrior Priest|Silver 2|Strength<br>Toughness<br>Weapon Skill<br>Willpower|Charm<br>Entertain (Speeches)<br>Intimidate<br>Language (Battle)<br>Melee (Any)<br>Ranged (Any)|Dual Wielder, Inspiring, Invoke (Any), Seasoned Traveller|Breastplate<br>Weapon (Any)|
+|3|Priest Sergeant|Silver 3|Fellowship<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Animal Care<br>Intuition<br>Perception<br>Ride (Horse)|Combat Aware, Holy Visions, Pure Soul, Stout-hearted|Light Warhorse with Saddle and Tack|
+|4|Priest Captain|Silver 4|Fellowship<br>Intelligence<br>Strength<br>Toughness<br>Weapon Skill<br>Willpower|Consume Alcohol<br>Lore (Warfare)|Fearless (Any), Furious Assault, Holy Hatred, Warleader|Religious Relic|
 
 
 
