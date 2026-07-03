@@ -89,14 +89,15 @@ test("chapter table of contents lists H2 sections and scrolls to them (desktop)"
   await expect(page.locator("#combat")).toBeInViewport();
 });
 
-test("chapter table of contents opens as a bottom sheet on mobile", async ({ page }) => {
+test("chapter table of contents opens as a bottom sheet on mobile via FAB", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/enemy_within/library/core-rulebook/rules");
 
   await expect(page.getByRole("navigation", { name: "Chapter contents" })).toBeHidden();
-  await page.getByRole("button", { name: "Contents" }).click();
+  await page.getByRole("button", { name: "Open navigation" }).click();
 
   const sheet = page.locator('[data-bottom-sheet-paper="true"]');
+  await sheet.getByRole("tab", { name: "Content" }).click();
   await expect(sheet.getByRole("link", { name: "Combat" })).toBeVisible();
 
   await sheet.getByRole("link", { name: "Combat" }).click();
@@ -104,11 +105,31 @@ test("chapter table of contents opens as a bottom sheet on mobile", async ({ pag
   await expect(page.locator("#combat")).toBeInViewport();
 });
 
-test("a chapter with fewer than 2 major sections has no table of contents", async ({ page }) => {
+test("a chapter with fewer than 2 major sections shows FAB but no Content tab in bottom sheet", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/enemy_within/library/core-rulebook/throwing-bones");
 
   await expect(page.getByRole("navigation", { name: "Chapter contents" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Contents" })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Open navigation" }).click();
+
+  const sheet = page.locator('[data-bottom-sheet-paper="true"]');
+  await expect(sheet.getByRole("tab", { name: "Chapters" })).toBeVisible();
+  await expect(sheet.getByRole("tab", { name: "Content" })).toHaveCount(0);
+});
+
+test("FAB bottom sheet Chapters tab navigates to another chapter on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/enemy_within/library/core-rulebook/throwing-bones");
+
+  await page.getByRole("button", { name: "Open navigation" }).click();
+
+  const sheet = page.locator('[data-bottom-sheet-paper="true"]');
+  await sheet.getByRole("button", { name: "Rules" }).click();
+
+  await expect(sheet).toBeHidden();
+  await expect(page).toHaveURL(/\/library\/core-rulebook\/rules$/);
+  await expect(page.getByRole("heading", { name: "Rules" })).toBeVisible();
 });
 
 test("tables have alternating row background colors", async ({ page }) => {

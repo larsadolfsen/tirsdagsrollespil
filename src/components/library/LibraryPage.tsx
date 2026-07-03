@@ -145,71 +145,69 @@ export function LibraryPage({
           <SquareMenu aria-hidden="true" className="h-6 w-6" />
         </Button>
         {isNavOpen ? (
-          <BottomSheetPaper isPullable>
-            <div className="flex w-full flex-col gap-3">
-              <div
-                className="flex w-full border-b border-wfrp-border"
-                role="tablist"
-                aria-label="Sidebar navigation"
+          <BottomSheetPaper isPullable onDismiss={() => setIsNavOpen(false)}>
+            <div
+              className="shrink-0 flex w-full gap-1 border-b border-wfrp-border pb-2"
+              role="tablist"
+              aria-label="Sidebar navigation"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={sidebarMode === "chapters" || !hasToc}
+                onClick={() => setSidebarMode("chapters")}
+                className={cn(
+                  "wfrp-label h-9 cursor-pointer rounded-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
+                  hasToc ? "w-1/2" : "w-full",
+                  sidebarMode === "chapters" || !hasToc
+                    ? inlineSubtabButtonActiveClassName
+                    : inlineSubtabButtonInactiveClassName,
+                )}
               >
+                Chapters
+              </button>
+              {hasToc ? (
                 <button
                   type="button"
                   role="tab"
-                  aria-selected={sidebarMode === "chapters" || !hasToc}
-                  onClick={() => setSidebarMode("chapters")}
+                  aria-selected={sidebarMode === "headings"}
+                  onClick={() => setSidebarMode("headings")}
                   className={cn(
-                    "wfrp-label h-9 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
-                    hasToc ? "w-1/2" : "w-full",
-                    sidebarMode === "chapters" || !hasToc
+                    "wfrp-label h-9 w-1/2 cursor-pointer rounded-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
+                    sidebarMode === "headings"
                       ? inlineSubtabButtonActiveClassName
                       : inlineSubtabButtonInactiveClassName,
                   )}
                 >
-                  Chapters
+                  Content
                 </button>
-                {hasToc ? (
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={sidebarMode === "headings"}
-                    onClick={() => setSidebarMode("headings")}
-                    className={cn(
-                      "wfrp-label h-9 w-1/2 cursor-pointer border-l border-black/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
-                      sidebarMode === "headings"
-                        ? inlineSubtabButtonActiveClassName
-                        : inlineSubtabButtonInactiveClassName,
-                    )}
-                  >
-                    Content
-                  </button>
-                ) : null}
-              </div>
-              <p className="wfrp-label truncate px-2 text-wfrp-muted-text">
-                {sidebarMode === "chapters" || !hasToc ? selectedBook.title : selectedChapter.title}
-              </p>
-              <div className="px-2 pb-2">
-                {!hasToc || sidebarMode === "chapters" ? (
-                  <LibraryNavList
-                    ariaLabel="Book chapters"
-                    items={selectedBook.chapters.map((chapter) => ({
-                      id: chapter.id,
-                      label: chapter.title,
-                      isActive: chapter.id === selectedChapter.id,
-                      onClick: () => {
-                        onSelectChapter(chapter.id);
-                        setSidebarMode("headings");
-                        setIsNavOpen(false);
-                      },
-                    }))}
-                  />
-                ) : (
-                  <ChapterTableOfContents
-                    headings={headings}
-                    title={selectedChapter.title}
-                    onSelect={() => setIsNavOpen(false)}
-                  />
-                )}
-              </div>
+              ) : null}
+            </div>
+            <p className="shrink-0 wfrp-label truncate py-2 text-wfrp-muted-text">
+              {sidebarMode === "chapters" || !hasToc ? selectedBook.title : selectedChapter.title}
+            </p>
+            <div className="overflow-y-auto flex-1 min-h-0 pb-2">
+              {!hasToc || sidebarMode === "chapters" ? (
+                <LibraryNavList
+                  ariaLabel="Book chapters"
+                  items={selectedBook.chapters.map((chapter) => ({
+                    id: chapter.id,
+                    label: chapter.title,
+                    isActive: chapter.id === selectedChapter.id,
+                    onClick: () => {
+                      onSelectChapter(chapter.id);
+                      setSidebarMode("headings");
+                      setIsNavOpen(false);
+                    },
+                  }))}
+                />
+              ) : (
+                <ChapterTableOfContents
+                  headings={headings}
+                  title={selectedChapter.title}
+                  onSelect={() => setIsNavOpen(false)}
+                />
+              )}
             </div>
           </BottomSheetPaper>
         ) : null}
