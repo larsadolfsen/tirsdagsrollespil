@@ -3,8 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { inlineSubtabButtonActiveClassName, inlineSubtabButtonBaseClassName, inlineSubtabButtonInactiveClassName } from "@/src/lib/tabStyles";
 import { BottomSheetPaper, Button, Card, Heading, Text } from "../ui";
-import { SheetDataButtonRow, SheetDataPanel } from "../wfrp";
-import { bookCatalog, bookCovers, loadChapterContent, type BookMeta } from "../../data/books";
+import { bookCatalog, loadChapterContent, type BookMeta } from "../../data/books";
 import { ChapterTableOfContents } from "./ChapterTableOfContents";
 import { LibraryNavList } from "./LibraryNavList";
 import { extractHeadings } from "./headingSlug";
@@ -27,7 +26,7 @@ export function LibraryPage({
 }) {
   const [chapterContent, setChapterContent] = useState<string | null>(null);
   const [isContentsOpen, setIsContentsOpen] = useState(false);
-  const [sidebarMode, setSidebarMode] = useState<"headings" | "chapters">("headings");
+  const [sidebarMode, setSidebarMode] = useState<"headings" | "chapters">("chapters");
 
   const selectedBook = bookId
     ? bookCatalog.find((book) => book.id === bookId)
@@ -56,7 +55,6 @@ export function LibraryPage({
 
   useEffect(() => {
     setIsContentsOpen(false);
-    setSidebarMode("headings");
   }, [selectedChapter]);
 
   const headings = useMemo(
@@ -189,7 +187,7 @@ export function LibraryPage({
           Back to books
         </Button>
         <Heading level={2} variant="section">{selectedBook.title}</Heading>
-        <div className="max-w-[648px] divide-y divide-wfrp-border">
+        <div className="w-full max-w-[648px] divide-y divide-wfrp-border">
           {selectedBook.chapters.map((chapter) => (
             <button
               key={chapter.id}
@@ -208,7 +206,7 @@ export function LibraryPage({
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <div className="max-w-[648px] divide-y divide-wfrp-border">
+      <div className="w-full max-w-[648px] divide-y divide-wfrp-border">
         {bookCatalog.map((book) => (
           <button
             key={book.id}

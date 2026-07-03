@@ -1,44 +1,28 @@
 import { ExternalLink } from "lucide-react";
-import { bookCatalog } from "../data/books";
 import { buildCampaignLibraryPath } from "../lib/campaignRoutes";
+import { cn } from "../lib/utils";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui";
-
-function openInNewTab(path: string) {
-  window.open(path, "_blank", "noopener,noreferrer");
-}
+  mainTabButtonBaseClassName,
+  mainTabButtonInactiveClassName,
+} from "../lib/tabStyles";
 
 export function LibraryHeaderMenu({ campaignId }: { campaignId: string }) {
+  const href = buildCampaignLibraryPath({ campaignId });
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        aria-label="Library"
-        title="Library"
-        className="wfrp-text-strong tracking-wide text-wfrp-muted-text transition-colors hover:text-white"
-      >
-        Library
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onClick={() => openInNewTab(buildCampaignLibraryPath({ campaignId }))}
-        >
-          <ExternalLink className="mr-2 size-4" aria-hidden="true" />
-          Library overview
-        </DropdownMenuItem>
-        {bookCatalog.map((book) => (
-          <DropdownMenuItem
-            key={book.id}
-            onClick={() => openInNewTab(buildCampaignLibraryPath({ campaignId, bookId: book.id }))}
-          >
-            <ExternalLink className="mr-2 size-4" aria-hidden="true" />
-            {book.title}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Library (opens in new tab)"
+      className={cn(
+        mainTabButtonBaseClassName,
+        mainTabButtonInactiveClassName,
+        "ml-6 inline-flex items-center gap-1.5",
+      )}
+    >
+      Library
+      <ExternalLink className="size-3 translate-y-px" aria-hidden="true" />
+    </a>
   );
 }

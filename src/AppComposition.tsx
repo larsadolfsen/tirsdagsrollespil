@@ -890,10 +890,13 @@ export function AppComposition() {
   const [libraryChapterId, setLibraryChapterId] = useState<string | null>(null);
 
   const selectLibraryBook = useCallback((nextBookId: string | null) => {
-    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: nextBookId, chapterId: null });
+    const firstChapterId = nextBookId
+      ? (bookCatalog.find((b) => b.id === nextBookId)?.chapters[0]?.id ?? null)
+      : null;
+    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: nextBookId, chapterId: firstChapterId });
     window.history.pushState(null, "", nextPath);
     setLibraryBookId(nextBookId);
-    setLibraryChapterId(null);
+    setLibraryChapterId(firstChapterId);
   }, [characterData.campaignId]);
 
   const selectLibraryChapter = useCallback((nextChapterId: string | null) => {
