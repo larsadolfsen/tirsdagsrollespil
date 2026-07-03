@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Use `Button variant="fab"` — already defined in `src/components/ui/button.tsx`, styled as `xl:hidden` fixed bottom-right, uses `BookOpen` icon from lucide-react.
+- Use `Button variant="fab"` — already defined in `src/components/ui/button.tsx`, styled as `xl:hidden` fixed bottom-right, uses `SquareMenu` icon from lucide-react.
 - Use `BottomSheetPaper isPullable` from `src/components/ui/BottomSheetPaper.tsx` — no `onDismiss` prop; close is handled by buttons inside.
 - Semantic Tailwind tokens only — no hardcoded hex/RGB.
 - `<Heading>` and `<Text>` for typography — no raw `<h1>`–`<h6>` or `<p>` with inline colour styles.
@@ -37,7 +37,7 @@
   to:
 
   ```tsx
-  import { BookOpen, ChevronRight } from "lucide-react";
+  import { ChevronRight, SquareMenu } from "lucide-react";
   ```
 
 - [ ] **Step 2: Rename state from `isContentsOpen` to `isNavOpen`**
@@ -138,7 +138,7 @@
         aria-label="Open navigation"
         onClick={() => setIsNavOpen(true)}
       >
-        <BookOpen aria-hidden="true" className="h-6 w-6" />
+        <SquareMenu aria-hidden="true" className="h-6 w-6" />
       </Button>
       {isNavOpen ? (
         <BottomSheetPaper isPullable>
