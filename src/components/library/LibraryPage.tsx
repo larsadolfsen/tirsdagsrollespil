@@ -6,6 +6,7 @@ import { BottomSheetPaper, Button, Card, Heading, Text } from "../ui";
 import { SheetDataButtonRow, SheetDataPanel } from "../wfrp";
 import { bookCatalog, bookCovers, loadChapterContent, type BookMeta } from "../../data/books";
 import { ChapterTableOfContents } from "./ChapterTableOfContents";
+import { LibraryNavList } from "./LibraryNavList";
 import { extractHeadings } from "./headingSlug";
 import { MarkdownContent } from "./MarkdownContent";
 
@@ -121,30 +122,20 @@ export function LibraryPage({
                     </button>
                   ) : null}
                 </div>
-                <div className="px-2 pb-2 pt-2">
-                  <p className="wfrp-label mb-1.5 truncate text-wfrp-muted-text">
+                <div className="px-2 pb-2">
+                  <p className="wfrp-label mb-1.5 mt-2 truncate text-wfrp-muted-text">
                     {sidebarMode === "chapters" || !hasToc ? selectedBook.title : selectedChapter.title}
                   </p>
                   {!hasToc || sidebarMode === "chapters" ? (
-                    <nav aria-label="Book chapters" className="flex flex-col gap-1">
-                      {selectedBook.chapters.map((chapter) => (
-                        <button
-                          key={chapter.id}
-                          type="button"
-                          onClick={() => {
-                            onSelectChapter(chapter.id);
-                            setSidebarMode("headings");
-                          }}
-                          className={cn(
-                            "flex h-9 items-center rounded px-2 text-sm text-left text-gray-300 transition-colors",
-                            "hover:bg-wfrp-control-hover hover:text-gray-100",
-                            chapter.id === selectedChapter.id && "bg-wfrp-control-hover text-gray-100",
-                          )}
-                        >
-                          {chapter.title}
-                        </button>
-                      ))}
-                    </nav>
+                    <LibraryNavList
+                      ariaLabel="Book chapters"
+                      items={selectedBook.chapters.map((chapter) => ({
+                        id: chapter.id,
+                        label: chapter.title,
+                        isActive: chapter.id === selectedChapter.id,
+                        onClick: () => { onSelectChapter(chapter.id); setSidebarMode("headings"); },
+                      }))}
+                    />
                   ) : (
                     <ChapterTableOfContents headings={headings} title={selectedChapter.title} />
                   )}
