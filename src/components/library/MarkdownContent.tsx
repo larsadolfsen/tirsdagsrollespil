@@ -84,16 +84,25 @@ export function MarkdownContent({
     h4: ({ children }) => <Heading id={resolveHeadingId(children)} level={4} variant="chapterH4">{children}</Heading>,
     h5: ({ children }) => <Heading id={resolveHeadingId(children)} level={5} variant="chapterH5">{children}</Heading>,
     h6: ({ children }) => <Heading id={resolveHeadingId(children)} level={6} variant="chapterH6">{children}</Heading>,
-    p: ({ children }) => <Text className="mb-3 max-w-[620px] text-base last:mb-0">{children}</Text>,
-    table: ({ children }) => <Table className="mb-3">{children}</Table>,
+    p: ({ children }) => <Text variant="bodyMuted" className="mb-3 max-w-[648px] text-base last:mb-0">{children}</Text>,
+    table: ({ children }) => <Table className="mb-3 !w-auto min-w-[324px] max-w-[648px] [&>table]:w-auto">{children}</Table>,
     thead: ({ children }) => <TableHeader>{children}</TableHeader>,
     tbody: ({ children }) => <TableBody className="[&>tr:nth-child(odd)]:bg-card">{children}</TableBody>,
     tr: ({ children }) => <tr className="border-b border-border transition-colors">{children}</tr>,
-    th: ({ children, style }) => <TableHead style={style}>{children}</TableHead>,
-    td: ({ children, style }) => <TableCell className="align-top" style={style}>{children}</TableCell>,
-    ul: ({ children }) => <ul className="mb-3 list-disc space-y-1 pl-5 wfrp-text text-gray-200">{children}</ul>,
-    ol: ({ children }) => <ol className="mb-3 list-decimal space-y-1 pl-5 wfrp-text text-gray-200">{children}</ol>,
-    li: ({ children }) => <li>{children}</li>,
+    th: ({ children, style }) => {
+      const text = nodeText(children).trim();
+      const isNumeric = /^\s*[+\-–—]?\d+(\.\d+)?\s*$/.test(text);
+      return <TableHead className={`whitespace-nowrap ${isNumeric ? "text-right" : "text-left"}`} style={style}>{children}</TableHead>;
+    },
+    td: ({ children, style }) => {
+      const text = nodeText(children).trim();
+      const isNumeric = /^\s*[+\-–—]?\d+(\.\d+)?\s*$/.test(text);
+      const isShort = !text.includes(" ") || text.length < 16;
+      return <TableCell className={`align-top ${isShort ? "whitespace-nowrap" : ""} ${isNumeric ? "text-right" : "text-left"}`} style={style}>{children}</TableCell>;
+    },
+    ul: ({ children }) => <ul className="mb-3 max-w-[648px] list-disc space-y-1 pl-5 text-base wfrp-text text-wfrp-muted-text">{children}</ul>,
+    ol: ({ children }) => <ol className="mb-3 max-w-[648px] list-decimal space-y-1 pl-5 text-base wfrp-text text-wfrp-muted-text">{children}</ol>,
+    li: ({ children }) => <li className="text-base">{children}</li>,
   };
 
   return (

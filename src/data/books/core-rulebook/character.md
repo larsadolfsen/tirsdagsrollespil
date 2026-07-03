@@ -331,7 +331,7 @@ The group also sets collective Party Ambitions (short-term and long-term), which
 
 Optional step for fleshing out personality, background, and relationships (e.g. via a set of guided background questions covering origins, family, friends, beliefs, and motivations for adventuring). Any bonus XP earned during character creation should be spent now, before play begins.
 
-# 9) Advancement
+## 9) Advancement
 
 XP is awarded by the GM after sessions (and for good roleplaying, resolving adventures, or defeating key foes) and spent between sessions to raise Characteristics, learn/improve Skills, gain Talents, or change Career. At the start, XP may only be spent on the 3 Characteristics, 8 Skills, and 4 Talents tied to the character's current Career level.
 

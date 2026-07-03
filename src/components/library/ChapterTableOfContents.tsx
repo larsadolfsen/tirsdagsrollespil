@@ -7,10 +7,12 @@ import { useScrollSpy } from "./useScrollSpy";
 export function ChapterTableOfContents({
   headings,
   title,
+  showTitle = false,
   onSelect,
 }: {
   headings: ExtractedHeading[];
   title: string;
+  showTitle?: boolean;
   onSelect?: () => void;
 }) {
   const sections = useMemo(() => headings.filter((heading) => heading.level === 2), [headings]);
@@ -21,9 +23,11 @@ export function ChapterTableOfContents({
 
   return (
     <nav aria-label="Chapter contents" className="flex flex-col gap-1">
-      <Text as="span" variant="bodyStrongMuted" className="wfrp-label mb-1">
-        {title}
-      </Text>
+      {showTitle ? (
+        <Text as="span" variant="bodyStrongMuted" className="wfrp-label mb-1">
+          {title}
+        </Text>
+      ) : null}
       {sections.map((section) => {
         const isActive = section.id === activeId;
 

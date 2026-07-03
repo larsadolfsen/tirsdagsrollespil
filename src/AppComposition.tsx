@@ -132,6 +132,7 @@ const TalentsTab = lazy(() => import("./tabs/TalentsTab").then((module) => ({ de
 const JournalTab = lazy(() => import("./tabs/JournalTab").then((module) => ({ default: module.JournalTab })));
 const CareerTab = lazy(() => import("./tabs/CareerTab").then((module) => ({ default: module.CareerTab })));
 const LibraryPage = lazy(() => import("./components/library/LibraryPage").then((module) => ({ default: module.LibraryPage })));
+const LibraryHeader = lazy(() => import("./components/library/LibraryHeader").then((module) => ({ default: module.LibraryHeader })));
 
 const editCharacterTabOptions: Array<{ id: CareerSubtab; label: string }> = [
   { id: "experience", label: "Experience" },
@@ -1920,39 +1921,59 @@ export function AppComposition() {
   }
 
   if (isLibraryOpen) {
-    const selectedLibraryBook = libraryBookId
-      ? bookCatalog.find((book) => book.id === libraryBookId)
+    const libraryBook = libraryBookId ? bookCatalog.find((b) => b.id === libraryBookId) : undefined;
+    const libraryChapter = libraryBook && libraryChapterId
+      ? libraryBook.chapters.find((c) => c.id === libraryChapterId)
       : undefined;
 
+    const libraryBreadcrumbs = [
+      {
+        label: campaignName,
+        href: "/",
+        onClick: () => {
+          window.history.pushState(null, "", "/");
+          setIsLandingPageOpen(true);
+          setIsLibraryOpen(false);
+        },
+      },
+      {
+        label: "Library",
+        href: buildCampaignLibraryPath({ campaignId: characterData.campaignId }),
+        onClick: () => selectLibraryBook(null),
+      },
+      ...(libraryBook
+        ? [{
+            label: libraryBook.title,
+            href: buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: libraryBook.id }),
+            onClick: () => selectLibraryBook(libraryBook.id),
+          }]
+        : []),
+      ...(libraryChapter ? [{ label: libraryChapter.title }] : []),
+    ];
+
     return (
-      <div className="wfrp-landing-shell flex-col gap-6">
-        <Breadcrumbs
-          items={[
-            {
-              label: campaignName,
-              href: "/",
-              onClick: () => {
-                window.history.pushState(null, "", "/");
-                setIsLandingPageOpen(true);
-                setIsLibraryOpen(false);
-              },
-            },
-            {
-              label: "Library",
-              href: buildCampaignLibraryPath({ campaignId: characterData.campaignId }),
-              onClick: () => selectLibraryBook(null),
-            },
-            ...(selectedLibraryBook ? [{ label: selectedLibraryBook.title }] : []),
-          ]}
-        />
+      <div className="flex h-dvh flex-col bg-background font-sans text-wfrp-page-text">
         <Suspense fallback={null}>
-          <LibraryPage
+          <LibraryHeader
             bookId={libraryBookId}
-            chapterId={libraryChapterId}
             onSelectBook={selectLibraryBook}
-            onSelectChapter={selectLibraryChapter}
           />
         </Suspense>
+        <main className="min-h-0 flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-[1199px]">
+            <div className="px-4 pt-3">
+              <Breadcrumbs items={libraryBreadcrumbs} />
+            </div>
+            <Suspense fallback={null}>
+              <LibraryPage
+                bookId={libraryBookId}
+                chapterId={libraryChapterId}
+                onSelectBook={selectLibraryBook}
+                onSelectChapter={selectLibraryChapter}
+              />
+            </Suspense>
+          </div>
+        </main>
       </div>
     );
   }
