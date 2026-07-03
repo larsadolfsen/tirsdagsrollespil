@@ -5,7 +5,6 @@ import {
   ChevronRight,
   ChevronUp,
   EllipsisVertical,
-  Menu,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
@@ -36,9 +35,9 @@ import {
   DropdownMenuTrigger,
   Heading,
   Separator,
-  WfrpStandardIcon,
   type BreadcrumbItem,
 } from "./ui";
+import { AppHeader, AppHeaderIdentity } from "./ui/AppHeader";
 import { SheetEmptyState } from "./wfrp";
 import { FormattedTextField } from "./FormattedTextField";
 import { SceneComponentsList, EncounterComponent, type SceneComponent } from "./SceneComponentsList";
@@ -113,66 +112,6 @@ function buildSceneNpcEncounterData(scenes: GMScene[]): EncounterData {
     }),
     playerOrder: [],
   };
-}
-
-function GameMasterHeader({
-  campaignName,
-  isSessionsSidebarOpen,
-  onToggleSessions,
-  onOpenMobileMenu,
-}: {
-  campaignName: string;
-  isSessionsSidebarOpen: boolean;
-  onToggleSessions: () => void;
-  onOpenMobileMenu: () => void;
-}) {
-  return (
-    <section
-      aria-label="Campaign header"
-      className="sticky top-0 z-[60] h-14 w-full border-b border-t-4 border-wfrp-border border-t-wfrp-red bg-sidebar py-1 shadow-lg shadow-black/20"
-    >
-      <div className="flex h-full max-h-12 items-center px-3 md:px-4">
-        <Button
-          variant="wfrpIcon"
-          onClick={onToggleSessions}
-          aria-label={isSessionsSidebarOpen ? "Close sessions menu" : "Open sessions menu"}
-          aria-expanded={isSessionsSidebarOpen}
-          title={isSessionsSidebarOpen ? "Close sessions menu" : "Open sessions menu"}
-          leadingIcon={isSessionsSidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
-          className="hidden sm:flex"
-        />
-        <div
-          aria-hidden="true"
-          className="wfrp-character-portrait-control ml-3 h-10 w-10 shrink-0 sm:h-12 sm:w-12"
-        >
-          <img
-            src="/gm-portrait.webp"
-            alt=""
-            className="wfrp-character-portrait-image"
-          />
-        </div>
-        <div
-          role="group"
-          aria-label="Campaign identity"
-          className="min-w-0 flex-1 flex flex-col justify-center ml-3"
-        >
-          <span className="block truncate text-left font-serif text-base font-semibold leading-tight tracking-tight text-gray-100 sm:text-xl">
-            {campaignName}
-          </span>
-          <span className="block truncate text-[9px] font-semibold uppercase text-wfrp-muted-text sm:text-[10px]">
-            Campaign View
-          </span>
-        </div>
-        <WfrpStandardIcon
-          onClick={onOpenMobileMenu}
-          className="ml-auto sm:hidden"
-          label="Open sessions menu"
-          aria-haspopup="dialog"
-          icon={<Menu />}
-        />
-      </div>
-    </section>
-  );
 }
 
 export function GameMasterPage({
@@ -653,11 +592,26 @@ export function GameMasterPage({
     <AppShell
       mobileAddAction={null}
       header={(
-        <GameMasterHeader
-          campaignName={campaignName}
-          isSessionsSidebarOpen={isSessionsSidebarOpen}
-          onToggleSessions={() => onSessionsSidebarOpenChange(!isSessionsSidebarOpen)}
-          onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
+        <AppHeader
+          portrait={(
+            <img
+              src="/gm-portrait.webp"
+              alt=""
+              className="wfrp-character-portrait-image"
+            />
+          )}
+          identity={<AppHeaderIdentity name={campaignName} subtitle="Campaign View" />}
+          leadingDesktopActions={(
+            <Button
+              variant="wfrpIcon"
+              onClick={() => onSessionsSidebarOpenChange(!isSessionsSidebarOpen)}
+              aria-label={isSessionsSidebarOpen ? "Close sessions menu" : "Open sessions menu"}
+              aria-expanded={isSessionsSidebarOpen}
+              title={isSessionsSidebarOpen ? "Close sessions menu" : "Open sessions menu"}
+              leadingIcon={isSessionsSidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
+            />
+          )}
+          onMobileMenuOpen={() => setIsMobileSidebarOpen(true)}
         />
       )}
       sidebars={(
