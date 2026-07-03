@@ -5,6 +5,7 @@ import {
   ChevronRight,
   ChevronUp,
   EllipsisVertical,
+  Menu,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
@@ -35,6 +36,7 @@ import {
   DropdownMenuTrigger,
   Heading,
   Separator,
+  WfrpStandardIcon,
   type BreadcrumbItem,
 } from "./ui";
 import { SheetEmptyState } from "./wfrp";
@@ -117,10 +119,12 @@ function GameMasterHeader({
   campaignName,
   isSessionsSidebarOpen,
   onToggleSessions,
+  onOpenMobileMenu,
 }: {
   campaignName: string;
   isSessionsSidebarOpen: boolean;
   onToggleSessions: () => void;
+  onOpenMobileMenu: () => void;
 }) {
   return (
     <section
@@ -135,11 +139,22 @@ function GameMasterHeader({
           aria-expanded={isSessionsSidebarOpen}
           title={isSessionsSidebarOpen ? "Close sessions menu" : "Open sessions menu"}
           leadingIcon={isSessionsSidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
+          className="hidden sm:flex"
         />
+        <div
+          aria-hidden="true"
+          className="wfrp-character-portrait-control ml-3 h-10 w-10 shrink-0 sm:h-12 sm:w-12"
+        >
+          <img
+            src="/gm-portrait.webp"
+            alt=""
+            className="wfrp-character-portrait-image"
+          />
+        </div>
         <div
           role="group"
           aria-label="Campaign identity"
-          className="ml-3 min-w-0 flex-1 flex flex-col justify-center"
+          className="min-w-0 flex-1 flex flex-col justify-center ml-3"
         >
           <span className="block truncate text-left font-serif text-base font-semibold leading-tight tracking-tight text-gray-100 sm:text-xl">
             {campaignName}
@@ -148,6 +163,13 @@ function GameMasterHeader({
             Campaign View
           </span>
         </div>
+        <WfrpStandardIcon
+          onClick={onOpenMobileMenu}
+          className="ml-auto sm:hidden"
+          label="Open sessions menu"
+          aria-haspopup="dialog"
+          icon={<Menu />}
+        />
       </div>
     </section>
   );
@@ -172,6 +194,7 @@ export function GameMasterPage({
   selectedSessionId,
   sessions,
 }: GameMasterPageProps) {
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isRenamingSession, setIsRenamingSession] = useState(false);
   const [isScenarioDialogOpen, setIsScenarioDialogOpen] = useState(false);
   const [importingScenarioId, setImportingScenarioId] = useState<string | null>(null);
@@ -569,6 +592,63 @@ export function GameMasterPage({
     </AppSidebar>
   );
 
+  const mobileSidebar = (
+    <AppSidebar
+      isOpen={isMobileSidebarOpen}
+      onClose={() => setIsMobileSidebarOpen(false)}
+      side="right"
+      motionKey="gm-mobile-sessions-sidebar"
+      title="Sessions"
+      titleId="gm-mobile-sessions-title"
+      overlayUntil="desktop"
+      closeLabel="Close sessions menu"
+      contentClassName="!p-0"
+      trapFocus
+      closeOnOutsidePointerDown
+      footer={(
+        <div className="grid w-full grid-cols-2 gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => { setIsScenarioDialogOpen(true); setIsMobileSidebarOpen(false); }}
+            className="justify-center"
+          >
+            Import scenario
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => { onCreateSession(); setIsMobileSidebarOpen(false); }}
+            className="justify-center"
+          >
+            Create session
+          </Button>
+        </div>
+      )}
+    >
+      {sessions.length > 0 ? (
+        <SidebarItemList
+          className="!rounded-none !border-0"
+          itemClassName="!min-h-0 !py-0 h-[72px]"
+          title="Session"
+          items={sessions.map((session) => ({
+            id: session.id,
+            name: (
+              <span className="flex min-w-0 flex-col gap-1">
+                <span className="block truncate leading-none text-base text-white">{session.name}</span>
+                <span className="block leading-none text-sm text-wfrp-muted-text">Session {session.sessionNumber + 1}</span>
+              </span>
+            ),
+          }))}
+          selectedItemId={selectedSessionId}
+          onItemSelect={(session) => { onSelectSession(session.id); setIsMobileSidebarOpen(false); }}
+        />
+      ) : (
+        <SheetEmptyState title={isLoadingSessions ? "Loading sessions" : "No sessions"} className="min-h-32">
+          {isLoadingSessions ? "Fetching campaign notes…" : "Create the first session to start planning."}
+        </SheetEmptyState>
+      )}
+    </AppSidebar>
+  );
+
   return (
     <AppShell
       mobileAddAction={null}
@@ -577,11 +657,13 @@ export function GameMasterPage({
           campaignName={campaignName}
           isSessionsSidebarOpen={isSessionsSidebarOpen}
           onToggleSessions={() => onSessionsSidebarOpenChange(!isSessionsSidebarOpen)}
+          onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
         />
       )}
       sidebars={(
         <>
           {sessionSidebar}
+          {mobileSidebar}
           <MonsterSidebar
             isOpen={isMonsterSidebarOpen}
             onClose={() => setIsMonsterSidebarOpen(false)}

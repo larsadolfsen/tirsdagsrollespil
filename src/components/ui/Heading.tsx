@@ -44,7 +44,7 @@ const variantClasses: Record<HeadingVariant, string> = {
   sectionEditorial: "font-display text-lg font-semibold leading-tight tracking-wide text-gray-100",
   sectionProminent: "font-serif text-2xl font-semibold leading-tight text-gray-100",
   subsection: "font-serif text-lg font-semibold leading-tight text-gray-100",
-  chapterH1: "font-serif text-[45px] font-normal leading-[52px] tracking-normal text-gray-100 pt-0",
+  chapterH1: "font-serif text-[36px] sm:text-[45px] font-normal leading-[44px] sm:leading-[52px] tracking-normal text-gray-100 pt-0",
   chapterH2: "font-serif text-[36px] font-normal leading-[44px] tracking-normal text-gray-100 pt-[22px]",
   chapterH3: "font-serif text-[28px] font-normal leading-[36px] tracking-normal text-gray-100 pt-[18px]",
   chapterH4: "font-sans text-[22px] font-normal leading-[28px] tracking-normal text-gray-100 pt-[14px]",
@@ -80,6 +80,7 @@ export function Heading({
   variant,
   align,
   truncate = false,
+  className,
   ...props
 }: HeadingProps) {
   const Tag = `h${level}` as const;
@@ -92,6 +93,7 @@ export function Heading({
         align === "center" && "text-center",
         align === "right" && "text-right",
         truncate && "truncate",
+        className,
       )}
       {...props}
     />

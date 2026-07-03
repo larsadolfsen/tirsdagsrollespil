@@ -30,7 +30,7 @@ export function MobileCharacterHeader({
   const { portraitDataUrl } = useGameSessionContext();
 
   return (
-    <section className="h-14 border-b border-t-4 border-wfrp-border border-t-wfrp-red bg-wfrp-surface py-1 shadow-lg shadow-black/20 md:hidden">
+    <section className="h-14 border-b border-t-4 border-wfrp-border border-b-white/30 border-t-wfrp-red bg-background py-1 md:hidden">
       <div className="flex h-full max-h-12 items-center">
         <div className="relative ml-3 shrink-0">
           <button

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { bookCatalog } from "../../data/books";
+import libraryCover from "../../data/books/library-cover.webp";
 import { AppSidebar } from "../sidebar/AppSidebar";
 import { MainTabMenu, WfrpStandardIcon } from "../ui";
 
@@ -8,22 +9,38 @@ const bookOptions = bookCatalog.map((book) => ({ id: book.id, label: book.title 
 
 export function LibraryHeader({
   bookId,
+  campaignName,
   onSelectBook,
+  onNavigateHome,
 }: {
   bookId: string | null;
+  campaignName: string;
   onSelectBook: (bookId: string | null) => void;
+  onNavigateHome: () => void;
 }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <>
-      <section className="flex h-14 max-h-14 items-center gap-4 overflow-visible rounded-t border-b border-t-4 border-wfrp-border border-t-wfrp-red bg-sidebar px-3 py-1">
+      <section className="flex h-14 max-h-14 items-center gap-3 overflow-visible rounded-t border-b border-t-4 border-wfrp-border border-b-white/30 border-t-wfrp-red bg-background px-3 py-1">
         <button
           type="button"
-          onClick={() => onSelectBook(null)}
-          className="min-w-0 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-left font-serif text-base font-semibold leading-tight tracking-tight transition-colors hover:text-wfrp-gold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:text-xl"
+          onClick={onNavigateHome}
+          className="flex shrink-0 items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50"
+          aria-label="Go to library home"
         >
-          Library
+          <img
+            src={libraryCover}
+            alt=""
+            className="h-10 w-7 rounded-sm object-cover shadow-sm sm:h-12 sm:w-8"
+          />
+        </button>
+        <button
+          type="button"
+          onClick={onNavigateHome}
+          className="min-w-0 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-left font-serif text-base font-semibold leading-tight tracking-tight focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-wfrp-gold/50 sm:text-xl"
+        >
+          {campaignName}
         </button>
 
         <div className="hidden h-12 items-stretch sm:flex ml-auto">

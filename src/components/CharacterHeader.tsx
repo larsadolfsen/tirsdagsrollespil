@@ -154,7 +154,7 @@ export function CharacterHeader({
   };
 
   return (
-    <section className="flex h-14 max-h-14 items-center gap-4 overflow-visible rounded-t border-b border-t-4 border-wfrp-border border-t-wfrp-red bg-sidebar px-3 py-1">
+    <section className="flex h-14 max-h-14 items-center gap-4 overflow-visible rounded-t border-b border-t-4 border-wfrp-border border-b-white/30 border-t-wfrp-red bg-background px-3 py-1">
       <div className="flex min-w-0 items-center gap-2 sm:contents">
         <div className="relative order-3 max-h-12 flex-shrink-0 sm:order-none">
           <input
