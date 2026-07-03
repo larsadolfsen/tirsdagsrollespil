@@ -85,20 +85,17 @@ export function MarkdownContent({
     h5: ({ children }) => <Heading id={resolveHeadingId(children)} level={5} variant="chapterH5">{children}</Heading>,
     h6: ({ children }) => <Heading id={resolveHeadingId(children)} level={6} variant="chapterH6">{children}</Heading>,
     p: ({ children }) => <Text variant="bodyMuted" className="mb-3 max-w-[648px] text-base last:mb-0">{children}</Text>,
-    table: ({ children }) => <Table className="mb-3 !w-auto min-w-[324px] max-w-[648px] [&>table]:w-auto">{children}</Table>,
+    table: ({ children }) => <Table className="mb-3 w-full max-w-[648px] [&>table]:w-full">{children}</Table>,
     thead: ({ children }) => <TableHeader>{children}</TableHeader>,
     tbody: ({ children }) => <TableBody className="[&>tr:nth-child(odd)]:bg-card">{children}</TableBody>,
     tr: ({ children }) => <tr className="border-b border-border transition-colors">{children}</tr>,
-    th: ({ children, style }) => {
-      const text = nodeText(children).trim();
-      const isNumeric = /^\s*[+\-–—]?\d+(\.\d+)?\s*$/.test(text);
-      return <TableHead className={`whitespace-nowrap ${isNumeric ? "text-right" : "text-left"}`} style={style}>{children}</TableHead>;
-    },
+    th: ({ children, style }) => (
+      <TableHead className="whitespace-nowrap text-left" style={style}>{children}</TableHead>
+    ),
     td: ({ children, style }) => {
       const text = nodeText(children).trim();
-      const isNumeric = /^\s*[+\-–—]?\d+(\.\d+)?\s*$/.test(text);
       const isShort = !text.includes(" ") || text.length < 16;
-      return <TableCell className={`align-top ${isShort ? "whitespace-nowrap" : ""} ${isNumeric ? "text-right" : "text-left"}`} style={style}>{children}</TableCell>;
+      return <TableCell className={`align-top text-left${isShort ? " whitespace-nowrap" : ""}`} style={style}>{children}</TableCell>;
     },
     ul: ({ children }) => <ul className="mb-3 max-w-[648px] list-disc space-y-1 pl-5 text-base wfrp-text text-wfrp-muted-text">{children}</ul>,
     ol: ({ children }) => <ol className="mb-3 max-w-[648px] list-decimal space-y-1 pl-5 text-base wfrp-text text-wfrp-muted-text">{children}</ol>,
