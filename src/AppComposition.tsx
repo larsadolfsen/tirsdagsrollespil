@@ -1632,11 +1632,6 @@ export function AppComposition() {
     return () => window.clearInterval(refreshInterval);
   }, [activeMainTab, refreshRollHistory]);
 
-  const openMobileAdvanceView = () => {
-    openAdvanceView();
-    setIsMobilePortraitMenuOpen(false);
-  };
-
   const openTalentSidebar = () => {
     closeSidebars();
     setIsTalentSidebarOpen(true);
@@ -2137,7 +2132,6 @@ export function AppComposition() {
                 onOpenMobileGainExperience={openMobileGainExperience}
                 onOpenMobileMenu={openMobileMenuSidebar}
                 onAwardXp={awardXp}
-                variant="desktop"
                 xpCurrent={xpCurrent}
               />
             )}
