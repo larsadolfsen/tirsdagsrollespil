@@ -123,7 +123,7 @@ export function LibraryPage({
                   ) : null}
                 </div>
                 <div className="px-2 pb-2">
-                  <p className="wfrp-label mb-1.5 mt-2 truncate pl-2 text-wfrp-muted-text">
+                  <p className="wfrp-label mb-1.5 mt-2 truncate pl-2 pt-2 text-wfrp-muted-text">
                     {sidebarMode === "chapters" || !hasToc ? selectedBook.title : selectedChapter.title}
                   </p>
                   {!hasToc || sidebarMode === "chapters" ? (
@@ -189,37 +189,37 @@ export function LibraryPage({
           Back to books
         </Button>
         <Heading level={2} variant="section">{selectedBook.title}</Heading>
-        <SheetDataPanel>
+        <div className="max-w-[648px] divide-y divide-wfrp-border">
           {selectedBook.chapters.map((chapter) => (
-            <SheetDataButtonRow
+            <button
               key={chapter.id}
-              className="grid-cols-[1fr_24px] px-4 py-3"
+              type="button"
               onClick={() => onSelectChapter(chapter.id)}
+              className="flex w-full items-center justify-between px-1 py-3 text-left transition-colors hover:text-wfrp-gold"
             >
               <Text variant="bodyStrong">{chapter.title}</Text>
-              <ChevronRight size={16} className="justify-self-end text-wfrp-muted-text" aria-hidden="true" />
-            </SheetDataButtonRow>
+              <ChevronRight size={16} className="shrink-0 text-wfrp-muted-text" aria-hidden="true" />
+            </button>
           ))}
-        </SheetDataPanel>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <div className="w-full max-w-[648px]">
-        <SheetDataPanel>
-          {bookCatalog.map((book) => (
-            <SheetDataButtonRow
-              key={book.id}
-              className="grid-cols-[1fr_24px] px-4 py-3"
-              onClick={() => onSelectBook(book.id)}
-            >
-              <Text variant="bodyStrong">{book.title}</Text>
-              <ChevronRight size={16} className="justify-self-end text-wfrp-muted-text" aria-hidden="true" />
-            </SheetDataButtonRow>
-          ))}
-        </SheetDataPanel>
+      <div className="max-w-[648px] divide-y divide-wfrp-border">
+        {bookCatalog.map((book) => (
+          <button
+            key={book.id}
+            type="button"
+            onClick={() => onSelectBook(book.id)}
+            className="flex w-full items-center justify-between px-1 py-3 text-left transition-colors hover:text-wfrp-gold"
+          >
+            <Text variant="bodyStrong">{book.title}</Text>
+            <ChevronRight size={16} className="shrink-0 text-wfrp-muted-text" aria-hidden="true" />
+          </button>
+        ))}
       </div>
     </div>
   );
