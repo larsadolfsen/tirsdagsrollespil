@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { inlineSubtabButtonActiveClassName, inlineSubtabButtonBaseClassName, inlineSubtabButtonInactiveClassName } from "@/src/lib/tabStyles";
 import { BottomSheetPaper, Button, Card, Heading, Text } from "../ui";
-import { bookCatalog, loadChapterContent, type BookMeta } from "../../data/books";
+import { bookCatalog, bookCovers, loadChapterContent, type BookMeta } from "../../data/books";
 import { ChapterTableOfContents } from "./ChapterTableOfContents";
 import { LibraryNavList } from "./LibraryNavList";
 import { extractHeadings } from "./headingSlug";
@@ -101,7 +101,7 @@ export function LibraryPage({
                         : inlineSubtabButtonInactiveClassName,
                     )}
                   >
-                    Book
+                    Chapters
                   </button>
                   {hasToc ? (
                     <button
@@ -116,7 +116,7 @@ export function LibraryPage({
                           : inlineSubtabButtonInactiveClassName,
                       )}
                     >
-                      Chapter
+                      Content
                     </button>
                   ) : null}
                 </div>
@@ -205,16 +205,25 @@ export function LibraryPage({
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col items-center gap-4 p-4">
       <div className="w-full max-w-[648px] divide-y divide-wfrp-border">
         {bookCatalog.map((book) => (
           <button
             key={book.id}
             type="button"
             onClick={() => onSelectBook(book.id)}
-            className="flex w-full items-center justify-between px-1 py-3 text-left transition-colors hover:text-wfrp-gold"
+            className="flex w-full cursor-pointer items-center gap-3 px-1 py-3 text-left transition-colors hover:text-wfrp-gold"
           >
-            <Text variant="bodyStrong">{book.title}</Text>
+            {bookCovers[book.id] ? (
+              <img
+                src={bookCovers[book.id]}
+                alt=""
+                className="h-14 w-10 shrink-0 rounded-sm object-cover shadow-sm"
+              />
+            ) : (
+              <div className="h-14 w-10 shrink-0 rounded-sm bg-wfrp-surface" />
+            )}
+            <Text variant="bodyStrong" className="flex-1">{book.title}</Text>
             <ChevronRight size={16} className="shrink-0 text-wfrp-muted-text" aria-hidden="true" />
           </button>
         ))}
