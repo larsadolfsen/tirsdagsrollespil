@@ -136,7 +136,7 @@ export function LibraryPage({
                             setSidebarMode("headings");
                           }}
                           className={cn(
-                            "rounded px-2 py-1 text-sm text-left text-gray-300 transition-colors",
+                            "flex h-9 items-center rounded px-2 text-sm text-left text-gray-300 transition-colors",
                             "hover:bg-wfrp-control-hover hover:text-gray-100",
                             chapter.id === selectedChapter.id && "bg-wfrp-control-hover text-gray-100",
                           )}
