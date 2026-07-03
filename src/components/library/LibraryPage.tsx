@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, SquareMenu } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { inlineSubtabButtonActiveClassName, inlineSubtabButtonBaseClassName, inlineSubtabButtonInactiveClassName } from "@/src/lib/tabStyles";
 import { BottomSheetPaper, Button, Card, Heading, Text } from "../ui";
 import { bookCatalog, bookCovers, loadChapterContent, type BookMeta } from "../../data/books";
+import { ChapterHeading } from "./ChapterDivider";
 import { ChapterTableOfContents } from "./ChapterTableOfContents";
 import { LibraryNavList } from "./LibraryNavList";
 import { extractHeadings } from "./headingSlug";
@@ -25,7 +26,7 @@ export function LibraryPage({
   onSelectChapter: (chapterId: string | null) => void;
 }) {
   const [chapterContent, setChapterContent] = useState<string | null>(null);
-  const [isContentsOpen, setIsContentsOpen] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const [sidebarMode, setSidebarMode] = useState<"headings" | "chapters">("chapters");
 
   const selectedBook = bookId
@@ -54,7 +55,7 @@ export function LibraryPage({
   }, [selectedBook, selectedChapter]);
 
   useEffect(() => {
-    setIsContentsOpen(false);
+    setIsNavOpen(false);
   }, [selectedChapter]);
 
   const headings = useMemo(
@@ -70,13 +71,6 @@ export function LibraryPage({
 
     return (
       <div className="flex flex-col gap-4 p-4">
-        {hasToc ? (
-          <div className="flex justify-end lg:hidden">
-            <Button variant="subtabAction" onClick={() => setIsContentsOpen(true)}>
-              Contents
-            </Button>
-          </div>
-        ) : null}
         {chapterContent === null ? (
           <Text variant="bodyMuted">Loading…</Text>
         ) : (
@@ -143,39 +137,82 @@ export function LibraryPage({
             <MarkdownContent content={chapterContent} headings={headings} />
           </div>
         )}
-        {hasToc && isContentsOpen ? (
-          <BottomSheetPaper className="lg:hidden" isPullable>
+        <Button
+          variant="fab"
+          aria-label="Open navigation"
+          onClick={() => setIsNavOpen(true)}
+        >
+          <SquareMenu aria-hidden="true" className="h-6 w-6" />
+        </Button>
+        {isNavOpen ? (
+          <BottomSheetPaper isPullable>
             <div className="flex w-full flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <Text variant="bodyStrong">Contents</Text>
-                <Button variant="subtabAction" onClick={() => setIsContentsOpen(false)}>
-                  Close
-                </Button>
+              <div
+                className="flex w-full border-b border-wfrp-border"
+                role="tablist"
+                aria-label="Sidebar navigation"
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={sidebarMode === "chapters" || !hasToc}
+                  onClick={() => setSidebarMode("chapters")}
+                  className={cn(
+                    "wfrp-label h-9 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
+                    hasToc ? "w-1/2" : "w-full",
+                    sidebarMode === "chapters" || !hasToc
+                      ? inlineSubtabButtonActiveClassName
+                      : inlineSubtabButtonInactiveClassName,
+                  )}
+                >
+                  Chapters
+                </button>
+                {hasToc ? (
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={sidebarMode === "headings"}
+                    onClick={() => setSidebarMode("headings")}
+                    className={cn(
+                      "wfrp-label h-9 w-1/2 cursor-pointer border-l border-black/20 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
+                      sidebarMode === "headings"
+                        ? inlineSubtabButtonActiveClassName
+                        : inlineSubtabButtonInactiveClassName,
+                    )}
+                  >
+                    Content
+                  </button>
+                ) : null}
               </div>
-              <ChapterTableOfContents
-                headings={headings}
-                title={selectedChapter.title}
-                onSelect={() => setIsContentsOpen(false)}
-              />
+              <p className="wfrp-label truncate px-2 text-wfrp-muted-text">
+                {sidebarMode === "chapters" || !hasToc ? selectedBook.title : selectedChapter.title}
+              </p>
+              <div className="px-2 pb-2">
+                {!hasToc || sidebarMode === "chapters" ? (
+                  <LibraryNavList
+                    ariaLabel="Book chapters"
+                    items={selectedBook.chapters.map((chapter) => ({
+                      id: chapter.id,
+                      label: chapter.title,
+                      isActive: chapter.id === selectedChapter.id,
+                      onClick: () => {
+                        onSelectChapter(chapter.id);
+                        setSidebarMode("headings");
+                        setIsNavOpen(false);
+                      },
+                    }))}
+                  />
+                ) : (
+                  <ChapterTableOfContents
+                    headings={headings}
+                    title={selectedChapter.title}
+                    onSelect={() => setIsNavOpen(false)}
+                  />
+                )}
+              </div>
             </div>
           </BottomSheetPaper>
         ) : null}
-        <div className="flex flex-wrap justify-between gap-3">
-          <Button
-            variant="subtabAction"
-            disabled={!previousChapter}
-            onClick={() => previousChapter && onSelectChapter(previousChapter.id)}
-          >
-            Previous chapter
-          </Button>
-          <Button
-            variant="subtabAction"
-            disabled={!nextChapter}
-            onClick={() => nextChapter && onSelectChapter(nextChapter.id)}
-          >
-            Next chapter
-          </Button>
-        </div>
       </div>
     );
   }
@@ -193,7 +230,7 @@ export function LibraryPage({
               key={chapter.id}
               type="button"
               onClick={() => onSelectChapter(chapter.id)}
-              className="flex w-full items-center justify-between px-1 py-3 text-left transition-colors hover:text-wfrp-gold"
+              className="flex w-full items-center justify-between rounded p-3 text-left transition-colors hover:bg-wfrp-control-hover"
             >
               <Text variant="bodyStrong">{chapter.title}</Text>
               <ChevronRight size={16} className="shrink-0 text-wfrp-muted-text" aria-hidden="true" />
@@ -206,13 +243,16 @@ export function LibraryPage({
 
   return (
     <div className="flex flex-col items-center gap-4 p-4">
+      <div className="w-full max-w-[648px]">
+        <ChapterHeading>Library</ChapterHeading>
+      </div>
       <div className="w-full max-w-[648px] divide-y divide-wfrp-border">
         {bookCatalog.map((book) => (
           <button
             key={book.id}
             type="button"
             onClick={() => onSelectBook(book.id)}
-            className="flex w-full cursor-pointer items-center gap-3 px-1 py-3 text-left transition-colors hover:text-wfrp-gold"
+            className="flex w-full cursor-pointer items-center gap-3 rounded p-3 text-left transition-colors hover:bg-wfrp-control-hover"
           >
             {bookCovers[book.id] ? (
               <img
