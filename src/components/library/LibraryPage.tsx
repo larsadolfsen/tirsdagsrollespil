@@ -123,7 +123,7 @@ export function LibraryPage({
                   ) : null}
                 </div>
                 <div className="px-2 pb-2">
-                  <p className="wfrp-label mb-1.5 mt-2 truncate text-wfrp-muted-text">
+                  <p className="wfrp-label mb-1.5 mt-2 truncate pl-2 text-wfrp-muted-text">
                     {sidebarMode === "chapters" || !hasToc ? selectedBook.title : selectedChapter.title}
                   </p>
                   {!hasToc || sidebarMode === "chapters" ? (

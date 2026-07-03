@@ -17,7 +17,7 @@ const itemClassName = (isActive: boolean) =>
 
 export function LibraryNavList({ items, ariaLabel }: { items: LibraryNavItem[]; ariaLabel: string }) {
   return (
-    <nav aria-label={ariaLabel} className="flex flex-col">
+    <nav aria-label={ariaLabel} className="flex flex-col gap-1">
       {items.map((item) =>
         item.href ? (
           <a
