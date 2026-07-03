@@ -38,7 +38,7 @@ export function ChapterTableOfContents({
             onClick={onSelect}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "rounded px-2 py-1.5 text-sm text-gray-300 transition-colors",
+              "flex h-9 items-center rounded px-2 text-sm text-gray-300 transition-colors",
               "hover:bg-wfrp-control-hover hover:text-gray-100",
               isActive && "bg-wfrp-control-hover text-gray-100",
             )}
