@@ -40,7 +40,7 @@ export function BottomSheetPaper({
           className={cn(
             "border border-b-0 border-wfrp-border bg-card rounded-t-[28px] shadow-[0_-18px_36px_rgba(0,0,0,0.45)]",
             onDismiss
-              ? "flex flex-col max-h-[50dvh] overflow-hidden px-5 pb-5 pt-4"
+              ? "flex flex-col h-[50dvh] overflow-hidden px-5 pb-5 pt-4"
               : "mx-auto max-w-md px-5 pb-5 pt-4",
           )}
         >
