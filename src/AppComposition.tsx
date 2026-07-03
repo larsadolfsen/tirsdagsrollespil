@@ -2123,7 +2123,7 @@ export function AppComposition() {
           
           <CharacterSheetFrame
             breadcrumbs={<Breadcrumbs items={breadcrumbItems} />}
-            desktopHeader={(
+            header={(
               <CharacterSheetHeader
                 activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
                 campaignId={characterData.campaignId}
@@ -2138,24 +2138,6 @@ export function AppComposition() {
                 onOpenMobileMenu={openMobileMenuSidebar}
                 onAwardXp={awardXp}
                 variant="desktop"
-                xpCurrent={xpCurrent}
-              />
-            )}
-            mobileHeader={(
-              <CharacterSheetHeader
-                activeMenuItem={activeMainTab === "dice" ? "dice" : activeMainTab === "career" ? "edit" : "sheet"}
-                campaignId={characterData.campaignId}
-                characterData={characterData}
-                isMobilePortraitMenuOpen={isMobilePortraitMenuOpen}
-                onCloseMobilePortraitMenu={() => setIsMobilePortraitMenuOpen(false)}
-                onOpenCharacterSheet={() => selectMainTab("skills")}
-                onOpenAdvance={openMobileAdvanceView}
-                onOpenDice={openDiceLog}
-                onOpenMobileCharacterActions={openMobileCharacterActions}
-                onOpenMobileGainExperience={openMobileGainExperience}
-                onOpenMobileMenu={openMobileMenuSidebar}
-                onAwardXp={awardXp}
-                variant="mobile"
                 xpCurrent={xpCurrent}
               />
             )}

@@ -5,9 +5,8 @@ import { Heading, WfrpArrowButton } from "./ui";
 interface CharacterSheetFrameProps {
   breadcrumbs: ReactNode;
   children: ReactNode;
-  desktopHeader: ReactNode;
+  header: ReactNode;
   hideMobileNavigation?: boolean;
-  mobileHeader: ReactNode;
   onMobileNextView: () => void;
   onMobilePreviousView: () => void;
   mobileTitleAction?: ReactNode;
@@ -72,9 +71,8 @@ function MobileTitlePager({
 export function CharacterSheetFrame({
   breadcrumbs,
   children,
-  desktopHeader,
+  header,
   hideMobileNavigation = false,
-  mobileHeader,
   onMobileNextView,
   onMobilePreviousView,
   mobileTitleAction,
@@ -87,11 +85,7 @@ export function CharacterSheetFrame({
 
   return (
     <>
-      <div className="hidden md:block">
-        {desktopHeader}
-      </div>
-
-      {mobileHeader}
+      {header}
 
       <div className="mx-auto flex w-full max-w-[1199px] flex-col gap-4 px-4 py-4 md:gap-8">
         {breadcrumbs}
