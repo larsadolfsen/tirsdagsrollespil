@@ -144,8 +144,7 @@ export function LibraryPage({
         >
           <SquareMenu aria-hidden="true" className="h-6 w-6" />
         </Button>
-        {isNavOpen ? (
-          <BottomSheetPaper isPullable onDismiss={() => setIsNavOpen(false)}>
+        <BottomSheetPaper isPullable isOpen={isNavOpen} onDismiss={() => setIsNavOpen(false)}>
             <div
               className="shrink-0 flex w-full gap-1 border-b border-wfrp-border pb-2"
               role="tablist"
@@ -156,8 +155,9 @@ export function LibraryPage({
                 role="tab"
                 aria-selected={sidebarMode === "chapters" || !hasToc}
                 onClick={() => setSidebarMode("chapters")}
+                style={{ touchAction: "manipulation" }}
                 className={cn(
-                  "wfrp-label h-9 cursor-pointer rounded-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
+                  "wfrp-label h-9 cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
                   hasToc ? "w-1/2" : "w-full",
                   sidebarMode === "chapters" || !hasToc
                     ? inlineSubtabButtonActiveClassName
@@ -172,8 +172,9 @@ export function LibraryPage({
                   role="tab"
                   aria-selected={sidebarMode === "headings"}
                   onClick={() => setSidebarMode("headings")}
+                  style={{ touchAction: "manipulation" }}
                   className={cn(
-                    "wfrp-label h-9 w-1/2 cursor-pointer rounded-md transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
+                    "wfrp-label h-9 w-1/2 cursor-pointer rounded-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-wfrp-gold/50",
                     sidebarMode === "headings"
                       ? inlineSubtabButtonActiveClassName
                       : inlineSubtabButtonInactiveClassName,
@@ -209,8 +210,7 @@ export function LibraryPage({
                 />
               )}
             </div>
-          </BottomSheetPaper>
-        ) : null}
+        </BottomSheetPaper>
       </div>
     );
   }
