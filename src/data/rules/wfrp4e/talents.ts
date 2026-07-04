@@ -27,6 +27,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_flee",
+    relatedSkillIds: ["skill_athletics"],
     name: "Flee!",
     max: "Agility Bonus",
     tests: "Athletics when Fleeing",
@@ -195,6 +196,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_accurate_shot",
+    relatedSkillIds: ["skill_ranged"],
     name: "Accurate Shot",
     max: "Ballistic Skill Bonus",
     tests: "Ranged Tests at long or extreme range",
@@ -231,6 +233,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_bookish",
+    relatedSkillIds: ["skill_research"],
     name: "Bookish",
     max: "Intelligence Bonus",
     tests: "Research Tests",
@@ -238,6 +241,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_carouser",
+    relatedSkillIds: ["skill_consume_alcohol"],
     name: "Carouser",
     max: "Toughness Bonus",
     tests: "Consume Alcohol Tests and Tests made while drunk",
@@ -296,6 +300,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_lip_reading",
+    relatedSkillIds: ["skill_perception"],
     name: "Lip Reading",
     max: "Initiative Bonus",
     description: "You can follow a conversation by watching the speaker's lips, even when you cannot hear them.",
@@ -386,6 +391,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_shadow",
+    relatedSkillIds: ["skill_perception", "skill_stealth"],
     name: "Shadow",
     max: "Agility Bonus",
     tests: "Stealth Tests while following a target",
@@ -400,6 +406,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_sixth_sense",
+    relatedSkillIds: ["skill_intuition"],
     name: "Sixth Sense",
     max: "Initiative Bonus",
     tests: "Perception Tests to avoid being surprised",
@@ -466,6 +473,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_acute_sense",
+    relatedSkillIds: ["skill_perception"],
     name: "Acute Sense",
     max: "Initiative Bonus",
     grouped: true,
@@ -476,6 +484,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_alley_cat",
+    relatedSkillIds: ["skill_stealth_urban"],
     name: "Alley Cat",
     max: "Initiative Bonus",
     tests: "Stealth (Urban)",
@@ -560,6 +569,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_cardsharp",
+    relatedSkillIds: ["skill_gamble"],
     name: "Cardsharp",
     max: "Intelligence Bonus",
     tests: "Play (Cards) or Gamble",
@@ -575,6 +585,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_catfall",
+    relatedSkillIds: ["skill_athletics"],
     name: "Catfall",
     max: "Agility Bonus",
     tests: "Athletics when falling",
@@ -615,6 +626,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_contortionist",
+    relatedSkillIds: ["skill_perform"],
     name: "Contortionist",
     max: "Agility Bonus",
     tests: "Perform or Agility to contort",
@@ -662,6 +674,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_diceman",
+    relatedSkillIds: ["skill_gamble"],
     name: "Diceman",
     max: "Intelligence Bonus",
     tests: "Play (Dice) or Gamble",
@@ -670,6 +683,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_dirty_fighting",
+    relatedSkillIds: ["skill_melee_brawling"],
     name: "Dirty Fighting",
     max: "Weapon Skill Bonus",
     tests: "Melee (Brawling)",
@@ -740,6 +754,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_field_dressing",
+    relatedSkillIds: ["skill_heal"],
     name: "Field Dressing",
     max: "Intelligence Bonus",
     tests: "Heal",
@@ -791,6 +806,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_gregarious",
+    relatedSkillIds: ["skill_gossip"],
     name: "Gregarious",
     max: "Fellowship Bonus",
     tests: "Gossip with travellers",
@@ -860,6 +876,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_iron_jaw",
+    relatedSkillIds: ["skill_endurance"],
     name: "Iron Jaw",
     max: "Toughness Bonus",
     tests: "Endurance to resist Stunned",
@@ -890,6 +907,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_linguistics",
+    relatedSkillIds: ["skill_language"],
     name: "Linguistics",
     max: "Intelligence Bonus",
     description: "You pick up tongues quickly. After a month's exposure to a Language you may treat it as a Basic Skill rather than an Advanced one.",
@@ -897,6 +915,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_magical_sense",
+    relatedSkillIds: ["skill_intuition"],
     name: "Magical Sense",
     max: "Initiative Bonus",
     tests: "Intuition to detect Wizards",
@@ -939,6 +958,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_numismatics",
+    relatedSkillIds: ["skill_evaluate"],
     name: "Numismatics",
     max: "Initiative Bonus",
     description: "You know coins and their worth. You can judge the value and authenticity of currency, spotting forgeries and clipped coin, without a Test.",
@@ -953,6 +973,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_orientation",
+    relatedSkillIds: ["skill_navigation"],
     name: "Orientation",
     max: "Initiative Bonus",
     description: "You always have your bearings. You instinctively know which way is north.",
@@ -968,6 +989,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_pharmacist",
+    relatedSkillIds: ["skill_trade_apothecary"],
     name: "Pharmacist",
     max: "Intelligence Bonus",
     tests: "Trade (Apothecary)",
@@ -976,6 +998,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_pilot",
+    relatedSkillIds: ["skill_row", "skill_sail"],
     name: "Pilot",
     max: "Initiative Bonus",
     tests: "Tests to navigate dangerous waters",
@@ -991,6 +1014,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_rapid_reload",
+    relatedSkillIds: ["skill_ranged"],
     name: "Rapid Reload",
     max: "Dexterity Bonus",
     tests: "Tests to reload ranged weapons",
@@ -1053,6 +1077,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_rover",
+    relatedSkillIds: ["skill_stealth_rural"],
     name: "Rover",
     max: "Agility Bonus",
     tests: "Stealth (Rural)",
@@ -1061,6 +1086,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_savant",
+    relatedSkillIds: ["skill_lore"],
     name: "Savant",
     max: "Intelligence Bonus",
     grouped: true,
@@ -1071,6 +1097,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_scale_sheer_surface",
+    relatedSkillIds: ["skill_climb"],
     name: "Scale Sheer Surface",
     max: "Strength Bonus",
     tests: "Climb",
@@ -1185,6 +1212,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_strong_swimmer",
+    relatedSkillIds: ["skill_swim"],
     name: "Strong Swimmer",
     max: "Strength Bonus",
     tests: "Swim or Endurance to hold breath",
@@ -1208,6 +1236,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_sure_shot",
+    relatedSkillIds: ["skill_ranged"],
     name: "Sure Shot",
     max: "Initiative Bonus",
     description: "Your shots punch through armour. Ignore Armour Points equal to your level of this Talent when you make ranged attacks.",
@@ -1215,6 +1244,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_surgery",
+    relatedSkillIds: ["skill_heal"],
     name: "Surgery",
     max: "Intelligence Bonus",
     tests: "Heal (Surgery)",
@@ -1230,6 +1260,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_tinker",
+    relatedSkillIds: ["skill_trade"],
     name: "Tinker",
     max: "Dexterity Bonus",
     tests: "Trade when repairing",
@@ -1245,6 +1276,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_trapper",
+    relatedSkillIds: ["skill_perception"],
     name: "Trapper",
     max: "Initiative Bonus",
     tests: "Perception to spot traps",
@@ -1261,6 +1293,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_tunnel_rat",
+    relatedSkillIds: ["skill_stealth_underground"],
     name: "Tunnel Rat",
     max: "Agility Bonus",
     tests: "Stealth (Underground)",
@@ -1321,6 +1354,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_nose_for_trouble",
+    relatedSkillIds: ["skill_intuition"],
     name: "Nose for Trouble",
     max: "Initiative Bonus",
     tests: "Any Test to spot Troublemakers",
