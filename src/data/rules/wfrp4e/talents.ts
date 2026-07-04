@@ -3,6 +3,7 @@ import type { TalentDefinition } from "../../../types";
 export const talentDefinitions: TalentDefinition[] = [
   {
     id: "talent_combat_aware",
+    relatedSkillIds: ["skill_perception"],
     name: "Combat Aware",
     max: "Initiative Bonus",
     tests: "Perception during melee",
@@ -66,6 +67,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_perfect_pitch",
+    grantsSkillIds: ["skill_entertain_singing"],
     name: "Perfect Pitch",
     max: "Initiative Bonus",
     tests: "Entertain (Sing), Language (Tonal Languages, such as Eltharin, Cathayan, and Magick)",
@@ -85,7 +87,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Toughness Bonus",
     tests: "Endurance Tests to resist Corruption",
     description: "Your spirit is hardened against the Ruinous Powers, granting a bonus to Tests you make to resist Corruption.",
-    effects: [{ type: "test_sl_bonus", test: "Endurance Tests to resist Corruption", valuePerLevel: 1 }],
+    effects: [{ type: "test_sl_bonus", test: "Endurance Tests to resist Corruption", valuePerLevel: 1, skillIds: ["skill_endurance"] }],
   },
   {
     id: "talent_instinctive_diction",
@@ -149,7 +151,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Intelligence Bonus",
     tests: "Lore (Engineering)",
     description: "Your deep study of engineering serves you well, granting a bonus to Lore (Engineering) Tests.",
-    effects: [{ type: "test_sl_bonus", test: "Lore (Engineering)", valuePerLevel: 1 }],
+    effects: [{ type: "test_sl_bonus", test: "Lore (Engineering)", valuePerLevel: 1, skillIds: ["skill_lore_engineering"] }],
   },
   {
     id: "talent_bless",
@@ -169,6 +171,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_gunner",
+    relatedSkillIds: ["skill_ranged_blackpowder"],
     name: "Gunner",
     max: "Dexterity Bonus",
     tests: "Extended Tests to reload a Blackpowder weapon",
@@ -188,7 +191,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Fellowship Bonus",
     tests: "Charm and Leadership Tests involving speeches or sermons",
     description: "Your fervour is infectious, granting a bonus to Charm and Leadership Tests made through speeches and sermons.",
-    effects: [{ type: "test_sl_bonus", test: "Charm and Leadership Tests involving speeches or sermons", valuePerLevel: 1 }],
+    effects: [{ type: "test_sl_bonus", test: "Charm and Leadership Tests involving speeches or sermons", valuePerLevel: 1, skillIds: ["skill_charm", "skill_leadership"] }],
   },
   {
     id: "talent_accurate_shot",
@@ -305,6 +308,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_menacing",
+    relatedSkillIds: ["skill_intimidate"],
     name: "Menacing",
     max: "Strength Bonus",
     tests: "Intimidate Tests",
@@ -503,6 +507,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_artistic",
+    relatedSkillIds: ["skill_art"],
     name: "Artistic",
     max: "Dexterity Bonus",
     tests: "Trade (Artist)",
@@ -625,6 +630,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_craftsman",
+    grantsSkillIds: ["skill_trade"],
     name: "Craftsman",
     max: "Dexterity Bonus",
     grouped: true,
@@ -914,6 +920,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_master_orator",
+    relatedSkillIds: ["skill_charm"],
     name: "Master Orator",
     max: "Fellowship Bonus",
     tests: "Charm when speaking publicly",
@@ -1086,6 +1093,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_seasoned_traveller",
+    grantsSkillIds: ["skill_lore_local"],
     name: "Seasoned Traveller",
     max: "Intelligence Bonus",
     description: "You have been almost everywhere. You may add Lore (Local) to any Career you enter.",
@@ -1161,6 +1169,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_strong_legs",
+    relatedSkillIds: ["skill_athletics"],
     name: "Strong Legs",
     max: "Strength Bonus",
     tests: "Athletics (Leaping)",
@@ -1320,6 +1329,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_witch",
+    grantsSkillIds: ["skill_language_magick"],
     name: "Witch!",
     max: "Willpower Bonus",
     description: "You are a self-taught hedge spellcaster. You may add Language (Magick) to any Career you enter, and by spending a Resilience point you can permanently learn a spell from any Arcane Lore, up to your level in this Talent.",
