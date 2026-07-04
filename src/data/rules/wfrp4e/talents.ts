@@ -36,6 +36,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_strike_to_stun",
+    relatedSkillIds: ["skill_melee"],
     name: "Strike to Stun",
     max: "Weapon Skill Bonus",
     tests: "Melee Tests when Striking to Stun",
@@ -204,6 +205,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_argumentative",
+    relatedSkillIds: ["skill_charm"],
     name: "Argumentative",
     max: "Fellowship Bonus",
     tests: "Charm or Intimidate Tests when debating",
@@ -219,6 +221,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_attractive",
+    relatedSkillIds: ["skill_charm"],
     name: "Attractive",
     max: "Fellowship Bonus",
     tests: "Fellowship Tests based on first impressions",
@@ -226,6 +229,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_blather",
+    relatedSkillIds: ["skill_charm"],
     name: "Blather",
     max: "Fellowship Bonus",
     tests: "Charm Tests to mislead or stall",
@@ -256,6 +260,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_commanding_presence",
+    relatedSkillIds: ["skill_leadership"],
     name: "Commanding Presence",
     max: "Fellowship Bonus",
     tests: "Leadership Tests to direct allies",
@@ -263,6 +268,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_dealmaker",
+    relatedSkillIds: ["skill_haggle"],
     name: "Dealmaker",
     max: "Fellowship Bonus",
     tests: "Haggle Tests",
@@ -278,6 +284,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_fast_hands",
+    relatedSkillIds: ["skill_sleight_of_hand"],
     name: "Fast Hands",
     max: "Dexterity Bonus",
     tests: "Sleight of Hand Tests",
@@ -355,6 +362,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_public_speaker",
+    relatedSkillIds: ["skill_charm"],
     name: "Public Speaker",
     max: "Fellowship Bonus",
     tests: "Charm or Leadership Tests when addressing a crowd",
@@ -377,6 +385,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_reversal",
+    relatedSkillIds: ["skill_melee"],
     name: "Reversal",
     max: "Weapon Skill Bonus",
     tests: "Melee Tests to turn a defence into an attack",
@@ -399,6 +408,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_shieldsman",
+    relatedSkillIds: ["skill_melee"],
     name: "Shieldsman",
     max: "Strength Bonus",
     tests: "Melee Tests while using a shield",
@@ -525,6 +535,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_battle_rage",
+    relatedSkillIds: ["skill_cool"],
     name: "Battle Rage",
     max: "Willpower Bonus",
     tests: "Cool to end Frenzy",
@@ -533,6 +544,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_beat_blade",
+    relatedSkillIds: ["skill_melee"],
     name: "Beat Blade",
     max: "Weapon Skill Bonus",
     tests: "Melee (Opposed)",
@@ -548,6 +560,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_berserk_charge",
+    relatedSkillIds: ["skill_melee"],
     name: "Berserk Charge",
     max: "Strength Bonus",
     description: "You throw yourself into the attack. When you Charge into melee, add +1 Damage per level of this Talent to your hits that Round.",
@@ -562,6 +575,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_briber",
+    relatedSkillIds: ["skill_bribery"],
     name: "Briber",
     max: "Fellowship Bonus",
     description: "You know how to grease the right palms. Reduce the cost of any bribe by 10% per level of this Talent.",
@@ -594,6 +608,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_cat_tongued",
+    relatedSkillIds: ["skill_charm"],
     name: "Cat-tongued",
     max: "Fellowship Bonus",
     tests: "Charm to lie",
@@ -618,6 +633,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_concoct",
+    relatedSkillIds: ["skill_trade_apothecary"],
     name: "Concoct",
     max: "Intelligence Bonus",
     tests: "Trade (Apothecary)",
@@ -659,6 +675,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_deadeye_shot",
+    relatedSkillIds: ["skill_ranged"],
     name: "Deadeye Shot",
     max: "1",
     description: "You aim for the vital spot. Instead of reversing the dice to find the Hit Location of a successful ranged attack, you may simply choose the location struck.",
@@ -666,6 +683,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_detect_artefact",
+    relatedSkillIds: ["skill_intuition"],
     name: "Detect Artefact",
     max: "Initiative Bonus",
     tests: "Intuition to detect magic items",
@@ -692,6 +710,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_disarm",
+    relatedSkillIds: ["skill_melee"],
     name: "Disarm",
     max: "Initiative Bonus",
     tests: "Melee (Opposed)",
@@ -700,6 +719,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_distract",
+    relatedSkillIds: ["skill_athletics"],
     name: "Distract",
     max: "Agility Bonus",
     tests: "Athletics or Cool (Opposed)",
@@ -708,6 +728,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_dual_wielder",
+    relatedSkillIds: ["skill_melee"],
     name: "Dual Wielder",
     max: "Agility Bonus",
     description: "You fight with a weapon in each hand. You may attack with both weapons as a single Action.",
@@ -723,6 +744,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_enclosed_fighter",
+    relatedSkillIds: ["skill_melee"],
     name: "Enclosed Fighter",
     max: "Agility Bonus",
     description: "You are used to fighting in tight quarters. You ignore the usual penalties for melee combat in confined or cramped spaces.",
@@ -746,6 +768,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_feint",
+    relatedSkillIds: ["skill_melee_fencing"],
     name: "Feint",
     max: "Weapon Skill Bonus",
     tests: "Melee (Fencing, Opposed)",
@@ -799,6 +822,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_furious_assault",
+    relatedSkillIds: ["skill_melee"],
     name: "Furious Assault",
     max: "Agility Bonus",
     description: "You press a relentless attack. You may spend Advantage, or your Move, to make an extra Melee attack in the same Round.",
@@ -829,6 +853,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_holy_visions",
+    relatedSkillIds: ["skill_intuition"],
     name: "Holy Visions",
     max: "Initiative Bonus",
     tests: "Intuition on Holy Ground",
@@ -851,6 +876,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_in_fighter",
+    relatedSkillIds: ["skill_melee"],
     name: "In-fighter",
     max: "Dexterity Bonus",
     tests: "Melee while in-fighting",
@@ -948,6 +974,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_master_tradesman",
+    relatedSkillIds: ["skill_trade"],
     name: "Master Tradesman",
     max: "Dexterity Bonus",
     grouped: true,
@@ -981,6 +1008,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_panhandle",
+    relatedSkillIds: ["skill_charm"],
     name: "Panhandle",
     max: "Fellowship Bonus",
     tests: "Charm (Begging)",
@@ -1047,6 +1075,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_riposte",
+    relatedSkillIds: ["skill_melee"],
     name: "Riposte",
     max: "Agility Bonus",
     tests: "Melee when defending",
@@ -1069,6 +1098,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_roughrider",
+    relatedSkillIds: ["skill_ride"],
     name: "Roughrider",
     max: "Agility Bonus",
     tests: "Ride",
@@ -1142,6 +1172,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_sharpshooter",
+    relatedSkillIds: ["skill_ranged"],
     name: "Sharpshooter",
     max: "1",
     description: "You compensate for an awkward target. You ignore the Difficulty penalties imposed by a target's size when shooting.",
@@ -1156,6 +1187,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_sniper",
+    relatedSkillIds: ["skill_ranged"],
     name: "Sniper",
     max: "4",
     tests: "Ranged at long or extreme range",
@@ -1285,6 +1317,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_trick_riding",
+    relatedSkillIds: ["skill_ride", "skill_perform"],
     name: "Trick Riding",
     max: "Agility Bonus",
     tests: "Perform or Dodge while mounted",
@@ -1302,6 +1335,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_unshakable",
+    relatedSkillIds: ["skill_cool"],
     name: "Unshakable",
     max: "Willpower Bonus",
     description: "Gunfire does not rattle you. You only need to Test against becoming Broken when you are wounded by Blackpowder weapons.",
