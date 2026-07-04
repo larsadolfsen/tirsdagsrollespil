@@ -6,6 +6,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useCallback } from "react";
 import type { ReactNode } from "react";
+import { useLocation, useNavigate } from "react-router";
 import {
   Dice5,
 } from "lucide-react";
@@ -242,31 +243,18 @@ export function AppComposition() {
   const [isMobileMenuSidebarOpen, setIsMobileMenuSidebarOpen] = useState(false);
   const [isMobileGainExperienceOpen, setIsMobileGainExperienceOpen] = useState(false);
   const careerTabRef = useRef<CareerTabHandle>(null);
-  const [isLandingPageOpen, setIsLandingPageOpen] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return (
-      parseCampaignCharacterPath(window.location.pathname) === null &&
-      !window.location.pathname.includes("/campaign") &&
-      !window.location.pathname.includes("/library")
-    );
-  });
-  const [isGameMasterOpen, setIsGameMasterOpen] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return window.location.pathname.includes("/campaign");
-  });
-  const [isLibraryOpen, setIsLibraryOpen] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-
-    return window.location.pathname.includes("/library");
-  });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const libraryRoute = useMemo(
+    () => parseCampaignLibraryPath(location.pathname),
+    [location.pathname],
+  );
+  const isLibraryOpen = libraryRoute !== null;
+  const isGameMasterOpen = location.pathname.includes("/campaign");
+  const isLandingPageOpen =
+    !isGameMasterOpen &&
+    !isLibraryOpen &&
+    parseCampaignCharacterPath(location.pathname) === null;
 
   // GM Sessions States
   const [gmSessions, setGmSessions] = useState<GMSession[]>([]);
@@ -288,8 +276,8 @@ export function AppComposition() {
     if (session) {
       const slug = toSessionSlug(session.sessionNumber, session.name);
       const newPath = `/${characterData.campaignId}/campaign/${slug}`;
-      if (window.location.pathname !== newPath) {
-        window.history.pushState(null, "", newPath);
+      if (location.pathname !== newPath) {
+        navigate(newPath);
       }
     }
   };
@@ -729,10 +717,10 @@ export function AppComposition() {
     const basePath = `/${characterData.campaignId}/campaign`;
     const slug = activeGmSession ? toSessionSlug(activeGmSession.sessionNumber, activeGmSession.name) : "";
     const newPath = slug ? `${basePath}/${slug}` : basePath;
-    if (window.location.pathname !== newPath) {
-      window.history.replaceState(null, "", newPath);
+    if (location.pathname !== newPath) {
+      navigate(newPath, { replace: true });
     }
-  }, [isGameMasterOpen, selectedGmSessionId, activeGmSession?.name, characterData.campaignId]);
+  }, [isGameMasterOpen, selectedGmSessionId, activeGmSession?.name, characterData.campaignId, location.pathname, navigate]);
 
   type ResolvedSkillOption = (typeof rulesIndex.resolvedSkillOptions)[number];
   const skillDefinitionById = new Map<string, SkillDefinition>(
@@ -886,67 +874,48 @@ export function AppComposition() {
     characterName: characterData.name,
   });
 
-  const [libraryBookId, setLibraryBookId] = useState<string | null>(null);
-  const [libraryChapterId, setLibraryChapterId] = useState<string | null>(null);
+  const libraryBookId = libraryRoute?.bookId ?? null;
+  const libraryChapterId = libraryRoute?.chapterId ?? null;
 
   const selectLibraryBook = useCallback((nextBookId: string | null) => {
     const firstChapterId = nextBookId
       ? (bookCatalog.find((b) => b.id === nextBookId)?.chapters[0]?.id ?? null)
       : null;
-    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: nextBookId, chapterId: firstChapterId });
-    window.history.pushState(null, "", nextPath);
-    setLibraryBookId(nextBookId);
-    setLibraryChapterId(firstChapterId);
-  }, [characterData.campaignId]);
+
+    navigate(buildCampaignLibraryPath({
+      campaignId: characterData.campaignId,
+      bookId: nextBookId,
+      chapterId: firstChapterId,
+    }));
+  }, [characterData.campaignId, navigate]);
 
   const selectLibraryChapter = useCallback((nextChapterId: string | null) => {
-    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: libraryBookId, chapterId: nextChapterId });
-    window.history.pushState(null, "", nextPath);
-    setLibraryChapterId(nextChapterId);
-  }, [characterData.campaignId, libraryBookId]);
+    navigate(buildCampaignLibraryPath({
+      campaignId: characterData.campaignId,
+      bookId: libraryBookId,
+      chapterId: nextChapterId,
+    }));
+  }, [characterData.campaignId, libraryBookId, navigate]);
 
+  // Sync selected session from the URL slug (covers back/forward — the two
+  // GM sync effects are idempotent and converge, since each no-ops when URL
+  // and selection already agree).
   useEffect(() => {
-    const libraryRoute = parseCampaignLibraryPath(window.location.pathname);
-    if (libraryRoute) {
-      setLibraryBookId(libraryRoute.bookId);
-      setLibraryChapterId(libraryRoute.chapterId);
+    if (!isGameMasterOpen) return;
+
+    const pathParts = location.pathname.split("/");
+    const gmIndex = pathParts.findIndex((p) => p === "campaign");
+    const urlSlug = gmIndex >= 0 ? pathParts[gmIndex + 1] : undefined;
+
+    if (urlSlug) {
+      const matched = gmSessionsRef.current.find(
+        (s) => toSessionSlug(s.sessionNumber, s.name) === urlSlug,
+      );
+      setSelectedGmSessionId(matched ? matched.id : null);
+    } else {
+      setSelectedGmSessionId(null);
     }
-  }, []);
-
-  useEffect(() => {
-    const handlePopState = () => {
-      const isGM = window.location.pathname.includes("/campaign");
-      const libraryRoute = parseCampaignLibraryPath(window.location.pathname);
-      const isLibrary = libraryRoute !== null;
-      const isLanding = parseCampaignCharacterPath(window.location.pathname) === null && !isGM && !isLibrary;
-      setIsLandingPageOpen(isLanding);
-      setIsGameMasterOpen(isGM);
-      setIsLibraryOpen(isLibrary);
-
-      if (isLibrary) {
-        setLibraryBookId(libraryRoute.bookId);
-        setLibraryChapterId(libraryRoute.chapterId);
-      }
-
-      if (isGM) {
-        const pathParts = window.location.pathname.split("/");
-        const gmIndex = pathParts.findIndex((p) => p === "campaign");
-        const urlSlug = gmIndex >= 0 ? pathParts[gmIndex + 1] : undefined;
-        if (urlSlug) {
-          const matched = gmSessionsRef.current.find((s) => toSessionSlug(s.sessionNumber, s.name) === urlSlug);
-          setSelectedGmSessionId(matched ? matched.id : null);
-        } else {
-          setSelectedGmSessionId(null);
-        }
-      }
-    };
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, []);
+  }, [isGameMasterOpen, location.pathname]);
 
   const openCharacterFromLanding = useCallback((characterId: string) => {
     const character = availableCharacters.find((availableCharacter) => availableCharacter.id === characterId);
@@ -956,30 +925,18 @@ export function AppComposition() {
       view: "characteristics",
       omitDefaultView: true,
     });
-    const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
 
-    window.history.pushState(null, "", nextUrl);
-    setIsLandingPageOpen(false);
-    setIsGameMasterOpen(false);
+    navigate(`${nextPath}${location.search}${location.hash}`);
     setSelectedCharacterId(characterId);
-  }, [availableCharacters, setSelectedCharacterId]);
+  }, [availableCharacters, location.hash, location.search, navigate, setSelectedCharacterId]);
 
   const openGameMasterFromLanding = useCallback(() => {
-    const nextPath = `/${characterData.campaignId}/campaign`;
-    const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
-
-    window.history.pushState(null, "", nextUrl);
-    setIsLandingPageOpen(false);
-    setIsGameMasterOpen(true);
-  }, [characterData.campaignId]);
+    navigate(`/${characterData.campaignId}/campaign${location.search}${location.hash}`);
+  }, [characterData.campaignId, location.hash, location.search, navigate]);
 
   const openLibraryFromLanding = useCallback(() => {
-    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId });
-    window.history.pushState(null, "", nextPath);
-    setIsLandingPageOpen(false);
-    setIsGameMasterOpen(false);
-    setIsLibraryOpen(true);
-  }, [characterData.campaignId]);
+    navigate(buildCampaignLibraryPath({ campaignId: characterData.campaignId }));
+  }, [characterData.campaignId, navigate]);
 
   useEffect(() => {
     resetAppShellState();
@@ -1789,11 +1746,7 @@ export function AppComposition() {
     {
       label: campaignName,
       href: "/",
-      onClick: () => {
-        window.history.pushState(null, "", "/");
-        setIsLandingPageOpen(true);
-        setIsGameMasterOpen(false);
-      },
+      onClick: () => navigate("/"),
     },
     {
       label: characterData.name,
@@ -1866,19 +1819,14 @@ export function AppComposition() {
           {
             label: campaignName,
             href: "/",
-            onClick: () => {
-              window.history.pushState(null, "", "/");
-              setIsLandingPageOpen(true);
-              setIsGameMasterOpen(false);
-            },
+            onClick: () => navigate("/"),
           },
           {
             label: "Campaign",
             href: `/${characterData.campaignId}/campaign`,
             onClick: () => {
               setSelectedGmSessionId(null);
-              const basePath = `/${characterData.campaignId}/campaign`;
-              window.history.pushState(null, "", basePath);
+              navigate(`/${characterData.campaignId}/campaign`);
             },
           },
           { label: `Session ${activeGmSession.sessionNumber + 1} - ${activeGmSession.name}` },
@@ -1887,11 +1835,7 @@ export function AppComposition() {
           {
             label: campaignName,
             href: "/",
-            onClick: () => {
-              window.history.pushState(null, "", "/");
-              setIsLandingPageOpen(true);
-              setIsGameMasterOpen(false);
-            },
+            onClick: () => navigate("/"),
           },
           { label: "Campaign" },
         ];
@@ -1928,11 +1872,7 @@ export function AppComposition() {
       {
         label: campaignName,
         href: "/",
-        onClick: () => {
-          window.history.pushState(null, "", "/");
-          setIsLandingPageOpen(true);
-          setIsLibraryOpen(false);
-        },
+        onClick: () => navigate("/"),
       },
       {
         label: "Library",
@@ -1956,11 +1896,7 @@ export function AppComposition() {
             bookId={libraryBookId}
             campaignName={campaignName}
             onSelectBook={selectLibraryBook}
-            onNavigateHome={() => {
-              window.history.pushState(null, "", "/");
-              setIsLandingPageOpen(true);
-              setIsLibraryOpen(false);
-            }}
+            onNavigateHome={() => navigate("/")}
           />
         </Suspense>
         <main className="min-h-0 flex-1 overflow-y-auto">

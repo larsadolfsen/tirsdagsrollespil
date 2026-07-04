@@ -73,6 +73,7 @@ export interface HeadingProps extends NativeHeadingProps {
   variant: HeadingVariant;
   align?: "left" | "center" | "right";
   truncate?: boolean;
+  className?: string;
 }
 
 export function Heading({

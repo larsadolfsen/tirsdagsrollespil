@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
 import type { CampaignCharacterRoute } from "./campaignRoutes";
 import {
   buildCampaignCharacterPath,
@@ -32,7 +33,6 @@ type SyncRouteOptions = {
   omitDefaultView?: boolean;
 };
 
-const getCurrentPathname = () => window.location.pathname;
 const isMainTab = (target: MobileMainView): target is MainTab => target !== "characteristics";
 
 export function useCampaignRouteSync({
@@ -48,16 +48,20 @@ export function useCampaignRouteSync({
   isAllProgressHydrated = false,
   characterName = "",
 }: UseCampaignRouteSyncOptions) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [hasAppliedInitialRoute, setHasAppliedInitialRoute] = useState(false);
   const currentCampaignRoute = useRef<CampaignCharacterRoute | null>(
-    parseCampaignCharacterPath(getCurrentPathname()),
+    parseCampaignCharacterPath(location.pathname),
   );
+  const locationRef = useRef(location);
+  locationRef.current = location;
 
   const syncCampaignRoute = useCallback(({
     characterId = selectedCharacterId,
     view = currentCampaignRoute.current?.view ?? activeMobileMainView,
     mode = "replace",
-    omitDefaultView = currentCampaignRoute.current?.hasExplicitView === false,
+    omitDefaultView = currentCampaignRoute.current ? currentCampaignRoute.current.hasExplicitView === false : true,
   }: SyncRouteOptions = {}) => {
     if (!routeSyncEnabled) return;
 
@@ -69,25 +73,25 @@ export function useCampaignRouteSync({
       omitDefaultView,
       characterName,
     });
-    const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
+    const { hash, pathname, search } = locationRef.current;
+    const nextUrl = `${nextPath}${search}${hash}`;
     const route = parseCampaignCharacterPath(nextPath);
 
     if (route) {
       currentCampaignRoute.current = route;
     }
 
-    if (getCurrentPathname() === nextPath) {
+    if (pathname === nextPath) {
       return;
     }
 
-    if (mode === "push") {
-      window.history.pushState(null, "", nextUrl);
-      return;
-    }
+    navigate(nextUrl, { replace: mode !== "push" });
+  }, [activeMobileMainView, characterName, navigate, routeSyncEnabled, selectedCharacterId]);
 
-    window.history.replaceState(null, "", nextUrl);
-  }, [activeMobileMainView, routeSyncEnabled, selectedCharacterId, characterName]);
-
+  // Applies the URL to app state. Runs on mount, on every location change
+  // (covers back/forward — React Router owns popstate now), and again when
+  // hydration completes so renamed-character slugs resolve correctly.
+  // Idempotent: after our own navigate() calls it re-applies the same values.
   useEffect(() => {
     if (!routeSyncEnabled) {
       setHasAppliedInitialRoute(false);
@@ -95,10 +99,8 @@ export function useCampaignRouteSync({
       return;
     }
 
-    const applyRoute = (pathname: string) => {
-      const route = parseCampaignCharacterPath(pathname);
-      if (!route) return;
-
+    const route = parseCampaignCharacterPath(location.pathname);
+    if (route) {
       currentCampaignRoute.current = route;
 
       if (availableCharacters.some((character) => character.id === route.characterId)) {
@@ -107,19 +109,12 @@ export function useCampaignRouteSync({
 
       setActiveMainTab(route.tab);
       setActiveMobileMainView(route.view);
-    };
+    }
 
-    applyRoute(getCurrentPathname());
     setHasAppliedInitialRoute(true);
-
-    const handlePopState = () => applyRoute(getCurrentPathname());
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
   }, [
     availableCharacters,
+    location.pathname,
     routeSyncEnabled,
     setActiveMainTab,
     setActiveMobileMainView,
@@ -151,7 +146,7 @@ export function useCampaignRouteSync({
   }, [handleMobileMainViewSelect, setActiveMainTab, setActiveMobileMainView, syncCampaignRoute]);
 
   const selectCharacter = useCallback((characterId: string) => {
-    syncCampaignRoute({ characterId, mode: "push" });
+    syncCampaignRoute({ characterId, mode: "push", omitDefaultView: true });
     setSelectedCharacterId(characterId);
   }, [setSelectedCharacterId, syncCampaignRoute]);
 
