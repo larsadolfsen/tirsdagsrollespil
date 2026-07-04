@@ -1,58 +1,54 @@
-# Skill↔Talent Link — Plan 06: Backfill Refs (Typed Effects) + Validation
+# Skill↔Talent Link — Plan 06: Backfill in Batches (by Effect Type)
 
-> Design source: `…-skill-talent-link-design.md` (see mapping tables A, B, D). Depends on Plans 01–02.
-> Adds the structured refs to talents that already carry a typed effect, plus the CI validation test.
+> Design source: `…-skill-talent-link-design.md` (mapping A/B/D). Governs: `.claude/skills/talent-effects`.
+> Depends on Plans 01, 02, 02b (registry). **Batch axis = effect type** — one type per batch, each an
+> independent commit guarded by the validation + no-false-positive tests.
 
-**Goal:** Author `skillIds`/`characteristics` on the `test_sl_bonus` and `test_reverse_failed_roll`
-effects (mapping A + B) and `characteristics` on `attribute_bonus` effects (mapping D), and add a spec
-that asserts every ref resolves.
+**Goal:** Author structured refs on the talents that carry typed effects, one effect type at a time,
+each batch exercising exactly one registry handler end-to-end.
 
 ## Global Constraints
-- Keep the display `test` string; add refs alongside (migration posture D-d).
-- Use `SkillRef`/`CharacteristicKey` from Plan 01–02; base-id matches any spec (D-a).
+- Follow `.claude/skills/talent-effects` for every batch (refs, tests, register-don't-scatter).
+- Keep display `test` strings; add refs alongside. MD table is authoritative.
+- Each batch: green `tests/talent-skill-refs.spec.ts` + a handler hit test + an absent test.
 
 ## File Map
 | Action | Path | Responsibility |
 |---|---|---|
-| Modify | `src/data/rules/wfrp4e/talents.ts` | Add refs per mapping A/B/D |
-| Create | `tests/talent-skill-refs.spec.ts` | Every ref resolves; validation ratchet |
+| Modify | `src/data/rules/wfrp4e/talents.ts` | Add refs per batch |
+| Create | `tests/talent-skill-refs.spec.ts` | Every ref resolves (created in Batch 1) |
+| Modify | `tests/talent-effects.spec.ts` | Per-batch hit + absent tests |
 
-## Task 1: Group A (`test_sl_bonus`)
-- [ ] `menacing`→`skillIds:["intimidate"]`; `master_orator`→`["charm"]`; `strong_legs`→`["athletics"]`;
-  `strong_back`→`characteristics:["S"]`; resistance(threat)→`["endurance"]`; `war_leader`→`["WP"]`.
+---
 
-## Task 2: Group B (`test_reverse_failed_roll`)
-- [ ] `alley_cat`→`["stealth_urban"]`; `bookish`→`["research"]`; `carouser`→`["consume_alcohol"]`;
+## Batch 1 — `test_sl_bonus` (mapping A)
+- [ ] `menacing`→`skillIds:["intimidate"]`; `master_orator`→`["charm"]` (Public Speaking);
+  `strong_legs`→`["athletics"]` (Leaping); `strong_back`→`characteristics:["S"]` (+encumbrance);
+  resistance(threat)→`["endurance"]`; `war_leader`→`characteristics:["WP"]`.
+- [ ] Create `tests/talent-skill-refs.spec.ts` (every ref resolves — see spec Plan 06 snippet).
+- [ ] Handler tests: Menacing applies on `{skillId:"intimidate"}`, absent on `{skillId:"charm"}`.
+
+## Batch 2 — `test_reverse_failed_roll` (mapping B)
+- [ ] Add `test_reverse_failed_roll` effects (where currently `special_rule`) with:
+  `alley_cat`→`["stealth_urban"]`; `bookish`→`["research"]`; `carouser`→`["consume_alcohol"]`;
   `field_dressing`→`["heal"]`; `gregarious`→`["gossip"]`; `pharmacist`→`["trade_apothecary"]`;
-  `pilot`→`["row","sail"]`. (Add `test_reverse_failed_roll` effects where currently `special_rule`.)
+  `pilot`→`["row","sail"]`.
+- [ ] Handler tests: Alley Cat matches Stealth (Urban), absent on Stealth (Rural).
 
-## Task 3: Group D (`attribute_bonus` → `characteristics`)
+## Batch 3 — `attribute_bonus` → `characteristics` (mapping D)
 - [ ] `warrior_born`→`["WS"]`, `marksman`→`["BS"]`, `very_strong`→`["S"]`, `very_resilient`→`["T"]`,
   `lightning_reflexes`→`["Ag"]`, `nimble_fingered`→`["Dex"]`, `savvy`→`["Int"]`, `coolheaded`→`["WP"]`,
-  `suave`→`["Fel"]`, `sharp`→`["I"]`. (Migrate legacy `attribute` names via `toCharacteristicKey`.)
+  `suave`→`["Fel"]`, `sharp`→`["I"]`. Migrate legacy `attribute` names via `toCharacteristicKey`.
+- [ ] Handler test: Warrior Born contributes +5 to WS as `starting_characteristic_only`.
 
-## Task 4: Validation spec
-**Files:** `tests/talent-skill-refs.spec.ts`
-```ts
-import { expect, test } from "@playwright/test";
-import { talentDefinitions } from "../src/data/rules/wfrp4e/talents";
-import { isResolvableSkillRef } from "../src/lib/skillRefs";
+## Batch 4 — `damage_bonus` / `encumbrance_bonus` / `ignore_penalty`
+- [ ] Add refs/conditions where a skill or characteristic is implicated (e.g. `strong_back` encumbrance;
+  `strike_mighty_blow`/`dirty_fighting`/`berserk_charge` damage → melee context tags).
+- [ ] Handler tests for each contribution + condition.
 
-test("every talent skill ref resolves", () => {
-  const bad: string[] = [];
-  for (const t of talentDefinitions) {
-    const refs = [
-      ...(t.relatedSkillIds ?? []), ...(t.grantsSkillIds ?? []),
-      ...(t.effects ?? []).flatMap((e) => ("skillIds" in e ? e.skillIds ?? [] : [])),
-    ];
-    for (const r of refs) if (!isResolvableSkillRef(r)) bad.push(`${t.id}: ${r}`);
-  }
-  expect(bad, `Unresolved skill refs: ${bad.join("; ")}`).toEqual([]);
-});
-```
-
-## Task 5: Verify
-- [ ] `npm run lint && npm run build && npm test` green.
+## Verify (each batch)
+- [ ] `npm run lint && npm run build && npm test` green before committing the batch.
 
 ## Definition of done
-- Mapping A/B/D refs authored; validation spec passes and now guards all future refs.
+- Every typed-effect talent carries structured refs; each effect type has hit + absent tests; the
+  validation spec guards all future refs.

@@ -161,7 +161,23 @@ Representative (the full set comes from the 91-`tests`-string sweep in Plan 06):
 `savant_*`→[lore], `iron_jaw`→[endurance], `linguistics`→[language], `surgery`→[heal],
 `magical_sense`/`detect_artefact`/`holy_visions`→[intuition], `tinker`→[trade].
 
-## Roll-time resolution (Plan 07–09)
+## Consistency architecture (decided 2026-07-04)
+
+Talent rules are applied the same way everywhere via **two mechanisms**:
+
+- **Effect registry / single resolver (runtime consistency)** — Plan 02b. `talentEffects.ts` becomes one
+  typed registry: each effect `type` has exactly one handler (`matches` / `contribute` / `format`), and
+  every consumer (dice roller, derived stats, career/XP, UI) funnels through `resolveTalentEffects(context)`.
+  No consumer branches on effect `type`. Adding effect type N+1 = one handler + its tests. This absorbs
+  the former standalone matcher rewrite (old Plan 08).
+- **Authoring skill (build-time consistency)** — `.claude/skills/talent-effects/SKILL.md`. Encodes the
+  taxonomy, ref conventions, "register don't scatter", the batch-by-effect-type process, and required
+  tests. Every batch and every new effect type follows it.
+
+**Backfill is batched by effect type** (Plan 06): one effect `type` per batch, each exercising one
+handler end-to-end, each an independent commit guarded by the validation + no-false-positive tests.
+
+## Roll-time resolution (Plan 09)
 
 - `TalentEffectContext` gains `skillId?`, `specialisationId?`, `characteristic?: CharacteristicKey`.
 - `getApplicableTalentEffects`/`testMatches`: match by **id first** (skill ref via `skillRefMatches`,
@@ -187,17 +203,19 @@ Data integrity first (priority), then behaviour, then UI.
 |---|---|---|
 | 01 | `skillRefs.ts` + `characteristicKeys.ts` pure helpers | unit spec: parse/match/resolve + legacy-attr map cases |
 | 02 | Additive ref fields on types (no data) | `npm run build` typechecks; no runtime change |
+| **02b** | **Effect registry / single resolver** (the component; id-first matching) | `talent-effects.spec.ts`: handler hit + no-false-positive; consumers carry no type logic |
+| — | **Authoring skill** `.claude/skills/talent-effects` (done) | governs every batch below |
 | 03 | Reconcile talent **Max** values vs MD | `talents-data.spec.ts` asserts corrected Max set |
 | 04 | Remove/rename non-Core talents (R7/R8 list) | `talent-references.spec.ts` still resolves all refs |
 | 05 | Reconcile wrong **mechanics** (Gunner, Magic Resistance) | `talents-data.spec.ts` asserts effect shape |
-| 06 | Backfill refs: group A+B+D (typed effects) | new `talent-skill-refs.spec.ts`: every ref resolves |
-| 07 | Backfill refs: group E + `tests`-string sweep | coverage assertion (ratchet) in the refs spec |
-| 08 | `TalentEffectContext` id fields + matcher rewrite (id-first, string fallback) | `talentEffects` unit spec: id match hits, token-collision no longer false-positives |
-| 09 | Thread `skillId`/`specialisationId` through `handleRoll` → roller | dice spec: SL bonus on the right skill, absent on an unrelated roll |
+| 06 | Backfill refs **in batches by effect type** (A/B/D: sl_bonus → reverse → attribute → damage/enc) | `talent-skill-refs.spec.ts` + per-batch hit/absent tests |
+| 07 | Backfill refs: group E + `tests`-string sweep (relatedSkillIds) | coverage ratchet in the refs spec |
+| 08 | *(superseded — matcher folded into 02b; placeholder to keep numbering)* | — |
+| 09 | Thread `skillId`/`specialisationId` through `handleRoll` → resolver context | dice spec: SL bonus on the right skill, absent on an unrelated roll |
 | 10 | Group-C grant/discount → career skill list + XP discount | advancement spec: granted skill available; advance costs −5 XP |
 | 11 | UI: TalentsTab/TalentSidebar show related skills | component/e2e: links render and navigate |
 | 12 | UI: SkillsTab/SkillSidebar show "talents affecting this skill" (derived index) | component/e2e: derived list correct |
-| 13 | Drop the string fallback in `testMatches` (D-d cleanup) | matcher spec passes without fallback |
+| 13 | Drop the string fallback in the resolver (D-d cleanup) | resolver spec passes without fallback |
 
 ## Non-goals
 
