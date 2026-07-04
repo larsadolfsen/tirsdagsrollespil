@@ -499,3 +499,55 @@ The recurring bug: a flat `"1"`/`"5"` where the book uses a Characteristic Bonus
   Channelling / Lore (Magic) / Language (Magick) / Research Tests.
 - Note: WoM has no fresh alphabetical talent list; it reuses Core talents + reprints an updated **Concoct**
   (now also Trade (Alchemist)). Concoct is already in the Core-missing list above.
+
+---
+
+# Architecture — robust skill ↔ talent connection (logged 2026-07-04)
+
+**Goal:** replace the current free-text / substring coupling between talents and the skills
+(and tests) they modify with a structured, ID-based link, so talent effects resolve
+deterministically at roll time and can be validated at build time.
+
+## Current state (why it's fragile)
+
+- `TalentDefinition.tests` (`src/types/rules.ts:73`) is a human-readable string only
+  (e.g. `"Perception during melee"`, `"Athletics when Fleeing"`). Nothing machine-links it to a
+  `SkillDefinition.id`.
+- `TalentEffect` of type `test_sl_bonus` / `test_reverse_failed_roll` carries `test: string`
+  (`rules.ts:9-18`), also free text (e.g. `"Endurance Tests to resist Corruption"`).
+- Matching happens in `src/lib/talentEffects.ts` via `testMatches()` (`:33-53`): a **two-way
+  `includes()`** substring compare between the effect's `test` string and the roll's `testName`,
+  with an ad-hoc special case for `"corruption"`. This produces both false positives (short
+  tokens like "melee"/"perception" match unrelated tests) and false negatives (phrasing drift).
+- At roll time the coupling is even looser: `useDiceRoller.ts:271-278` only ever passes the
+  **characteristic** label as `testName` (`char.label`), not the skill actually being rolled — so
+  a talent that boosts a *specific skill* can never match precisely, only its characteristic.
+- No build-time check ties talent `tests`/effect `test` strings to real skill ids, so typos and
+  drift are invisible (mirrors the class of bug already seen in #6 career-skill-id breakage).
+
+## Proposed approach
+
+- [ ] **Add a structured reference to `TalentEffect`.** Extend the `test_sl_bonus` /
+  `test_reverse_failed_roll` variants (and any test-scoped effect) with an optional
+  `skillIds?: string[]` and/or `characteristics?: string[]`, resolving against
+  `SkillDefinition.id` and characteristic codes. Keep `test: string` as the display label.
+- [ ] **Optionally add `skillIds?: string[]` to `TalentDefinition`** for talents that grant/relate
+  a whole skill (e.g. Perfect Pitch → Entertain (Sing)), covering the grant/discount cases in the
+  `special_rule` talents that are currently prose-only.
+- [ ] **Thread the real test identity through the roller.** Give `getApplicableTalentEffects`'s
+  `TalentEffectContext` a `skillId?`/`characteristic?` and pass it from every roll entry point
+  (`useDiceRoller.ts`, skill rolls, `useCharacterDerivedStats.ts`), so matching is by id, not label.
+- [ ] **Rewrite `testMatches` to prefer structured ids** (exact id/characteristic match) and fall
+  back to the existing string match only when a talent has no structured refs yet — enabling an
+  incremental migration instead of a big-bang rewrite.
+- [ ] **Backfill structured refs** on the talents that already carry typed test effects (start with
+  the `test_sl_bonus` set: Resistance (Corruption), Drilled, Flee!, etc.), then widen coverage.
+- [ ] **Add a regression test** (à la `career-steps.spec.ts` / `talent-references.spec.ts`) asserting
+  every talent `skillId`/effect `skillIds` resolves to a real `SkillDefinition`, so drift fails CI.
+
+## Notes / decisions needed
+
+- Grouped skills (specialisations, e.g. Lore, Trade, Melee) need to decide whether a talent binds
+  to the base `skillId` or a specific specialisation id — affects the ref shape.
+- Coordinate with the open talent-data work above (R6–R8, missing-talent backfill): new talents
+  should be authored with structured refs from the start rather than retro-fitted.
