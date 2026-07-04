@@ -7,6 +7,30 @@ const SSE_ENDPOINT = "/api/character-progress/events";
 
 type CharacterProgressMap = Record<string, CharacterProgressData>;
 
+// Plan 00: catalog ids are prefixed (skill_/talent_). Coerce any bare ids that
+// arrive from an older or dev store so the client cache always resolves.
+function normalizeProgressCatalogIds(progress: CharacterProgressData): CharacterProgressData {
+  const skills =
+    progress.skills && typeof progress.skills === "object"
+      ? Object.fromEntries(
+          Object.entries(progress.skills).map(([key, value]) => [
+            key.startsWith("skill_") ? key : `skill_${key}`,
+            value,
+          ]),
+        )
+      : progress.skills;
+  const talentIds = progress.talentIds?.map((id) =>
+    id.startsWith("talent_") ? id : `talent_${id}`,
+  );
+  return { ...progress, skills, talentIds };
+}
+
+function normalizeProgressMapCatalogIds(map: CharacterProgressMap): CharacterProgressMap {
+  return Object.fromEntries(
+    Object.entries(map).map(([id, progress]) => [id, normalizeProgressCatalogIds(progress)]),
+  );
+}
+
 let progressCache: CharacterProgressMap = {};
 
 function readProgressMap(): CharacterProgressMap {
@@ -95,7 +119,7 @@ function openSseConnection() {
 
       // Keep local cache in sync so loadCharacterProgress stays accurate.
       if (msg.type === "save") {
-        writeProgressMap({ ...readProgressMap(), [msg.characterId]: msg.progress });
+        writeProgressMap({ ...readProgressMap(), [msg.characterId]: normalizeProgressCatalogIds(msg.progress) });
       } else if (msg.type === "clear") {
         const next = { ...readProgressMap() };
         delete next[msg.characterId];
@@ -190,7 +214,7 @@ export async function hydrateCharacterProgress(characterId: string) {
     const characterProgress = (await response.json()) as CharacterProgressData | null;
     writeProgressMap({
       ...readProgressMap(),
-      ...(characterProgress ? { [characterId]: characterProgress } : {}),
+      ...(characterProgress ? { [characterId]: normalizeProgressCatalogIds(characterProgress) } : {}),
     });
   } catch {
     // Keep the current in-memory values if the server cannot be read.
@@ -208,7 +232,7 @@ export async function hydrateAllCharacterProgress() {
     if (progressMap) {
       writeProgressMap({
         ...readProgressMap(),
-        ...progressMap,
+        ...normalizeProgressMapCatalogIds(progressMap),
       });
     }
   } catch {
