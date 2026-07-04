@@ -874,44 +874,33 @@ export function AppComposition() {
     characterName: characterData.name,
   });
 
-  const [libraryBookId, setLibraryBookId] = useState<string | null>(null);
-  const [libraryChapterId, setLibraryChapterId] = useState<string | null>(null);
+  const libraryBookId = libraryRoute?.bookId ?? null;
+  const libraryChapterId = libraryRoute?.chapterId ?? null;
 
   const selectLibraryBook = useCallback((nextBookId: string | null) => {
     const firstChapterId = nextBookId
       ? (bookCatalog.find((b) => b.id === nextBookId)?.chapters[0]?.id ?? null)
       : null;
-    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: nextBookId, chapterId: firstChapterId });
-    window.history.pushState(null, "", nextPath);
-    setLibraryBookId(nextBookId);
-    setLibraryChapterId(firstChapterId);
-  }, [characterData.campaignId]);
+
+    navigate(buildCampaignLibraryPath({
+      campaignId: characterData.campaignId,
+      bookId: nextBookId,
+      chapterId: firstChapterId,
+    }));
+  }, [characterData.campaignId, navigate]);
 
   const selectLibraryChapter = useCallback((nextChapterId: string | null) => {
-    const nextPath = buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: libraryBookId, chapterId: nextChapterId });
-    window.history.pushState(null, "", nextPath);
-    setLibraryChapterId(nextChapterId);
-  }, [characterData.campaignId, libraryBookId]);
+    navigate(buildCampaignLibraryPath({
+      campaignId: characterData.campaignId,
+      bookId: libraryBookId,
+      chapterId: nextChapterId,
+    }));
+  }, [characterData.campaignId, libraryBookId, navigate]);
 
-  useEffect(() => {
-    const libraryRoute = parseCampaignLibraryPath(window.location.pathname);
-    if (libraryRoute) {
-      setLibraryBookId(libraryRoute.bookId);
-      setLibraryChapterId(libraryRoute.chapterId);
-    }
-  }, []);
-
-  // Transitional: library params and GM session selection are still local
-  // state; keep syncing them on back/forward until Tasks 4-5 derive them
-  // from the router location. Page flags are now derived from useLocation.
+  // Transitional: GM session selection is still local state; keep syncing it
+  // on back/forward until Task 5 moves it onto the router location.
   useEffect(() => {
     const handlePopState = () => {
-      const libraryRoute = parseCampaignLibraryPath(window.location.pathname);
-      if (libraryRoute) {
-        setLibraryBookId(libraryRoute.bookId);
-        setLibraryChapterId(libraryRoute.chapterId);
-      }
-
       if (window.location.pathname.includes("/campaign")) {
         const pathParts = window.location.pathname.split("/");
         const gmIndex = pathParts.findIndex((p) => p === "campaign");
