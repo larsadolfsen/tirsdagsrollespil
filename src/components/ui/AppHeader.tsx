@@ -7,6 +7,12 @@ export interface AppHeaderProps {
   portrait: ReactNode;
   /** If provided, portrait is wrapped in a button and this is called on click. */
   onPortraitClick?: () => void;
+  /** Accessible label for the portrait button (only used when onPortraitClick is set). */
+  portraitLabel?: string;
+  /** aria-haspopup for the portrait button, when it opens a menu/dialog. */
+  portraitHasPopup?: boolean | "menu" | "dialog";
+  /** aria-expanded for the portrait button, when it toggles a popup. */
+  portraitExpanded?: boolean;
   /** Name + subtitle area. Use AppHeaderIdentity for consistent typography. */
   identity: ReactNode;
   /** Rendered as hidden on mobile (sm:flex). Tabs, icon buttons, links, etc. */
@@ -23,6 +29,9 @@ export interface AppHeaderProps {
 export function AppHeader({
   portrait,
   onPortraitClick,
+  portraitLabel,
+  portraitHasPopup,
+  portraitExpanded,
   identity,
   desktopActions,
   leadingDesktopActions,
@@ -40,6 +49,9 @@ export function AppHeader({
         <button
           type="button"
           onClick={onPortraitClick}
+          aria-label={portraitLabel}
+          aria-haspopup={portraitHasPopup}
+          aria-expanded={portraitExpanded}
           className="wfrp-character-portrait-button h-10 w-10 shrink-0 sm:h-12 sm:w-12"
         >
           {portrait}

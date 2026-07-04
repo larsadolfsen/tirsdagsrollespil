@@ -94,6 +94,9 @@ export function CharacterSheetHeader({
         <AppHeader
           portrait={portrait}
           onPortraitClick={onOpenMobileCharacterActions}
+          portraitLabel="Open character actions"
+          portraitHasPopup="menu"
+          portraitExpanded={isMobilePortraitMenuOpen}
           identity={
             <AppHeaderIdentity
               name={characterData.name}
