@@ -12,7 +12,7 @@ test("every referenced talent id resolves to a known talent", () => {
 
   // Referenced by a Core career table but with no Core talent entry — likely a
   // talent from a supplement not yet imported. Tracked in TODO.md.
-  const PENDING_FROM_OTHER_BOOKS = new Set(["street_fighting"]);
+  const PENDING_FROM_OTHER_BOOKS = new Set(["talent_street_fighting"]);
 
   const resolves = (ref: string) =>
     ids.has(ref) ||

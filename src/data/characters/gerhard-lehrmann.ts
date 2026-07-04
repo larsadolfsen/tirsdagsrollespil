@@ -66,12 +66,12 @@ export const gerhardLehrmann: CharacterRecord = {
     { id: "gerhard_lehrmann_spikes_1", itemId: "spike_item", equipped: false, containerId: "gerhard_lehrmann_backpack_1" },
   ],
   talents: [
-    { talentId: "magic_resistance" },
-    { talentId: "marksman" },
-    { talentId: "read_write" },
-    { talentId: "sturdy" },
-    { talentId: "gunner" },
-    { talentId: "savant_engineering" },
+    { talentId: "talent_magic_resistance" },
+    { talentId: "talent_marksman" },
+    { talentId: "talent_read_write" },
+    { talentId: "talent_sturdy" },
+    { talentId: "talent_gunner" },
+    { talentId: "talent_savant_engineering" },
   ],
   spells: [],
 };

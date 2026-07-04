@@ -65,12 +65,12 @@ export const karlMuller: CharacterRecord = {
     { id: "karl_muller_hammer_1", itemId: "hammer_item", equipped: false, containerId: "karl_muller_backpack_1" },
   ],
   talents: [
-    { talentId: "doomed" },
-    { talentId: "suave" },
-    { talentId: "read_write" },
-    { talentId: "coolheaded" },
-    { talentId: "bless" },
-    { talentId: "etiquette_cultists" },
+    { talentId: "talent_doomed" },
+    { talentId: "talent_suave" },
+    { talentId: "talent_read_write" },
+    { talentId: "talent_coolheaded" },
+    { talentId: "talent_bless" },
+    { talentId: "talent_etiquette_cultists" },
   ],
   spells: [],
 };
