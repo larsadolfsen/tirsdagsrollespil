@@ -10,6 +10,10 @@ catalogs (skill / talent / trait), including parenthetical specialisation → co
 ## Global Constraints
 - Pure `src/lib/`; resolve names via `skillDefinitions`, `talentDefinitions`, `creatureTraitDefinitions`.
 - A parenthetical is one base + specialisation (see the skill's "Specialised entries" section).
+- **Field-specific resolution (id-collision safety).** `parseTalentEntry` searches **only** the talent
+  catalog; `parseTraitEntry` searches **only** the trait catalog. 9 ids collide across catalogs
+  (`armour`, `frenzy`, `hardy`, `hatred`, `magic_resistance`, `night_vision`, `prejudice`, `ranged`,
+  `weapon`), so a name must never be resolved against both — the array a string lives in decides its kind.
 
 ## File Map
 | Action | Path | Responsibility |
@@ -33,6 +37,8 @@ parseTraitEntry("Tough")               // { id:"tough" }
 
 ## Task 2: Tests
 - [ ] Cover all three kinds, specialised + unspecialised, rating + extra, and one unresolved case.
+- [ ] **Collision test:** `parseTalentEntry("Hatred (Orcs)")` → talent `hatred`; `parseTraitEntry("Hatred (Orcs)")`
+  → trait `hatred`; neither leaks into the other catalog.
 
 ## Task 3: Verify
 - [ ] `npm run lint && npm run build && npm test` green.

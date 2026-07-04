@@ -65,6 +65,30 @@ talent / trait) resolving to the shared catalogs — and finish the creature sid
 - **Reuse character-side infrastructure**: `skillRefs`, `characteristicKeys`, the effect registry
   (trait effects become handlers too), and the authoring skill.
 
+## ⚠️ ID uniqueness & cross-catalog collisions (verified 2026-07-04)
+
+IDs are unique **within** each catalog, but **not across** them. Nine ids exist in **both** the talent
+and trait catalogs (normalising `-`/`_`):
+
+`armour`, `frenzy`, `hardy`, `hatred`, `magic_resistance`, `night_vision`, `prejudice`, `ranged`, `weapon`
+
+- **Four** (`armour`, `weapon`, `ranged`, `prejudice`) are the R7/R8 meta-entries wrongly in the talent
+  catalog; char Plan 04 removes them → trait-only afterwards.
+- **Five** (`frenzy`, `hardy`, `hatred`, `magic_resistance`, `night_vision`) are **legitimately in both
+  books** (a player talent *and* a creature trait). The collision is permanent.
+
+**Rule: the field is the source of truth for kind.** A string in `talents[]` resolves against the
+talent catalog; a string in `traits[]` resolves against the trait catalog. Parsers are therefore
+**field-specific** — `parseTalentEntry` searches only talents, `parseTraitEntry` only traits — so a name
+is never resolved against the wrong catalog. The single judgement call is **A03**, which decides which
+array a currently-conflated string belongs in; for the 5 legitimate-both ids that cannot be decided by
+name, A03 uses the entity kind (bestiary creature/beast → trait; human NPC → talent) and **flags each
+for review** rather than guessing.
+
+Also: `resistance` exists as both a bare base talent (`:1002`) and `resistance_corruption` (`:83`) —
+a duplicate to resolve in char Plan 03/04 (pick the grouped base `resistance` + `resistance_<threat>`
+specialisations, drop the redundant one).
+
 ## Dependency on the character effort
 
 Character **Plan 04** removes the non-Core meta-"talents" `armour`/`weapon`/`ranged`/`tough`/`prejudice`.

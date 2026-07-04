@@ -117,7 +117,7 @@ The token-saver: authored refs for the backfill, grouped by effect kind. `id` = 
 | master_orator | Fel Bonus | `skillIds: [charm]` | while Public Speaking |
 | strong_legs | Str Bonus | `skillIds: [athletics]` | Leaping only |
 | strong_back | Str Bonus | `characteristics: [S]` | Opposed Strength; + `encumbrance_bonus` |
-| resistance_* (Threat) | T Bonus | `skillIds: [endurance]` | grouped over threat (Magic/Poison/Disease/Corruption…); auto-pass first test/session |
+| resistance (base) | T Bonus | `skillIds: [endurance]` | **dedupe:** both bare `resistance` (:1002) and `resistance_corruption` (:83) exist — keep grouped base `resistance` + `resistance_<threat>` specs, drop the redundant one (char Plan 03/04); auto-pass first test/session |
 | rapid_reload | Dex Bonus | `relatedSkillIds: [ranged]` | reload Extended Test (not a skill SL) |
 | gunner | Dex Bonus | `relatedSkillIds: [ranged_blackpowder]` | reload Extended Test — **reconcile: current data has BS Bonus + ranged-attack effect (wrong)** |
 | war_leader | Fel Bonus | `characteristics: [WP]` | subordinates add level to one WP Test/round |
@@ -139,9 +139,9 @@ The token-saver: authored refs for the backfill, grouped by effect kind. `id` = 
 | perfect_pitch | Init Bonus | `entertain_singing` | add to Career or −5 XP/Advance |
 | seasoned_traveller | Int Bonus | `lore_local` | add or discount, per Speciality |
 | witch | WP Bonus | `language_magick` | add or discount |
-| craftsman_* (Trade) | Dex Bonus | `trade` (chosen spec) | add a Trade to Career, or −5 XP |
+| craftsman | Dex Bonus | `trade` (chosen spec) | id is `craftsman` (verified), not `craftsman_trade`; add a Trade to Career, or −5 XP |
 | artistic | Dex Bonus | `art` (verify vs "Trade (Artist)") | **flag:** MD says "Trade (Artist)"; Art is its own skill — confirm target |
-| master_tradesman_* | Dex Bonus | — (`relatedSkillIds: [trade]`) | reduces Extended Trade SL; no grant |
+| master_tradesman | Dex Bonus | — (`relatedSkillIds: [trade]`) | id is `master_tradesman` (verified); reduces Extended Trade SL; no grant |
 
 ### D. `attribute_bonus` — permanent +5 starting characteristic → `effect.characteristics`
 | id | key | | id | key |

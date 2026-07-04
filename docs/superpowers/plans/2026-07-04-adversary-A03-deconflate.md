@@ -23,6 +23,10 @@
   the trait strings in `traits[]`.
 - [ ] Known trait bases to move: `weapon`, `armour`, `ranged`, `tough`, `prejudice`, plus any other
   string whose base resolves to `creatureTraitDefinitions`.
+- [ ] **Collision review (the 5 legitimate-both ids):** `frenzy`, `hardy`, `hatred`, `magic_resistance`,
+  `night_vision` exist in *both* catalogs — name alone can't classify them. Decide by entity kind
+  (bestiary creature/beast → trait; human NPC → talent) and **flag each occurrence for confirmation**
+  rather than auto-moving. The 4 meta-entries (`weapon`/`armour`/`ranged`/`prejudice`) are always traits.
 
 ## Task 2: Guard
 - [ ] `adversary-references.spec.ts` (Plan A04) must resolve every remaining `talents[]` entry to the
