@@ -525,25 +525,116 @@ deterministically at roll time and can be validated at build time.
 - No build-time check ties talent `tests`/effect `test` strings to real skill ids, so typos and
   drift are invisible (mirrors the class of bug already seen in #6 career-skill-id breakage).
 
-## Proposed approach
+## Key facts discovered (grounding numbers, 2026-07-04)
 
-- [ ] **Add a structured reference to `TalentEffect`.** Extend the `test_sl_bonus` /
-  `test_reverse_failed_roll` variants (and any test-scoped effect) with an optional
-  `skillIds?: string[]` and/or `characteristics?: string[]`, resolving against
-  `SkillDefinition.id` and characteristic codes. Keep `test: string` as the display label.
-- [ ] **Optionally add `skillIds?: string[]` to `TalentDefinition`** for talents that grant/relate
-  a whole skill (e.g. Perfect Pitch → Entertain (Sing)), covering the grant/discount cases in the
-  `special_rule` talents that are currently prose-only.
-- [ ] **Thread the real test identity through the roller.** Give `getApplicableTalentEffects`'s
-  `TalentEffectContext` a `skillId?`/`characteristic?` and pass it from every roll entry point
-  (`useDiceRoller.ts`, skill rolls, `useCharacterDerivedStats.ts`), so matching is by id, not label.
-- [ ] **Rewrite `testMatches` to prefer structured ids** (exact id/characteristic match) and fall
-  back to the existing string match only when a talent has no structured refs yet — enabling an
-  incremental migration instead of a big-bang rewrite.
-- [ ] **Backfill structured refs** on the talents that already carry typed test effects (start with
-  the `test_sl_bonus` set: Resistance (Corruption), Drilled, Flee!, etc.), then widen coverage.
-- [ ] **Add a regression test** (à la `career-steps.spec.ts` / `talent-references.spec.ts`) asserting
-  every talent `skillId`/effect `skillIds` resolves to a real `SkillDefinition`, so drift fails CI.
+- **176 talents total**, but the mechanics are barely modelled: `special_rule` (prose only) **123**,
+  `attribute_bonus` 8, `test_sl_bonus` 5, `ignore_penalty`/`encumbrance_bonus`/`damage_bonus` 1 each.
+  **91** talents carry a free-text `tests` string. → Most talents have no machine-readable link at all;
+  the "connection" is mostly missing, not just fragile.
+- **Skill rolls already carry more than the matcher uses.** `SkillsTab.tsx:107` calls
+  `handleRoll({ key: skill.characteristic, label: skill.displayName })` — so the display *name* of the
+  skill reaches the roller, but its **id and specialisation are dropped**, and `useDiceRoller.ts:275`
+  forwards only `char.label` as `testName`. The characteristic key is available at the call site but
+  never reaches `TalentEffectContext`.
+- **A ref convention already exists** for grouped entries: `talent-references.spec.ts` resolves grouped
+  talents as `"<baseId>_<specialisation>"` (e.g. `acute_sense_sight`, `etiquette_nobles`). Reuse this
+  shape for skill/specialisation refs instead of inventing a new one.
+- **Skill→characteristic map already exists**: `skillCharacteristicById` in `src/data/rules/wfrp4e`.
+- **Grouped-skill machinery exists**: `GROUPED_SPECIALISATIONS` + `getSkillDisplayName` in `skills.ts`.
+
+## Scope
+
+**In scope (this effort):**
+- A structured, id-based link from talents → the skills / characteristics / tests they modify.
+- Deterministic resolution of that link at roll time (replace substring matching).
+- Build-time validation of every ref.
+- Bidirectional UI: talent shows affected skills; skill shows talents that affect it.
+
+**Out of scope (explicitly NOT this effort — log separately if wanted):**
+- A full rules engine that mechanically models all 123 `special_rule` prose talents. We add a
+  *reference* + optional lightweight typed effect where one clearly exists; we do **not** try to
+  execute every talent's prose.
+- XP/career economy changes (skill-grant / advance-discount talents like Perfect Pitch, Craftsman).
+  We may *tag* these with `grantsSkillIds` for display, but wiring them into cost math is a follow-up.
+- New talent-data corrections (owned by R6–R8 / missing-talent backfill above).
+
+## Open decisions (answer before coding)
+
+- [ ] **D-a. Ref granularity for grouped skills.** Bind to base `skillId`, a specific specialisation,
+  or allow both? (e.g. Resistance (Corruption) → base `endurance`; Perfect Pitch → specialisation
+  `entertain_sing`.) *Recommendation: support both via the `<baseId>_<spec>` convention already used
+  for talents; a base-id ref matches any specialisation of that skill.*
+- [ ] **D-b. Where does the ref live — on `TalentEffect`, on `TalentDefinition`, or both?**
+  *Recommendation: both. Test-scoped `TalentEffect` variants get `skillIds?`/`characteristics?` for
+  roll-time math; `TalentDefinition` gets a `relatedSkillIds?` for display/cross-linking even when the
+  talent is prose-only.*
+- [ ] **D-c. Store the reverse (skill → talents) or derive it?** *Recommendation: derive an index at
+  runtime from talent refs — one source of truth, no double maintenance.*
+- [ ] **D-d. Migration posture.** Keep `test: string` as the display label and add refs alongside, or
+  replace? *Recommendation: keep the string for display, add refs for logic, id-match first with
+  string fallback so nothing regresses mid-migration.*
+- [ ] **D-e. Characteristic code convention.** `attribute_bonus` effects use names like `weaponSkill`,
+  `movement`; skills use short codes (`WS`, `T`…) via `skillCharacteristicById`. Pick one canonical
+  set and a mapping helper so talent refs and skill characteristics compare cleanly.
+
+## Phased plan
+
+### Phase 0 — Foundations (types + helpers)
+- [ ] Add optional `skillIds?: string[]` and `characteristics?: string[]` to the `test_sl_bonus` and
+  `test_reverse_failed_roll` variants of `TalentEffect` (`src/types/rules.ts`). Keep `test` for display.
+- [ ] Add optional `relatedSkillIds?: string[]` (and maybe `grantsSkillIds?: string[]`) to
+  `TalentDefinition` for cross-linking prose talents.
+- [ ] Add a `resolveSkillRef(ref)` helper (base-id or `<baseId>_<spec>`) mirroring the talent-ref
+  convention, plus a characteristic-normalisation helper (D-e).
+
+### Phase 1 — Roll-time resolution (the core fix)
+- [ ] Extend `TalentEffectContext` (`talentEffects.ts`) with `skillId?`, `specialisationId?`,
+  `characteristic?`.
+- [ ] Rewrite `testMatches`/`getApplicableTalentEffects` to match on ids first (skill id, specialisation,
+  characteristic), falling back to the existing string compare only when an effect has no structured
+  refs. Remove/relocate the ad-hoc `"corruption"` special case behind the structured path.
+- [ ] Thread real identity through the roll pipeline: `SkillsTab` → `handleRoll` (extend its
+  `{ key, label }` payload with `skillId`/`specialisationId`) → `useDiceRoller` → context. Do the same
+  for characteristic-only rolls and `useCharacterDerivedStats.ts`.
+
+### Phase 2 — Data backfill
+- [ ] Backfill structured refs on the 5 `test_sl_bonus` + typed effects first (Resistance (Corruption),
+  Drilled, Flee!, Strike to Injure, etc.) — the smallest, highest-value set.
+- [ ] Sweep the **91** talents with a `tests` string: add `relatedSkillIds` (and `skillIds` on the
+  effect where the talent gives a real test bonus). Track coverage so it can be done in batches.
+- [ ] Author refs for any talent that clearly grants/relates a whole skill (Perfect Pitch, Petty/Arcane
+  Magic → Channelling/Language (Magick), etc.).
+
+### Phase 3 — UI cross-linking (the visible payoff)
+- [ ] In `TalentsTab` / `TalentSidebar`, render the talent's related skills as links.
+- [ ] In `SkillsTab` / `SkillSidebar`, show "Talents affecting this skill" from the derived reverse index.
+- [ ] Surface active talent SL bonuses on the roll UI keyed to the *specific* skill (they already flow
+  through `bonusSources`; verify the label now names the skill correctly).
+
+### Phase 4 — Validation & tests
+- [ ] New spec (extend `talent-references.spec.ts`): every `skillIds`/`characteristics`/`relatedSkillIds`
+  resolves to a real `SkillDefinition`/specialisation/characteristic — drift fails CI.
+- [ ] Dice regression spec: a talent's SL bonus applies on the **correct** skill roll and is **absent**
+  on an unrelated roll that used to false-positive under substring matching (e.g. a "melee"/"perception"
+  token collision).
+- [ ] Optional lint: warn when a talent has a `tests` string but no structured ref (coverage ratchet).
+
+### Phase 5 — Cleanup
+- [ ] Once coverage is high, decide whether to drop the string fallback in `testMatches` (D-d) and make
+  refs authoritative.
+
+## Edge cases & gotchas
+
+- **False positives are the current bug** — the dice regression test (Phase 4) must assert *absence* on
+  unrelated rolls, not just presence on the right one.
+- **Specialisation vs base skill**: a base-id ref should match any specialisation; a spec ref must match
+  only that one. Get the direction right in `resolveSkillRef`.
+- **Characteristic vs skill name collisions**: today `testName` mixes both into one string. Keep them as
+  distinct typed fields end-to-end.
+- **Definitions vs instances**: refs live on rule *definitions*, not on stored `ResolvedCharacterTalent`
+  instances or persisted character JSON — so no data migration and no persistence-format change.
+- **Corruption/condition tags**: preserve existing `conditionTags`/`testType` behaviour; only the
+  test-identity matching changes.
 
 ## Prior-art check (2026-07-04)
 
@@ -554,9 +645,5 @@ codebase is the unrelated, pre-existing `ArmourPenalty.skillId` (`src/types/rule
 armour → penalized skill), present identically on every branch. `claude/todo-implementation`
 only touched list-key/a11y items, not this coupling. → This is greenfield; nothing to rebase onto.
 
-## Notes / decisions needed
-
-- Grouped skills (specialisations, e.g. Lore, Trade, Melee) need to decide whether a talent binds
-  to the base `skillId` or a specific specialisation id — affects the ref shape.
-- Coordinate with the open talent-data work above (R6–R8, missing-talent backfill): new talents
-  should be authored with structured refs from the start rather than retro-fitted.
+> Coordinate with the open talent-data work above (R6–R8, missing-talent backfill): new talents should
+> be authored with structured refs from the start rather than retro-fitted.
