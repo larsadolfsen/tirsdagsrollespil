@@ -32,7 +32,7 @@ function traitById(id: string) {
 // WFRP 4e Bestiary: Chill Grasp deals 1d10 + SL Wounds (ignoring Toughness Bonus
 // and armour). The damage must roll a die, not apply a flat 10.
 test("Chill Grasp damage rolls a die rather than a flat value", () => {
-  const damage = traitById("chill-grasp").modifiers?.find((modifier) => modifier.type === "damage");
+  const damage = traitById("trait_chill_grasp").modifiers?.find((modifier) => modifier.type === "damage");
   expect(damage?.formula).toBe("1d10 + SL");
 });
 
@@ -40,7 +40,7 @@ test("Chill Grasp damage rolls a die rather than a flat value", () => {
 // flat "2 + SL". Permanent petrification past the threshold is tracked separately
 // via the combat flag.
 test("Petrifying Gaze applies Stunned scaled per 2 SL", () => {
-  const stunned = traitById("petrifying-gaze").modifiers?.find(
+  const stunned = traitById("trait_petrifying_gaze").modifiers?.find(
     (modifier) => modifier.type === "condition" && modifier.condition === "Stunned",
   );
   expect(stunned?.formula).toBe("1 Stunned per 2 SL");
