@@ -39,9 +39,11 @@ attribute-name map) — with unit tests.
 - [ ] **Step 1:** Re-export the existing union so refs don't drift from creature data:
 
 ```ts
-// src/types/rules.ts
+// src/types/rules.ts   (D-f: bare ids, no prefix; kind carried by type + field)
 export type { CharacteristicKey } from "../data/rules/wfrp4e/creatureTraits";
-export type SkillRef = string; // "endurance" (base, matches any spec) | "stealth_urban" (spec)
+export type SkillRef = string;  // "endurance" (base, matches any spec) | "stealth_urban" (spec)
+export type TalentRef = string; // "hatred" | "etiquette_nobles"
+export type TraitRef = string;  // "weapon" | "ranged" (kebab-case in the trait catalog)
 ```
 
 > Note: if the import direction (types → data) trips the build, instead **move** the

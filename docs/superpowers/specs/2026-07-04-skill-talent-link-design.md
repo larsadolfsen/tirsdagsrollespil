@@ -39,6 +39,7 @@ as many small, independently-testable pieces.
 | Data | Reconciliation | **Auto-apply `skills-and-talents.md` as source of truth** where `talents.ts` disagrees (Max, mechanic, skill refs). |
 | Grants | Skill-granting talents | **Wire into career/XP** — grant talents add the skill to the character and apply the XP discount. |
 | Priority | Build order | **Data integrity / validation first** (types + validation + reconciliation), then roll-time, then career/XP + UI. |
+| D-f | ID scheme (2026-07-04) | **Keep bare ids — no `ski_`/`tal_`/`tra_` prefix.** A prefix would rename ~4,500 refs and break every saved character (progress is keyed by id in `storage.ts`). Instead, kind is carried by the ref **type** (`SkillRef`/`TalentRef`/`TraitRef` aliases at the API layer) and by the **field/array** a ref lives in. Cross-catalog collisions (9 ids) are handled by field-specific resolution, not global uniqueness. |
 
 ## Data model (additive, all optional — no breaking change, no data migration)
 
@@ -50,7 +51,12 @@ character JSON — so there is no persistence-format change.
 export type CharacteristicKey =            // re-export the existing union from creatureTraits.ts
   "WS" | "BS" | "S" | "T" | "I" | "Ag" | "Dex" | "Int" | "WP" | "Fel";
 
+// Ref types are documented aliases (D-f: bare ids, no prefix). Kind is carried by the type at the API
+// layer and by the field a ref lives in; data literals stay plain strings (no cast friction). The
+// parser/resolver returns kind-tagged output ({ kind: "skill"|"talent"|"trait", id }).
 export type SkillRef = string;             // "endurance" (base, matches any spec) | "stealth_urban" (spec)
+export type TalentRef = string;            // "hatred" | "etiquette_nobles"
+export type TraitRef = string;             // "weapon" | "ranged"  (kebab-case in the trait catalog)
 
 // added to the test_sl_bonus and test_reverse_failed_roll variants of TalentEffect:
 //   skillIds?: SkillRef[];

@@ -77,6 +77,10 @@ and trait catalogs (normalising `-`/`_`):
 - **Five** (`frenzy`, `hardy`, `hatred`, `magic_resistance`, `night_vision`) are **legitimately in both
   books** (a player talent *and* a creature trait). The collision is permanent.
 
+**Decision (2026-07-04): keep bare ids — no `ski_`/`tal_`/`tra_` prefix** (see char spec D-f: a prefix
+would rename ~4,500 refs and break saved characters). Kind is carried by the ref **type**
+(`SkillRef`/`TalentRef`/`TraitRef`) and by the **field** a ref lives in.
+
 **Rule: the field is the source of truth for kind.** A string in `talents[]` resolves against the
 talent catalog; a string in `traits[]` resolves against the trait catalog. Parsers are therefore
 **field-specific** — `parseTalentEntry` searches only talents, `parseTraitEntry` only traits — so a name
