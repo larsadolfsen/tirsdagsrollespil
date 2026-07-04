@@ -666,13 +666,68 @@ function parseJsonValue(value, columnName, characterId) {
   }
 }
 
+// Plan 00: catalog ids are prefixed (skill_/talent_). Sheets written before the
+// rename hold bare ids; normalize on read AND write so they always resolve. This
+// makes the live transition transparent — no destructive bulk rewrite is required,
+// old sheets upgrade as they flow through, and stale-tab writes are coerced.
+function normalizeSheetCatalogIds(sheet) {
+  if (!sheet || typeof sheet !== "object") {
+    return sheet;
+  }
+  if (sheet.skills && typeof sheet.skills === "object" && !Array.isArray(sheet.skills)) {
+    const nextSkills = {};
+    for (const [key, value] of Object.entries(sheet.skills)) {
+      nextSkills[key.startsWith("skill_") ? key : `skill_${key}`] = value;
+    }
+    sheet.skills = nextSkills;
+  }
+  if (Array.isArray(sheet.talentIds)) {
+    sheet.talentIds = sheet.talentIds.map((id) =>
+      typeof id === "string" && !id.startsWith("talent_") ? `talent_${id}` : id,
+    );
+  }
+  return sheet;
+}
+
+// One-time at-rest pass so stored rows are self-consistent after deploy. Read/write
+// normalization already guarantees correctness; this keeps the DB tidy. Flag-guarded
+// and transactional, mirroring the legacy-migration pattern.
+const CATALOG_ID_MIGRATION_KEY = "catalog-ids-prefixed-v1";
+function migrateCatalogIdsAtRest() {
+  if (selectMetadataValue.get(CATALOG_ID_MIGRATION_KEY)?.value === "true") {
+    return;
+  }
+  database.exec("BEGIN IMMEDIATE");
+  try {
+    for (const row of selectAllCharacterProgress.all()) {
+      let sheet;
+      try {
+        sheet = JSON.parse(row.sheet_json);
+      } catch {
+        continue;
+      }
+      const before = JSON.stringify(sheet);
+      const after = JSON.stringify(normalizeSheetCatalogIds(sheet));
+      if (after !== before) {
+        upsertCharacterProgress.run(row.character_id, after, row.notes_json, row.background_text);
+      }
+    }
+    upsertMetadataValue.run(CATALOG_ID_MIGRATION_KEY, "true");
+    database.exec("COMMIT");
+  } catch (error) {
+    database.exec("ROLLBACK");
+    throw error;
+  }
+}
+migrateCatalogIdsAtRest();
+
 function rowToCharacterState(row) {
   if (!row) {
     return null;
   }
 
   return joinCharacterState({
-    sheet: parseJsonValue(row.sheet_json, "sheet_json", row.character_id),
+    sheet: normalizeSheetCatalogIds(parseJsonValue(row.sheet_json, "sheet_json", row.character_id)),
     notes: parseJsonValue(row.notes_json, "notes_json", row.character_id),
     backgroundText: row.background_text,
   });
@@ -823,7 +878,7 @@ function writeCharacterProgress(characterId, characterState, statement = upsertC
   const { sheet, notes, backgroundText } = splitCharacterState(characterState ?? {});
   statement.run(
     characterId,
-    JSON.stringify(sheet ?? {}),
+    JSON.stringify(normalizeSheetCatalogIds(sheet ?? {})),
     JSON.stringify(Array.isArray(notes) ? notes : []),
     typeof backgroundText === "string" ? backgroundText : "",
   );
