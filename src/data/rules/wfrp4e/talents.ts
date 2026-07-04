@@ -19,6 +19,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_drilled",
+    relatedSkillIds: ["skill_melee"],
     name: "Drilled",
     max: "Weapon Skill Bonus",
     tests: "Melee Tests when beside an ally with Drilled",
@@ -93,6 +94,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_instinctive_diction",
+    relatedSkillIds: ["skill_language_magick"],
     name: "Instinctive Diction",
     max: "Initiative Bonus",
     tests: "Language (Magick) when casting",
@@ -108,6 +110,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_aethyric_attunement",
+    relatedSkillIds: ["skill_channelling"],
     name: "Aethyric Attunement",
     max: "Initiative Bonus",
     tests: "Channel (Any)",
@@ -157,6 +160,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_bless",
+    relatedSkillIds: ["skill_pray"],
     name: "Bless",
     max: "1",
     tests: "Pray Tests to invoke blessings",
@@ -165,6 +169,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_etiquette_cultists",
+    relatedSkillIds: ["skill_charm"],
     name: "Etiquette (Cultists)",
     max: "Fellowship Bonus",
     tests: "Social Tests with cult members",
@@ -443,6 +448,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_step_aside",
+    relatedSkillIds: ["skill_dodge"],
     name: "Step Aside",
     max: "Agility Bonus",
     tests: "Tests to dodge an attack without using your reaction",
@@ -885,6 +891,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_inspiring",
+    relatedSkillIds: ["skill_leadership"],
     name: "Inspiring",
     max: "Fellowship Bonus",
     tests: "Leadership",
@@ -950,6 +957,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_magnum_opus",
+    relatedSkillIds: ["skill_art", "skill_trade"],
     name: "Magnum Opus",
     max: "None",
     tests: "Art or Trade",
@@ -1051,6 +1059,7 @@ export const talentDefinitions: TalentDefinition[] = [
   },
   {
     id: "talent_reaction_strike",
+    relatedSkillIds: ["skill_melee"],
     name: "Reaction Strike",
     max: "Initiative Bonus",
     tests: "Initiative when Charged",
