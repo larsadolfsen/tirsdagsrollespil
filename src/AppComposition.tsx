@@ -276,8 +276,8 @@ export function AppComposition() {
     if (session) {
       const slug = toSessionSlug(session.sessionNumber, session.name);
       const newPath = `/${characterData.campaignId}/campaign/${slug}`;
-      if (window.location.pathname !== newPath) {
-        window.history.pushState(null, "", newPath);
+      if (location.pathname !== newPath) {
+        navigate(newPath);
       }
     }
   };
@@ -717,10 +717,10 @@ export function AppComposition() {
     const basePath = `/${characterData.campaignId}/campaign`;
     const slug = activeGmSession ? toSessionSlug(activeGmSession.sessionNumber, activeGmSession.name) : "";
     const newPath = slug ? `${basePath}/${slug}` : basePath;
-    if (window.location.pathname !== newPath) {
-      window.history.replaceState(null, "", newPath);
+    if (location.pathname !== newPath) {
+      navigate(newPath, { replace: true });
     }
-  }, [isGameMasterOpen, selectedGmSessionId, activeGmSession?.name, characterData.campaignId]);
+  }, [isGameMasterOpen, selectedGmSessionId, activeGmSession?.name, characterData.campaignId, location.pathname, navigate]);
 
   type ResolvedSkillOption = (typeof rulesIndex.resolvedSkillOptions)[number];
   const skillDefinitionById = new Map<string, SkillDefinition>(
@@ -897,29 +897,25 @@ export function AppComposition() {
     }));
   }, [characterData.campaignId, libraryBookId, navigate]);
 
-  // Transitional: GM session selection is still local state; keep syncing it
-  // on back/forward until Task 5 moves it onto the router location.
+  // Sync selected session from the URL slug (covers back/forward — the two
+  // GM sync effects are idempotent and converge, since each no-ops when URL
+  // and selection already agree).
   useEffect(() => {
-    const handlePopState = () => {
-      if (window.location.pathname.includes("/campaign")) {
-        const pathParts = window.location.pathname.split("/");
-        const gmIndex = pathParts.findIndex((p) => p === "campaign");
-        const urlSlug = gmIndex >= 0 ? pathParts[gmIndex + 1] : undefined;
-        if (urlSlug) {
-          const matched = gmSessionsRef.current.find((s) => toSessionSlug(s.sessionNumber, s.name) === urlSlug);
-          setSelectedGmSessionId(matched ? matched.id : null);
-        } else {
-          setSelectedGmSessionId(null);
-        }
-      }
-    };
+    if (!isGameMasterOpen) return;
 
-    window.addEventListener("popstate", handlePopState);
+    const pathParts = location.pathname.split("/");
+    const gmIndex = pathParts.findIndex((p) => p === "campaign");
+    const urlSlug = gmIndex >= 0 ? pathParts[gmIndex + 1] : undefined;
 
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, []);
+    if (urlSlug) {
+      const matched = gmSessionsRef.current.find(
+        (s) => toSessionSlug(s.sessionNumber, s.name) === urlSlug,
+      );
+      setSelectedGmSessionId(matched ? matched.id : null);
+    } else {
+      setSelectedGmSessionId(null);
+    }
+  }, [isGameMasterOpen, location.pathname]);
 
   const openCharacterFromLanding = useCallback((characterId: string) => {
     const character = availableCharacters.find((availableCharacter) => availableCharacter.id === characterId);
