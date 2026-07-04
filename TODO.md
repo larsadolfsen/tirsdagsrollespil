@@ -505,8 +505,11 @@ The recurring bug: a flat `"1"`/`"5"` where the book uses a Characteristic Bonus
 
 > **Promoted to a Superpowers spec + plans.** The full design, resolved decisions, extracted
 > talent→skill mapping, and the 13-piece plan index now live in:
-> - Spec: [`docs/superpowers/specs/2026-07-04-skill-talent-link-design.md`](docs/superpowers/specs/2026-07-04-skill-talent-link-design.md)
-> - Plans: `docs/superpowers/plans/2026-07-04-skill-talent-*` (Plan 01 written; 02–13 indexed in the spec)
+> - Spec (characters): [`docs/superpowers/specs/2026-07-04-skill-talent-link-design.md`](docs/superpowers/specs/2026-07-04-skill-talent-link-design.md)
+> - Spec (NPCs/generics/creatures): [`docs/superpowers/specs/2026-07-04-adversary-skill-trait-link-design.md`](docs/superpowers/specs/2026-07-04-adversary-skill-trait-link-design.md)
+> - Plans: `docs/superpowers/plans/2026-07-04-skill-talent-*` (character 01–13) and `…-adversary-A01–A08`
+> - Consistency: single effect registry (Plan 02b) + `.claude/skills/talent-effects` authoring skill
+> - Ordering note: adversary A01→A03 (de-conflate traits) must land **before** character Plan 04.
 >
 > Related open data items above (R6–R8 + the wrong-Max / wrong-mechanic / extra-talent lists) are
 > folded into that effort's reconciliation plans (03–05), which auto-apply `skills-and-talents.md`

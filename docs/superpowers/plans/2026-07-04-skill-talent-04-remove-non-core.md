@@ -2,6 +2,10 @@
 
 > Design source: `…-skill-talent-link-design.md`. **Data-integrity priority.** Auto-apply MD as truth.
 > Discrepancy list is in `TODO.md` (R7 + "extra / unverified in code").
+>
+> ⚠️ **Depends on adversary Plan A03.** The meta-"talents" `armour`/`weapon`/`ranged`/`tough`/`prejudice`
+> removed here exist to resolve NPC/generic trait strings. A03 must first move those into the `traits`
+> field / trait catalog, or these deletions break adversary references. Run A01→A03 before this plan.
 
 **Goal:** Delete or rename talents that are not in the Core MD list, and repoint every reference so
 `talent-references.spec.ts` still resolves.

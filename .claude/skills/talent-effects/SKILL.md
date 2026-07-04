@@ -38,6 +38,21 @@ Where refs live (from decision D-b):
 
 ---
 
+## Specialised (parenthetical) entries — one base, applied conditionally
+
+`Name (X)` on a talent **or** trait is the single base `Name` aimed at target `X` (weapon / race /
+group / lore / threat). Rules:
+
+- **One catalog definition.** The specialisation is instance data (`<base>_<spec>` ref or a
+  `specialisation`/`value` field), never a new catalog entry.
+- **Applies only sometimes.** A specialisation that names a *target* becomes a **condition tag**; the
+  handler contributes only when the roll context carries it (Hatred (Orcs) → vs Orcs; Weapon (Sword) →
+  wielding a sword; Resistance (Poison) → poison tests).
+- **Unless the specialisation is a skill area** (Etiquette (Nobles), Lore (Engineering)) — then it maps
+  to a `SkillRef` specialisation instead of a condition.
+- Multiple specialisations of the same base (Hatred (Orcs) + Hatred (Elves)) = one base, several
+  conditional instances.
+
 ## Effect type taxonomy
 
 Model with a typed effect where the mechanic is clear; otherwise `special_rule` (prose) + a
