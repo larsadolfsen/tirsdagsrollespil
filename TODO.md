@@ -509,9 +509,10 @@ The recurring bug: a flat `"1"`/`"5"` where the book uses a Characteristic Bonus
 > - Spec (NPCs/generics/creatures): [`docs/superpowers/specs/2026-07-04-adversary-skill-trait-link-design.md`](docs/superpowers/specs/2026-07-04-adversary-skill-trait-link-design.md)
 > - Plans: `docs/superpowers/plans/2026-07-04-skill-talent-*` (character 01–13) and `…-adversary-A01–A08`
 > - Consistency: single effect registry (Plan 02b) + `.claude/skills/talent-effects` authoring skill
-> - **ID scheme (D-g): prefixed globally-unique ids** `skill_*`/`talent_*`/`trait_*` — **Plan 00 runs first**,
->   with a load-time saved-data migration map (characteristics stay bare `WS…Fel`).
-> - Ordering: Plan 00 (unique ids) → then everything else; adversary A01→A03 (de-conflate traits) before char Plan 04.
+> - **ID scheme (D-g): prefixed globally-unique ids** `skill_*`/`talent_*`/`trait_*` (characteristics bare).
+>   ✅ **Plan 00 IMPLEMENTED** — all catalogs prefixed; live-server read/write normalization + at-rest
+>   migration; `id-uniqueness.spec` guard; lint+build green.
+> - Ordering: ~~Plan 00 (unique ids)~~ ✅ done → then everything else; adversary A01→A03 (de-conflate traits) before char Plan 04.
 >
 > Related open data items above (R6–R8 + the wrong-Max / wrong-mechanic / extra-talent lists) are
 > folded into that effort's reconciliation plans (03–05), which auto-apply `skills-and-talents.md`

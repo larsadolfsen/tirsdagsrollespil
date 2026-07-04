@@ -1,5 +1,15 @@
 # Skill↔Talent Link — Plan 00: Globally-Unique Catalog IDs
 
+> ✅ **IMPLEMENTED (2026-07-04).** Commits: talents `e5bd774`, skills `623374e`, traits `ad323e9`,
+> hardcoded-id fixes (bless/spellcaster) `after ad323e9`, server transition + uniqueness guard, client
+> shim. All catalog ids are now `skill_*` / `talent_* ` / `trait_*` (characteristics bare). Live transition
+> is **read+write normalization** in `server.mjs` (`normalizeSheetCatalogIds`) plus a flag-guarded at-rest
+> pass (`catalog-ids-prefixed-v1`) — chosen over a destructive bulk rewrite because it's transparent and
+> idempotent (old sheets upgrade as they flow through; stale-tab writes coerced). Client mirrors it in
+> `persistence.ts`. Guards: `tests/id-uniqueness.spec.ts` (prefixes + pairwise-disjoint). `npm run lint`
+> and `npm run build` green; all data specs green. (UI/browser specs not run here — env browser version
+> mismatch; change is data/persistence only.)
+
 > Design source: `docs/superpowers/specs/2026-07-04-skill-talent-link-design.md` (supersedes D-f).
 > **Runs before every other plan.** Prefix all skill/talent/trait ids so they are globally unique, and
 > protect saved characters with a load-time migration map. All downstream plans author against the new ids.
