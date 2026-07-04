@@ -66,13 +66,14 @@ const variantClasses: Record<HeadingVariant, string> = {
   visuallyHidden: "sr-only",
 };
 
-type NativeHeadingProps = Omit<ComponentPropsWithoutRef<"h2">, "className" | "style">;
+type NativeHeadingProps = Omit<ComponentPropsWithoutRef<"h2">, "style">;
 
 export interface HeadingProps extends NativeHeadingProps {
   level: HeadingLevel;
   variant: HeadingVariant;
   align?: "left" | "center" | "right";
   truncate?: boolean;
+  className?: string;
 }
 
 export function Heading({
