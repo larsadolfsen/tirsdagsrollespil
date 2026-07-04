@@ -70,6 +70,25 @@ existing `app_metadata` flag + `ensureLegacyMigration` idioms.
 ## Task 6: Verify
 - [ ] `npm run lint && npm run build && npm test` fully green; drive the app (load a saved sheet, roll).
 
+## Deploy runbook (first plan that touches production data)
+
+Order matters — the migration is forward-only. Run it once, for real, like this:
+
+1. **Rehearse on a copy.** Pull the prod SQLite file (Railway volume) to a scratch dir; boot the new
+   `server.mjs` against the copy; confirm the boot migration completes, the flag is set, a sample sheet
+   loads and rolls, and re-running boot is a no-op (idempotent). Fix anything before touching prod.
+2. **Back up prod.** Copy the live SQLite file (and note the Railway volume path) to a dated backup
+   before deploying. This is the rollback artifact.
+3. **Deploy the new code.** Railway swaps the container atomically; on boot the flag-guarded migration
+   rewrites `sheet_json`. Watch logs for the migration line + flag write.
+4. **Verify live.** Load a real character sheet, check skills/talents/advances resolve, roll a test,
+   confirm no console/server errors. Spot-check a second character.
+5. **Rollback path (if needed).** Restore the backup SQLite **and** redeploy the previous code image —
+   because migrated (prefixed) data is not understood by the old code. Don't roll back code alone.
+
+> Note: `data/` is gitignored runtime state; the prod DB lives on the Railway volume, not in git. See
+> `README.md` for Railway specifics.
+
 ## Definition of done
 - All catalog ids are prefixed + globally unique; every ref re-pointed; the live server migrates
   `sheet_json` once on boot (flag-guarded, transactional, backed up) and normalizes stray old ids on
