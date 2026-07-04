@@ -317,7 +317,7 @@ function PlayerInfoPane({ characterId }: { characterId: string }) {
   const visibleEquipment = char.equipment
     .filter((item) => item.equipped)
     .sort((a, b) => a.name.localeCompare(b.name));
-  const hasBlessTalent = char.talents.some((talent) => talent.id === "bless" || talent.name === "Bless");
+  const hasBlessTalent = char.talents.some((talent) => talent.id === "talent_bless" || talent.name === "Bless");
   const hasInvokeTalent = char.talents.some((talent) => /^Invoke(?:\s|$)/i.test(talent.name));
   const grantedPrayers = session.ruleset.spells.filter((spell) =>
     (hasBlessTalent && spell.school?.endsWith("-prayer")) ||
@@ -515,7 +515,7 @@ function MonsterInfoPane({
     if (trait.rating !== undefined) return String(trait.rating);
     return "";
   };
-  const spellcasterTraits = template.traits.filter((trait) => trait.id === "spellcaster");
+  const spellcasterTraits = template.traits.filter((trait) => trait.id === "trait_spellcaster");
   const spellSearchTerms = spellcasterTraits.flatMap((trait) => {
     if (Array.isArray(trait.value)) return trait.value;
     if (typeof trait.value === "string") return trait.value.split(/[,;]/);
