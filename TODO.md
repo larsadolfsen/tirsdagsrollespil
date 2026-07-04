@@ -98,11 +98,11 @@ Suggested fix order: #1 → #2 → #3 → #4/#5 → #6. The first three corrupt 
     `:4874 "set_traps"` → `set_trap`. Skill resolution breaks for the Envoy, Coach Master, and
     Wrecker career steps.
 
-- [ ] **7. List keys use non-unique `name` instead of `id`.**
-  - Files: `src/tabs/SpellsTab.tsx:124` (`key={spell.name}`),
-    `src/tabs/ActionsTab.tsx:360`/`:438` (`key={weapon.name}`)
+- [x] **7. ✅ List keys use non-unique `name` instead of `id`.** — FIXED.
+  - Files: `src/tabs/SpellsTab.tsx:124` (`key={spell.name}` → `key={spell.id}`),
+    `src/tabs/ActionsTab.tsx:360`/`:438` (`key={weapon.name}` → `key={weapon.id}`)
   - Two same-named spells/weapons collide, attaching accordion/Remove state to the wrong row.
-    Unique `id` is available in both cases.
+    Unique `id` is available in both cases (`spell.id`, `ResolvedCharacterEquipment.id`).
 
 - [ ] **8. Stale-update lost saves across the editor.**
   - Files: `src/lib/useGameSession.ts:392-476`, `src/data/persistence.ts:177-184`

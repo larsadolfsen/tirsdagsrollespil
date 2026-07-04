@@ -121,7 +121,7 @@ export function SpellsTab({
           {spellRows.map(({ channelValue, formatted, mobileDetails, rollLabel, spell }) => {
             return (
               <SheetDataAccordionRow
-                key={spell.name}
+                key={spell.id}
                 summaryClassName={`${mobileSpellGridClass} md:grid ${desktopSpellGridClass} md:gap-0`}
                 summary={(
                   <>

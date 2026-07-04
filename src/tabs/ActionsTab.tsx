@@ -357,7 +357,7 @@ export function ActionsTab({
 
               return isMelee ? (
                 <SheetDataSection
-                  key={weapon.name}
+                  key={weapon.id}
                   gridClassName={weaponActionGridClass}
                   headerClassName={actionSummaryGridClass}
                   leadingLabels={[{ align: "center", label: "Roll" }]}
@@ -435,7 +435,7 @@ export function ActionsTab({
                 </SheetDataSection>
               ) : (
                 <SheetDataSection
-                  key={weapon.name}
+                  key={weapon.id}
                   gridClassName={rangedActionGridClass}
                   headerClassName={actionSummaryGridClass}
                   leadingLabels={[{ align: "center", label: "Roll" }]}
