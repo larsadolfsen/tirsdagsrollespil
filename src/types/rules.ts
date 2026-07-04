@@ -6,7 +6,9 @@ export type RulesTextDefinition = {
 
 // Plan 00 (D-g): catalog ids are prefixed and globally unique. Ref types document
 // intent; the field a ref lives in also signals its kind.
-export type { CharacteristicKey } from "../data/rules/wfrp4e/creatureTraits";
+import type { CharacteristicKey } from "../data/rules/wfrp4e/creatureTraits";
+
+export type { CharacteristicKey };
 export type SkillRef = string; // "skill_endurance" (base, matches any spec) | "skill_stealth_urban"
 export type TalentRef = string; // "talent_hatred" | "talent_etiquette_nobles"
 export type TraitRef = string; // "trait_weapon" | "trait_chill_grasp"
@@ -17,11 +19,16 @@ export type TalentEffect =
       test: string;
       valuePerLevel: number;
       condition?: string;
+      // Plan 06: structured, id-first matching (base ref matches any specialisation).
+      skillIds?: SkillRef[];
+      characteristics?: CharacteristicKey[];
     }
   | {
       type: "test_reverse_failed_roll";
       test: string;
       condition?: string;
+      skillIds?: SkillRef[];
+      characteristics?: CharacteristicKey[];
     }
   | {
       type: "attribute_bonus";
@@ -79,6 +86,9 @@ export interface TalentDefinition extends RulesTextDefinition {
   effects?: TalentEffect[];
   grouped?: boolean;
   specialisationLabel?: string;
+  // Plan 07: cross-linking (prose talents included). Plan 10: career/XP grants.
+  relatedSkillIds?: SkillRef[];
+  grantsSkillIds?: SkillRef[];
 }
 
 export interface SpellDefinition extends RulesTextDefinition {

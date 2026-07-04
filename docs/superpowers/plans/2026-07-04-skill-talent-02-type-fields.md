@@ -1,5 +1,7 @@
 # Skill↔Talent Link — Plan 02: Additive Ref Fields on Types
 
+> ✅ **IMPLEMENTED (2026-07-04).** Added `skillIds?`/`characteristics?` to the `test_sl_bonus` + `test_reverse_failed_roll` variants and `relatedSkillIds?`/`grantsSkillIds?` to `TalentDefinition` (all optional). `CharacteristicKey` now imported+re-exported so it's usable in-file. lint green; no data/behavior change.
+
 > Design source: `docs/superpowers/specs/2026-07-04-skill-talent-link-design.md`. Depends on Plan 01.
 > Pure type additions — no data, no runtime change. Proven by the build.
 
