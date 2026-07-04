@@ -31,7 +31,8 @@ eliminating the 9 cross-catalog collisions permanently, with zero breakage to sa
 | Modify | `src/data/rules/wfrp4e/creatureTraits.ts` | Prefix + snake-normalise trait ids; `CreatureTraitId` follows |
 | Modify | `src/data/rules/wfrp4e/careers/careerSteps.ts` | Re-point ~4,227 `skillIds`/`talentIds` entries |
 | Modify | `src/data/characters/*`, `src/data/rules/wfrp4e/creatureCatalog/**` | Re-point `skillId`/`talentId`/trait-instance ids (72 char refs + creature trait instances) |
-| Modify | `src/data/persistence.ts` | Load-time old→new migration map for stored `skills` keys + `talentIds` |
+| Modify | `server.mjs` | **Server-side** one-time SQLite migration of `sheet_json` blobs + read/write id normalization |
+| Modify | `src/data/persistence.ts` | Client-side read/write normalization shim (defensive; stale-tab safety) |
 | Modify | `tests/*` | Update any hard-coded ids; add uniqueness guard |
 
 ## Task 1: Generate the old→new map (scripted)
@@ -47,10 +48,20 @@ eliminating the 9 cross-catalog collisions permanently, with zero breakage to sa
   talent map — **field-scoped**, so a colliding bare id gets the right prefix.
 - [ ] Character files + creature catalog: re-point `skillId`/`talentId`/trait-instance ids.
 
-## Task 4: Saved-data migration (the safety net)
-- [ ] In `persistence.ts` load path, remap stored `CharacterProgress.skills` keys and `talentIds` through
-  the old→new map (idempotent; leaves already-migrated/new ids untouched). Characteristics unaffected.
-- [ ] Test: a fixture with old-id progress loads and resolves to the new ids.
+## Task 4: Live-server transition (the safety net)
+Durable data lives in the **server** SQLite (`character_progress.sheet_json` on the Railway volume), not
+the client — the ids are inside the JSON blob (`skills` keys, `talentIds`, trait ids). Reuse the
+existing `app_metadata` flag + `ensureLegacyMigration` idioms.
+- [ ] **One-time startup migration** in `server.mjs`, guarded by an `app_metadata` key
+  (`catalog-ids-prefixed-v1`), wrapped in a **transaction**: for each row, parse `sheet_json`, remap
+  `skills` keys / `talentIds` / trait ids via the old→new map, re-serialize, `UPDATE`; set the flag.
+  Idempotent; skips already-migrated/new ids.
+- [ ] **Read + write normalization** (server PUT/GET, mirrored in `persistence.ts`): coerce old ids →
+  new on both directions so a **stale cached client tab** saving an old-id sheet after migration is safe.
+- [ ] **Back up the SQLite file before migrating** — the migration is forward-only; code rollback after
+  it runs requires restoring the backup. Document this in the deploy step.
+- [ ] **Audit `dice_rolls.roll_json` + `gm_sessions.scenes_json`** for embedded skill/talent ids; remap if any.
+- [ ] Tests: a fixture row with old-id `sheet_json` migrates on boot; a PUT of an old-id sheet is normalized.
 
 ## Task 5: Uniqueness guard
 - [ ] New `tests/id-uniqueness.spec.ts`: the id sets of the three catalogs are pairwise disjoint
@@ -60,5 +71,6 @@ eliminating the 9 cross-catalog collisions permanently, with zero breakage to sa
 - [ ] `npm run lint && npm run build && npm test` fully green; drive the app (load a saved sheet, roll).
 
 ## Definition of done
-- All catalog ids are prefixed + globally unique; every ref re-pointed; saved characters migrate on load;
-  uniqueness enforced by a test. Downstream plans (01→13, A01→A08) author against the new ids.
+- All catalog ids are prefixed + globally unique; every ref re-pointed; the live server migrates
+  `sheet_json` once on boot (flag-guarded, transactional, backed up) and normalizes stray old ids on
+  read/write; uniqueness enforced by a test. Downstream plans (01→13, A01→A08) author against the new ids.
