@@ -545,6 +545,15 @@ deterministically at roll time and can be validated at build time.
 - [ ] **Add a regression test** (à la `career-steps.spec.ts` / `talent-references.spec.ts`) asserting
   every talent `skillId`/effect `skillIds` resolves to a real `SkillDefinition`, so drift fails CI.
 
+## Prior-art check (2026-07-04)
+
+Scanned all 54 remote branches: **no branch already implements this.** No branch adds
+`skillIds` to `talents.ts` or the test-scoped `TalentEffect` variants; `talents.ts` and
+`talentEffects.ts` have zero structured skill refs anywhere. The only `skillId` in the
+codebase is the unrelated, pre-existing `ArmourPenalty.skillId` (`src/types/rules.ts:110`,
+armour → penalized skill), present identically on every branch. `claude/todo-implementation`
+only touched list-key/a11y items, not this coupling. → This is greenfield; nothing to rebase onto.
+
 ## Notes / decisions needed
 
 - Grouped skills (specialisations, e.g. Lore, Trade, Melee) need to decide whether a talent binds
