@@ -39,7 +39,8 @@ as many small, independently-testable pieces.
 | Data | Reconciliation | **Auto-apply `skills-and-talents.md` as source of truth** where `talents.ts` disagrees (Max, mechanic, skill refs). |
 | Grants | Skill-granting talents | **Wire into career/XP** — grant talents add the skill to the character and apply the XP discount. |
 | Priority | Build order | **Data integrity / validation first** (types + validation + reconciliation), then roll-time, then career/XP + UI. |
-| D-f | ID scheme (2026-07-04) | **Keep bare ids — no `ski_`/`tal_`/`tra_` prefix.** A prefix would rename ~4,500 refs and break every saved character (progress is keyed by id in `storage.ts`). Instead, kind is carried by the ref **type** (`SkillRef`/`TalentRef`/`TraitRef` aliases at the API layer) and by the **field/array** a ref lives in. Cross-catalog collisions (9 ids) are handled by field-specific resolution, not global uniqueness. |
+| ~~D-f~~ | ~~Keep bare ids~~ | **Superseded by D-g.** |
+| D-g | ID scheme (2026-07-04, final) | **Prefix all catalog ids for global uniqueness** — `skill_*` / `talent_*` / `trait_*`; characteristics stay bare (`WS…Fel`). Done as **Plan 00** before any other code, with a load-time old→new migration map so saved characters (progress keyed by id in `storage.ts`) don't break. Chosen because nothing is built yet (cheapest moment) and it kills the 9 cross-catalog collisions permanently → one generic parser, self-documenting refs, future mixed lists possible. `SkillRef`/`TalentRef`/`TraitRef` types still document intent; the field a ref lives in still signals kind. |
 
 ## Data model (additive, all optional — no breaking change, no data migration)
 
@@ -51,12 +52,11 @@ character JSON — so there is no persistence-format change.
 export type CharacteristicKey =            // re-export the existing union from creatureTraits.ts
   "WS" | "BS" | "S" | "T" | "I" | "Ag" | "Dex" | "Int" | "WP" | "Fel";
 
-// Ref types are documented aliases (D-f: bare ids, no prefix). Kind is carried by the type at the API
-// layer and by the field a ref lives in; data literals stay plain strings (no cast friction). The
-// parser/resolver returns kind-tagged output ({ kind: "skill"|"talent"|"trait", id }).
-export type SkillRef = string;             // "endurance" (base, matches any spec) | "stealth_urban" (spec)
-export type TalentRef = string;            // "hatred" | "etiquette_nobles"
-export type TraitRef = string;             // "weapon" | "ranged"  (kebab-case in the trait catalog)
+// Ref types are documented aliases (D-g: prefixed, globally-unique ids). Kind is also signalled by the
+// field a ref lives in; data literals stay plain strings.
+export type SkillRef = string;             // "skill_endurance" (base, matches any spec) | "skill_stealth_urban"
+export type TalentRef = string;            // "talent_hatred" | "talent_etiquette_nobles"
+export type TraitRef = string;             // "trait_weapon" | "trait_ranged" | "trait_chill_grasp"
 
 // added to the test_sl_bonus and test_reverse_failed_roll variants of TalentEffect:
 //   skillIds?: SkillRef[];
@@ -115,6 +115,10 @@ Spec ref form `<base>_<spec>` (spec lowercased, spaces→`_`): e.g. `stealth_urb
 
 The token-saver: authored refs for the backfill, grouped by effect kind. `id` = talent id in
 `talents.ts`. This is the working draft the backfill plans consume; verify each against the row.
+
+> **Prefix note (D-g):** ids in the tables below are shown *without* the prefix for brevity. After
+> Plan 00, read them prefixed: `intimidate`→`skill_intimidate`, `stealth_urban`→`skill_stealth_urban`,
+> talent ids `talent_*`, trait ids `trait_*`. Characteristic keys (`WS…Fel`) are unprefixed.
 
 ### A. `test_sl_bonus` — +SL to specific tests → `effect.skillIds` / `effect.characteristics`
 | id | Max | ref | condition / note |
@@ -207,6 +211,7 @@ Data integrity first (priority), then behaviour, then UI.
 
 | Plan | Piece | Test that proves it |
 |---|---|---|
+| **00** | **Globally-unique prefixed ids** (`skill_*`/`talent_*`/`trait_*`) + saved-data migration map | `id-uniqueness.spec.ts` (catalogs disjoint); existing suites green; old-id fixture migrates |
 | 01 | `skillRefs.ts` + `characteristicKeys.ts` pure helpers | unit spec: parse/match/resolve + legacy-attr map cases |
 | 02 | Additive ref fields on types (no data) | `npm run build` typechecks; no runtime change |
 | **02b** | **Effect registry / single resolver** (the component; id-first matching) | `talent-effects.spec.ts`: handler hit + no-false-positive; consumers carry no type logic |

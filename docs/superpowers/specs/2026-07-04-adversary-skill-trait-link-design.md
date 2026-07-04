@@ -67,8 +67,8 @@ talent / trait) resolving to the shared catalogs — and finish the creature sid
 
 ## ⚠️ ID uniqueness & cross-catalog collisions (verified 2026-07-04)
 
-IDs are unique **within** each catalog, but **not across** them. Nine ids exist in **both** the talent
-and trait catalogs (normalising `-`/`_`):
+**Resolved by Plan 00 (prefixed ids).** Before the prefix, ids were unique **within** each catalog but
+**not across** them — nine collided in **both** the talent and trait catalogs (normalising `-`/`_`):
 
 `armour`, `frenzy`, `hardy`, `hatred`, `magic_resistance`, `night_vision`, `prejudice`, `ranged`, `weapon`
 
@@ -77,17 +77,16 @@ and trait catalogs (normalising `-`/`_`):
 - **Five** (`frenzy`, `hardy`, `hatred`, `magic_resistance`, `night_vision`) are **legitimately in both
   books** (a player talent *and* a creature trait). The collision is permanent.
 
-**Decision (2026-07-04): keep bare ids — no `ski_`/`tal_`/`tra_` prefix** (see char spec D-f: a prefix
-would rename ~4,500 refs and break saved characters). Kind is carried by the ref **type**
-(`SkillRef`/`TalentRef`/`TraitRef`) and by the **field** a ref lives in.
+**Decision (2026-07-04, final — char spec D-g): prefix all catalog ids** (`skill_*`/`talent_*`/`trait_*`;
+characteristics bare) via **Plan 00**, so ids are globally unique and the collision is gone at the id
+level. Kind is *also* signalled by the field a ref lives in.
 
-**Rule: the field is the source of truth for kind.** A string in `talents[]` resolves against the
-talent catalog; a string in `traits[]` resolves against the trait catalog. Parsers are therefore
-**field-specific** — `parseTalentEntry` searches only talents, `parseTraitEntry` only traits — so a name
-is never resolved against the wrong catalog. The single judgement call is **A03**, which decides which
-array a currently-conflated string belongs in; for the 5 legitimate-both ids that cannot be decided by
-name, A03 uses the entity kind (bestiary creature/beast → trait; human NPC → talent) and **flags each
-for review** rather than guessing.
+**But de-conflation still needs a human judgement.** The prefix removes *id* ambiguity, not *authoring*
+ambiguity: an NPC's `talents[]` still lists **display names** (`"Hatred (Orcs)"`), and the name Hatred
+exists in both books. So `parseTalentEntry` resolves to `talent_hatred` and `parseTraitEntry` to
+`trait_hatred` (field-specific), and **A03** still decides which array a currently-conflated string
+belongs in — for the 5 legitimate-both names it uses entity kind (bestiary creature/beast → trait;
+human NPC → talent) and **flags each for review** rather than guessing.
 
 Also: `resistance` exists as both a bare base talent (`:1002`) and `resistance_corruption` (`:83`) —
 a duplicate to resolve in char Plan 03/04 (pick the grouped base `resistance` + `resistance_<threat>`
