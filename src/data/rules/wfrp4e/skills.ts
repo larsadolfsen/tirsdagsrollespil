@@ -371,16 +371,16 @@ function createSkillDefinitions(
   type: "basic" | "advanced",
 ): SkillDefinition[] {
   return names.map((name) => {
-    const id = toSnakeCase(name);
-    const copy = SKILL_COPY[id];
+    const bareId = toSnakeCase(name);
+    const copy = SKILL_COPY[bareId];
     return {
-      id,
+      id: `skill_${bareId}`,
       name,
       type,
       shortDescription: copy.shortDescription,
       description: copy.description,
-      grouped: groupedSkillIds.has(id) || undefined,
-      specialisationLabel: groupedSkillIds.has(id) ? "Specialisation" : undefined,
+      grouped: groupedSkillIds.has(bareId) || undefined,
+      specialisationLabel: groupedSkillIds.has(bareId) ? "Specialisation" : undefined,
     };
   });
 }
@@ -394,13 +394,13 @@ export const skillSpecialisationDefinitions: SkillSpecialisationDefinition[] = O
   GROUPED_SPECIALISATIONS,
 ).flatMap(([skillId, names]) =>
   names.map((name) => ({
-    id: `${skillId}_${toSnakeCase(name)}`,
-    skillId,
+    id: `skill_${skillId}_${toSnakeCase(name)}`,
+    skillId: `skill_${skillId}`,
     name,
   })),
 );
 
-export const skillCharacteristicById: Record<string, string> = {
+const RAW_SKILL_CHARACTERISTIC: Record<string, string> = {
   art: "Dex",
   athletics: "Ag",
   bribery: "Fel",
@@ -448,6 +448,10 @@ export const skillCharacteristicById: Record<string, string> = {
   track: "I",
   trade: "Dex",
 };
+
+export const skillCharacteristicById: Record<string, string> = Object.fromEntries(
+  Object.entries(RAW_SKILL_CHARACTERISTIC).map(([id, char]) => [`skill_${id}`, char]),
+);
 
 export function getSkillDisplayName(
   skill: Pick<SkillDefinition, "name" | "grouped">,
