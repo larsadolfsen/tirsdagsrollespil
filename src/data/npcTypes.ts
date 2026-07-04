@@ -29,5 +29,7 @@ export interface NpcTemplate {
   statBlock: NpcStatBlock;
   skills?: readonly string[];
   talents?: readonly string[];
+  // Bestiary traits (Plan A02), kept distinct from talents. Parsed via adversaryRefs.
+  traits?: readonly string[];
   trappings?: readonly string[];
 }

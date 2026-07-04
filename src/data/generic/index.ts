@@ -32,9 +32,11 @@ export const genericCatalog: NpcTemplate[] = [
       "Melee (Basic) 61",
     ],
     talents: [
+      "Strike to Stun",
+    ],
+    traits: [
       "Armour (Leathers and Plates) 3",
       "Prejudice (Ambosstein Enemies)",
-      "Strike to Stun",
       "Tough",
       "Weapon (Sword) +8",
     ],
@@ -70,9 +72,11 @@ export const genericCatalog: NpcTemplate[] = [
       "Melee (Basic) 61",
     ],
     talents: [
+      "Strike to Stun",
+    ],
+    traits: [
       "Armour (Leathers and Plates) 3",
       "Prejudice (Ambosstein Enemies)",
-      "Strike to Stun",
       "Tough",
       "Weapon (Sword) +8",
     ],
@@ -104,6 +108,8 @@ export const genericCatalog: NpcTemplate[] = [
       W: 12,
     },
     talents: [
+    ],
+    traits: [
       "Weapon (Fist) +6",
     ],
   },
@@ -134,6 +140,8 @@ export const genericCatalog: NpcTemplate[] = [
       W: 16,
     },
     talents: [
+    ],
+    traits: [
       "Prejudice (Boatmen)",
       "Ranged (Blunderbuss) +8 (20)",
       "Ranged (Whip) +6 (6)",
@@ -167,9 +175,11 @@ export const genericCatalog: NpcTemplate[] = [
       W: 17,
     },
     skills: [
-      "Armour (Leathers) 1",
     ],
     talents: [
+    ],
+    traits: [
+      "Armour (Leathers) 1",
       "Prejudice (Coachmen)",
       "Weapon (Club) +8",
     ],
@@ -201,6 +211,8 @@ export const genericCatalog: NpcTemplate[] = [
       W: 12,
     },
     talents: [
+    ],
+    traits: [
       "Weapon (Bucket/Tool/Tray/Mop) +5",
     ],
   },
@@ -231,11 +243,13 @@ export const genericCatalog: NpcTemplate[] = [
       W: 16,
     },
     talents: [
-      "Weapon (Bone Clubs) +8",
     ],
     trappings: [
       "Face Paint",
       "Morrian Vestments",
+    ],
+    traits: [
+      "Weapon (Bone Clubs) +8",
     ],
   },
   {
@@ -270,6 +284,8 @@ export const genericCatalog: NpcTemplate[] = [
       "Melee (Basic) 55",
     ],
     talents: [
+    ],
+    traits: [
       "Armour (Leathers) 1",
       "Prejudice (Nobles)",
       "Weapon (Club) +9",
@@ -303,6 +319,8 @@ export const genericCatalog: NpcTemplate[] = [
       W: 17,
     },
     talents: [
+    ],
+    traits: [
       "Prejudice (Warriors)",
       "Weapon (Dagger) +6",
     ],
