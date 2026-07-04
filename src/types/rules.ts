@@ -4,6 +4,13 @@ export type RulesTextDefinition = {
   description: string;
 };
 
+// Plan 00 (D-g): catalog ids are prefixed and globally unique. Ref types document
+// intent; the field a ref lives in also signals its kind.
+export type { CharacteristicKey } from "../data/rules/wfrp4e/creatureTraits";
+export type SkillRef = string; // "skill_endurance" (base, matches any spec) | "skill_stealth_urban"
+export type TalentRef = string; // "talent_hatred" | "talent_etiquette_nobles"
+export type TraitRef = string; // "trait_weapon" | "trait_chill_grasp"
+
 export type TalentEffect =
   | {
       type: "test_sl_bonus";

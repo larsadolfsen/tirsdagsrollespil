@@ -1,5 +1,7 @@
 # Skill↔Talent Link — Plan 01: Ref & Characteristic Helpers
 
+> ✅ **IMPLEMENTED (2026-07-04).** `src/lib/skillRefs.ts` (parse/match/resolve, base-matches-any, prefixed ids) + `src/lib/characteristicKeys.ts` (canonical + legacy map) + `SkillRef`/`TalentRef`/`TraitRef` + `CharacteristicKey` re-export in `types/rules.ts`. `tests/skill-refs.spec.ts` (6) green; lint green.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
 > Design source of truth: `docs/superpowers/specs/2026-07-04-skill-talent-link-design.md`.
