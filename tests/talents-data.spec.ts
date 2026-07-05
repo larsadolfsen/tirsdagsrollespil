@@ -52,6 +52,36 @@ test("corrected talent Max values match the Core Rulebook", () => {
   expect(wrong, `Wrong talent Max: ${wrong.join("; ")}`).toEqual([]);
 });
 
+// Plan 05: mechanic corrections modelled as typed effects, validated against
+// skills-and-talents.md (the authoritative Core Rulebook table). These talents
+// previously invented a Test where the book grants a flat +5 starting characteristic.
+test("flat +5 starting-characteristic talents are modelled as attribute_bonus, not invented Tests", () => {
+  const expected: Record<string, string> = {
+    talent_nimble_fingered: "dexterity",
+    talent_savvy: "intelligence",
+    talent_very_resilient: "toughness",
+  };
+  for (const [id, attribute] of Object.entries(expected)) {
+    const talent = byId(id);
+    expect(talent, id).toBeTruthy();
+    expect(talent?.tests, `${id} should not invent a Test`).toBeUndefined();
+    const effect = talent?.effects?.find((entry) => entry.type === "attribute_bonus");
+    expect(effect, `${id} attribute_bonus effect`).toEqual({
+      type: "attribute_bonus",
+      attribute,
+      valuePerLevel: 5,
+      condition: "starting_characteristic_only",
+    });
+  }
+});
+
+test("accurate_shot adds ranged Damage per level, not the Sniper range mechanic", () => {
+  const talent = byId("talent_accurate_shot");
+  expect(talent?.tests, "accurate_shot should not carry the Sniper range Test").toBeUndefined();
+  const effect = talent?.effects?.find((entry) => entry.type === "damage_bonus");
+  expect(effect).toEqual({ type: "damage_bonus", valuePerLevel: 1, condition: "ranged_attack" });
+});
+
 test("talent ids are unique", () => {
   const seen = new Set<string>();
   const dupes: string[] = [];
