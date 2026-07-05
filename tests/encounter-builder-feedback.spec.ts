@@ -41,8 +41,8 @@ test("encounter builder keeps sidebar open, shows add feedback, and disables uni
   // 3. Add Generic: Hired Thug (requires instance name)
   const hiredThugRow = sidebar.getByRole("button", { name: "Hired Thug Generic - Human", exact: true });
   await hiredThugRow.click();
-  // Click Add to trigger the naming dialog
-  await sidebar.getByRole("button", { name: "Add", exact: true }).click();
+  // "Add Named" opens the naming dialog ("Add" adds a default-named instance directly).
+  await sidebar.getByRole("button", { name: "Add Named", exact: true }).click();
 
   const nameDialog = page.getByRole("dialog", { name: "Name this character" });
   await expect(nameDialog).toBeVisible();

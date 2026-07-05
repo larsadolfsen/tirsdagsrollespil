@@ -11,7 +11,8 @@ test("adding a Generic adversary requires and keeps an instance name", async ({ 
 
   await page.getByRole("button", { name: "Add adversary", exact: true }).click();
   await page.getByRole("button", { name: "Hired Thug Generic - Human", exact: true }).click();
-  await page.getByRole("button", { name: "Add", exact: true }).click();
+  // "Add Named" opens the naming dialog ("Add" adds a default-named instance directly).
+  await page.getByRole("button", { name: "Add Named", exact: true }).click();
 
   const nameDialog = page.getByRole("dialog", { name: "Name this character" });
   await expect(nameDialog).toBeVisible();
@@ -33,7 +34,10 @@ test("adding an NPC adversary keeps the selected template", async ({ page }) => 
   await page.getByRole("button", { name: "Open", exact: true }).first().click();
   await page.getByRole("button", { name: "Expand scene" }).nth(6).click();
   await page.getByRole("button", { name: "Add adversary", exact: true }).click();
-  await page.getByRole("button", { name: "Bruno Franke NPC - Human", exact: true }).click();
-  await page.getByRole("button", { name: "Add", exact: true }).click();
-  await expect(page.getByText("Bruno Franke", { exact: true })).toBeVisible();
+
+  // Scope to the sidebar: the expanded scene also has a block-type "Add" menu button.
+  const sidebar = page.getByRole("dialog", { name: "Add Adversary" });
+  await sidebar.getByRole("button", { name: "Bruno Franke NPC - Human", exact: true }).click();
+  await sidebar.getByRole("button", { name: "Add", exact: true }).click();
+  await expect(page.getByText("Bruno Franke", { exact: true }).first()).toBeVisible();
 });
