@@ -13,10 +13,10 @@ test("GM pages use the top content heading as the only h1", async ({ page }) => 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(/.+/);
   await expect(page.getByRole("heading", { name: "Enemy Within" })).toHaveCount(0);
 
-  const campaignHeader = page.getByRole("region", { name: "Campaign header" });
-  const campaignIdentity = campaignHeader.getByRole("group", { name: "Campaign identity" });
-  await expect(campaignIdentity.locator("span").nth(0)).toHaveText("Enemy Within");
-  await expect(campaignIdentity.locator("span").nth(1)).toHaveText("Campaign View");
+  // The unified header shows the campaign name and subtitle as identity text
+  // (not as a heading), so the only h1 remains the page content heading above.
+  await expect(page.getByText("Campaign View", { exact: true })).toBeVisible();
+  await expect(page.getByText("Enemy Within").first()).toBeVisible();
 });
 
 test("Game Master page scene components workflow", async ({ page }) => {
