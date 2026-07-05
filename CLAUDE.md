@@ -53,6 +53,7 @@ Opsummering af de vigtigste punkter:
 - **Farver**: Brug semantiske Tailwind-tokens (`bg-background`, `text-foreground`, `text-wfrp-gold` osv.) – aldrig hårdkodede hex/RGB.
 - **Komponenter**: Brug altid komponenter fra `src/components/ui/` fremfor rå HTML-elementer.
 - **Ingen runtime-data i Git**: Filer under `data/` må aldrig committes (blokeret af `.githooks`).
+- **Database-ID'er**: Når der oprettes en database, SKAL alle database-elementer have et unikt ID.
 - **Test**: Kør `npm run lint && npm run build && npm test` før du afleverer.
 
 ## Datamodel – adversaries
