@@ -17,22 +17,22 @@ test("player can open the Library from the landing page and browse into a chapte
   await page.getByRole("button", { name: "Open Library" }).click();
   await expect(page).toHaveURL(/\/enemy_within\/library$/);
 
-  await page.getByRole("button", { name: "WFRP 4E Core Rulebook" }).click();
-  await expect(page).toHaveURL(/\/enemy_within\/library\/core-rulebook$/);
-  await expect(page.getByRole("heading", { name: "WFRP 4E Core Rulebook" })).toBeVisible();
-
-  await page.getByRole("button", { name: "Throwing Bones" }).click();
+  // Opening a book (from the catalog list) jumps straight into its first chapter (two-pane view).
+  await page.getByRole("main").getByRole("button", { name: "WFRP 4E Core Rulebook" }).click();
   await expect(page).toHaveURL(/\/enemy_within\/library\/core-rulebook\/throwing-bones$/);
   await expect(page.getByRole("heading", { name: "Throwing Bones" })).toBeVisible();
   await expect(page.getByText(/ten-sided dice/).first()).toBeVisible();
 
-  await page.getByRole("button", { name: "Back to chapters" }).click();
-  await expect(page).toHaveURL(/\/enemy_within\/library\/core-rulebook$/);
-  await expect(page.getByRole("heading", { name: "WFRP 4E Core Rulebook" })).toBeVisible();
+  // The chapter sidebar navigates to another chapter.
+  const chapterNav = page.getByRole("complementary").getByRole("navigation", { name: "Book chapters" });
+  await chapterNav.getByRole("button", { name: "Rules" }).click();
+  await expect(page).toHaveURL(/\/enemy_within\/library\/core-rulebook\/rules$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Rules" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Back to books" }).click();
+  // Breadcrumbs walk back up to the library catalog.
+  await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Library" }).click();
   await expect(page).toHaveURL(/\/enemy_within\/library$/);
-  await expect(page.getByRole("button", { name: "WFRP 4E Core Rulebook" })).toBeVisible();
+  await expect(page.getByRole("main").getByRole("button", { name: "WFRP 4E Core Rulebook" })).toBeVisible();
 });
 
 test("a chapter URL can be opened directly (deep link)", async ({ page }) => {
@@ -44,19 +44,21 @@ test("a chapter URL can be opened directly (deep link)", async ({ page }) => {
 
 test("browser back/forward moves between book and chapter views", async ({ page }) => {
   await page.goto("/enemy_within/library");
-  await page.getByRole("button", { name: "WFRP 4E Core Rulebook" }).click();
-  await page.getByRole("button", { name: "Throwing Bones" }).click();
+  await page.getByRole("main").getByRole("button", { name: "WFRP 4E Core Rulebook" }).click();
   await expect(page).toHaveURL(/\/library\/core-rulebook\/throwing-bones$/);
 
+  await page.getByRole("complementary").getByRole("navigation", { name: "Book chapters" })
+    .getByRole("button", { name: "Rules" }).click();
+  await expect(page).toHaveURL(/\/library\/core-rulebook\/rules$/);
+
   await page.goBack();
-  await expect(page).toHaveURL(/\/library\/core-rulebook$/);
-  await expect(page.getByRole("heading", { name: "WFRP 4E Core Rulebook" })).toBeVisible();
+  await expect(page).toHaveURL(/\/library\/core-rulebook\/throwing-bones$/);
 
   await page.goBack();
   await expect(page).toHaveURL(/\/library$/);
 
   await page.goForward();
-  await expect(page).toHaveURL(/\/library\/core-rulebook$/);
+  await expect(page).toHaveURL(/\/library\/core-rulebook\/throwing-bones$/);
 });
 
 test("an unknown chapter slug falls back to the book's chapter list", async ({ page }) => {
@@ -82,7 +84,11 @@ test("chapter heading levels form a correct outline (H1 chapter title, H2 major 
 test("chapter table of contents lists H2 sections and scrolls to them (desktop)", async ({ page }) => {
   await page.goto("/enemy_within/library/core-rulebook/rules");
 
-  const toc = page.getByRole("navigation", { name: "Chapter contents" });
+  // The desktop sidebar opens on the chapter list; switch to the Content (TOC) tab.
+  const sidebar = page.getByRole("complementary");
+  await sidebar.getByRole("tab", { name: "Content" }).click();
+
+  const toc = sidebar.getByRole("navigation", { name: "Chapter contents" });
   await expect(toc.getByRole("link", { name: "Combat" })).toBeVisible();
 
   await toc.getByRole("link", { name: "Combat" }).click();
@@ -93,15 +99,18 @@ test("chapter table of contents opens as a bottom sheet on mobile via FAB", asyn
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/enemy_within/library/core-rulebook/rules");
 
-  await expect(page.getByRole("navigation", { name: "Chapter contents" })).toBeHidden();
-  await page.getByRole("button", { name: "Open navigation" }).click();
-
+  // The bottom sheet stays mounted off-screen; use viewport position as the open/closed signal.
   const sheet = page.locator('[data-bottom-sheet-paper="true"]');
+  await expect(sheet).not.toBeInViewport();
+
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  await expect(sheet).toBeInViewport();
+
   await sheet.getByRole("tab", { name: "Content" }).click();
   await expect(sheet.getByRole("link", { name: "Combat" })).toBeVisible();
 
   await sheet.getByRole("link", { name: "Combat" }).click();
-  await expect(sheet).toBeHidden();
+  await expect(sheet).not.toBeInViewport();
   await expect(page.locator("#combat")).toBeInViewport();
 });
 
@@ -122,14 +131,15 @@ test("FAB bottom sheet Chapters tab navigates to another chapter on mobile", asy
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/enemy_within/library/core-rulebook/throwing-bones");
 
-  await page.getByRole("button", { name: "Open navigation" }).click();
-
   const sheet = page.locator('[data-bottom-sheet-paper="true"]');
-  await sheet.getByRole("button", { name: "Rules" }).click();
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  await expect(sheet).toBeInViewport();
 
-  await expect(sheet).toBeHidden();
+  await sheet.getByRole("navigation", { name: "Book chapters" }).getByRole("button", { name: "Rules" }).click();
+
+  await expect(sheet).not.toBeInViewport();
   await expect(page).toHaveURL(/\/library\/core-rulebook\/rules$/);
-  await expect(page.getByRole("heading", { name: "Rules" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Rules" })).toBeVisible();
 });
 
 test("tables have alternating row background colors", async ({ page }) => {
@@ -144,30 +154,16 @@ test("tables have alternating row background colors", async ({ page }) => {
   expect(firstColor).not.toBe(secondColor);
 });
 
-test("desktop character header Library dropdown opens the overview and a specific book in new tabs", async ({ page, context }) => {
+test("desktop character header Library link opens the library overview in a new tab", async ({ page, context }) => {
   await page.goto("/enemy_within/karl-muller/skills");
-
-  const characterMenu = page.getByRole("navigation", { name: "Character menu" });
-  await expect(characterMenu.getByRole("button", { name: "Books" })).toHaveCount(0);
 
   const [overviewTab] = await Promise.all([
     context.waitForEvent("page"),
-    page.getByRole("button", { name: "Library" }).click().then(() =>
-      page.getByRole("menuitem", { name: "Library overview" }).click(),
-    ),
+    page.getByRole("link", { name: "Library (opens in new tab)" }).click(),
   ]);
   await overviewTab.waitForLoadState();
   await expect(overviewTab).toHaveURL(/\/enemy_within\/library$/);
   await expect(page).toHaveURL(/\/enemy_within\/karl-muller\/skills$/);
-
-  const [bookTab] = await Promise.all([
-    context.waitForEvent("page"),
-    page.getByRole("button", { name: "Library" }).click().then(() =>
-      page.getByRole("menuitem", { name: "WFRP 4E Core Rulebook" }).click(),
-    ),
-  ]);
-  await bookTab.waitForLoadState();
-  await expect(bookTab).toHaveURL(/\/enemy_within\/library\/core-rulebook$/);
 });
 
 test("mobile menu Library accordion expands and opens a book in a new tab", async ({ page, context }) => {
