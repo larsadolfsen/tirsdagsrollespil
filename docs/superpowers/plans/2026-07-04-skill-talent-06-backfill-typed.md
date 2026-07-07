@@ -1,5 +1,7 @@
 # Skill↔Talent Link — Plan 06: Backfill in Batches (by Effect Type)
 
+> 🔶 **PARTIAL (2026-07-07 verified).** Batch 1 refs partially in (`2797dc4`; 3 effect-level `skillIds` in `talents.ts`); validation spec `tests/talent-skill-refs.spec.ts` exists + green. Remaining: rest of Batch 1, Batches 2–4 (`characteristics:` count is 0) and all handler hit/absent tests — **blocked on Plan 02b** (registry). Do 02b first.
+
 > Design source: `…-skill-talent-link-design.md` (mapping A/B/D). Governs: `.claude/skills/talent-effects`.
 > Depends on Plans 01, 02, 02b (registry). **Batch axis = effect type** — one type per batch, each an
 > independent commit guarded by the validation + no-false-positive tests.

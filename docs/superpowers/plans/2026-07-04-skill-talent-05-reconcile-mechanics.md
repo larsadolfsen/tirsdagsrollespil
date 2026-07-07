@@ -1,5 +1,7 @@
 # Skill↔Talent Link — Plan 05: Reconcile Wrong Mechanics vs MD
 
+> 🔶 **PARTIAL (2026-07-07 verified).** Done: **Gunner** (max Dexterity Bonus, reload SL effect, `relatedSkillIds`), **Magic Resistance** (max 1, oppose-with-Willpower rule), **accurate_shot** prose (+SL to ranged damage). Remaining: accurate_shot typed `damage_bonus` effect; **nimble_fingered/savvy/very_resilient** still have invented `tests` + max 1 — remodel as flat +5 `attribute_bonus` (`starting_characteristic_only`), no Tests. Only do Task 1's remaining bullets + Task 2.
+
 > Design source: `…-skill-talent-link-design.md`. **Data-integrity priority.** Auto-apply MD as truth.
 > Discrepancy list in `TODO.md` (R8 + "wrong MECHANIC").
 

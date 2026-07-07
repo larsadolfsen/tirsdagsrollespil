@@ -1,5 +1,7 @@
 # Skill↔Talent Link — Plan 12: UI — Skill → Affecting Talents
 
+> 🔶 **PARTIAL (2026-07-04).** Task 1+3 done (`24a272d`): `src/lib/skillTalentIndex.ts` + `tests/skill-talent-index.spec.ts` green. Remaining: Task 2 (render in SkillsTab/SkillSidebar) + the open question + live verify.
+
 > Design source: `…-skill-talent-link-design.md` (UI cross-linking, D-c derive reverse). Depends on 06–07.
 > Shows, on a skill, which talents affect it — from a derived reverse index (no stored back-refs).
 

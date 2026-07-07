@@ -1,5 +1,7 @@
 # Skill↔Talent Link — Plan 07: Backfill Refs (Prose Talents) + Coverage Ratchet
 
+> ✅ **IMPLEMENTED (2026-07-04).** `2797dc4`+`8c5abce`+`fd2d219`+`a494248` — 83 `relatedSkillIds` in `talents.ts`; coverage ratchet in `tests/talent-skill-refs.spec.ts` green. Skip this plan.
+
 > Design source: `…-skill-talent-link-design.md` (mapping E). Depends on Plan 06 (validation spec).
 > Adds `relatedSkillIds` to the prose (`special_rule`) talents by sweeping the 91 `tests` strings.
 

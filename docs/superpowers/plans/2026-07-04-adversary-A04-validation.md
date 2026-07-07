@@ -1,5 +1,7 @@
 # Adversary Link — Plan A04: Reference Validation
 
+> ✅ **IMPLEMENTED (2026-07-04).** `34b3b19` — `tests/adversary-references.spec.ts` green (every entry resolves). Skip.
+
 > Design source: `…-adversary-skill-trait-link-design.md`. Depends on A01. Mirrors
 > `talent-references.spec.ts` for the adversary side.
 

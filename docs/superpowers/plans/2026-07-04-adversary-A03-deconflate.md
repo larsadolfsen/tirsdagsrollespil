@@ -1,5 +1,7 @@
 # Adversary Link — Plan A03: De-conflate `talents[]` → `traits[]`
 
+> ✅ **IMPLEMENTED (2026-07-04).** `34b3b19` — trait strings moved to `traits[]` in `generic/index.ts` (9), `npcs/named/a-g.ts` (12), `h-z.ts` (14); `tests/adversary-references.spec.ts` green. Character Plan 04 unblocked (and since done). Skip.
+
 > Design source: `…-adversary-skill-trait-link-design.md`. Depends on A01, A02.
 > **Blocks character Plan 04** (which removes the meta-"talents" armour/weapon/ranged/tough/prejudice).
 > Batched by data file so each move is small and verifiable.

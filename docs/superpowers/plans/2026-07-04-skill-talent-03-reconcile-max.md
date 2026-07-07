@@ -1,5 +1,7 @@
 # Skill↔Talent Link — Plan 03: Reconcile Talent `max` vs MD
 
+> ✅ **IMPLEMENTED** (on `main`, session 2: `01a6124`, `90e2ff8`, `3dd521b` — predates this plan file). Lock test green: `tests/talents-data.spec.ts` "corrected talent Max values match the Core Rulebook". Skip this plan.
+
 > Design source: `…-skill-talent-link-design.md`. **Data-integrity priority.** Auto-apply
 > `skills-and-talents.md` as source of truth. Depends only on the dataset (independent of Plans 01–02).
 

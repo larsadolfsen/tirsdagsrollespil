@@ -1,5 +1,7 @@
 # Adversary Link — Plan A01: Skill/Talent/Trait String Parsers
 
+> ✅ **IMPLEMENTED (2026-07-04).** `6d16e08` — `src/lib/adversaryRefs.ts` + `tests/adversary-refs.spec.ts` green (incl. collision test). Skip this plan.
+
 > Design source: `docs/superpowers/specs/2026-07-04-adversary-skill-trait-link-design.md`.
 > Governs: `.claude/skills/talent-effects`. Depends on character Plan 01 (`skillRefs`, `characteristicKeys`).
 > Pure functions only — fully unit-testable, unblocks the rest of the adversary work.

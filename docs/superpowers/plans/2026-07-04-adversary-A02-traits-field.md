@@ -1,5 +1,7 @@
 # Adversary Link — Plan A02: Add `traits` Field to NpcTemplate
 
+> ✅ **IMPLEMENTED (2026-07-04).** `34b3b19` — `traits?: readonly string[]` on `NpcTemplate` (`src/data/npcTypes.ts:33`). Skip.
+
 > Design source: `…-adversary-skill-trait-link-design.md`. Additive type change — no data moves yet.
 
 **Goal:** Give NPCs/generics a place for bestiary traits distinct from talents, so Plan A03 can

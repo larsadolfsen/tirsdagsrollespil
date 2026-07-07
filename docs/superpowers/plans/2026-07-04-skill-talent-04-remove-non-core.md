@@ -1,5 +1,7 @@
 # Skill↔Talent Link — Plan 04: Remove/Rename Non-Core Talents
 
+> ✅ **IMPLEMENTED (2026-07-07 verified).** `0bdb5fa` (meta-talents armour/weapon/ranged/prejudice removed after A03 moved them to traits) + earlier removals of `tough`/`shields_up`/`public_speaking`/`fanatical` — zero matches remain in `talents.ts`; `tests/talent-references.spec.ts` green. Skip this plan.
+
 > Design source: `…-skill-talent-link-design.md`. **Data-integrity priority.** Auto-apply MD as truth.
 > Discrepancy list is in `TODO.md` (R7 + "extra / unverified in code").
 >
