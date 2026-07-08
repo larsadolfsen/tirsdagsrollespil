@@ -257,14 +257,11 @@ export function getApplicableTalentEffects(params: {
 }
 
 export function getTalentSlBonusSources(effects: ActiveTalentEffect[]): TalentSlBonusSource[] {
-  return effects
-    .filter((entry): entry is ActiveTalentEffect & { effect: Extract<TalentEffect, { type: "test_sl_bonus" }> } =>
-      entry.effect.type === "test_sl_bonus",
-    )
-    .map((entry) => ({
-      label: entry.talentName,
-      value: entry.effect.valuePerLevel * entry.level,
-    }));
+  return effects.flatMap((entry) => {
+    const contribution = EFFECT_HANDLERS[entry.effect.type].contribute?.(entry.effect, entry.level, {});
+    if (contribution?.kind !== "sl") return [];
+    return [{ label: entry.talentName, value: contribution.value }];
+  });
 }
 
 export function getTalentSlBonus(effects: ActiveTalentEffect[]) {
@@ -272,19 +269,17 @@ export function getTalentSlBonus(effects: ActiveTalentEffect[]) {
 }
 
 export function getTalentDamageBonus(effects: ActiveTalentEffect[]) {
-  return effects
-    .filter((entry): entry is ActiveTalentEffect & { effect: Extract<TalentEffect, { type: "damage_bonus" }> } =>
-      entry.effect.type === "damage_bonus",
-    )
-    .reduce((total, entry) => total + entry.effect.valuePerLevel * entry.level, 0);
+  return effects.reduce((total, entry) => {
+    const contribution = EFFECT_HANDLERS[entry.effect.type].contribute?.(entry.effect, entry.level, {});
+    return contribution?.kind === "damage" ? total + contribution.value : total;
+  }, 0);
 }
 
 export function getTalentEncumbranceBonus(effects: ActiveTalentEffect[]) {
-  return effects
-    .filter((entry): entry is ActiveTalentEffect & { effect: Extract<TalentEffect, { type: "encumbrance_bonus" }> } =>
-      entry.effect.type === "encumbrance_bonus",
-    )
-    .reduce((total, entry) => total + entry.effect.valuePerLevel * entry.level, 0);
+  return effects.reduce((total, entry) => {
+    const contribution = EFFECT_HANDLERS[entry.effect.type].contribute?.(entry.effect, entry.level, {});
+    return contribution?.kind === "encumbrance" ? total + contribution.value : total;
+  }, 0);
 }
 
 export function formatTalentEffect(effect: TalentEffect) {
