@@ -89,6 +89,8 @@ export interface TalentDefinition extends RulesTextDefinition {
   // Plan 07: cross-linking (prose talents included). Plan 10: career/XP grants.
   relatedSkillIds?: SkillRef[];
   grantsSkillIds?: SkillRef[];
+  // Plan 10: XP discount per Advance on a granted skill, where MD specifies one (undefined = no discount).
+  grantedSkillDiscount?: number;
 }
 
 export interface SpellDefinition extends RulesTextDefinition {

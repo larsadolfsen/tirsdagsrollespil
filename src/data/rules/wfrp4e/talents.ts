@@ -71,6 +71,7 @@ export const talentDefinitions: TalentDefinition[] = [
   {
     id: "talent_perfect_pitch",
     grantsSkillIds: ["skill_entertain_singing"],
+    grantedSkillDiscount: 5,
     name: "Perfect Pitch",
     max: "Initiative Bonus",
     tests: "Entertain (Sing), Language (Tonal Languages, such as Eltharin, Cathayan, and Magick)",
@@ -506,6 +507,8 @@ export const talentDefinitions: TalentDefinition[] = [
   {
     id: "talent_artistic",
     relatedSkillIds: ["skill_art"],
+    grantsSkillIds: ["skill_art"],
+    grantedSkillDiscount: 5,
     name: "Artistic",
     max: "Dexterity Bonus",
     tests: "Trade (Artist)",

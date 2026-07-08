@@ -117,8 +117,42 @@ export function useCareerAdvancement({
       .filter((option) => option.skillId === skillDefinition.id)
       .map((option) => option.name);
   };
+  // Plan 10: skills granted by owned talents (e.g. Perfect Pitch → Entertain (Sing)) become
+  // purchasable as if they were career skills, and where the talent specifies it, their Advances
+  // cost less. Resolve each granted SkillRef to its display name(s) the same way career skill
+  // names are resolved elsewhere in this hook: a direct skill id maps to one name, a grouped base
+  // skill id (e.g. "skill_trade") expands to all of its specialisation option names.
+  const grantedSkillNames = new Set<string>();
+  const grantedSkillDiscountByName = new Map<string, number>();
+  for (const characterTalent of characterTalents) {
+    const talentDefinition = ruleset.talents.find(
+      (talent) => talent.id === characterTalent.id || talent.name === characterTalent.name,
+    );
+    const grantsSkillIds = talentDefinition?.grantsSkillIds ?? [];
+    const discount = talentDefinition?.grantedSkillDiscount;
+
+    for (const skillRef of grantsSkillIds) {
+      const directSkill = skillDefinitionById.get(skillRef);
+      const names = directSkill?.grouped
+        ? rulesIndex.resolvedSkillOptions
+            .filter((option) => option.skillId === directSkill.id)
+            .map((option) => option.name)
+        : directSkill
+          ? [directSkill.name]
+          : [];
+
+      for (const name of names) {
+        grantedSkillNames.add(name);
+        if (discount !== undefined) {
+          const existingDiscount = grantedSkillDiscountByName.get(name) ?? 0;
+          grantedSkillDiscountByName.set(name, Math.max(existingDiscount, discount));
+        }
+      }
+    }
+  }
+  const getGrantedSkillDiscount = (skillName: string) => grantedSkillDiscountByName.get(skillName) ?? 0;
   const isCareerSkillName = (skillName: string) => {
-    if (careerAdvancementData.skills.includes(skillName)) {
+    if (careerAdvancementData.skills.includes(skillName) || grantedSkillNames.has(skillName)) {
       return true;
     }
 
@@ -166,8 +200,9 @@ export function useCareerAdvancement({
     }
     for (const [skillName, count] of Object.entries(pendingSkillAdvances)) {
       const base = characterSkillByName.get(skillName)?.advances ?? 0;
+      const discount = grantedSkillDiscountByName.get(skillName) ?? 0;
       for (let step = 0; step < count; step += 1) {
-        total += getAdvanceCost(base + step);
+        total += Math.max(0, getAdvanceCost(base + step) - discount);
       }
     }
     for (const [talentName, count] of Object.entries(pendingTalentPurchases)) {
@@ -217,6 +252,7 @@ export function useCareerAdvancement({
     displayedCareerRank,
     displayedCareerRankRecord,
     getCareerSkillOptions,
+    getGrantedSkillDiscount,
     hasPendingCareerChanges,
     isCareerSkillName,
     nextCareerRankRecord,
