@@ -205,8 +205,8 @@ export const talentDefinitions: TalentDefinition[] = [
     relatedSkillIds: ["skill_ranged"],
     name: "Accurate Shot",
     max: "Ballistic Skill Bonus",
-    tests: "Ranged Tests at long or extreme range",
-    description: "Your aim finds its mark. Add your Success Level to the Damage of your successful ranged attacks.",
+    description: "Your aim finds its mark. Add +1 Damage per level to your successful ranged attacks.",
+    effects: [{ type: "damage_bonus", valuePerLevel: 1, condition: "ranged_attacks" }],
   },
   {
     id: "talent_argumentative",
@@ -340,8 +340,8 @@ export const talentDefinitions: TalentDefinition[] = [
     id: "talent_nimble_fingered",
     name: "Nimble Fingered",
     max: "1",
-    tests: "Pick Lock and Sleight of Hand Tests",
-    description: "Your fingers are remarkably deft, granting a bonus to Pick Lock and Sleight of Hand Tests.",
+    description: "Your fingers are remarkably deft. You gain a permanent +5 bonus to your starting Dexterity; this does not count as Advances.",
+    effects: [{ type: "attribute_bonus", attribute: "dexterity", valuePerLevel: 5, condition: "starting_characteristic_only" }],
   },
   {
     id: "talent_noble_blood",
@@ -376,8 +376,8 @@ export const talentDefinitions: TalentDefinition[] = [
     id: "talent_savvy",
     name: "Savvy",
     max: "1",
-    tests: "Intuition Tests to read a social situation",
-    description: "You read people and situations sharply, granting a bonus to Intuition Tests.",
+    description: "You read people and situations sharply. You gain a permanent +5 bonus to your starting Intelligence; this does not count as Advances.",
+    effects: [{ type: "attribute_bonus", attribute: "intelligence", valuePerLevel: 5, condition: "starting_characteristic_only" }],
   },
   {
     id: "talent_shadow",
@@ -440,8 +440,8 @@ export const talentDefinitions: TalentDefinition[] = [
     id: "talent_very_resilient",
     name: "Very Resilient",
     max: "1",
-    tests: "Endurance Tests to resist disease, poison, or exhaustion",
     description: "You are exceptionally hardy. You gain a permanent +5 bonus to your starting Toughness; this does not count as Advances.",
+    effects: [{ type: "attribute_bonus", attribute: "toughness", valuePerLevel: 5, condition: "starting_characteristic_only" }],
   },
   {
     id: "talent_very_strong",

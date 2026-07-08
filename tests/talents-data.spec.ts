@@ -61,3 +61,50 @@ test("talent ids are unique", () => {
   }
   expect(dupes, `Duplicate talent ids: ${dupes.join(", ")}`).toEqual([]);
 });
+
+// Mechanic corrections from Plan 05: reconcile wrong mechanics vs MD source
+test("talent_accurate_shot has damage_bonus effect for ranged attacks", () => {
+  const talent = byId("talent_accurate_shot");
+  expect(talent).toBeTruthy();
+  expect(talent?.effects).toBeTruthy();
+  const damageBonus = talent?.effects?.find((e) => e.type === "damage_bonus");
+  expect(damageBonus).toBeTruthy();
+  expect(damageBonus?.type === "damage_bonus" && damageBonus.valuePerLevel).toBe(1);
+  expect(damageBonus?.type === "damage_bonus" && damageBonus.condition).toBe("ranged_attacks");
+});
+
+test("talent_nimble_fingered has attribute_bonus for dexterity with no tests field", () => {
+  const talent = byId("talent_nimble_fingered");
+  expect(talent).toBeTruthy();
+  expect(talent?.tests).toBeUndefined();
+  expect(talent?.effects).toBeTruthy();
+  const dexBonus = talent?.effects?.find((e) => e.type === "attribute_bonus" && "attribute" in e && e.attribute === "dexterity");
+  expect(dexBonus).toBeTruthy();
+  expect(dexBonus?.type === "attribute_bonus" && dexBonus.attribute).toBe("dexterity");
+  expect(dexBonus?.type === "attribute_bonus" && dexBonus.valuePerLevel).toBe(5);
+  expect(dexBonus?.type === "attribute_bonus" && dexBonus.condition).toBe("starting_characteristic_only");
+});
+
+test("talent_savvy has attribute_bonus for intelligence with no tests field", () => {
+  const talent = byId("talent_savvy");
+  expect(talent).toBeTruthy();
+  expect(talent?.tests).toBeUndefined();
+  expect(talent?.effects).toBeTruthy();
+  const intBonus = talent?.effects?.find((e) => e.type === "attribute_bonus" && "attribute" in e && e.attribute === "intelligence");
+  expect(intBonus).toBeTruthy();
+  expect(intBonus?.type === "attribute_bonus" && intBonus.attribute).toBe("intelligence");
+  expect(intBonus?.type === "attribute_bonus" && intBonus.valuePerLevel).toBe(5);
+  expect(intBonus?.type === "attribute_bonus" && intBonus.condition).toBe("starting_characteristic_only");
+});
+
+test("talent_very_resilient has attribute_bonus for toughness with no tests field", () => {
+  const talent = byId("talent_very_resilient");
+  expect(talent).toBeTruthy();
+  expect(talent?.tests).toBeUndefined();
+  expect(talent?.effects).toBeTruthy();
+  const toughBonus = talent?.effects?.find((e) => e.type === "attribute_bonus" && "attribute" in e && e.attribute === "toughness");
+  expect(toughBonus).toBeTruthy();
+  expect(toughBonus?.type === "attribute_bonus" && toughBonus.attribute).toBe("toughness");
+  expect(toughBonus?.type === "attribute_bonus" && toughBonus.valuePerLevel).toBe(5);
+  expect(toughBonus?.type === "attribute_bonus" && toughBonus.condition).toBe("starting_characteristic_only");
+});
