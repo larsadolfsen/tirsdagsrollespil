@@ -28,7 +28,7 @@ type CharacterResourcesCardsProps = {
   onAdjustResolve: ResourceAdjuster;
   coins: Record<CoinKey, number>;
   onAdjustCoin: CoinAdjuster;
-  onOpenRoll?: (characteristic: { key: Characteristic["key"]; label: string }) => void;
+  onOpenRoll?: (characteristic: { key: Characteristic["key"]; label: string; skillId?: string }) => void;
 };
 
 const coinRows = [
