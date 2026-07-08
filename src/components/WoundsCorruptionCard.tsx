@@ -11,7 +11,7 @@ type WoundsCorruptionCardProps = {
   corruptionMax: number;
   onAdjustCorruption: ResourceAdjuster;
   onAdjustWounds: ResourceAdjuster;
-  onOpenRoll?: (characteristic: { key: Characteristic["key"]; label: string }) => void;
+  onOpenRoll?: (characteristic: { key: Characteristic["key"]; label: string; skillId?: string }) => void;
   woundsCurrent: number;
   woundsMax: number;
 };
@@ -64,6 +64,7 @@ export function WoundsCorruptionCard({
       return {
         skillName,
         characteristic,
+        skillId: skill?.skillId,
         target,
       };
     });
@@ -72,12 +73,14 @@ export function WoundsCorruptionCard({
   const openCorruptionCheck = ({
     skillName,
     characteristic,
+    skillId,
   }: {
     skillName: CorruptionCheckSkillName;
     characteristic: Characteristic["key"];
+    skillId?: string;
   }) => {
     if (onOpenRoll) {
-      onOpenRoll({ key: characteristic, label: skillName });
+      onOpenRoll({ key: characteristic, label: skillName, skillId });
       return;
     }
 

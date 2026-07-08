@@ -175,7 +175,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Fellowship Bonus",
     tests: "Social Tests with cult members",
     description: "You understand how the faithful conduct themselves, granting a bonus to social Tests when dealing with members of religious cults.",
-    effects: [{ type: "test_sl_bonus", test: "Social Tests with cult members", valuePerLevel: 1 }],
+    effects: [{ type: "test_sl_bonus", test: "Social Tests with cult members", valuePerLevel: 1, skillIds: ["skill_charm"] }],
   },
   {
     id: "talent_gunner",
@@ -184,7 +184,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Dexterity Bonus",
     tests: "Extended Tests to reload a Blackpowder weapon",
     description: "You can reload blackpowder weapons with practised ease. Add your Success Level (equal to your level in Gunner) to any Extended Test made to reload a Blackpowder weapon.",
-    effects: [{ type: "test_sl_bonus", test: "Extended Tests to reload a Blackpowder weapon", valuePerLevel: 1 }],
+    effects: [{ type: "test_sl_bonus", test: "Extended Tests to reload a Blackpowder weapon", valuePerLevel: 1, skillIds: ["skill_ranged_blackpowder"] }],
   },
   {
     id: "talent_marksman",

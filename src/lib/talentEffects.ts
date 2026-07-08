@@ -25,8 +25,8 @@ export interface TalentEffectContext {
   actionId?: string;
   conditionTags?: string[];
   testType?: RollTestType;
-  // Plan 02b: id-first matching. When present, roll-math handlers match these
-  // structurally and ignore the `test` string; otherwise they fall back to it.
+  // Plan 02b/13: structured, id-first matching. Roll-math handlers match these
+  // exclusively; `test` on the effect is a display label only (see `format`).
   skillIds?: Array<{ skillId: string; specialisationId?: string } | string>;
   characteristics?: CharacteristicKey[];
 }
@@ -40,7 +40,7 @@ export type TalentContribution =
 
 export interface TalentEffectHandler<E extends TalentEffect = TalentEffect> {
   type: E["type"];
-  /** id-first; falls back to the `test` string only when the effect carries no structured refs. */
+  /** id/characteristic-first only (Plan 13): matches structured refs; `test` string is display-only. */
   matches(effect: E, ctx: TalentEffectContext): boolean;
   /** contribution to a roll/derived stat (SL, damage, encumbrance, flag, …). */
   contribute?(effect: E, level: number, ctx: TalentEffectContext): TalentContribution;
@@ -64,38 +64,18 @@ const conditionMatches = (effectCondition: string | undefined, conditionTags: st
   return conditionTags.some((tag) => normalize(tag) === normalizedCondition);
 };
 
-const testMatches = (
-  effectTest: string | undefined,
-  testName: string | undefined,
-  testType?: RollTestType,
-) => {
-  if (!effectTest || !testName) return true;
-
-  const normalizedEffectTest = normalize(effectTest);
-  const normalizedTestName = normalize(testName);
-
-  if (!normalizedEffectTest || !normalizedTestName) return false;
-
-  if (normalizedEffectTest.includes("corruption")) {
-    return testType === "corruption";
-  }
-
-  return (
-    normalizedEffectTest.includes(normalizedTestName) ||
-    normalizedTestName.includes(normalizedEffectTest)
-  );
-};
-
 const asSkillTarget = (
   ref: { skillId: string; specialisationId?: string } | string,
 ): { skillId: string; specialisationId?: string } =>
   typeof ref === "string" ? { skillId: ref } : ref;
 
 /**
- * Roll-math match (test_sl_bonus / test_reverse_failed_roll). Id-first: when the
- * effect carries structured `skillIds`/`characteristics` and the context supplies
- * refs, match those structurally. Otherwise fall back to the `test` string compare
- * (kept until the Plan 13 cleanup).
+ * Roll-math match (test_sl_bonus / test_reverse_failed_roll). Purely id-first
+ * (Plan 13): matches only when the effect carries structured `skillIds`/
+ * `characteristics` refs and the context supplies matching refs. `effect.test`
+ * is a display label only (see `format` below) and plays no role in matching.
+ * An effect with no structured refs simply never matches — that's a data gap
+ * (missing ref), not something for the matcher to paper over.
  */
 const rollMathMatches = (
   effect: {
@@ -109,20 +89,15 @@ const rollMathMatches = (
   if (!conditionMatches(effect.condition, ctx.conditionTags ?? [])) return false;
 
   const hasRefs = (effect.skillIds?.length ?? 0) > 0 || (effect.characteristics?.length ?? 0) > 0;
-  const ctxHasRefs = (ctx.skillIds?.length ?? 0) > 0 || (ctx.characteristics?.length ?? 0) > 0;
+  if (!hasRefs) return false;
 
-  if (hasRefs && ctxHasRefs) {
-    const skillHit = (effect.skillIds ?? []).some((ref) =>
-      (ctx.skillIds ?? []).some((target) => skillRefMatches(ref, asSkillTarget(target))),
-    );
-    const charHit = (effect.characteristics ?? []).some((key) =>
-      (ctx.characteristics ?? []).includes(key),
-    );
-    return skillHit || charHit;
-  }
-
-  // No structured refs on the effect (or none in context): string fallback.
-  return testMatches(effect.test, ctx.testName, ctx.testType);
+  const skillHit = (effect.skillIds ?? []).some((ref) =>
+    (ctx.skillIds ?? []).some((target) => skillRefMatches(ref, asSkillTarget(target))),
+  );
+  const charHit = (effect.characteristics ?? []).some((key) =>
+    (ctx.characteristics ?? []).includes(key),
+  );
+  return skillHit || charHit;
 };
 
 // --- registry: one handler per effect type -----------------------------------

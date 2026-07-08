@@ -67,49 +67,79 @@ test("test_sl_bonus: id-first match, contributes valuePerLevel*level, formats", 
   expect(formatTalentEffect(definition.effects![0])).toContain("SL");
 });
 
-test("test_sl_bonus: string fallback when the effect carries no refs", () => {
+test("test_sl_bonus: without a structured ref, the effect never matches (Plan 13: no string fallback)", () => {
   const definition = def({
-    id: "talent_speaker",
-    name: "Speaker",
+    id: "talent_no_ref",
+    name: "No Ref",
     effects: [{ type: "test_sl_bonus", test: "Social Tests with cult members", valuePerLevel: 1 }],
   });
-  const talents = [talentOf("Speaker", "talent_speaker")];
+  const talents = [talentOf("No Ref", "talent_no_ref")];
+
+  // Even an exact testName string match must NOT fire — `test` is display-only now.
+  const stringMatch = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { testName: "Social Tests with cult members" },
+  });
+  expect(getTalentSlBonus(stringMatch.effects)).toBe(0);
+
+  const withSkillRef = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: ["skill_charm"] },
+  });
+  expect(getTalentSlBonus(withSkillRef.effects)).toBe(0);
+});
+
+test("talent_etiquette_cultists: test_sl_bonus routes via skill_charm ref (real data, Plan 13 backfill)", () => {
+  const definition = def({
+    id: "talent_etiquette_cultists",
+    name: "Etiquette (Cultists)",
+    effects: [{ type: "test_sl_bonus", test: "Social Tests with cult members", valuePerLevel: 1, skillIds: ["skill_charm"] }],
+  });
+  const talents = [talentOf("Etiquette (Cultists)", "talent_etiquette_cultists")];
 
   const hit = resolveTalentEffects({
     talents,
     talentDefinitions: [definition],
-    context: { testName: "Social Tests" },
+    context: { skillIds: ["skill_charm"] },
   });
   expect(getTalentSlBonus(hit.effects)).toBe(1);
 
+  // false-positive guard: matching testName string alone (no ref) must NOT fire.
   const miss = resolveTalentEffects({
     talents,
     talentDefinitions: [definition],
-    context: { testName: "Melee" },
+    context: { testName: "Social Tests with cult members", skillIds: ["skill_intimidate"] },
   });
   expect(getTalentSlBonus(miss.effects)).toBe(0);
 });
 
-test("test_sl_bonus: corruption routes via characteristics/testType", () => {
+test("test_sl_bonus: corruption routes via skill_endurance ref, not the testType/testName string", () => {
   const definition = def({
-    id: "talent_pure_soul",
-    name: "Pure Soul",
-    effects: [{ type: "test_sl_bonus", test: "Endurance Tests to resist Corruption", valuePerLevel: 1 }],
+    id: "talent_resistance_corruption",
+    name: "Resistance (Corruption)",
+    effects: [{ type: "test_sl_bonus", test: "Endurance Tests to resist Corruption", valuePerLevel: 1, skillIds: ["skill_endurance"] }],
   });
-  const talents = [talentOf("Pure Soul", "talent_pure_soul")];
+  const talents = [talentOf("Resistance (Corruption)", "talent_resistance_corruption")];
 
   const hit = resolveTalentEffects({
     talents,
     talentDefinitions: [definition],
-    context: { testName: "Corruption Test", testType: "corruption" },
+    context: {
+      testName: "Corruption Test",
+      testType: "corruption",
+      skillIds: [{ skillId: "skill_endurance", specialisationId: undefined }],
+    },
   });
   expect(getTalentSlBonus(hit.effects)).toBe(1);
 
-  // false-positive guard: a non-corruption test that shares no meaning must not fire.
+  // false-positive guard: testType alone (no matching skill ref) must NOT fire —
+  // proves the old `effectTest.includes("corruption")` special case is gone.
   const miss = resolveTalentEffects({
     talents,
     talentDefinitions: [definition],
-    context: { testName: "Melee", testType: "dramatic" },
+    context: { testName: "Corruption Test", testType: "corruption" },
   });
   expect(getTalentSlBonus(miss.effects)).toBe(0);
 });

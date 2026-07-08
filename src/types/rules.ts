@@ -16,6 +16,7 @@ export type TraitRef = string; // "trait_weapon" | "trait_chill_grasp"
 export type TalentEffect =
   | {
       type: "test_sl_bonus";
+      // Plan 13: display label only — matching is via skillIds/characteristics below.
       test: string;
       valuePerLevel: number;
       condition?: string;
@@ -25,6 +26,7 @@ export type TalentEffect =
     }
   | {
       type: "test_reverse_failed_roll";
+      // Plan 13: display label only — matching is via skillIds/characteristics below.
       test: string;
       condition?: string;
       skillIds?: SkillRef[];
