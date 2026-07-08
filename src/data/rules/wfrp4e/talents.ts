@@ -322,6 +322,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Strength Bonus",
     tests: "Intimidate Tests",
     description: "Your bearing is intimidating, granting a bonus to Intimidate Tests.",
+    effects: [{ type: "test_sl_bonus", test: "Intimidate Tests", valuePerLevel: 1, skillIds: ["skill_intimidate"] }],
   },
   {
     id: "talent_mimic",
@@ -946,7 +947,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Fellowship Bonus",
     tests: "Charm when speaking publicly",
     description: "You command an audience. Add your Success Level to Charm Tests made when speaking publicly.",
-    effects: [{ type: "special_rule", rule: "+SL to Charm Tests when speaking publicly." }],
+    effects: [{ type: "test_sl_bonus", test: "Charm when speaking publicly", valuePerLevel: 1, skillIds: ["skill_charm"] }],
   },
   {
     id: "talent_master_tradesman",
@@ -1201,7 +1202,10 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Strength Bonus",
     tests: "Strength (Opposed)",
     description: "You carry and heave with ease. Add your Success Level to Opposed Strength Tests, and you can bear more Encumbrance before being weighed down.",
-    effects: [{ type: "special_rule", rule: "+SL on Opposed Strength Tests; carry more Encumbrance." }],
+    effects: [
+      { type: "test_sl_bonus", test: "Strength (Opposed)", valuePerLevel: 1, characteristics: ["S"] },
+      { type: "special_rule", rule: "Can bear more Encumbrance before being weighed down." },
+    ],
   },
   {
     id: "talent_strong_legs",
@@ -1210,7 +1214,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Strength Bonus",
     tests: "Athletics (Leaping)",
     description: "You leap with power. Add your Success Level to Athletics Tests made to jump or leap.",
-    effects: [{ type: "special_rule", rule: "+SL to Athletics (Leaping) Tests." }],
+    effects: [{ type: "test_sl_bonus", test: "Athletics (Leaping)", valuePerLevel: 1, skillIds: ["skill_athletics"] }],
   },
   {
     id: "talent_strong_minded",

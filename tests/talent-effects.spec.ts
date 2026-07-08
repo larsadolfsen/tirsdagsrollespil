@@ -205,6 +205,101 @@ test("ignore_penalty & special_rule: present and format", () => {
   expect(resolved.effects).toHaveLength(2);
 });
 
+test("talent_menacing: test_sl_bonus hits on skill_intimidate, absent on skill_charm", () => {
+  const definition = def({
+    id: "talent_menacing",
+    name: "Menacing",
+    effects: [{ type: "test_sl_bonus", test: "Intimidate Tests", valuePerLevel: 1, skillIds: ["skill_intimidate"] }],
+  });
+  const talents = [talentOf("Menacing", "talent_menacing")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: ["skill_intimidate"] },
+  });
+  expect(getTalentSlBonus(hit.effects)).toBe(1);
+
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: ["skill_charm"] },
+  });
+  expect(getTalentSlBonus(miss.effects)).toBe(0);
+});
+
+test("talent_master_orator: test_sl_bonus hits on skill_charm, absent on skill_intimidate", () => {
+  const definition = def({
+    id: "talent_master_orator",
+    name: "Master Orator",
+    effects: [{ type: "test_sl_bonus", test: "Charm when speaking publicly", valuePerLevel: 1, skillIds: ["skill_charm"] }],
+  });
+  const talents = [talentOf("Master Orator", "talent_master_orator")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: ["skill_charm"] },
+  });
+  expect(getTalentSlBonus(hit.effects)).toBe(1);
+
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: ["skill_intimidate"] },
+  });
+  expect(getTalentSlBonus(miss.effects)).toBe(0);
+});
+
+test("talent_strong_legs: test_sl_bonus hits on skill_athletics, absent on unrelated skill", () => {
+  const definition = def({
+    id: "talent_strong_legs",
+    name: "Strong Legs",
+    effects: [{ type: "test_sl_bonus", test: "Athletics (Leaping)", valuePerLevel: 1, skillIds: ["skill_athletics"] }],
+  });
+  const talents = [talentOf("Strong Legs", "talent_strong_legs")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: ["skill_athletics"] },
+  });
+  expect(getTalentSlBonus(hit.effects)).toBe(1);
+
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: ["skill_stealth"] },
+  });
+  expect(getTalentSlBonus(miss.effects)).toBe(0);
+});
+
+test("talent_strong_back: test_sl_bonus hits on characteristics S, absent on T", () => {
+  const definition = def({
+    id: "talent_strong_back",
+    name: "Strong Back",
+    effects: [
+      { type: "test_sl_bonus", test: "Strength (Opposed)", valuePerLevel: 1, characteristics: ["S"] },
+      { type: "special_rule", rule: "Can bear more Encumbrance before being weighed down." },
+    ],
+  });
+  const talents = [talentOf("Strong Back", "talent_strong_back")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { characteristics: ["S"] },
+  });
+  expect(getTalentSlBonus(hit.effects)).toBe(1);
+
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { characteristics: ["T"] },
+  });
+  expect(getTalentSlBonus(miss.effects)).toBe(0);
+});
+
 test("condition tags gate an effect on/off", () => {
   const definition = def({
     id: "talent_hatred_orcs",
