@@ -238,7 +238,8 @@ export const talentDefinitions: TalentDefinition[] = [
     name: "Bookish",
     max: "Intelligence Bonus",
     tests: "Research Tests",
-    description: "You are at home among books and records, granting a bonus to Research Tests.",
+    description: "You are at home among books and records. You may reverse the dice of a failed Research Test to turn it into a success.",
+    effects: [{ type: "test_reverse_failed_roll", test: "Research Tests", skillIds: ["skill_research"] }],
   },
   {
     id: "talent_carouser",
@@ -247,6 +248,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Toughness Bonus",
     tests: "Consume Alcohol Tests and Tests made while drunk",
     description: "You hold your drink and party hard. You may reverse the dice of a failed Consume Alcohol Test to turn it into a success.",
+    effects: [{ type: "test_reverse_failed_roll", test: "Consume Alcohol Tests and Tests made while drunk", skillIds: ["skill_consume_alcohol"] }],
   },
   {
     id: "talent_combat_reflexes",
@@ -474,7 +476,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Initiative Bonus",
     tests: "Stealth (Urban)",
     description: "You are at home slipping through streets and over rooftops. Once per level you may reverse the dice of a failed Stealth (Urban) Test to turn it into a success.",
-    effects: [{ type: "special_rule", rule: "Reverse the dice on a failed Stealth (Urban) Test." }],
+    effects: [{ type: "test_reverse_failed_roll", test: "Stealth (Urban)", skillIds: ["skill_stealth_urban"] }],
   },
   {
     id: "talent_ambidextrous",
@@ -756,8 +758,8 @@ export const talentDefinitions: TalentDefinition[] = [
     name: "Field Dressing",
     max: "Intelligence Bonus",
     tests: "Heal",
-    description: "You can patch wounds in the thick of it. You may reverse the dice of a failed Heal Test made during combat.",
-    effects: [{ type: "special_rule", rule: "Reverse the dice on a failed Heal Test during combat." }],
+    description: "You know how to bind wounds quickly. You may reverse the dice of a failed Heal Test to turn it into a success (capped at +1 Success Level).",
+    effects: [{ type: "test_reverse_failed_roll", test: "Heal", skillIds: ["skill_heal"] }],
   },
   {
     id: "talent_fisherman",
@@ -810,7 +812,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Fellowship Bonus",
     tests: "Gossip with travellers",
     description: "You make friends on the road. You may reverse the dice of a failed Gossip Test when dealing with travellers and strangers.",
-    effects: [{ type: "special_rule", rule: "Reverse the dice on failed Gossip Tests with travellers." }],
+    effects: [{ type: "test_reverse_failed_roll", test: "Gossip with travellers", skillIds: ["skill_gossip"], condition: "with_travellers_or_strangers" }],
   },
   {
     id: "talent_hardy",
@@ -999,7 +1001,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Intelligence Bonus",
     tests: "Trade (Apothecary)",
     description: "You rarely spoil a preparation. You may reverse the dice of a failed Trade (Apothecary) Test.",
-    effects: [{ type: "special_rule", rule: "Reverse the dice on a failed Trade (Apothecary) Test." }],
+    effects: [{ type: "test_reverse_failed_roll", test: "Trade (Apothecary)", skillIds: ["skill_trade_apothecary"] }],
   },
   {
     id: "talent_pilot",
@@ -1008,7 +1010,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Initiative Bonus",
     tests: "Tests to navigate dangerous waters",
     description: "You read dangerous waters. You may reverse the dice of failed Tests made to navigate hazardous waterways.",
-    effects: [{ type: "special_rule", rule: "Reverse the dice on failed Tests navigating dangerous waters." }],
+    effects: [{ type: "test_reverse_failed_roll", test: "Tests to navigate dangerous waters", skillIds: ["skill_row", "skill_sail"] }],
   },
   {
     id: "talent_pure_soul",

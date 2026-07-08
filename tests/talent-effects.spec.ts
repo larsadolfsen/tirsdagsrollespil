@@ -300,6 +300,63 @@ test("talent_strong_back: test_sl_bonus hits on characteristics S, absent on T",
   expect(getTalentSlBonus(miss.effects)).toBe(0);
 });
 
+test("talent_alley_cat: test_reverse_failed_roll hits on skill_stealth_urban, absent on skill_stealth_rural", () => {
+  const definition = def({
+    id: "talent_alley_cat",
+    name: "Alley Cat",
+    effects: [{ type: "test_reverse_failed_roll", test: "Stealth (Urban)", skillIds: ["skill_stealth_urban"] }],
+  });
+  const talents = [talentOf("Alley Cat", "talent_alley_cat")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: [{ skillId: "skill_stealth", specialisationId: "skill_stealth_urban" }] },
+  });
+  expect(hit.effects).toHaveLength(1);
+  expect(hit.effects[0].effect.type).toBe("test_reverse_failed_roll");
+
+  // near-miss guard: a different specialisation of the same base skill must NOT trigger.
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: [{ skillId: "skill_stealth", specialisationId: "skill_stealth_rural" }] },
+  });
+  expect(miss.effects).toHaveLength(0);
+});
+
+test("talent_gregarious: test_reverse_failed_roll hits when condition tag + skill both match, absent without the tag", () => {
+  const definition = def({
+    id: "talent_gregarious",
+    name: "Gregarious",
+    effects: [
+      {
+        type: "test_reverse_failed_roll",
+        test: "Gossip with travellers",
+        skillIds: ["skill_gossip"],
+        condition: "with_travellers_or_strangers",
+      },
+    ],
+  });
+  const talents = [talentOf("Gregarious", "talent_gregarious")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: ["skill_gossip"], conditionTags: ["with_travellers_or_strangers"] },
+  });
+  expect(hit.effects).toHaveLength(1);
+  expect(hit.effects[0].effect.type).toBe("test_reverse_failed_roll");
+
+  // condition tag absent (e.g. gossiping with a local, not a traveller/stranger): must not trigger.
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { skillIds: ["skill_gossip"], conditionTags: [] },
+  });
+  expect(miss.effects).toHaveLength(0);
+});
+
 test("condition tags gate an effect on/off", () => {
   const definition = def({
     id: "talent_hatred_orcs",
