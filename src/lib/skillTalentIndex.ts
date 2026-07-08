@@ -19,9 +19,7 @@ export function collectTalentSkillRefs(talent: TalentDefinition): string[] {
  * ("skill_stealth") so a query on the base skill finds it. Single source of truth —
  * built from talent refs, never stored back on skills.
  */
-export function buildSkillTalentIndex(
-  talents: TalentDefinition[] = talentDefinitions,
-): Map<string, TalentDefinition[]> {
+function buildSkillTalentIndexUncached(talents: TalentDefinition[]): Map<string, TalentDefinition[]> {
   const index = new Map<string, TalentDefinition[]>();
   for (const talent of talents) {
     const baseIds = new Set(collectTalentSkillRefs(talent).map((ref) => parseSkillRef(ref).baseId));
@@ -34,10 +32,27 @@ export function buildSkillTalentIndex(
   return index;
 }
 
+// Memoised index for the default (catalog-wide) talent list, since talentDefinitions
+// is a static import and callers (e.g. SkillsTab's per-row lookups) repeatedly query it
+// with no arguments. Built lazily on first use, not at module load.
+let defaultIndexCache: Map<string, TalentDefinition[]> | null = null;
+
+export function buildSkillTalentIndex(
+  talents?: TalentDefinition[],
+): Map<string, TalentDefinition[]> {
+  if (talents === undefined) {
+    if (!defaultIndexCache) {
+      defaultIndexCache = buildSkillTalentIndexUncached(talentDefinitions);
+    }
+    return defaultIndexCache;
+  }
+  return buildSkillTalentIndexUncached(talents);
+}
+
 /** Talents affecting a given skill (base or specialisation id). */
 export function talentsAffectingSkill(
   skillId: string,
-  talents: TalentDefinition[] = talentDefinitions,
+  talents?: TalentDefinition[],
 ): TalentDefinition[] {
   return buildSkillTalentIndex(talents).get(parseSkillRef(skillId).baseId) ?? [];
 }
