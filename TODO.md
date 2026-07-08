@@ -234,12 +234,12 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
 - [x] **R3. ✅ Petrifying Gaze formula wrong.** — FIXED (fc71711); `tests/creature-traits.spec.ts`.
   - Data `"2 + SL"` → book is **1 Stunned per 2 SL** (SL÷2), plus permanent petrification at 6+ SL.
 
-- [ ] **R4. Breath trigger wrong.** `creatureTraits.ts:233`
+- [x] **R4. ✅ Breath trigger wrong.** — FIXED (Plan A05); `tests/creature-traits.spec.ts`.
   - Data trigger `"Action"` → book: a **Free Attack costing 2 Advantage**.
 
-- [ ] **R5. Daemonic parameter mislabeled.** `creatureTraits.ts:387`
-  - Labeled `"Patron or source"`; the book's bracketed value is the `(Target)` ignore-blow roll
-    (roll 1d10 ≥ Target → blow ignored). The ignore-blow mechanic is also not modeled.
+- [x] **R5. ✅ Daemonic parameter mislabeled.** — FIXED (Plan A05); `tests/creature-traits.spec.ts`.
+  - Labeled `"Patron or source"`; the book's bracketed value is the ignore-blow roll target
+    (roll 1d10 ≥ Target → blow ignored). The ignore-blow mechanic is now modeled as a diceHook.
 
 ## 🔴 Talents — `max` values  ✅ FIXED (session 2: 01a6124, 90e2ff8, 3dd521b)
 
