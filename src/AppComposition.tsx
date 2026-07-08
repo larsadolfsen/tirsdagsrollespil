@@ -1125,6 +1125,7 @@ export function AppComposition() {
         max: talentDefinition.max,
         tests: talentDefinition.tests,
         effects: talentDefinition.effects,
+        relatedSkillIds: talentDefinition.relatedSkillIds,
       },
     ]);
   };
@@ -1162,6 +1163,7 @@ export function AppComposition() {
         max: talentDefinition.max,
         tests: talentDefinition.tests,
         effects: talentDefinition.effects,
+        relatedSkillIds: talentDefinition.relatedSkillIds,
       }));
 
       if (firstTalentIndex < 0) {
@@ -1365,6 +1367,7 @@ export function AppComposition() {
               max: talentDefinition.max,
               tests: talentDefinition.tests,
               effects: talentDefinition.effects,
+              relatedSkillIds: talentDefinition.relatedSkillIds,
             });
           }
         }
@@ -2368,6 +2371,7 @@ export function AppComposition() {
                         formatTalentEffect={formatTalentEffect}
                         onOpenTalentSidebar={openTalentSidebar}
                         onRemoveTalent={removeTalent}
+                        onNavigateToSkill={() => selectMainTab("skills")}
                       />
                       )}
 

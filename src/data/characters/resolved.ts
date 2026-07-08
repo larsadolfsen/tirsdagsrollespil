@@ -62,6 +62,7 @@ export interface ResolvedCharacterTalent {
   max: string;
   tests?: string;
   effects?: TalentDefinition["effects"];
+  relatedSkillIds?: TalentDefinition["relatedSkillIds"];
 }
 
 export interface ResolvedCharacterSpell {
@@ -260,6 +261,7 @@ export function resolveCharacterRecord(
         max: definition.max,
         tests: definition.tests,
         effects: definition.effects,
+        relatedSkillIds: definition.relatedSkillIds,
       };
     }),
     spells: character.spells.map((spell) => {
