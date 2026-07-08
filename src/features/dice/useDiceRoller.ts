@@ -6,7 +6,7 @@ import type {
   ResolvedCharacterTalent,
 } from "../../data/characters/resolved";
 import { loadCampaignDiceRolls, saveCampaignDiceRoll } from "../../data/diceRolls";
-import { getApplicableTalentEffects, getTalentSlBonusSources } from "../../lib/talentEffects";
+import { getTalentSlBonusSources, resolveTalentEffects } from "../../lib/talentEffects";
 import type { ActiveInfoState } from "../../components/appTypes";
 import type { Characteristic, Ruleset } from "../../types";
 import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/dice";
@@ -268,7 +268,7 @@ export function useDiceRoller({
         ? [{ label: options?.slBonusLabel ?? "Bonus", value: options?.slBonus ?? 0 }]
         : []);
     const testType = options?.testType ?? (damage === undefined ? "dramatic" : "attack");
-    const talentEffects = getApplicableTalentEffects({
+    const talentEffects = resolveTalentEffects({
       talents: characterTalents,
       talentDefinitions: ruleset.talents,
       context: {
@@ -276,7 +276,7 @@ export function useDiceRoller({
         testType,
       },
     });
-    const talentBonusSources = getTalentSlBonusSources(talentEffects);
+    const talentBonusSources = getTalentSlBonusSources(talentEffects.effects);
     const bonusSources = [...optionBonusSources, ...talentBonusSources];
 
     setRollState({
