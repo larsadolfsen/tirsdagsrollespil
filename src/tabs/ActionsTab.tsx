@@ -382,7 +382,7 @@ export function ActionsTab({
                                 onClick={(event) => {
                                   event.preventDefault();
                                   handleRoll(
-                                    { key: action.char, label: rollLabel },
+                                    { key: action.char, label: rollLabel, skillId: skillToUse?.skillId, specialisationId: skillToUse?.specialisationId },
                                     action.rollDamage,
                                     {
                                       bonuses: action.bonuses,
@@ -464,7 +464,7 @@ export function ActionsTab({
                                 onClick={(event) => {
                                   event.preventDefault();
                                   handleRoll(
-                                    { key: action.char, label: rollLabel },
+                                    { key: action.char, label: rollLabel, skillId: skillToUse?.skillId, specialisationId: skillToUse?.specialisationId },
                                     action.rollDamage,
                                     {
                                       bonuses: action.bonuses,
@@ -557,7 +557,7 @@ export function ActionsTab({
                               onClick={(event) => {
                                 event.preventDefault();
                                 handleRoll(
-                                  { key: action.char, label: action.name },
+                                  { key: action.char, label: action.name, skillId: skill?.skillId, specialisationId: skill?.specialisationId },
                                   action.damage === "SB" ? sb : undefined,
                                   { title: action.name },
                                 );

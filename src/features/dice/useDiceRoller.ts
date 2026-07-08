@@ -274,6 +274,9 @@ export function useDiceRoller({
       context: {
         testName: testType === "corruption" ? "Corruption Test" : char.label,
         testType,
+        ...(char.skillId
+          ? { skillIds: [{ skillId: char.skillId, specialisationId: char.specialisationId }] }
+          : {}),
       },
     });
     const talentBonusSources = getTalentSlBonusSources(talentEffects.effects);

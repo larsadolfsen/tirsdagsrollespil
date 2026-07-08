@@ -7,6 +7,7 @@ import {
   getTalentDamageBonus,
   getTalentEncumbranceBonus,
   getTalentSlBonus,
+  getTalentSlBonusSources,
   resolveTalentEffects,
 } from "../src/lib/talentEffects";
 
@@ -471,6 +472,47 @@ test("talent_gregarious: test_reverse_failed_roll hits when condition tag + skil
     context: { skillIds: ["skill_gossip"], conditionTags: [] },
   });
   expect(miss.effects).toHaveLength(0);
+});
+
+test("Plan 09: useDiceRoller's context shape (object-array skillIds) reaches talent_menacing on the matching skill roll, absent on an unrelated one", () => {
+  // Plan 06 Batch 1's real talent definition (unchanged from talent_menacing above), reused here to
+  // prove the *context shape* useDiceRoller.ts's handleRoll now builds — not the simpler string-array
+  // form used elsewhere in this file — still id-matches correctly end-to-end.
+  const definition = def({
+    id: "talent_menacing",
+    name: "Menacing",
+    effects: [{ type: "test_sl_bonus", test: "Intimidate Tests", valuePerLevel: 1, skillIds: ["skill_intimidate"] }],
+  });
+  const talents = [talentOf("Menacing", "talent_menacing")];
+
+  // Simulates a roll on a ResolvedCharacterSkill for Intimidate: useDiceRoller.ts's handleRoll builds
+  // `skillIds: [{ skillId: char.skillId, specialisationId: char.specialisationId }]` when char.skillId
+  // is present (see src/features/dice/useDiceRoller.ts, resolveTalentEffects context build).
+  const matchingRollContext = {
+    testName: "Intimidate",
+    testType: "dramatic" as const,
+    skillIds: [{ skillId: "skill_intimidate", specialisationId: undefined }],
+  };
+  const hit = resolveTalentEffects({ talents, talentDefinitions: [definition], context: matchingRollContext });
+  expect(getTalentSlBonus(hit.effects)).toBe(1);
+  expect(getTalentSlBonusSources(hit.effects)).toEqual([{ label: "Menacing", value: 1 }]);
+
+  // Same context shape but for an unrelated skill roll (e.g. rolling Charm instead of Intimidate):
+  // the false-positive guard this plan exists to close — Menacing must NOT fire here.
+  const unrelatedRollContext = {
+    testName: "Charm",
+    testType: "dramatic" as const,
+    skillIds: [{ skillId: "skill_charm", specialisationId: undefined }],
+  };
+  const miss = resolveTalentEffects({ talents, talentDefinitions: [definition], context: unrelatedRollContext });
+  expect(getTalentSlBonus(miss.effects)).toBe(0);
+  expect(getTalentSlBonusSources(miss.effects)).toEqual([]);
+
+  // A skill-less roll (char.skillId absent, e.g. a pure characteristic roll): useDiceRoller.ts omits
+  // `skillIds` entirely in this case, so this must behave exactly like the pre-Plan-09 code path.
+  const skillLessRollContext = { testName: "Charisma", testType: "dramatic" as const };
+  const skillLess = resolveTalentEffects({ talents, talentDefinitions: [definition], context: skillLessRollContext });
+  expect(getTalentSlBonus(skillLess.effects)).toBe(0);
 });
 
 test("condition tags gate an effect on/off", () => {

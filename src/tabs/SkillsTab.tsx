@@ -6,6 +6,7 @@ import {
   SheetDataRollCell,
   SheetDataSection,
 } from "../components/wfrp";
+import type { Characteristic } from "../types";
 import type { SkillSubtab } from "./tabTypes";
 
 type SkillRow = {
@@ -16,6 +17,8 @@ type SkillRow = {
   shortDescription?: string;
   description?: string;
   specialization?: string;
+  skillId?: string;
+  specialisationId?: string;
 };
 
 const desktopSkillGridClass = "md:grid-cols-[56px_minmax(10rem,0.8fr)_minmax(14rem,1.2fr)_56px_56px_56px_56px_48px]";
@@ -45,7 +48,7 @@ export function SkillsTab({
   setActiveSkillSubtab: (subtab: SkillSubtab) => void;
   visibleSkillRows: SkillRow[];
   attributes: Record<string, number>;
-  handleRoll: (characteristic: { key: string; label: string }) => void;
+  handleRoll: (characteristic: Characteristic) => void;
   onOpenAdvance: () => void;
   openSkillInfo?: (skillName: string) => void;
 }) {
@@ -104,7 +107,7 @@ export function SkillsTab({
                       <button
                         onClick={(event) => {
                           event.preventDefault();
-                          handleRoll({ key: skill.characteristic, label: skill.displayName });
+                          handleRoll({ key: skill.characteristic, label: skill.displayName, skillId: skill.skillId, specialisationId: skill.specialisationId });
                         }}
                         className="wfrp-roll-btn"
                         aria-label={`Roll for ${skill.displayName}`}

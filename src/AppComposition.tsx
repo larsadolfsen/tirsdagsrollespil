@@ -1434,6 +1434,7 @@ export function AppComposition() {
           : undefined,
         isTrained: (characterSkill?.advances ?? 0) > 0,
         skillId: option.skillId,
+        specialisationId: option.specialisationId,
         isGrouped: skillDef?.grouped ?? false,
         skillName: skillDef?.name ?? "",
       };
@@ -1464,6 +1465,8 @@ export function AppComposition() {
       specialization: skill.specialisationId
         ? skillSpecialisationById.get(skill.specialisationId)?.name
         : undefined,
+      skillId: skill.skillId,
+      specialisationId: skill.specialisationId,
     }))
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
   const allSkillRows = [...trainedBasicSkillRows, ...advancedSkillRows].sort((a, b) =>
