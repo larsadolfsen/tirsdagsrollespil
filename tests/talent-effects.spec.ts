@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import type { TalentDefinition, TalentEffect } from "../src/types";
 import type { ResolvedCharacterTalent } from "../src/data/characters/resolved";
+import type { CreatureTraitModifier } from "../src/data/rules/wfrp4e/creatureTraits";
 import {
   EFFECT_HANDLERS,
   formatTalentEffect,
@@ -8,6 +9,8 @@ import {
   getTalentEncumbranceBonus,
   getTalentSlBonus,
   getTalentSlBonusSources,
+  mapCreatureTraitModifierToTalentEffect,
+  resolveCreatureTraitEffects,
   resolveTalentEffects,
 } from "../src/lib/talentEffects";
 
@@ -536,4 +539,87 @@ test("condition tags gate an effect on/off", () => {
     context: { conditionTags: ["elves"] },
   });
   expect(getTalentDamageBonus(miss.effects)).toBe(0);
+});
+
+// Plan A06: bestiary trait modifiers map into the SAME registry/resolver as
+// talent effects, rather than a parallel trait-only path.
+
+test("mapCreatureTraitModifierToTalentEffect: numeric skillTestBonus maps to test_sl_bonus with skillIds + condition", () => {
+  const modifier: CreatureTraitModifier = { type: "skillTestBonus", skill: "skill_melee", amount: -10 };
+  const effect = mapCreatureTraitModifierToTalentEffect(modifier, "using:swarm");
+  expect(effect).toEqual({
+    type: "test_sl_bonus",
+    test: "skill_melee",
+    valuePerLevel: -10,
+    skillIds: ["skill_melee"],
+    condition: "using:swarm",
+  });
+});
+
+test("mapCreatureTraitModifierToTalentEffect: numeric characteristic maps to attribute_bonus", () => {
+  const modifier: CreatureTraitModifier = { type: "characteristic", characteristic: "WS", amount: 10 };
+  const effect = mapCreatureTraitModifierToTalentEffect(modifier);
+  expect(effect).toEqual({ type: "attribute_bonus", attribute: "WS", valuePerLevel: 10, condition: undefined });
+});
+
+test("mapCreatureTraitModifierToTalentEffect: rank-formula amount ('agilityBonus') and 'all' targets are intentionally unmapped", () => {
+  const formulaBased: CreatureTraitModifier = { type: "skillTestBonus", skill: "skill_stealth", amount: "agilityBonus" };
+  const allTargeted: CreatureTraitModifier = { type: "skillTestBonus", skill: "all", amount: -20 };
+  const unrelatedType: CreatureTraitModifier = { type: "combatFlag", target: "hatred" };
+
+  expect(mapCreatureTraitModifierToTalentEffect(formulaBased)).toBeUndefined();
+  expect(mapCreatureTraitModifierToTalentEffect(allTargeted)).toBeUndefined();
+  expect(mapCreatureTraitModifierToTalentEffect(unrelatedType)).toBeUndefined();
+});
+
+test("resolveCreatureTraitEffects: trait skillTestBonus applies through the shared resolver on the matching skill only", () => {
+  // Mirrors trait_infestation's real modifier shape (creatureTraits.ts): a numeric,
+  // single-skill penalty against opponents attacking in melee.
+  const resolved = resolveCreatureTraitEffects({
+    traits: [
+      {
+        id: "trait_infestation",
+        name: "Infestation",
+        modifiers: [{ type: "skillTestBonus", skill: "skill_melee", amount: -10 }],
+      },
+    ],
+    context: { skillIds: ["skill_melee"] },
+  });
+  expect(getTalentSlBonus(resolved.effects)).toBe(-10);
+
+  // false-positive guard: an unrelated skill roll must not pick up the trait bonus.
+  const miss = resolveCreatureTraitEffects({
+    traits: [
+      {
+        id: "trait_infestation",
+        name: "Infestation",
+        modifiers: [{ type: "skillTestBonus", skill: "skill_melee", amount: -10 }],
+      },
+    ],
+    context: { skillIds: ["skill_dodge"] },
+  });
+  expect(getTalentSlBonus(miss.effects)).toBe(0);
+});
+
+test("resolveCreatureTraitEffects: Hatred (Orcs)-style trait effect gates on its conditionTag, not on an unrelated target (Elves)", () => {
+  // Not real creatureTraits.ts data (trait_hatred has no characteristic modifier
+  // in the catalog) — a synthetic trait, same pattern as the talent_hatred_orcs
+  // test above, proving trait conditionTags gate through the identical
+  // conditionMatches() path talent effects use. "using:orcs" is the trait-side
+  // conditionTag convention from adversaryRefs.parseTraitEntry (Plan A01).
+  const hatredOfOrcs: CreatureTraitModifier = { type: "characteristic", characteristic: "WS", amount: 10 };
+
+  const hit = resolveCreatureTraitEffects({
+    traits: [{ id: "trait_hatred", name: "Hatred (Orcs)", modifiers: [hatredOfOrcs], condition: "using:orcs" }],
+    context: { conditionTags: ["using:orcs"], characteristics: ["WS"] },
+  });
+  expect(hit.effects).toHaveLength(1);
+  expect(hit.effects[0].effect.type).toBe("attribute_bonus");
+
+  // The same trait, encountering Elves instead of Orcs: must NOT contribute.
+  const miss = resolveCreatureTraitEffects({
+    traits: [{ id: "trait_hatred", name: "Hatred (Orcs)", modifiers: [hatredOfOrcs], condition: "using:orcs" }],
+    context: { conditionTags: ["using:elves"], characteristics: ["WS"] },
+  });
+  expect(miss.effects).toHaveLength(0);
 });

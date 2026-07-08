@@ -1,11 +1,15 @@
-// Talent effect registry + single resolver (Plan 02b).
+// Talent effect registry + single resolver (Plan 02b; Plan A06 unifies trait input).
 // Exposes: EFFECT_HANDLERS (one handler per TalentEffect["type"]),
-//   resolveTalentEffects (the single entry point), formatTalentEffect, and thin
-//   public wrappers (getTalentSlBonus/DamageBonus/EncumbranceBonus + sources).
-// Deps: skillRefMatches (id-first skill matching), CharacteristicKey union.
+//   resolveTalentEffects / resolveCreatureTraitEffects (both delegate to the same
+//   resolveEffectSources core), mapCreatureTraitModifierToTalentEffect (trait ->
+//   registry effect shape), formatTalentEffect, and thin public wrappers
+//   (getTalentSlBonus/DamageBonus/EncumbranceBonus + sources).
+// Deps: skillRefMatches (id-first skill matching), CharacteristicKey union,
+//   CreatureTraitModifier (bestiary trait modifiers, Plan A06).
 import type { ResolvedCharacterTalent } from "../data/characters/resolved";
 import type { CharacteristicKey, SkillRef, TalentDefinition, TalentEffect } from "../types";
 import type { RollTestType } from "../types/dice";
+import type { CreatureTraitModifier } from "../data/rules/wfrp4e/creatureTraits";
 import { skillRefMatches } from "./skillRefs";
 import { toCharacteristicKey } from "./characteristicKeys";
 
@@ -211,30 +215,35 @@ export interface ResolvedTalentEffects {
   encumbranceBonus: number;
 }
 
+/** A generic "thing that grants typed effects at a level" — a talent at N levels,
+ *  or (Plan A06) a creature trait, whose modifiers have been mapped to this same
+ *  TalentEffect shape and which always contributes at level 1 (traits don't stack
+ *  by count the way talents do). */
+interface EffectSource {
+  id: string;
+  name: string;
+  level: number;
+  effects: TalentEffect[];
+}
+
 /**
- * Single entry point: resolves which talent effects are active for the given
- * context and totals their typed contributions. All consumers go through this.
+ * The single resolver core: matches + totals typed contributions for any list of
+ * effect sources against a context. Both resolveTalentEffects and (Plan A06)
+ * resolveCreatureTraitEffects delegate here — there is exactly one matching/
+ * contribution pipeline, regardless of whether the effect originated from a
+ * talent or a trait modifier.
  */
-export function resolveTalentEffects(params: {
-  talents: ResolvedCharacterTalent[];
-  talentDefinitions: TalentDefinition[];
-  context?: TalentEffectContext;
-}): ResolvedTalentEffects {
-  const context = params.context ?? {};
-
-  const effects: ActiveTalentEffect[] = params.talentDefinitions.flatMap((definition) => {
-    const level = getTalentLevel(params.talents, definition);
-    if (level === 0) return [];
-
-    return (definition.effects ?? [])
+function resolveEffectSources(sources: EffectSource[], context: TalentEffectContext): ResolvedTalentEffects {
+  const effects: ActiveTalentEffect[] = sources.flatMap((source) =>
+    source.effects
       .filter((effect) => EFFECT_HANDLERS[effect.type].matches(effect, context))
       .map((effect) => ({
-        talentId: definition.id,
-        talentName: definition.name,
-        level,
+        talentId: source.id,
+        talentName: source.name,
+        level: source.level,
         effect,
-      }));
-  });
+      })),
+  );
 
   let slBonus = 0;
   let damageBonus = 0;
@@ -248,6 +257,99 @@ export function resolveTalentEffects(params: {
   }
 
   return { effects, slBonus, damageBonus, encumbranceBonus };
+}
+
+/**
+ * Single entry point: resolves which talent effects are active for the given
+ * context and totals their typed contributions. All consumers go through this.
+ */
+export function resolveTalentEffects(params: {
+  talents: ResolvedCharacterTalent[];
+  talentDefinitions: TalentDefinition[];
+  context?: TalentEffectContext;
+}): ResolvedTalentEffects {
+  const sources: EffectSource[] = params.talentDefinitions.flatMap((definition) => {
+    const level = getTalentLevel(params.talents, definition);
+    if (level === 0) return [];
+    return [{ id: definition.id, name: definition.name, level, effects: definition.effects ?? [] }];
+  });
+
+  return resolveEffectSources(sources, params.context ?? {});
+}
+
+// --- trait modifiers -> registry effects (Plan A06) --------------------------
+
+/**
+ * Maps a bestiary trait modifier into the shared TalentEffect shape so it flows
+ * through the SAME registry/resolver talents use (EFFECT_HANDLERS, matches,
+ * conditionTags). Only modifiers that are unambiguously a flat, single-target
+ * bonus are representable this way: a numeric `amount` and a specific skill/
+ * characteristic (not "all"). Rank-formula amounts (`agilityBonus`, `rating`, …)
+ * and "all"-target modifiers need creature-specific computation the registry
+ * doesn't do, so they intentionally map to `undefined` — mirrors the "typed
+ * where clear" depth decision used for talents (no rules engine for every
+ * trait's prose).
+ */
+export function mapCreatureTraitModifierToTalentEffect(
+  modifier: CreatureTraitModifier,
+  condition?: string,
+): TalentEffect | undefined {
+  if (modifier.type === "skillTestBonus") {
+    if (typeof modifier.amount !== "number" || !modifier.skill || modifier.skill === "all") return undefined;
+    return {
+      type: "test_sl_bonus",
+      test: modifier.skill,
+      valuePerLevel: modifier.amount,
+      skillIds: [modifier.skill],
+      condition,
+    };
+  }
+
+  if (modifier.type === "characteristic") {
+    if (typeof modifier.amount !== "number" || !modifier.characteristic || modifier.characteristic === "all") {
+      return undefined;
+    }
+    return {
+      type: "attribute_bonus",
+      attribute: modifier.characteristic,
+      valuePerLevel: modifier.amount,
+      condition,
+    };
+  }
+
+  return undefined;
+}
+
+export interface CreatureTraitEffectSource {
+  id: string;
+  name: string;
+  modifiers: CreatureTraitModifier[];
+  /** Condition tag for a specialised/target trait instance (Plan A01 convention,
+   *  e.g. `using:sword` for Weapon (Sword), `using:orcs` for Hatred (Orcs)). Gates
+   *  the mapped effect exactly like a talent effect's `condition` field. */
+  condition?: string;
+}
+
+/**
+ * Trait-side counterpart to resolveTalentEffects: maps each trait's modifiers
+ * into registry effects (mapCreatureTraitModifierToTalentEffect) and resolves
+ * them through the same resolveEffectSources core — one registry, one resolver,
+ * for both talents and traits.
+ */
+export function resolveCreatureTraitEffects(params: {
+  traits: CreatureTraitEffectSource[];
+  context?: TalentEffectContext;
+}): ResolvedTalentEffects {
+  const sources: EffectSource[] = params.traits.map((trait) => ({
+    id: trait.id,
+    name: trait.name,
+    level: 1,
+    effects: trait.modifiers
+      .map((modifier) => mapCreatureTraitModifierToTalentEffect(modifier, trait.condition))
+      .filter((effect): effect is TalentEffect => effect !== undefined),
+  }));
+
+  return resolveEffectSources(sources, params.context ?? {});
 }
 
 // --- public helpers (thin wrappers over the resolver / registry) -------------
