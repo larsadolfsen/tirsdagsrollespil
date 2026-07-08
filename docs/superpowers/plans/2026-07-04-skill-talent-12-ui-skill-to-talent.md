@@ -1,6 +1,9 @@
 # Skill↔Talent Link — Plan 12: UI — Skill → Affecting Talents
 
-> 🔶 **PARTIAL (2026-07-04).** Task 1+3 done (`24a272d`): `src/lib/skillTalentIndex.ts` + `tests/skill-talent-index.spec.ts` green. Remaining: Task 2 (render in SkillsTab/SkillSidebar) + the open question + live verify.
+> ✅ **DONE (2026-07-08, `71a8f0c`).** Task 1+3 done (`24a272d`): `src/lib/skillTalentIndex.ts` +
+> `tests/skill-talent-index.spec.ts` green. Task 2: `SkillsTab` now shows an "Affecting Talents" row
+> (all catalog talents, not filtered to owned talents — matches Plan 11's symmetric behavior), linking
+> back to the Talents section via `selectMainTab`. Tested in `tests/skill-affecting-talents.spec.ts`.
 
 > Design source: `…-skill-talent-link-design.md` (UI cross-linking, D-c derive reverse). Depends on 06–07.
 > Shows, on a skill, which talents affect it — from a derived reverse index (no stored back-refs).
@@ -28,7 +31,7 @@ export function buildSkillTalentIndex(talents: TalentDefinition[]): Map<string, 
 ```
 
 ## Task 2: Render on the skill
-- [ ] Add an "Affecting talents" section to the skill detail; only show for talents the character owns
+- [x] Add an "Affecting talents" section to the skill detail; only show for talents the character owns
   (or all, per product choice — confirm). Link each talent back to its detail (pairs with Plan 11).
 
 ## Task 3: Test
@@ -36,10 +39,11 @@ export function buildSkillTalentIndex(talents: TalentDefinition[]): Map<string, 
   a base-id ref appears for every specialisation query.
 
 ## Task 4: Verify
-- [ ] `npm run lint && npm run build && npm test`; drive the app.
+- [x] `npm run lint && npm run build && npm test`; drive the app.
 
 ## Open question
-- [ ] Show all affecting talents, or only ones the character owns? Confirm before building.
+- [x] Resolved: show ALL affecting talents from the catalog (not filtered to owned talents),
+  mirroring Plan 11's catalog-wide talent → related skills behavior.
 
 ## Definition of done
 - Skill detail shows affecting talents from the derived index; tested + verified.
