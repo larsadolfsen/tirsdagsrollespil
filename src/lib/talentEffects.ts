@@ -7,6 +7,7 @@ import type { ResolvedCharacterTalent } from "../data/characters/resolved";
 import type { CharacteristicKey, SkillRef, TalentDefinition, TalentEffect } from "../types";
 import type { RollTestType } from "../types/dice";
 import { skillRefMatches } from "./skillRefs";
+import { toCharacteristicKey } from "./characteristicKeys";
 
 export interface ActiveTalentEffect {
   talentId: string;
@@ -138,7 +139,14 @@ const testReverseFailedRollHandler: TalentEffectHandler<Extract<TalentEffect, { 
 
 const attributeBonusHandler: TalentEffectHandler<Extract<TalentEffect, { type: "attribute_bonus" }>> = {
   type: "attribute_bonus",
-  matches: (effect, ctx) => conditionMatches(effect.condition, ctx.conditionTags ?? []),
+  matches: (effect, ctx) => {
+    if (!conditionMatches(effect.condition, ctx.conditionTags ?? [])) return false;
+    if (ctx.characteristics && ctx.characteristics.length > 0) {
+      const key = toCharacteristicKey(effect.attribute);
+      return key !== undefined && ctx.characteristics.includes(key);
+    }
+    return true;
+  },
   format: (effect) =>
     `+${effect.valuePerLevel} ${effect.attribute} per level${effect.condition ? ` (${effect.condition})` : ""}`,
 };

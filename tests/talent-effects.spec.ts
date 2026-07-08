@@ -138,6 +138,56 @@ test("attribute_bonus: format renders the characteristic and value", () => {
   expect(formatTalentEffect(effect)).toContain("5");
 });
 
+test("talent_warrior_born: attribute_bonus hits on characteristics WS, absent on BS", () => {
+  const definition = def({
+    id: "talent_warrior_born",
+    name: "Warrior Born",
+    effects: [{ type: "attribute_bonus", attribute: "weaponSkill", valuePerLevel: 5, condition: "starting_characteristic_only" }],
+  });
+  const talents = [talentOf("Warrior Born", "talent_warrior_born")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { conditionTags: ["starting_characteristic_only"], characteristics: ["WS"] },
+  });
+  expect(hit.effects).toHaveLength(1);
+  expect(hit.effects[0].effect.type).toBe("attribute_bonus");
+
+  // false-positive guard: a different characteristic must NOT trigger.
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { conditionTags: ["starting_characteristic_only"], characteristics: ["BS"] },
+  });
+  expect(miss.effects).toHaveLength(0);
+});
+
+test("talent_suave: attribute_bonus hits on characteristics Fel, absent on WP", () => {
+  const definition = def({
+    id: "talent_suave",
+    name: "Suave",
+    effects: [{ type: "attribute_bonus", attribute: "fellowship", valuePerLevel: 5, condition: "starting_characteristic_only" }],
+  });
+  const talents = [talentOf("Suave", "talent_suave")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { conditionTags: ["starting_characteristic_only"], characteristics: ["Fel"] },
+  });
+  expect(hit.effects).toHaveLength(1);
+  expect(hit.effects[0].effect.type).toBe("attribute_bonus");
+
+  // false-positive guard: a different characteristic must NOT trigger.
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { conditionTags: ["starting_characteristic_only"], characteristics: ["WP"] },
+  });
+  expect(miss.effects).toHaveLength(0);
+});
+
 test("damage_bonus: contributes valuePerLevel*level and formats", () => {
   const definition = def({
     id: "talent_strike_mighty",

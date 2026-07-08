@@ -451,6 +451,7 @@ export const talentDefinitions: TalentDefinition[] = [
     name: "Very Strong",
     max: "1",
     description: "You are exceptionally strong. You gain a permanent +5 bonus to your starting Strength; this does not count as Advances.",
+    effects: [{ type: "attribute_bonus", attribute: "strength", valuePerLevel: 5, condition: "starting_characteristic_only" }],
   },
   {
     id: "talent_wealthy",
