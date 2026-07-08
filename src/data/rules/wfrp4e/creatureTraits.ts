@@ -1,3 +1,5 @@
+import type { SkillRef } from "../../../types/rules";
+
 export type CharacteristicKey = "WS" | "BS" | "S" | "T" | "I" | "Ag" | "Dex" | "Int" | "WP" | "Fel";
 
 export type CreatureTraitParameterKind =
@@ -43,7 +45,7 @@ export interface CreatureTraitModifier {
   amount?: CreatureTraitModifierAmount;
   target?: string;
   characteristic?: CharacteristicKey | "all";
-  skill?: string;
+  skill?: SkillRef | "all";
   action?: string;
   condition?: string;
   formula?: string;
@@ -96,7 +98,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Add Agility Bonus SL to Swim tests.",
     modifiers: [
       { type: "movement", target: "water", notes: "Moves at full Movement through water." },
-      { type: "skillTestBonus", skill: "Swim", amount: "agilityBonus" },
+      { type: "skillTestBonus", skill: "skill_swim", amount: "agilityBonus" },
     ],
   },
   {
@@ -108,8 +110,8 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     combatTracker: "Allow terrain-aware prompts for trees, canopy, and forest cover.",
     diceRoller: "Add Agility Bonus SL to Climb and Stealth tests in woodland.",
     modifiers: [
-      { type: "skillTestBonus", skill: "Climb", amount: "agilityBonus", appliesTo: "woodland" },
-      { type: "skillTestBonus", skill: "Stealth", amount: "agilityBonus", appliesTo: "woodland" },
+      { type: "skillTestBonus", skill: "skill_climb", amount: "agilityBonus", appliesTo: "woodland" },
+      { type: "skillTestBonus", skill: "skill_stealth", amount: "agilityBonus", appliesTo: "woodland" },
     ],
   },
   {
@@ -162,7 +164,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Blocks tests that require normal language, reasoning, or Fellowship unless explicitly allowed.",
     modifiers: [
       { type: "combatFlag", target: "bestial" },
-      { type: "skillTestBonus", skill: "Fellowship", notes: "Usually unavailable unless another trait allows it." },
+      { type: "immunity", target: "fellowship", notes: "Has no Fellowship; usually unavailable unless another trait allows it." },
     ],
   },
   {
@@ -642,7 +644,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     combatTracker: "Show melee penalty to engaged opponents.",
     diceRoller: "Apply -10 to hit the creature in melee.",
     modifiers: [
-      { type: "skillTestBonus", skill: "Melee", amount: -10, appliesTo: "opponents attacking this creature" },
+      { type: "skillTestBonus", skill: "skill_melee", amount: -10, appliesTo: "opponents attacking this creature" },
     ],
   },
   {
@@ -864,7 +866,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     combatTracker: "Use as reminder for ambush and hidden state.",
     diceRoller: "Add Agility Bonus SL to Stealth tests.",
     modifiers: [
-      { type: "skillTestBonus", skill: "Stealth", amount: "agilityBonus" },
+      { type: "skillTestBonus", skill: "skill_stealth", amount: "agilityBonus" },
     ],
   },
   {
@@ -916,7 +918,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
       { type: "combatFlag", target: "swarm" },
       { type: "immunity", target: "psychology" },
       { type: "damage", trigger: "end of round after successful swarm hit", target: "engaged opponent" },
-      { type: "skillTestBonus", skill: "Weapon Skill", amount: 10, appliesTo: "swarm attacks" },
+      { type: "characteristic", characteristic: "WS", amount: 10, appliesTo: "swarm attacks" },
     ],
   },
   {
@@ -1013,7 +1015,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     combatTracker: "Use as out-of-combat pursuit or ambush helper.",
     diceRoller: "Add Initiative Bonus SL to Track tests.",
     modifiers: [
-      { type: "skillTestBonus", skill: "Track", amount: "initiativeBonus" },
+      { type: "skillTestBonus", skill: "skill_track", amount: "initiativeBonus" },
     ],
   },
   {
@@ -1027,7 +1029,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Apply package-specific bonuses or permit tests that would otherwise be unavailable.",
     modifiers: [
       { type: "actionOption", target: "trained behaviour", appliesTo: "configured skill list" },
-      { type: "skillTestBonus", skill: "configured trained skill", appliesTo: "trained animal use" },
+      { type: "skillTestBonus", appliesTo: "trained animal use", notes: "Skill is set by the trained skill list parameter, not a fixed catalog id." },
     ],
   },
   {
@@ -1121,7 +1123,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Suppress normal Climb tests for supported surfaces.",
     modifiers: [
       { type: "movement", target: "walls and ceilings" },
-      { type: "skillTestBonus", skill: "Climb", notes: "Automatic success where trait applies." },
+      { type: "skillTestBonus", skill: "skill_climb", notes: "Automatic success where trait applies." },
     ],
   },
   {
