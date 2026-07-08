@@ -438,6 +438,7 @@ export const talentDefinitions: TalentDefinition[] = [
     name: "Strike Mighty Blow",
     max: "Strength Bonus",
     description: "You put your whole strength behind your blows, adding +1 Damage per level of this Talent to your melee attacks.",
+    effects: [{ type: "damage_bonus", valuePerLevel: 1, condition: "melee_attacks" }],
   },
   {
     id: "talent_very_resilient",
@@ -542,7 +543,7 @@ export const talentDefinitions: TalentDefinition[] = [
     name: "Berserk Charge",
     max: "Strength Bonus",
     description: "You throw yourself into the attack. When you Charge into melee, add +1 Damage per level of this Talent to your hits that Round.",
-    effects: [{ type: "special_rule", rule: "+1 Melee Damage per level when you Charge." }],
+    effects: [{ type: "damage_bonus", valuePerLevel: 1, condition: "when_charging_in_melee" }],
   },
   {
     id: "talent_break_and_enter",
@@ -684,7 +685,7 @@ export const talentDefinitions: TalentDefinition[] = [
     max: "Weapon Skill Bonus",
     tests: "Melee (Brawling)",
     description: "You fight without honour when it counts. Add +1 Damage per level to your Melee (Brawling) attacks.",
-    effects: [{ type: "special_rule", rule: "+1 Damage per level on Melee (Brawling) attacks." }],
+    effects: [{ type: "damage_bonus", valuePerLevel: 1, condition: "melee_attacks" }],
   },
   {
     id: "talent_disarm",
@@ -1207,7 +1208,7 @@ export const talentDefinitions: TalentDefinition[] = [
     description: "You carry and heave with ease. Add your Success Level to Opposed Strength Tests, and you can bear more Encumbrance before being weighed down.",
     effects: [
       { type: "test_sl_bonus", test: "Strength (Opposed)", valuePerLevel: 1, characteristics: ["S"] },
-      { type: "special_rule", rule: "Can bear more Encumbrance before being weighed down." },
+      { type: "encumbrance_bonus", valuePerLevel: 1 },
     ],
   },
   {

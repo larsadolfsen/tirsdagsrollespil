@@ -217,6 +217,72 @@ test("encumbrance_bonus: contributes valuePerLevel*level and formats", () => {
   expect(formatTalentEffect(definition.effects![0])).toContain("Encumbrance");
 });
 
+test("talent_strike_mighty_blow: damage_bonus hits on melee_attacks, absent on ranged_attacks", () => {
+  const definition = def({
+    id: "talent_strike_mighty_blow",
+    name: "Strike Mighty Blow",
+    effects: [{ type: "damage_bonus", valuePerLevel: 1, condition: "melee_attacks" }],
+  });
+  const talents = [talentOf("Strike Mighty Blow", "talent_strike_mighty_blow")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { conditionTags: ["melee_attacks"] },
+  });
+  expect(getTalentDamageBonus(hit.effects)).toBe(1);
+
+  // false-positive guard: an unrelated condition tag must NOT trigger.
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { conditionTags: ["ranged_attacks"] },
+  });
+  expect(getTalentDamageBonus(miss.effects)).toBe(0);
+});
+
+test("talent_berserk_charge: damage_bonus hits on when_charging_in_melee, absent on melee_attacks alone", () => {
+  const definition = def({
+    id: "talent_berserk_charge",
+    name: "Berserk Charge",
+    effects: [{ type: "damage_bonus", valuePerLevel: 1, condition: "when_charging_in_melee" }],
+  });
+  const talents = [talentOf("Berserk Charge", "talent_berserk_charge")];
+
+  const hit = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { conditionTags: ["when_charging_in_melee"] },
+  });
+  expect(getTalentDamageBonus(hit.effects)).toBe(1);
+
+  // proves the two melee-damage condition tags are genuinely distinct, not interchangeable.
+  const miss = resolveTalentEffects({
+    talents,
+    talentDefinitions: [definition],
+    context: { conditionTags: ["melee_attacks"] },
+  });
+  expect(getTalentDamageBonus(miss.effects)).toBe(0);
+});
+
+test("talent_strong_back: encumbrance_bonus contributes valuePerLevel unconditionally", () => {
+  const definition = def({
+    id: "talent_strong_back",
+    name: "Strong Back",
+    effects: [
+      { type: "test_sl_bonus", test: "Strength (Opposed)", valuePerLevel: 1, characteristics: ["S"] },
+      { type: "encumbrance_bonus", valuePerLevel: 1 },
+    ],
+  });
+  const talents = [
+    talentOf("Strong Back", "talent_strong_back"),
+    talentOf("Strong Back", "talent_strong_back"),
+  ];
+
+  const resolved = resolveTalentEffects({ talents, talentDefinitions: [definition] });
+  expect(getTalentEncumbranceBonus(resolved.effects)).toBe(2); // 1 per level * 2 levels
+});
+
 test("action_unlock: matches its action, absent for another action, formats", () => {
   const effect = { type: "action_unlock" as const, action: "shield_bash" };
   const definition = def({ id: "talent_shieldsman", name: "Shieldsman", effects: [effect] });
