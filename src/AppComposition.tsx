@@ -2280,6 +2280,7 @@ export function AppComposition() {
                               closeSidebars();
                               setActiveInfo({ type: 'skill', name: skillName });
                             }}
+                            onNavigateToTalent={() => selectMainTab("features")}
                           />
                         )}
 
