@@ -7,6 +7,7 @@ import type {
 } from "../../data/characters/resolved";
 import { loadCampaignDiceRolls, saveCampaignDiceRoll } from "../../data/diceRolls";
 import { getTalentSlBonusSources, resolveTalentEffects } from "../../lib/talentEffects";
+import { buildTalentRollContext } from "./rollContext";
 import type { ActiveInfoState } from "../../components/appTypes";
 import type { Characteristic, Ruleset } from "../../types";
 import type { RollBonusSource, RollHistoryItem, RollState } from "../../types/dice";
@@ -271,13 +272,7 @@ export function useDiceRoller({
     const talentEffects = resolveTalentEffects({
       talents: characterTalents,
       talentDefinitions: ruleset.talents,
-      context: {
-        testName: testType === "corruption" ? "Corruption Test" : char.label,
-        testType,
-        ...(char.skillId
-          ? { skillIds: [{ skillId: char.skillId, specialisationId: char.specialisationId }] }
-          : {}),
-      },
+      context: buildTalentRollContext(char, testType),
     });
     const talentBonusSources = getTalentSlBonusSources(talentEffects.effects);
     const bonusSources = [...optionBonusSources, ...talentBonusSources];
