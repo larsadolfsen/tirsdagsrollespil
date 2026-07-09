@@ -250,6 +250,31 @@ test("cancel edit character discards pending XP changes", async ({ page }) => {
   await expect(currentXpField).toHaveValue(String(startXp));
 });
 
+test("Perfect Pitch discounts Entertain (Sing) advances by 5 XP", async ({ page }) => {
+  // Thano Voss already owns Perfect Pitch and has 1 Advance in Entertain (Sing), which is
+  // already a Wizard career skill (via the grouped "Entertain" career skill). Perfect Pitch's
+  // grant+discount mechanic should make Entertain (Sing) count as a career skill (already true
+  // here via the grouped-skill path) and shave 5 XP off its next Advance cost.
+  await openAdvanceTab(page);
+
+  await page.getByRole("button", { name: "Skills", exact: true }).click();
+  const entertainRow = page.locator(".wfrp-data-accordion-row").filter({ hasText: "Entertain (Sing)" });
+  await expect(entertainRow).toBeVisible();
+
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+  const currentXpField = page.getByRole("spinbutton", { name: "Current XP" });
+  const startXp = Number(await currentXpField.inputValue());
+  expect(startXp).toBeGreaterThan(0);
+
+  // Entertain (Sing) is at 1 Advance, so a normal next Advance costs getAdvanceCost(1) = 10 XP.
+  // With Perfect Pitch's 5 XP discount, it should cost only 5.
+  await page.getByRole("button", { name: "Skills", exact: true }).click();
+  await page.getByRole("button", { name: "Advance skill Entertain (Sing)" }).click();
+
+  await page.getByRole("button", { name: "Experience", exact: true }).click();
+  await expect(currentXpField).toHaveValue(String(startXp - 5));
+});
+
 test("manual current-XP adjustment moves the field by exactly that amount", async ({ page }) => {
   await openAdvanceTab(page);
   await page.getByRole("button", { name: "Experience", exact: true }).click();

@@ -1,5 +1,7 @@
 # Unified AppHeader Implementation Plan
 
+> ✅ **IMPLEMENTED (2026-07-04).** `9808ff1` (AppHeader shell) + `cfb97a0` (character) + `a73ff3b` (GM) + `8a93a6a` (library) + `cf502d3` (a11y fix) + `30d4ed1` (frame collapse). `CharacterHeader.tsx`/`MobileCharacterHeader.tsx` deleted. Final full-suite verification shared with react-router Task 6. Skip this plan.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace three separate header implementations (CharacterHeader+MobileCharacterHeader, GameMasterHeader, LibraryHeader) with a single `AppHeader` compound component that handles both mobile and desktop breakpoints.

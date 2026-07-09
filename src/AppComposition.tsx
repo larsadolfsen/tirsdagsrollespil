@@ -615,6 +615,7 @@ export function AppComposition() {
     displayedCareerRank,
     displayedCareerRankRecord,
     getCareerSkillOptions,
+    getGrantedSkillDiscount,
     hasPendingCareerChanges,
     isCareerSkillName,
     pendingAdvancesXpCost,
@@ -1124,6 +1125,7 @@ export function AppComposition() {
         max: talentDefinition.max,
         tests: talentDefinition.tests,
         effects: talentDefinition.effects,
+        relatedSkillIds: talentDefinition.relatedSkillIds,
       },
     ]);
   };
@@ -1161,6 +1163,7 @@ export function AppComposition() {
         max: talentDefinition.max,
         tests: talentDefinition.tests,
         effects: talentDefinition.effects,
+        relatedSkillIds: talentDefinition.relatedSkillIds,
       }));
 
       if (firstTalentIndex < 0) {
@@ -1364,6 +1367,7 @@ export function AppComposition() {
               max: talentDefinition.max,
               tests: talentDefinition.tests,
               effects: talentDefinition.effects,
+              relatedSkillIds: talentDefinition.relatedSkillIds,
             });
           }
         }
@@ -1434,6 +1438,7 @@ export function AppComposition() {
           : undefined,
         isTrained: (characterSkill?.advances ?? 0) > 0,
         skillId: option.skillId,
+        specialisationId: option.specialisationId,
         isGrouped: skillDef?.grouped ?? false,
         skillName: skillDef?.name ?? "",
       };
@@ -1464,6 +1469,8 @@ export function AppComposition() {
       specialization: skill.specialisationId
         ? skillSpecialisationById.get(skill.specialisationId)?.name
         : undefined,
+      skillId: skill.skillId,
+      specialisationId: skill.specialisationId,
     }))
     .sort((a, b) => a.displayName.localeCompare(b.displayName));
   const allSkillRows = [...trainedBasicSkillRows, ...advancedSkillRows].sort((a, b) =>
@@ -1528,7 +1535,7 @@ export function AppComposition() {
         baseAdvances,
         characteristicKey,
         baseCharacteristicValue,
-        nextSkillCost: getAdvanceCost(baseAdvances + pendingAdvances),
+        nextSkillCost: Math.max(0, getAdvanceCost(baseAdvances + pendingAdvances) - getGrantedSkillDiscount(skillName)),
         isCareerSkill: isCareerSkillName(skillName),
         isSidebarCareerSkill: sidebarCareerSkillNames.has(skillName),
         isBasicSkill,
@@ -2273,6 +2280,7 @@ export function AppComposition() {
                               closeSidebars();
                               setActiveInfo({ type: 'skill', name: skillName });
                             }}
+                            onNavigateToTalent={() => selectMainTab("features")}
                           />
                         )}
 
@@ -2364,6 +2372,7 @@ export function AppComposition() {
                         formatTalentEffect={formatTalentEffect}
                         onOpenTalentSidebar={openTalentSidebar}
                         onRemoveTalent={removeTalent}
+                        onNavigateToSkill={() => selectMainTab("skills")}
                       />
                       )}
 

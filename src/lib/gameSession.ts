@@ -276,6 +276,7 @@ function applyCharacterProgress(
         max: definition.max,
         tests: definition.tests,
         effects: definition.effects,
+        relatedSkillIds: definition.relatedSkillIds,
       };
     })
     .filter((talent): talent is ResolvedCharacterRecord["talents"][number] => Boolean(talent));

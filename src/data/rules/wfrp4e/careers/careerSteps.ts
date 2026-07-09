@@ -12,20 +12,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "heal",
-      "language_classical",
-      "lore_chemistry",
-      "lore_medicine",
-      "lore_plants",
-      "trade_apothecary",
-      "trade_poisoner"
+      "skill_consume_alcohol",
+      "skill_heal",
+      "skill_language_classical",
+      "skill_lore_chemistry",
+      "skill_lore_medicine",
+      "skill_lore_plants",
+      "skill_trade_apothecary",
+      "skill_trade_poisoner"
     ],
     "talentIds": [
-      "concoct",
-      "craftsman_apothecary",
-      "etiquette_scholar",
-      "read_write"
+      "talent_concoct",
+      "talent_craftsman_apothecary",
+      "talent_etiquette_scholar",
+      "talent_read_write"
     ],
     "trappingIds": [
       "book_blank",
@@ -42,18 +42,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "haggle",
-      "lore_science",
-      "gossip",
-      "language_guilder",
-      "perception"
+      "skill_charm",
+      "skill_haggle",
+      "skill_lore_science",
+      "skill_gossip",
+      "skill_language_guilder",
+      "skill_perception"
     ],
     "talentIds": [
-      "criminal",
-      "dealmaker",
-      "etiquette_guilder",
-      "pharmacist"
+      "talent_criminal",
+      "talent_dealmaker",
+      "talent_etiquette_guilder",
+      "talent_pharmacist"
     ],
     "trappingIds": [
       "guild_licence",
@@ -68,16 +68,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "intuition",
-      "leadership",
-      "research",
-      "secret_signs_guilder"
+      "skill_intuition",
+      "skill_leadership",
+      "skill_research",
+      "skill_secret_signs_guilder"
     ],
     "talentIds": [
-      "bookish",
-      "master_tradesman_apothecary",
-      "resistance_poison",
-      "savvy"
+      "talent_bookish",
+      "talent_master_tradesman_apothecary",
+      "talent_resistance_poison",
+      "talent_savvy"
     ],
     "trappingIds": [
       "book_apothecary",
@@ -93,14 +93,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "intimidate",
-      "ride_horse"
+      "skill_intimidate",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "acute_sense_taste",
-      "coolheaded",
-      "master_tradesman_poisoner",
-      "savant_apothecary"
+      "talent_acute_sense_taste",
+      "talent_coolheaded",
+      "talent_master_tradesman_poisoner",
+      "talent_savant_apothecary"
     ],
     "trappingIds": [
       "commission_papers",
@@ -115,20 +115,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "cool",
-      "endurance",
-      "language_classical",
-      "lore_engineer",
-      "perception",
-      "ranged_blackpowder",
-      "trade_engineer"
+      "skill_consume_alcohol",
+      "skill_cool",
+      "skill_endurance",
+      "skill_language_classical",
+      "skill_lore_engineer",
+      "skill_perception",
+      "skill_ranged_blackpowder",
+      "skill_trade_engineer"
     ],
     "talentIds": [
-      "artistic",
-      "gunner",
-      "read_write",
-      "tinker"
+      "talent_artistic",
+      "talent_gunner",
+      "talent_read_write",
+      "talent_tinker"
     ],
     "trappingIds": [
       "book_engineer",
@@ -143,18 +143,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "drive",
-      "dodge",
-      "navigation",
-      "ranged_engineering",
-      "research",
-      "language_guilder"
+      "skill_drive",
+      "skill_dodge",
+      "skill_navigation",
+      "skill_ranged_engineering",
+      "skill_research",
+      "skill_language_guilder"
     ],
     "talentIds": [
-      "craftsman_engineer",
-      "etiquette_guilder",
-      "marksman",
-      "orientation"
+      "talent_craftsman_engineer",
+      "talent_etiquette_guilder",
+      "talent_marksman",
+      "talent_orientation"
     ],
     "trappingIds": [
       "guild_licence",
@@ -169,16 +169,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_khazalid",
-      "leadership",
-      "ride_horse",
-      "secret_signs_guilder"
+      "skill_language_khazalid",
+      "skill_leadership",
+      "skill_ride_horse",
+      "skill_secret_signs_guilder"
     ],
     "talentIds": [
-      "etiquette_scholar",
-      "master_tradesman_engineering",
-      "sniper",
-      "super_numerate"
+      "talent_etiquette_scholar",
+      "talent_master_tradesman_engineering",
+      "talent_sniper",
+      "talent_super_numerate"
     ],
     "trappingIds": [
       "workshop"
@@ -192,14 +192,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_any",
-      "lore_any"
+      "skill_language_any",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "magnum_opus",
-      "rapid_reload",
-      "savant_engineering",
-      "unshakable"
+      "talent_magnum_opus",
+      "talent_rapid_reload",
+      "talent_savant_engineering",
+      "talent_unshakable"
     ],
     "trappingIds": [
       "guild_license",
@@ -216,20 +216,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "endurance",
-      "haggle",
-      "language_classical",
-      "lore_law",
-      "lore_theology",
-      "perception",
-      "research"
+      "skill_consume_alcohol",
+      "skill_endurance",
+      "skill_haggle",
+      "skill_language_classical",
+      "skill_lore_law",
+      "skill_lore_theology",
+      "skill_perception",
+      "skill_research"
     ],
     "talentIds": [
-      "blather",
-      "etiquette_scholar",
-      "read_write",
-      "speedreader"
+      "talent_blather",
+      "talent_etiquette_scholar",
+      "talent_read_write",
+      "talent_speedreader"
     ],
     "trappingIds": [
       "book_law",
@@ -244,18 +244,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "gossip",
-      "intuition",
-      "language_guilder",
-      "secret_signs_guilder"
+      "skill_bribery",
+      "skill_charm",
+      "skill_gossip",
+      "skill_intuition",
+      "skill_language_guilder",
+      "skill_secret_signs_guilder"
     ],
     "talentIds": [
-      "argumentative",
-      "criminal",
-      "etiquette_guilder",
-      "suave"
+      "talent_argumentative",
+      "talent_criminal",
+      "talent_etiquette_guilder",
+      "talent_suave"
     ],
     "trappingIds": [
       "court_robes",
@@ -271,16 +271,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "art_writing",
-      "entertain_speeches",
-      "intimidate",
-      "lore_any"
+      "skill_art_writing",
+      "skill_entertain_speeches",
+      "skill_intimidate",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "bookish",
-      "cat_tongued",
-      "impassioned_zeal",
-      "savvy"
+      "talent_bookish",
+      "talent_cat_tongued",
+      "talent_impassioned_zeal",
+      "talent_savvy"
     ],
     "trappingIds": [
       "office",
@@ -295,14 +295,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "lore_any"
+      "skill_cool",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "commanding_presence",
-      "kingpin",
-      "savant_law",
-      "wealthy"
+      "talent_commanding_presence",
+      "talent_kingpin",
+      "talent_savant_law",
+      "talent_wealthy"
     ],
     "trappingIds": [
       "gavel",
@@ -317,20 +317,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "art_calligraphy",
-      "cool",
-      "endurance",
-      "entertain_storyteller",
-      "gossip",
-      "heal",
-      "lore_theology",
-      "pray"
+      "skill_art_calligraphy",
+      "skill_cool",
+      "skill_endurance",
+      "skill_entertain_storyteller",
+      "skill_gossip",
+      "skill_heal",
+      "skill_lore_theology",
+      "skill_pray"
     ],
     "talentIds": [
-      "bless_any",
-      "stone_soup",
-      "panhandle",
-      "read_write"
+      "talent_bless_any",
+      "talent_stone_soup",
+      "talent_panhandle",
+      "talent_read_write"
     ],
     "trappingIds": [
       "religious_symbol",
@@ -345,18 +345,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "melee_any",
-      "research",
-      "trade_brewer",
-      "trade_herbalist",
-      "trade_vintner"
+      "skill_charm",
+      "skill_melee_any",
+      "skill_research",
+      "skill_trade_brewer",
+      "skill_trade_herbalist",
+      "skill_trade_vintner"
     ],
     "talentIds": [
-      "etiquette_cultists",
-      "field_dressing",
-      "holy_visions",
-      "invoke_any"
+      "talent_etiquette_cultists",
+      "talent_field_dressing",
+      "talent_holy_visions",
+      "talent_invoke_any"
     ],
     "trappingIds": [
       "book_religion",
@@ -372,16 +372,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "leadership",
-      "lore_local",
-      "lore_politics",
-      "perception"
+      "skill_leadership",
+      "skill_lore_local",
+      "skill_lore_politics",
+      "skill_perception"
     ],
     "talentIds": [
-      "resistance_any",
-      "robust",
-      "savant_theology",
-      "stout_hearted"
+      "talent_resistance_any",
+      "talent_robust",
+      "talent_savant_theology",
+      "talent_stout_hearted"
     ],
     "trappingIds": [
       "abbey",
@@ -396,14 +396,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_any",
-      "lore_any"
+      "skill_language_any",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "commanding_presence",
-      "iron_will",
-      "pure_soul",
-      "strong_minded"
+      "talent_commanding_presence",
+      "talent_iron_will",
+      "talent_pure_soul",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "religious_order"
@@ -417,20 +417,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "cool",
-      "drive",
-      "endurance",
-      "gossip",
-      "heal",
-      "perception",
-      "sleight_of_hand"
+      "skill_bribery",
+      "skill_cool",
+      "skill_drive",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_heal",
+      "skill_perception",
+      "skill_sleight_of_hand"
     ],
     "talentIds": [
-      "bookish",
-      "field_dressing",
-      "read_write",
-      "strike_to_stun"
+      "talent_bookish",
+      "talent_field_dressing",
+      "talent_read_write",
+      "talent_strike_to_stun"
     ],
     "trappingIds": [
       "bandages",
@@ -445,18 +445,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "haggle",
-      "language_guilder",
-      "lore_anatomy",
-      "lore_medicine",
-      "trade_barber"
+      "skill_charm",
+      "skill_haggle",
+      "skill_language_guilder",
+      "skill_lore_anatomy",
+      "skill_lore_medicine",
+      "skill_trade_barber"
     ],
     "talentIds": [
-      "coolheaded",
-      "criminal",
-      "etiquette_guilder",
-      "surgery"
+      "talent_coolheaded",
+      "talent_criminal",
+      "talent_etiquette_guilder",
+      "talent_surgery"
     ],
     "trappingIds": [
       "book_medicine",
@@ -472,16 +472,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "intimidate",
-      "leadership",
-      "research"
+      "skill_consume_alcohol",
+      "skill_intimidate",
+      "skill_leadership",
+      "skill_research"
     ],
     "talentIds": [
-      "etiquette_scholars",
-      "resistance_disease",
-      "savvy",
-      "strike_to_injure"
+      "talent_etiquette_scholars",
+      "talent_resistance_disease",
+      "talent_savvy",
+      "talent_strike_to_injure"
     ],
     "trappingIds": [
       "apprentice",
@@ -496,14 +496,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_noble",
-      "perform_dancing"
+      "skill_lore_noble",
+      "skill_perform_dancing"
     ],
     "talentIds": [
-      "etiquette_nobles",
-      "nimble_fingered",
-      "savant_medicine",
-      "strong_minded"
+      "talent_etiquette_nobles",
+      "talent_nimble_fingered",
+      "talent_savant_medicine",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "courtly_attire",
@@ -518,20 +518,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "cool",
-      "endurance",
-      "intuition",
-      "lore_theology",
-      "perception",
-      "pray",
-      "research"
+      "skill_athletics",
+      "skill_cool",
+      "skill_endurance",
+      "skill_intuition",
+      "skill_lore_theology",
+      "skill_perception",
+      "skill_pray",
+      "skill_research"
     ],
     "talentIds": [
-      "bless_any",
-      "holy_visions",
-      "read_write",
-      "suave"
+      "talent_bless_any",
+      "talent_holy_visions",
+      "talent_read_write",
+      "talent_suave"
     ],
     "trappingIds": [
       "religious_symbol",
@@ -546,18 +546,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "entertain_storytelling",
-      "gossip",
-      "heal",
-      "intimidate",
-      "melee_basic"
+      "skill_charm",
+      "skill_entertain_storytelling",
+      "skill_gossip",
+      "skill_heal",
+      "skill_intimidate",
+      "skill_melee_basic"
     ],
     "talentIds": [
-      "blather",
-      "bookish",
-      "etiquette_cultists",
-      "invoke_any"
+      "talent_blather",
+      "talent_bookish",
+      "talent_etiquette_cultists",
+      "talent_invoke_any"
     ],
     "trappingIds": [
       "book_religion",
@@ -572,16 +572,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "art_writing",
-      "entertain_speeches",
-      "leadership",
-      "lore_heraldry"
+      "skill_art_writing",
+      "skill_entertain_speeches",
+      "skill_leadership",
+      "skill_lore_heraldry"
     ],
     "talentIds": [
-      "acute_sense_any",
-      "hatred_any",
-      "impassioned_zeal",
-      "strong_minded"
+      "talent_acute_sense_any",
+      "talent_hatred_any",
+      "talent_impassioned_zeal",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "quality_robes",
@@ -598,14 +598,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_any",
-      "lore_politics"
+      "skill_language_any",
+      "skill_lore_politics"
     ],
     "talentIds": [
-      "master_orator",
-      "pure_soul",
-      "resistance_any",
-      "savant_theology"
+      "talent_master_orator",
+      "talent_pure_soul",
+      "talent_resistance_any",
+      "talent_savant_theology"
     ],
     "trappingIds": [
       "library_theology",
@@ -620,20 +620,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "entertain_storytelling",
-      "gamble",
-      "gossip",
-      "haggle",
-      "language_classical",
-      "lore_any",
-      "research"
+      "skill_consume_alcohol",
+      "skill_entertain_storytelling",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_language_classical",
+      "skill_lore_any",
+      "skill_research"
     ],
     "talentIds": [
-      "carouser",
-      "read_write",
-      "savvy",
-      "super_numerate"
+      "talent_carouser",
+      "talent_read_write",
+      "talent_savvy",
+      "talent_super_numerate"
     ],
     "trappingIds": [
       "alcohol",
@@ -650,18 +650,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "art_writing",
-      "intuition",
-      "language_any",
-      "lore_any",
-      "perception",
-      "trade_any"
+      "skill_art_writing",
+      "skill_intuition",
+      "skill_language_any",
+      "skill_lore_any",
+      "skill_perception",
+      "skill_trade_any"
     ],
     "talentIds": [
-      "bookish",
-      "etiquette_scholars",
-      "speedreader",
-      "suave"
+      "talent_bookish",
+      "talent_etiquette_scholars",
+      "talent_speedreader",
+      "talent_suave"
     ],
     "trappingIds": [
       "access_to_a_library",
@@ -676,16 +676,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_lecture",
-      "intimidate",
-      "language_any",
-      "lore_any"
+      "skill_entertain_lecture",
+      "skill_intimidate",
+      "skill_language_any",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "linguistics",
-      "public_speaker",
-      "savant_any",
-      "tower_of_memories"
+      "talent_linguistics",
+      "talent_public_speaker",
+      "talent_savant_any",
+      "talent_tower_of_memories"
     ],
     "trappingIds": [
       "mortarboard",
@@ -700,14 +700,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_rhetoric",
-      "lore_any"
+      "skill_entertain_rhetoric",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "magnum_opus",
-      "master_orator",
-      "savant_any",
-      "sharp"
+      "talent_magnum_opus",
+      "talent_master_orator",
+      "talent_savant_any",
+      "talent_sharp"
     ],
     "trappingIds": [
       "study"
@@ -721,20 +721,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "channelling_any_colour",
-      "dodge",
-      "intuition",
-      "language_magick",
-      "lore_magick",
-      "melee_basic",
-      "melee_pole_arm",
-      "perception"
+      "skill_channelling_any_colour",
+      "skill_dodge",
+      "skill_intuition",
+      "skill_language_magick",
+      "skill_lore_magick",
+      "skill_melee_basic",
+      "skill_melee_pole_arm",
+      "skill_perception"
     ],
     "talentIds": [
-      "aethyric_attunement",
-      "petty_magic",
-      "read_write",
-      "second_sight"
+      "talent_aethyric_attunement",
+      "talent_petty_magic",
+      "talent_read_write",
+      "talent_second_sight"
     ],
     "trappingIds": [
       "grimoire",
@@ -749,18 +749,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "cool",
-      "gossip",
-      "intimidate",
-      "language_battle",
-      "language_any"
+      "skill_charm",
+      "skill_cool",
+      "skill_gossip",
+      "skill_intimidate",
+      "skill_language_battle",
+      "skill_language_any"
     ],
     "talentIds": [
-      "arcane_magic_any_arcane_lore",
-      "detect_artefact",
-      "fast_hands",
-      "sixth_sense"
+      "talent_arcane_magic_any_arcane_lore",
+      "talent_detect_artefact",
+      "talent_fast_hands",
+      "talent_sixth_sense"
     ],
     "trappingIds": [
       "magical_license"
@@ -774,16 +774,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "evaluate",
-      "lore_warfare",
-      "ride_horse"
+      "skill_animal_care",
+      "skill_evaluate",
+      "skill_lore_warfare",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "dual_wielder",
-      "instinctive_diction",
-      "magical_sense",
-      "menacing"
+      "talent_dual_wielder",
+      "talent_instinctive_diction",
+      "talent_magical_sense",
+      "talent_menacing"
     ],
     "trappingIds": [
       "apprentice",
@@ -799,14 +799,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_any",
-      "lore_any"
+      "skill_language_any",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "combat_aware",
-      "frightening",
-      "iron_will",
-      "war_wizard"
+      "talent_combat_aware",
+      "talent_frightening",
+      "talent_iron_will",
+      "talent_war_wizard"
     ],
     "trappingIds": [
       "apprentice",
@@ -822,20 +822,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "art_writing",
-      "bribery",
-      "charm",
-      "consume_alcohol",
-      "gossip",
-      "haggle",
-      "lore_politics",
-      "trade_printing"
+      "skill_art_writing",
+      "skill_bribery",
+      "skill_charm",
+      "skill_consume_alcohol",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_lore_politics",
+      "skill_trade_printing"
     ],
     "talentIds": [
-      "blather",
-      "gregarious",
-      "panhandle",
-      "read_write"
+      "talent_blather",
+      "talent_gregarious",
+      "talent_panhandle",
+      "talent_read_write"
     ],
     "trappingIds": [
       "writing_kit",
@@ -851,18 +851,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "dodge",
-      "entertain_storytelling",
-      "gamble",
-      "intuition",
-      "leadership"
+      "skill_cool",
+      "skill_dodge",
+      "skill_entertain_storytelling",
+      "skill_gamble",
+      "skill_intuition",
+      "skill_leadership"
     ],
     "talentIds": [
-      "alley_cat",
-      "argumentative",
-      "impassioned_zeal",
-      "public_speaker"
+      "talent_alley_cat",
+      "talent_argumentative",
+      "talent_impassioned_zeal",
+      "talent_public_speaker"
     ],
     "trappingIds": [
       "leather_jack"
@@ -876,16 +876,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "intimidate",
-      "melee_fist",
-      "perception"
+      "skill_athletics",
+      "skill_intimidate",
+      "skill_melee_fist",
+      "skill_perception"
     ],
     "talentIds": [
-      "cat_tongued",
-      "dirty_fighting",
-      "flee",
-      "step_aside"
+      "talent_cat_tongued",
+      "talent_dirty_fighting",
+      "talent_flee",
+      "talent_step_aside"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -900,14 +900,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_heraldry",
-      "ride_horse"
+      "skill_lore_heraldry",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "etiquette_any",
-      "master_orator",
-      "schemer",
-      "suave"
+      "talent_etiquette_any",
+      "talent_master_orator",
+      "talent_schemer",
+      "talent_suave"
     ],
     "trappingIds": [
       "3_pamphleteers",
@@ -924,20 +924,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "cool",
-      "consume_alcohol",
-      "dodge",
-      "endurance",
-      "evaluate",
-      "stealth_urban",
-      "trade_any"
+      "skill_athletics",
+      "skill_cool",
+      "skill_consume_alcohol",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_evaluate",
+      "skill_stealth_urban",
+      "skill_trade_any"
     ],
     "talentIds": [
-      "artistic",
-      "craftsman_any",
-      "strong_back",
-      "very_strong"
+      "talent_artistic",
+      "talent_craftsman_any",
+      "talent_strong_back",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "chalk",
@@ -953,18 +953,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "haggle",
-      "lore_local",
-      "gossip",
-      "language_guilder",
-      "perception"
+      "skill_charm",
+      "skill_haggle",
+      "skill_lore_local",
+      "skill_gossip",
+      "skill_language_guilder",
+      "skill_perception"
     ],
     "talentIds": [
-      "dealmaker",
-      "etiquette_guilder",
-      "nimble_fingered",
-      "sturdy"
+      "talent_dealmaker",
+      "talent_etiquette_guilder",
+      "talent_nimble_fingered",
+      "talent_sturdy"
     ],
     "trappingIds": [
       "guild_licence",
@@ -979,16 +979,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "intuition",
-      "leadership",
-      "research",
-      "secret_signs_guilder"
+      "skill_intuition",
+      "skill_leadership",
+      "skill_research",
+      "skill_secret_signs_guilder"
     ],
     "talentIds": [
-      "acute_sense_taste_or_touch",
-      "master_tradesman_any",
-      "read_write",
-      "tinker"
+      "talent_acute_sense_taste_or_touch",
+      "talent_master_tradesman_any",
+      "talent_read_write",
+      "talent_tinker"
     ],
     "trappingIds": [
       "apprentice",
@@ -1003,14 +1003,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "intimidate"
+      "skill_bribery",
+      "skill_intimidate"
     ],
     "talentIds": [
-      "briber",
-      "magnum_opus",
-      "public_speaker",
-      "schemer"
+      "talent_briber",
+      "talent_magnum_opus",
+      "talent_public_speaker",
+      "talent_schemer"
     ],
     "trappingIds": [
       "guild",
@@ -1025,20 +1025,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 0",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "charm",
-      "consume_alcohol",
-      "cool",
-      "dodge",
-      "endurance",
-      "intuition",
-      "stealth_urban"
+      "skill_athletics",
+      "skill_charm",
+      "skill_consume_alcohol",
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_intuition",
+      "skill_stealth_urban"
     ],
     "talentIds": [
-      "panhandle",
-      "resistance_disease",
-      "stone_soup",
-      "very_resilient"
+      "talent_panhandle",
+      "talent_resistance_disease",
+      "talent_stone_soup",
+      "talent_very_resilient"
     ],
     "trappingIds": [
       "poor_quality_blanket",
@@ -1053,18 +1053,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_acting",
-      "entertain_any",
-      "gossip",
-      "haggle",
-      "perception",
-      "sleight_of_hand"
+      "skill_entertain_acting",
+      "skill_entertain_any",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_perception",
+      "skill_sleight_of_hand"
     ],
     "talentIds": [
-      "alley_cat",
-      "beneath_notice",
-      "criminal",
-      "etiquette_criminals"
+      "talent_alley_cat",
+      "talent_beneath_notice",
+      "talent_criminal",
+      "talent_etiquette_criminals"
     ],
     "trappingIds": [
       "crutch",
@@ -1079,16 +1079,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm_animal",
-      "leadership",
-      "lore_local",
-      "secret_signs_vagabond"
+      "skill_charm_animal",
+      "skill_leadership",
+      "skill_lore_local",
+      "skill_secret_signs_vagabond"
     ],
     "talentIds": [
-      "blather",
-      "dirty_fighting",
-      "hardy",
-      "step_aside"
+      "talent_blather",
+      "talent_dirty_fighting",
+      "talent_hardy",
+      "talent_step_aside"
     ],
     "trappingIds": [
       "disguise_kit",
@@ -1104,14 +1104,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "intimidate"
+      "skill_bribery",
+      "skill_intimidate"
     ],
     "talentIds": [
-      "cat_tongued",
-      "fearless_watchmen",
-      "kingpin",
-      "suave"
+      "talent_cat_tongued",
+      "talent_fearless_watchmen",
+      "talent_kingpin",
+      "talent_suave"
     ],
     "trappingIds": [
       "lair",
@@ -1126,20 +1126,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "climb",
-      "cool",
-      "gossip",
-      "intuition",
-      "perception",
-      "stealth_urban",
-      "track"
+      "skill_charm",
+      "skill_climb",
+      "skill_cool",
+      "skill_gossip",
+      "skill_intuition",
+      "skill_perception",
+      "skill_stealth_urban",
+      "skill_track"
     ],
     "talentIds": [
-      "alley_cat",
-      "beneath_notice",
-      "read_write",
-      "sharp"
+      "talent_alley_cat",
+      "talent_beneath_notice",
+      "talent_read_write",
+      "talent_sharp"
     ],
     "trappingIds": [
       "lantern",
@@ -1156,18 +1156,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "dodge",
-      "lore_law",
-      "melee_brawling",
-      "pick_lock",
-      "sleight_of_hand"
+      "skill_consume_alcohol",
+      "skill_dodge",
+      "skill_lore_law",
+      "skill_melee_brawling",
+      "skill_pick_lock",
+      "skill_sleight_of_hand"
     ],
     "talentIds": [
-      "etiquette_any",
-      "savvy",
-      "shadow",
-      "tenacious"
+      "talent_etiquette_any",
+      "talent_savvy",
+      "talent_shadow",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "leather_jack",
@@ -1184,16 +1184,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "evaluate",
-      "leadership",
-      "lore_any"
+      "skill_bribery",
+      "skill_evaluate",
+      "skill_leadership",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "bookish",
-      "break_and_enter",
-      "sixth_sense",
-      "suave"
+      "talent_bookish",
+      "talent_break_and_enter",
+      "talent_sixth_sense",
+      "talent_suave"
     ],
     "trappingIds": [
       "assistant",
@@ -1208,14 +1208,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "intimidate",
-      "lore_any"
+      "skill_intimidate",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "acute_sense_any",
-      "savant_any",
-      "speedreader",
-      "tower_of_memories"
+      "talent_acute_sense_any",
+      "talent_savant_any",
+      "talent_speedreader",
+      "talent_tower_of_memories"
     ],
     "trappingIds": [
       "network_of_informants",
@@ -1230,20 +1230,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "bribery",
-      "charm",
-      "consume_alcohol",
-      "drive",
-      "gamble",
-      "gossip",
-      "haggle"
+      "skill_animal_care",
+      "skill_bribery",
+      "skill_charm",
+      "skill_consume_alcohol",
+      "skill_drive",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_haggle"
     ],
     "talentIds": [
-      "blather",
-      "dealmaker",
-      "read_write",
-      "suave"
+      "talent_blather",
+      "talent_dealmaker",
+      "talent_read_write",
+      "talent_suave"
     ],
     "trappingIds": [
       "abacus",
@@ -1260,18 +1260,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "evaluate",
-      "intuition",
-      "language_any",
-      "language_guilder",
-      "lore_local",
-      "perception"
+      "skill_evaluate",
+      "skill_intuition",
+      "skill_language_any",
+      "skill_language_guilder",
+      "skill_lore_local",
+      "skill_perception"
     ],
     "talentIds": [
-      "briber",
-      "embezzle",
-      "etiquette_guilder",
-      "savvy"
+      "talent_briber",
+      "talent_embezzle",
+      "talent_etiquette_guilder",
+      "talent_savvy"
     ],
     "trappingIds": [
       "riverboat_or_2_wagons",
@@ -1287,16 +1287,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "language_classical",
-      "navigation",
-      "secret_signs_guilder"
+      "skill_cool",
+      "skill_language_classical",
+      "skill_navigation",
+      "skill_secret_signs_guilder"
     ],
     "talentIds": [
-      "cat_tongued",
-      "etiquette_any",
-      "numismatics",
-      "sharp"
+      "talent_cat_tongued",
+      "talent_etiquette_any",
+      "talent_numismatics",
+      "talent_sharp"
     ],
     "trappingIds": [
       "town_house_with_servants",
@@ -1312,14 +1312,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_any",
-      "intimidate"
+      "skill_lore_any",
+      "skill_intimidate"
     ],
     "talentIds": [
-      "iron_will",
-      "luck",
-      "schemer",
-      "wealthy"
+      "talent_iron_will",
+      "talent_luck",
+      "talent_schemer",
+      "talent_wealthy"
     ],
     "trappingIds": [
       "2_riverboats_or_4_wagons",
@@ -1337,20 +1337,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "animal_training_dog",
-      "charm_animal",
-      "consume_alcohol",
-      "endurance",
-      "melee_basic",
-      "ranged_sling",
-      "stealth_underground_or_urban"
+      "skill_athletics",
+      "skill_animal_training_dog",
+      "skill_charm_animal",
+      "skill_consume_alcohol",
+      "skill_endurance",
+      "skill_melee_basic",
+      "skill_ranged_sling",
+      "skill_stealth_underground_or_urban"
     ],
     "talentIds": [
-      "night_vision",
-      "resistance_disease",
-      "strike_mighty_blow",
-      "strike_to_stun"
+      "talent_night_vision",
+      "talent_resistance_disease",
+      "talent_strike_mighty_blow",
+      "talent_strike_to_stun"
     ],
     "trappingIds": [
       "sling_with_ammunition",
@@ -1366,18 +1366,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "gossip",
-      "haggle",
-      "lore_poison",
-      "perception",
-      "set_trap"
+      "skill_animal_care",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_lore_poison",
+      "skill_perception",
+      "skill_set_trap"
     ],
     "talentIds": [
-      "enclosed_fighter",
-      "etiquette_guilder",
-      "fearless_rats",
-      "very_resilient"
+      "talent_enclosed_fighter",
+      "talent_etiquette_guilder",
+      "talent_fearless_rats",
+      "talent_very_resilient"
     ],
     "trappingIds": [
       "animal_traps",
@@ -1392,16 +1392,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "cool",
-      "dodge",
-      "ranged_crossbow_pistol"
+      "skill_climb",
+      "skill_cool",
+      "skill_dodge",
+      "skill_ranged_crossbow_pistol"
     ],
     "talentIds": [
-      "hardy",
-      "stout_hearted",
-      "strong_legs",
-      "tunnel_rat"
+      "talent_hardy",
+      "talent_stout_hearted",
+      "talent_strong_legs",
+      "talent_tunnel_rat"
     ],
     "trappingIds": [
       "davrich_lantern",
@@ -1417,14 +1417,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "leadership",
-      "track"
+      "skill_leadership",
+      "skill_track"
     ],
     "talentIds": [
-      "fearless_skaven",
-      "menacing",
-      "robust",
-      "strong_minded"
+      "talent_fearless_skaven",
+      "talent_menacing",
+      "talent_robust",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "assistant",
@@ -1440,20 +1440,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "climb",
-      "consume_alcohol",
-      "drive",
-      "dodge",
-      "gamble",
-      "gossip",
-      "haggle"
+      "skill_charm",
+      "skill_climb",
+      "skill_consume_alcohol",
+      "skill_drive",
+      "skill_dodge",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_haggle"
     ],
     "talentIds": [
-      "alley_cat",
-      "beneath_notice",
-      "etiquette_servants",
-      "sturdy"
+      "talent_alley_cat",
+      "talent_beneath_notice",
+      "talent_etiquette_servants",
+      "talent_sturdy"
     ],
     "trappingIds": [
       "lodgings",
@@ -1468,18 +1468,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "evaluate",
-      "intuition",
-      "lore_local",
-      "melee_brawling",
-      "play_any"
+      "skill_bribery",
+      "skill_evaluate",
+      "skill_intuition",
+      "skill_lore_local",
+      "skill_melee_brawling",
+      "skill_play_any"
     ],
     "talentIds": [
-      "dealmaker",
-      "embezzle",
-      "etiquette_any",
-      "gregarious"
+      "talent_dealmaker",
+      "talent_embezzle",
+      "talent_etiquette_any",
+      "talent_gregarious"
     ],
     "trappingIds": [
       "modest_townhouse",
@@ -1495,16 +1495,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "lore_law",
-      "perception",
-      "research"
+      "skill_cool",
+      "skill_lore_law",
+      "skill_perception",
+      "skill_research"
     ],
     "talentIds": [
-      "briber",
-      "public_speaker",
-      "read_write",
-      "supportive"
+      "talent_briber",
+      "talent_public_speaker",
+      "talent_read_write",
+      "talent_supportive"
     ],
     "trappingIds": [
       "coach_and_driver",
@@ -1519,14 +1519,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_politics",
-      "intimidate"
+      "skill_lore_politics",
+      "skill_intimidate"
     ],
     "talentIds": [
-      "commanding_presence",
-      "master_orator",
-      "schemer",
-      "suave"
+      "talent_commanding_presence",
+      "talent_master_orator",
+      "talent_schemer",
+      "talent_suave"
     ],
     "trappingIds": [
       "chains_of_office",
@@ -1543,20 +1543,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "climb",
-      "consume_alcohol",
-      "dodge",
-      "endurance",
-      "gamble",
-      "melee_any",
-      "perception"
+      "skill_athletics",
+      "skill_climb",
+      "skill_consume_alcohol",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_gamble",
+      "skill_melee_any",
+      "skill_perception"
     ],
     "talentIds": [
-      "drilled",
-      "hardy",
-      "strike_to_stun",
-      "tenacious"
+      "talent_drilled",
+      "talent_hardy",
+      "talent_strike_to_stun",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -1572,18 +1572,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "cool",
-      "gossip",
-      "intimidate",
-      "intuition",
-      "lore_local"
+      "skill_charm",
+      "skill_cool",
+      "skill_gossip",
+      "skill_intimidate",
+      "skill_intuition",
+      "skill_lore_local"
     ],
     "talentIds": [
-      "break_and_enter",
-      "criminal",
-      "night_vision",
-      "sprinter"
+      "talent_break_and_enter",
+      "talent_criminal",
+      "talent_night_vision",
+      "talent_sprinter"
     ],
     "trappingIds": [
       "lantern_and_pole",
@@ -1599,16 +1599,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_storytelling",
-      "haggle",
-      "leadership",
-      "lore_law"
+      "skill_entertain_storytelling",
+      "skill_haggle",
+      "skill_leadership",
+      "skill_lore_law"
     ],
     "talentIds": [
-      "disarm",
-      "etiquette_soldiers",
-      "fearless_criminals",
-      "nose_for_trouble"
+      "talent_disarm",
+      "talent_etiquette_soldiers",
+      "talent_fearless_criminals",
+      "talent_nose_for_trouble"
     ],
     "trappingIds": [
       "breastplate",
@@ -1624,14 +1624,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_politics",
-      "ride_horse"
+      "skill_lore_politics",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "public_speaker",
-      "robust",
-      "kingpin",
-      "schemer"
+      "talent_public_speaker",
+      "talent_robust",
+      "talent_kingpin",
+      "talent_schemer"
     ],
     "trappingIds": [
       "riding_horse_with_saddle_and_tack",
@@ -1648,20 +1648,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "consume_alcohol",
-      "endurance",
-      "gossip",
-      "haggle",
-      "language_classical",
-      "lore_politics",
-      "perception"
+      "skill_bribery",
+      "skill_consume_alcohol",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_language_classical",
+      "skill_lore_politics",
+      "skill_perception"
     ],
     "talentIds": [
-      "beneath_notice",
-      "etiquette_any",
-      "gregarious",
-      "read_write"
+      "talent_beneath_notice",
+      "talent_etiquette_any",
+      "talent_gregarious",
+      "talent_read_write"
     ],
     "trappingIds": [
       "writing_kit"
@@ -1675,18 +1675,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "cool",
-      "evaluate",
-      "gamble",
-      "intuition",
-      "lore_local"
+      "skill_charm",
+      "skill_cool",
+      "skill_evaluate",
+      "skill_gamble",
+      "skill_intuition",
+      "skill_lore_local"
     ],
     "talentIds": [
-      "blather",
-      "criminal",
-      "schemer",
-      "supportive"
+      "talent_blather",
+      "talent_criminal",
+      "talent_schemer",
+      "talent_supportive"
     ],
     "trappingIds": [
       "livery"
@@ -1700,16 +1700,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_storytelling",
-      "leadership",
-      "language_any",
-      "lore_any"
+      "skill_entertain_storytelling",
+      "skill_leadership",
+      "skill_language_any",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "argumentative",
-      "briber",
-      "carouser",
-      "cat_tongued"
+      "talent_argumentative",
+      "talent_briber",
+      "talent_carouser",
+      "talent_cat_tongued"
     ],
     "trappingIds": [
       "quality_clothing",
@@ -1724,14 +1724,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_heraldry",
-      "ride_horse"
+      "skill_lore_heraldry",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "commanding_presence",
-      "embezzle",
-      "kingpin",
-      "suave"
+      "talent_commanding_presence",
+      "talent_embezzle",
+      "talent_kingpin",
+      "talent_suave"
     ],
     "trappingIds": [
       "riding_horse_with_saddle_and_harness",
@@ -1747,20 +1747,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "art_any",
-      "cool",
-      "consume_alcohol",
-      "evaluate",
-      "endurance",
-      "gossip",
-      "perception",
-      "stealth_urban"
+      "skill_art_any",
+      "skill_cool",
+      "skill_consume_alcohol",
+      "skill_evaluate",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_perception",
+      "skill_stealth_urban"
     ],
     "talentIds": [
-      "artistic",
-      "sharp",
-      "strong_back",
-      "tenacious"
+      "talent_artistic",
+      "talent_sharp",
+      "talent_strong_back",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "brush_or_chisel_or_quill_pen"
@@ -1774,19 +1774,19 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "gamble",
-      "haggle",
-      "intuition",
-      "language_classical",
-      "sleight_of_hand",
-      "trade_art_supplies"
+      "skill_climb",
+      "skill_gamble",
+      "skill_haggle",
+      "skill_intuition",
+      "skill_language_classical",
+      "skill_sleight_of_hand",
+      "skill_trade_art_supplies"
     ],
     "talentIds": [
-      "carouser",
-      "criminal",
-      "gregarious",
-      "nimble_fingered"
+      "talent_carouser",
+      "talent_criminal",
+      "talent_gregarious",
+      "talent_nimble_fingered"
     ],
     "trappingIds": [
       "sling_bag_containing_trade_tools_artist"
@@ -1800,16 +1800,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "leadership",
-      "lore_art",
-      "lore_heraldry"
+      "skill_charm",
+      "skill_leadership",
+      "skill_lore_art",
+      "skill_lore_heraldry"
     ],
     "talentIds": [
-      "acute_sense_any",
-      "dealmaker",
-      "etiquette_any",
-      "nose_for_trouble"
+      "talent_acute_sense_any",
+      "talent_dealmaker",
+      "talent_etiquette_any",
+      "talent_nose_for_trouble"
     ],
     "trappingIds": [
       "apprentice",
@@ -1825,14 +1825,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "research",
-      "ride_horse"
+      "skill_research",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "ambidextrous",
-      "kingpin",
-      "magnum_opus",
-      "read_write"
+      "talent_ambidextrous",
+      "talent_kingpin",
+      "talent_magnum_opus",
+      "talent_read_write"
     ],
     "trappingIds": [
       "large_workshop_artist",
@@ -1848,20 +1848,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "dodge",
-      "endurance",
-      "heal",
-      "intuition",
-      "language_classical",
-      "melee_any",
-      "perception"
+      "skill_athletics",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_heal",
+      "skill_intuition",
+      "skill_language_classical",
+      "skill_melee_any",
+      "skill_perception"
     ],
     "talentIds": [
-      "beat_blade",
-      "distract",
-      "feint",
-      "step_aside"
+      "talent_beat_blade",
+      "talent_distract",
+      "talent_feint",
+      "talent_step_aside"
     ],
     "trappingIds": [
       "basic_weapon_or_rapier",
@@ -1876,18 +1876,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "cool",
-      "gamble",
-      "melee_parry",
-      "ranged_blackpowder",
-      "trade_gunsmith"
+      "skill_charm",
+      "skill_cool",
+      "skill_gamble",
+      "skill_melee_parry",
+      "skill_ranged_blackpowder",
+      "skill_trade_gunsmith"
     ],
     "talentIds": [
-      "combat_reflexes",
-      "etiquette_any",
-      "fast_shot",
-      "reversal"
+      "talent_combat_reflexes",
+      "talent_etiquette_any",
+      "talent_fast_shot",
+      "talent_reversal"
     ],
     "trappingIds": [
       "main_gauche_or_sword_breaker",
@@ -1902,16 +1902,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "intimidate",
-      "leadership",
-      "melee_basic",
-      "perform_acrobatics"
+      "skill_intimidate",
+      "skill_leadership",
+      "skill_melee_basic",
+      "skill_perform_acrobatics"
     ],
     "talentIds": [
-      "ambidextrous",
-      "disarm",
-      "dual_wielder",
-      "riposte"
+      "talent_ambidextrous",
+      "talent_disarm",
+      "talent_dual_wielder",
+      "talent_riposte"
     ],
     "trappingIds": [
       "quality_rapier",
@@ -1928,14 +1928,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_law",
-      "melee_any"
+      "skill_lore_law",
+      "skill_melee_any"
     ],
     "talentIds": [
-      "combat_master",
-      "menacing",
-      "reaction_strike",
-      "strike_to_injure"
+      "talent_combat_master",
+      "talent_menacing",
+      "talent_reaction_strike",
+      "talent_strike_to_injure"
     ],
     "trappingIds": [
       "2_quality_weapons"
@@ -1949,20 +1949,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "charm",
-      "drive",
-      "dodge",
-      "endurance",
-      "intuition",
-      "ride_horse",
-      "row"
+      "skill_athletics",
+      "skill_charm",
+      "skill_drive",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_intuition",
+      "skill_ride_horse",
+      "skill_row"
     ],
     "talentIds": [
-      "blather",
-      "etiquette_nobles",
-      "read_write",
-      "suave"
+      "talent_blather",
+      "talent_etiquette_nobles",
+      "talent_read_write",
+      "talent_suave"
     ],
     "trappingIds": [
       "leather_jack",
@@ -1978,18 +1978,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "art_writing",
-      "bribery",
-      "cool",
-      "gossip",
-      "haggle",
-      "lore_politics"
+      "skill_art_writing",
+      "skill_bribery",
+      "skill_cool",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_lore_politics"
     ],
     "talentIds": [
-      "attractive",
-      "cat_tongued",
-      "etiquette_any",
-      "seasoned_traveller"
+      "talent_attractive",
+      "talent_cat_tongued",
+      "talent_etiquette_any",
+      "talent_seasoned_traveller"
     ],
     "trappingIds": [
       "quill_and_ink",
@@ -2004,16 +2004,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "intimidate",
-      "language_any",
-      "leadership",
-      "navigation"
+      "skill_intimidate",
+      "skill_language_any",
+      "skill_leadership",
+      "skill_navigation"
     ],
     "talentIds": [
-      "carouser",
-      "dealmaker",
-      "gregarious",
-      "schemer"
+      "talent_carouser",
+      "talent_dealmaker",
+      "talent_gregarious",
+      "talent_schemer"
     ],
     "trappingIds": [
       "aide",
@@ -2029,14 +2029,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_any",
-      "lore_any"
+      "skill_language_any",
+      "skill_lore_any"
     ],
     "talentIds": [
-      "briber",
-      "commanding_presence",
-      "noble_blood",
-      "savvy"
+      "talent_briber",
+      "talent_commanding_presence",
+      "talent_noble_blood",
+      "talent_savvy"
     ],
     "trappingIds": [
       "aide",
@@ -2053,20 +2053,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "consume_alcohol",
-      "gamble",
-      "intimidate",
-      "leadership",
-      "lore_heraldry",
-      "melee_fencing",
-      "play_any"
+      "skill_bribery",
+      "skill_consume_alcohol",
+      "skill_gamble",
+      "skill_intimidate",
+      "skill_leadership",
+      "skill_lore_heraldry",
+      "skill_melee_fencing",
+      "skill_play_any"
     ],
     "talentIds": [
-      "etiquette_nobles",
-      "luck",
-      "noble_blood",
-      "read_write"
+      "talent_etiquette_nobles",
+      "talent_luck",
+      "talent_noble_blood",
+      "talent_read_write"
     ],
     "trappingIds": [
       "courtly_garb",
@@ -2083,18 +2083,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "gossip",
-      "language_classical",
-      "lore_local",
-      "ride_horse",
-      "melee_parry"
+      "skill_charm",
+      "skill_gossip",
+      "skill_language_classical",
+      "skill_lore_local",
+      "skill_ride_horse",
+      "skill_melee_parry"
     ],
     "talentIds": [
-      "attractive",
-      "briber",
-      "carouser",
-      "suave"
+      "talent_attractive",
+      "talent_briber",
+      "talent_carouser",
+      "talent_suave"
     ],
     "trappingIds": [
       "4_household_servants",
@@ -2113,16 +2113,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_any",
-      "intuition",
-      "lore_politics",
-      "perception"
+      "skill_language_any",
+      "skill_intuition",
+      "skill_lore_politics",
+      "skill_perception"
     ],
     "talentIds": [
-      "coolheaded",
-      "dealmaker",
-      "public_speaker",
-      "schemer"
+      "talent_coolheaded",
+      "talent_dealmaker",
+      "talent_public_speaker",
+      "talent_schemer"
     ],
     "trappingIds": [
       "2_sets_of_quality_courtly_garb",
@@ -2140,14 +2140,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 7",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_any",
-      "track"
+      "skill_lore_any",
+      "skill_track"
     ],
     "talentIds": [
-      "commanding_presence",
-      "iron_will",
-      "war_leader",
-      "wealthy"
+      "talent_commanding_presence",
+      "talent_iron_will",
+      "talent_war_leader",
+      "talent_wealthy"
     ],
     "trappingIds": [
       "4_sets_of_best_quality_courtly_garb",
@@ -2165,20 +2165,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "climb",
-      "drive",
-      "dodge",
-      "endurance",
-      "intuition",
-      "perception",
-      "stealth_any"
+      "skill_athletics",
+      "skill_climb",
+      "skill_drive",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_intuition",
+      "skill_perception",
+      "skill_stealth_any"
     ],
     "talentIds": [
-      "beneath_notice",
-      "strong_back",
-      "strong_minded",
-      "sturdy"
+      "talent_beneath_notice",
+      "talent_strong_back",
+      "talent_strong_minded",
+      "talent_sturdy"
     ],
     "trappingIds": [
       "floor_brush"
@@ -2192,18 +2192,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "consume_alcohol",
-      "evaluate",
-      "gamble",
-      "gossip",
-      "haggle"
+      "skill_animal_care",
+      "skill_consume_alcohol",
+      "skill_evaluate",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_haggle"
     ],
     "talentIds": [
-      "etiquette_servants",
-      "shadow",
-      "tenacious",
-      "well_prepared"
+      "talent_etiquette_servants",
+      "talent_shadow",
+      "talent_tenacious",
+      "talent_well_prepared"
     ],
     "trappingIds": [
       "livery"
@@ -2217,16 +2217,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "cool",
-      "intimidate",
-      "lore_local"
+      "skill_charm",
+      "skill_cool",
+      "skill_intimidate",
+      "skill_lore_local"
     ],
     "talentIds": [
-      "embezzle",
-      "resistance_poison",
-      "suave",
-      "supportive"
+      "talent_embezzle",
+      "talent_resistance_poison",
+      "talent_suave",
+      "talent_supportive"
     ],
     "trappingIds": [
       "quality_livery",
@@ -2243,14 +2243,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "leadership",
-      "melee_basic"
+      "skill_leadership",
+      "skill_melee_basic"
     ],
     "talentIds": [
-      "etiquette_any",
-      "numismatics",
-      "read_write",
-      "savvy"
+      "talent_etiquette_any",
+      "talent_numismatics",
+      "talent_read_write",
+      "talent_savvy"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -2266,20 +2266,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "cool",
-      "gamble",
-      "gossip",
-      "haggle",
-      "perception",
-      "stealth_any"
+      "skill_bribery",
+      "skill_charm",
+      "skill_cool",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_perception",
+      "skill_stealth_any"
     ],
     "talentIds": [
-      "blather",
-      "carouser",
-      "gregarious",
-      "shadow"
+      "talent_blather",
+      "talent_carouser",
+      "talent_gregarious",
+      "talent_shadow"
     ],
     "trappingIds": [
       "charcoal_stick",
@@ -2294,18 +2294,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "entertain_act",
-      "intuition",
-      "melee_basic",
-      "secret_signs_any",
-      "sleight_of_hand"
+      "skill_climb",
+      "skill_entertain_act",
+      "skill_intuition",
+      "skill_melee_basic",
+      "skill_secret_signs_any",
+      "skill_sleight_of_hand"
     ],
     "talentIds": [
-      "etiquette_any",
-      "lip_reading",
-      "read_write",
-      "secret_identity"
+      "talent_etiquette_any",
+      "talent_lip_reading",
+      "talent_read_write",
+      "talent_secret_identity"
     ],
     "trappingIds": [
       "informer",
@@ -2323,16 +2323,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "animal_training_pigeon",
-      "language_any",
-      "leadership"
+      "skill_animal_care",
+      "skill_animal_training_pigeon",
+      "skill_language_any",
+      "skill_leadership"
     ],
     "talentIds": [
-      "attractive",
-      "cat_tongued",
-      "master_of_disguise",
-      "mimic"
+      "talent_attractive",
+      "talent_cat_tongued",
+      "talent_master_of_disguise",
+      "talent_mimic"
     ],
     "trappingIds": [
       "book_cryptography",
@@ -2349,14 +2349,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_any",
-      "research"
+      "skill_lore_any",
+      "skill_research"
     ],
     "talentIds": [
-      "briber",
-      "schemer",
-      "suave",
-      "tower_of_memories"
+      "talent_briber",
+      "talent_schemer",
+      "talent_suave",
+      "talent_tower_of_memories"
     ],
     "trappingIds": [
       "office_and_staff",
@@ -2373,20 +2373,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "charm_animal",
-      "consume_alcohol",
-      "cool",
-      "endurance",
-      "intuition",
-      "lore_local",
-      "perception"
+      "skill_athletics",
+      "skill_charm_animal",
+      "skill_consume_alcohol",
+      "skill_cool",
+      "skill_endurance",
+      "skill_intuition",
+      "skill_lore_local",
+      "skill_perception"
     ],
     "talentIds": [
-      "menacing",
-      "night_vision",
-      "sharp",
-      "strike_to_stun"
+      "talent_menacing",
+      "talent_night_vision",
+      "talent_sharp",
+      "talent_strike_to_stun"
     ],
     "trappingIds": [
       "keys",
@@ -2403,18 +2403,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "melee_basic",
-      "outdoor_survival",
-      "ranged_bow",
-      "ride_horse",
-      "swim"
+      "skill_animal_care",
+      "skill_melee_basic",
+      "skill_outdoor_survival",
+      "skill_ranged_bow",
+      "skill_ride_horse",
+      "skill_swim"
     ],
     "talentIds": [
-      "animal_affinity",
-      "etiquette_servants",
-      "strider_any",
-      "rover"
+      "talent_animal_affinity",
+      "talent_etiquette_servants",
+      "talent_strider_any",
+      "talent_rover"
     ],
     "trappingIds": [
       "hand_weapon_or_bow_with_10_arrows",
@@ -2430,16 +2430,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "gossip",
-      "leadership"
+      "skill_bribery",
+      "skill_charm",
+      "skill_gossip",
+      "skill_leadership"
     ],
     "talentIds": [
-      "embezzle",
-      "numismatics",
-      "read_write",
-      "supportive"
+      "talent_embezzle",
+      "talent_numismatics",
+      "talent_read_write",
+      "talent_supportive"
     ],
     "trappingIds": [
       "breastplate",
@@ -2455,14 +2455,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "evaluate",
-      "language_any"
+      "skill_evaluate",
+      "skill_language_any"
     ],
     "talentIds": [
-      "commanding_presence",
-      "etiquette_any",
-      "savant_local",
-      "suave"
+      "talent_commanding_presence",
+      "talent_etiquette_any",
+      "talent_savant_local",
+      "talent_suave"
     ],
     "trappingIds": [
       "aide",
@@ -2478,20 +2478,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "dodge",
-      "endurance",
-      "gossip",
-      "haggle",
-      "intimidate",
-      "melee",
-      "perception"
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_intimidate",
+      "skill_melee",
+      "skill_perception"
     ],
     "talentIds": [
-      "embezzle",
-      "numismatics",
-      "strong_back",
-      "tenacious"
+      "talent_embezzle",
+      "talent_numismatics",
+      "talent_strong_back",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -2506,18 +2506,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "evaluate",
-      "intuition",
-      "leadership",
-      "lore_local"
+      "skill_bribery",
+      "skill_charm",
+      "skill_evaluate",
+      "skill_intuition",
+      "skill_leadership",
+      "skill_lore_local"
     ],
     "talentIds": [
-      "break_and_enter",
-      "criminal",
-      "public_speaker",
-      "strike_to_stun"
+      "talent_break_and_enter",
+      "talent_criminal",
+      "talent_public_speaker",
+      "talent_strike_to_stun"
     ],
     "trappingIds": [
       "leather_jack",
@@ -2532,16 +2532,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "lore_heraldry",
-      "navigation",
-      "ride_horse"
+      "skill_animal_care",
+      "skill_lore_heraldry",
+      "skill_navigation",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "kingpin",
-      "menacing",
-      "nose_for_trouble",
-      "read_write"
+      "talent_kingpin",
+      "talent_menacing",
+      "talent_nose_for_trouble",
+      "talent_read_write"
     ],
     "trappingIds": [
       "horse_with_saddle_and_tack",
@@ -2557,14 +2557,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_classical",
-      "lore_law"
+      "skill_language_classical",
+      "skill_lore_law"
     ],
     "talentIds": [
-      "commanding_presence",
-      "iron_will",
-      "savvy",
-      "schemer"
+      "talent_commanding_presence",
+      "talent_iron_will",
+      "talent_savvy",
+      "talent_schemer"
     ],
     "trappingIds": [
       "library_law",
@@ -2580,20 +2580,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "channelling",
-      "endurance",
-      "intuition",
-      "language_magick",
-      "lore_folklore",
-      "lore_herbs",
-      "outdoor_survival",
-      "perception"
+      "skill_channelling",
+      "skill_endurance",
+      "skill_intuition",
+      "skill_language_magick",
+      "skill_lore_folklore",
+      "skill_lore_herbs",
+      "skill_outdoor_survival",
+      "skill_perception"
     ],
     "talentIds": [
-      "fast_hands",
-      "petty_magic",
-      "rover",
-      "strider_woodlands"
+      "talent_fast_hands",
+      "talent_petty_magic",
+      "talent_rover",
+      "talent_strider_woodlands"
     ],
     "trappingIds": [
       "1d10_lucky_charms",
@@ -2609,18 +2609,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "gossip",
-      "heal",
-      "lore_local",
-      "trade_charms",
-      "trade_herbalist"
+      "skill_cool",
+      "skill_gossip",
+      "skill_heal",
+      "skill_lore_local",
+      "skill_trade_charms",
+      "skill_trade_herbalist"
     ],
     "talentIds": [
-      "aethyric_attunement",
-      "animal_affinity",
-      "arcane_magic_hedgecraft",
-      "sixth_sense"
+      "talent_aethyric_attunement",
+      "talent_animal_affinity",
+      "talent_arcane_magic_hedgecraft",
+      "talent_sixth_sense"
     ],
     "trappingIds": [
       "antitoxin_kit",
@@ -2636,16 +2636,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "haggle",
-      "lore_genealogy",
-      "lore_magick",
-      "lore_spirits"
+      "skill_haggle",
+      "skill_lore_genealogy",
+      "skill_lore_magick",
+      "skill_lore_spirits"
     ],
     "talentIds": [
-      "craftsman_herbalist",
-      "magical_sense",
-      "pure_soul",
-      "resistance_disease"
+      "talent_craftsman_herbalist",
+      "talent_magical_sense",
+      "talent_pure_soul",
+      "talent_resistance_disease"
     ],
     "trappingIds": [
       "isolated_hut",
@@ -2660,14 +2660,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "intimidate",
-      "pray"
+      "skill_intimidate",
+      "skill_pray"
     ],
     "talentIds": [
-      "acute_sense_any",
-      "master_tradesman_herbalist",
-      "night_vision",
-      "strong_minded"
+      "talent_acute_sense_any",
+      "talent_master_tradesman_herbalist",
+      "talent_night_vision",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "assortment_of_animal_skulls",
@@ -2682,20 +2682,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm_animal",
-      "climb",
-      "endurance",
-      "lore_herbs",
-      "outdoor_survival",
-      "perception",
-      "swim",
-      "trade_herbalist"
+      "skill_charm_animal",
+      "skill_climb",
+      "skill_endurance",
+      "skill_lore_herbs",
+      "skill_outdoor_survival",
+      "skill_perception",
+      "skill_swim",
+      "skill_trade_herbalist"
     ],
     "talentIds": [
-      "acute_sense_taste",
-      "orientation",
-      "rover",
-      "strider_any"
+      "talent_acute_sense_taste",
+      "talent_orientation",
+      "talent_rover",
+      "talent_strider_any"
     ],
     "trappingIds": [
       "boots",
@@ -2711,18 +2711,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "cool",
-      "gossip",
-      "haggle",
-      "heal",
-      "lore_local"
+      "skill_consume_alcohol",
+      "skill_cool",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_heal",
+      "skill_lore_local"
     ],
     "talentIds": [
-      "dealmaker",
-      "nimble_fingered",
-      "sharp",
-      "sturdy"
+      "talent_dealmaker",
+      "talent_nimble_fingered",
+      "talent_sharp",
+      "talent_sturdy"
     ],
     "trappingIds": [
       "hand_weapon_sickle",
@@ -2738,16 +2738,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "intuition",
-      "leadership",
-      "lore_medicine",
-      "trade_poisons"
+      "skill_intuition",
+      "skill_leadership",
+      "skill_lore_medicine",
+      "skill_trade_poisons"
     ],
     "talentIds": [
-      "craftsman_herbalist",
-      "field_dressing",
-      "hardy",
-      "savvy"
+      "talent_craftsman_herbalist",
+      "talent_field_dressing",
+      "talent_hardy",
+      "talent_savvy"
     ],
     "trappingIds": [
       "herb_gatherer",
@@ -2764,14 +2764,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "drive",
-      "navigation"
+      "skill_drive",
+      "skill_navigation"
     ],
     "talentIds": [
-      "concoct",
-      "master_tradesman_herbalist",
-      "resistance_poison",
-      "savant_herbs"
+      "talent_concoct",
+      "talent_master_tradesman_herbalist",
+      "talent_resistance_poison",
+      "talent_savant_herbs"
     ],
     "trappingIds": [
       "pony_and_cart"
@@ -2785,20 +2785,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm_animal",
-      "climb",
-      "endurance",
-      "lore_beasts",
-      "outdoor_survival",
-      "perception",
-      "ranged_bow",
-      "set_trap"
+      "skill_charm_animal",
+      "skill_climb",
+      "skill_endurance",
+      "skill_lore_beasts",
+      "skill_outdoor_survival",
+      "skill_perception",
+      "skill_ranged_bow",
+      "skill_set_trap"
     ],
     "talentIds": [
-      "hardy",
-      "rover",
-      "strider_any",
-      "trapper"
+      "talent_hardy",
+      "talent_rover",
+      "talent_strider_any",
+      "talent_trapper"
     ],
     "trappingIds": [
       "selection_of_animal_traps",
@@ -2814,18 +2814,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "intuition",
-      "melee_basic",
-      "ranged_sling",
-      "secret_signs_hunter",
-      "stealth_rural"
+      "skill_cool",
+      "skill_intuition",
+      "skill_melee_basic",
+      "skill_ranged_sling",
+      "skill_secret_signs_hunter",
+      "skill_stealth_rural"
     ],
     "talentIds": [
-      "accurate_shot",
-      "fast_shot",
-      "hunters_eye",
-      "marksman"
+      "talent_accurate_shot",
+      "talent_fast_shot",
+      "talent_hunters_eye",
+      "talent_marksman"
     ],
     "trappingIds": [
       "bow_with_10_arrows",
@@ -2840,16 +2840,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "navigation",
-      "ride_horse",
-      "swim",
-      "track"
+      "skill_navigation",
+      "skill_ride_horse",
+      "skill_swim",
+      "skill_track"
     ],
     "talentIds": [
-      "acute_sense_any",
-      "deadeye_shot",
-      "fearless_animals",
-      "sharpshooter"
+      "talent_acute_sense_any",
+      "talent_deadeye_shot",
+      "talent_fearless_animals",
+      "talent_sharpshooter"
     ],
     "trappingIds": [
       "backpack",
@@ -2865,14 +2865,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "animal_training_any"
+      "skill_animal_care",
+      "skill_animal_training_any"
     ],
     "talentIds": [
-      "fearless_monsters",
-      "robust",
-      "sniper",
-      "sure_shot"
+      "talent_fearless_monsters",
+      "talent_robust",
+      "talent_sniper",
+      "talent_sure_shot"
     ],
     "trappingIds": [
       "riding_horse_with_saddle_and_tack",
@@ -2887,20 +2887,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "endurance",
-      "intuition",
-      "lore_local",
-      "melee_two_handed",
-      "outdoor_survival",
-      "perception",
-      "swim"
+      "skill_cool",
+      "skill_endurance",
+      "skill_intuition",
+      "skill_lore_local",
+      "skill_melee_two_handed",
+      "skill_outdoor_survival",
+      "skill_perception",
+      "skill_swim"
     ],
     "talentIds": [
-      "rover",
-      "strider_rocky",
-      "sturdy",
-      "tenacious"
+      "talent_rover",
+      "talent_strider_rocky",
+      "talent_sturdy",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "charcoal_stick",
@@ -2917,18 +2917,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "consume_alcohol",
-      "evaluate",
-      "melee_basic",
-      "secret_signs_miner",
-      "trade_explosives"
+      "skill_climb",
+      "skill_consume_alcohol",
+      "skill_evaluate",
+      "skill_melee_basic",
+      "skill_secret_signs_miner",
+      "skill_trade_explosives"
     ],
     "talentIds": [
-      "night_vision",
-      "strike_mighty_blow",
-      "strong_back",
-      "very_strong"
+      "talent_night_vision",
+      "talent_strike_mighty_blow",
+      "talent_strong_back",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "davrich_lamp",
@@ -2945,16 +2945,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "gossip",
-      "lore_geology",
-      "stealth_underground",
-      "trade_engineer"
+      "skill_gossip",
+      "skill_lore_geology",
+      "skill_stealth_underground",
+      "skill_trade_engineer"
     ],
     "talentIds": [
-      "careful_strike",
-      "craftsman_explosives",
-      "tinker",
-      "tunnel_rat"
+      "talent_careful_strike",
+      "talent_craftsman_explosives",
+      "talent_tinker",
+      "talent_tunnel_rat"
     ],
     "trappingIds": [
       "great_weapon_two_handed_pick",
@@ -2970,14 +2970,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "leadership"
+      "skill_charm",
+      "skill_leadership"
     ],
     "talentIds": [
-      "argumentative",
-      "strong_minded",
-      "embezzle",
-      "read_write"
+      "talent_argumentative",
+      "talent_strong_minded",
+      "talent_embezzle",
+      "talent_read_write"
     ],
     "trappingIds": [
       "crew_of_miners",
@@ -2992,20 +2992,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "entertain_fortune_telling",
-      "dodge",
-      "gossip",
-      "haggle",
-      "intuition",
-      "perception",
-      "sleight_of_hand"
+      "skill_charm",
+      "skill_entertain_fortune_telling",
+      "skill_dodge",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_intuition",
+      "skill_perception",
+      "skill_sleight_of_hand"
     ],
     "talentIds": [
-      "attractive",
-      "luck",
-      "second_sight",
-      "suave"
+      "talent_attractive",
+      "talent_luck",
+      "talent_second_sight",
+      "talent_suave"
     ],
     "trappingIds": [
       "deck_of_cards_or_dice",
@@ -3020,18 +3020,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "cool",
-      "entertain_prophecy",
-      "evaluate",
-      "intimidate",
-      "lore_astrology"
+      "skill_bribery",
+      "skill_cool",
+      "skill_entertain_prophecy",
+      "skill_evaluate",
+      "skill_intimidate",
+      "skill_lore_astrology"
     ],
     "talentIds": [
-      "detect_artefact",
-      "holy_visions",
-      "sixth_sense",
-      "well_prepared"
+      "talent_detect_artefact",
+      "talent_holy_visions",
+      "talent_sixth_sense",
+      "talent_well_prepared"
     ],
     "trappingIds": [
       "selection_of_amulets"
@@ -3045,16 +3045,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm_animal",
-      "entertain_storytelling",
-      "language_any",
-      "trade_writing"
+      "skill_charm_animal",
+      "skill_entertain_storytelling",
+      "skill_language_any",
+      "skill_trade_writing"
     ],
     "talentIds": [
-      "nose_for_trouble",
-      "petty_magic",
-      "read_write",
-      "witch"
+      "talent_nose_for_trouble",
+      "talent_petty_magic",
+      "talent_read_write",
+      "talent_witch"
     ],
     "trappingIds": [
       "trade_tools_writing"
@@ -3068,14 +3068,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_prophecy",
-      "channelling_azyr"
+      "skill_lore_prophecy",
+      "skill_channelling_azyr"
     ],
     "talentIds": [
-      "arcane_magic_celestial",
-      "magical_sense",
-      "menacing",
-      "strong_minded"
+      "talent_arcane_magic_celestial",
+      "talent_magical_sense",
+      "talent_menacing",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "trade_tools_astrology"
@@ -3089,20 +3089,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm_animal",
-      "climb",
-      "endurance",
-      "gossip",
-      "lore_local",
-      "melee_basic",
-      "outdoor_survival",
-      "perception"
+      "skill_charm_animal",
+      "skill_climb",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_lore_local",
+      "skill_melee_basic",
+      "skill_outdoor_survival",
+      "skill_perception"
     ],
     "talentIds": [
-      "orientation",
-      "rover",
-      "sharp",
-      "strider_any"
+      "talent_orientation",
+      "talent_rover",
+      "talent_sharp",
+      "talent_strider_any"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -3119,18 +3119,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "navigation",
-      "ranged_bow",
-      "ride_horse",
-      "stealth_rural",
-      "track"
+      "skill_athletics",
+      "skill_navigation",
+      "skill_ranged_bow",
+      "skill_ride_horse",
+      "skill_stealth_rural",
+      "skill_track"
     ],
     "talentIds": [
-      "combat_aware",
-      "night_vision",
-      "nose_for_trouble",
-      "seasoned_traveller"
+      "talent_combat_aware",
+      "talent_night_vision",
+      "talent_nose_for_trouble",
+      "talent_seasoned_traveller"
     ],
     "trappingIds": [
       "bow_and_10_arrows",
@@ -3145,16 +3145,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "haggle",
-      "secret_signs_hunter",
-      "swim"
+      "skill_animal_care",
+      "skill_haggle",
+      "skill_secret_signs_hunter",
+      "skill_swim"
     ],
     "talentIds": [
-      "acute_sense_sight",
-      "sixth_sense",
-      "strong_legs",
-      "very_resilient"
+      "talent_acute_sense_sight",
+      "talent_sixth_sense",
+      "talent_strong_legs",
+      "talent_very_resilient"
     ],
     "trappingIds": [
       "map",
@@ -3171,14 +3171,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_any",
-      "trade_cartographer"
+      "skill_language_any",
+      "skill_trade_cartographer"
     ],
     "talentIds": [
-      "hardy",
-      "linguistics",
-      "savant_local",
-      "tenacious"
+      "talent_hardy",
+      "talent_linguistics",
+      "talent_savant_local",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "selection_of_maps",
@@ -3193,20 +3193,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "athletics",
-      "consume_alcohol",
-      "endurance",
-      "gossip",
-      "melee_brawling",
-      "lore_local",
-      "outdoor_survival"
+      "skill_animal_care",
+      "skill_athletics",
+      "skill_consume_alcohol",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_melee_brawling",
+      "skill_lore_local",
+      "skill_outdoor_survival"
     ],
     "talentIds": [
-      "rover",
-      "strong_back",
-      "strong_minded",
-      "stone_soup"
+      "talent_rover",
+      "talent_strong_back",
+      "talent_strong_minded",
+      "talent_stone_soup"
     ],
     "trappingIds": [
       "none"
@@ -3220,17 +3220,17 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "drive",
-      "entertain_storytelling",
-      "haggle",
-      "melee_basic",
-      "trade_any"
+      "skill_drive",
+      "skill_entertain_storytelling",
+      "skill_haggle",
+      "skill_melee_basic",
+      "skill_trade_any"
     ],
     "talentIds": [
-      "animal_affinity",
-      "hardy",
-      "tenacious",
-      "very_strong"
+      "talent_animal_affinity",
+      "talent_hardy",
+      "talent_tenacious",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "leather_jerkin",
@@ -3246,16 +3246,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "intimidate",
-      "leadership"
+      "skill_bribery",
+      "skill_charm",
+      "skill_intimidate",
+      "skill_leadership"
     ],
     "talentIds": [
-      "craftsman_any",
-      "dealmaker",
-      "stout_hearted",
-      "very_resilient"
+      "talent_craftsman_any",
+      "talent_dealmaker",
+      "talent_stout_hearted",
+      "talent_very_resilient"
     ],
     "trappingIds": [
       "mule_and_cart",
@@ -3270,14 +3270,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "intuition",
-      "lore_history"
+      "skill_intuition",
+      "skill_lore_history"
     ],
     "talentIds": [
-      "master_tradesman_any",
-      "nimble_fingered",
-      "public_speaker",
-      "savant_local"
+      "talent_master_tradesman_any",
+      "talent_nimble_fingered",
+      "talent_public_speaker",
+      "talent_savant_local"
     ],
     "trappingIds": [
       "the_respect_of_the_village"
@@ -3291,20 +3291,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "gossip",
-      "haggle",
-      "intuition",
-      "melee_basic",
-      "outdoor_survival",
-      "perception"
+      "skill_bribery",
+      "skill_charm",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_intuition",
+      "skill_melee_basic",
+      "skill_outdoor_survival",
+      "skill_perception"
     ],
     "talentIds": [
-      "break_and_enter",
-      "shadow",
-      "strike_to_stun",
-      "suave"
+      "talent_break_and_enter",
+      "talent_shadow",
+      "talent_strike_to_stun",
+      "talent_suave"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -3320,18 +3320,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "endurance",
-      "intimidate",
-      "ranged_crossbow",
-      "ranged_entangling",
-      "track"
+      "skill_athletics",
+      "skill_endurance",
+      "skill_intimidate",
+      "skill_ranged_crossbow",
+      "skill_ranged_entangling",
+      "skill_track"
     ],
     "talentIds": [
-      "marksman",
-      "relentless",
-      "seasoned_traveller",
-      "strong_back"
+      "talent_marksman",
+      "talent_relentless",
+      "talent_seasoned_traveller",
+      "talent_strong_back"
     ],
     "trappingIds": [
       "crossbow_and_10_bolts",
@@ -3349,16 +3349,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "climb",
-      "ride_horse",
-      "swim"
+      "skill_animal_care",
+      "skill_climb",
+      "skill_ride_horse",
+      "skill_swim"
     ],
     "talentIds": [
-      "accurate_shot",
-      "careful_strike",
-      "dual_wielder",
-      "sprinter"
+      "talent_accurate_shot",
+      "talent_careful_strike",
+      "talent_dual_wielder",
+      "talent_sprinter"
     ],
     "trappingIds": [
       "mail_shirt",
@@ -3373,14 +3373,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "drive",
-      "lore_law"
+      "skill_drive",
+      "skill_lore_law"
     ],
     "talentIds": [
-      "deadeye_shot",
-      "fearless_bounties",
-      "hardy",
-      "sure_shot"
+      "talent_deadeye_shot",
+      "talent_fearless_bounties",
+      "talent_hardy",
+      "talent_sure_shot"
     ],
     "trappingIds": [
       "draught_horse_and_cart",
@@ -3396,20 +3396,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "charm_animal",
-      "climb",
-      "drive",
-      "endurance",
-      "perception",
-      "ranged_entangling",
-      "ride_horse"
+      "skill_animal_care",
+      "skill_charm_animal",
+      "skill_climb",
+      "skill_drive",
+      "skill_endurance",
+      "skill_perception",
+      "skill_ranged_entangling",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "animal_affinity",
-      "seasoned_traveller",
-      "trick_riding",
-      "tenacious"
+      "talent_animal_affinity",
+      "talent_seasoned_traveller",
+      "talent_trick_riding",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "warm_coat_and_gloves",
@@ -3424,18 +3424,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "gossip",
-      "intuition",
-      "lore_local",
-      "navigation",
-      "ranged_blackpowder"
+      "skill_consume_alcohol",
+      "skill_gossip",
+      "skill_intuition",
+      "skill_lore_local",
+      "skill_navigation",
+      "skill_ranged_blackpowder"
     ],
     "talentIds": [
-      "coolheaded",
-      "crack_the_whip",
-      "gunner",
-      "strong_minded"
+      "talent_coolheaded",
+      "talent_crack_the_whip",
+      "talent_gunner",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "blunderbuss_with_10_shots",
@@ -3452,16 +3452,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_training_horse",
-      "intimidate",
-      "language_any",
-      "lore_routes"
+      "skill_animal_training_horse",
+      "skill_intimidate",
+      "skill_language_any",
+      "skill_lore_routes"
     ],
     "talentIds": [
-      "accurate_shot",
-      "dealmaker",
-      "fearless_outlaws",
-      "nose_for_trouble"
+      "talent_accurate_shot",
+      "talent_dealmaker",
+      "talent_fearless_outlaws",
+      "talent_nose_for_trouble"
     ],
     "trappingIds": [
       "mail_shirt",
@@ -3477,14 +3477,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "leadership"
+      "skill_charm",
+      "skill_leadership"
     ],
     "talentIds": [
-      "fearless_beastmen",
-      "marksman",
-      "orientation",
-      "rapid_reload"
+      "talent_fearless_beastmen",
+      "talent_marksman",
+      "talent_orientation",
+      "talent_rapid_reload"
     ],
     "trappingIds": [
       "fleet_of_coaches_and_horses",
@@ -3499,20 +3499,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "charm",
-      "entertain_any",
-      "gossip",
-      "haggle",
-      "perform_any",
-      "play_any",
-      "sleight_of_hand"
+      "skill_athletics",
+      "skill_charm",
+      "skill_entertain_any",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_perform_any",
+      "skill_play_any",
+      "skill_sleight_of_hand"
     ],
     "talentIds": [
-      "attractive",
-      "mimic",
-      "public_speaker",
-      "suave"
+      "talent_attractive",
+      "talent_mimic",
+      "talent_public_speaker",
+      "talent_suave"
     ],
     "trappingIds": [
       "bowl",
@@ -3527,17 +3527,17 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_any",
-      "ride_any",
-      "melee_basic",
-      "perform_any",
-      "play_any_ranged_throwing"
+      "skill_entertain_any",
+      "skill_ride_any",
+      "skill_melee_basic",
+      "skill_perform_any",
+      "skill_play_any_ranged_throwing"
     ],
     "talentIds": [
-      "contortionist",
-      "jump_up",
-      "sharpshooter",
-      "trick_riding"
+      "talent_contortionist",
+      "talent_jump_up",
+      "talent_sharpshooter",
+      "talent_trick_riding"
     ],
     "trappingIds": [
       "costume",
@@ -3554,16 +3554,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "animal_training",
-      "art_writing",
-      "language_any"
+      "skill_animal_care",
+      "skill_animal_training",
+      "skill_art_writing",
+      "skill_language_any"
     ],
     "talentIds": [
-      "blather",
-      "master_of_disguise",
-      "perfect_pitch",
-      "read_write"
+      "talent_blather",
+      "talent_master_of_disguise",
+      "talent_perfect_pitch",
+      "talent_read_write"
     ],
     "trappingIds": [
       "trained_animal",
@@ -3578,14 +3578,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "drive",
-      "leadership"
+      "skill_drive",
+      "skill_leadership"
     ],
     "talentIds": [
-      "dealmaker",
-      "etiquette_any",
-      "seasoned_traveller",
-      "sharp"
+      "talent_dealmaker",
+      "talent_etiquette_any",
+      "talent_seasoned_traveller",
+      "talent_sharp"
     ],
     "trappingIds": [
       "draught_horses_and_wagon_stage",
@@ -3601,20 +3601,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 0",
     "characteristicAdvances": [],
     "skillIds": [
-      "dodge",
-      "endurance",
-      "heal",
-      "intimidate",
-      "intuition",
-      "lore_sigmar",
-      "melee_flail",
-      "outdoor_survival"
+      "skill_dodge",
+      "skill_endurance",
+      "skill_heal",
+      "skill_intimidate",
+      "skill_intuition",
+      "skill_lore_sigmar",
+      "skill_melee_flail",
+      "skill_outdoor_survival"
     ],
     "talentIds": [
-      "berserk_charge",
-      "frenzy",
-      "read_write",
-      "stone_soup"
+      "talent_berserk_charge",
+      "talent_frenzy",
+      "talent_read_write",
+      "talent_stone_soup"
     ],
     "trappingIds": [
       "flail",
@@ -3629,18 +3629,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 0",
     "characteristicAdvances": [],
     "skillIds": [
-      "art_icons",
-      "athletics",
-      "cool",
-      "language_classical",
-      "lore_the_empire",
-      "ranged_sling"
+      "skill_art_icons",
+      "skill_athletics",
+      "skill_cool",
+      "skill_language_classical",
+      "skill_lore_the_empire",
+      "skill_ranged_sling"
     ],
     "talentIds": [
-      "hardy",
-      "hatred_heretics",
-      "flagellant",
-      "implacable"
+      "talent_hardy",
+      "talent_hatred_heretics",
+      "talent_flagellant",
+      "talent_implacable"
     ],
     "trappingIds": [
       "placard",
@@ -3656,16 +3656,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 0",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "language_any",
-      "lore_theology",
-      "perception"
+      "skill_charm",
+      "skill_language_any",
+      "skill_lore_theology",
+      "skill_perception"
     ],
     "talentIds": [
-      "field_dressing",
-      "furious_assault",
-      "menacing",
-      "seasoned_traveller"
+      "talent_field_dressing",
+      "talent_furious_assault",
+      "talent_menacing",
+      "talent_seasoned_traveller"
     ],
     "trappingIds": [
       "religious_relic"
@@ -3679,14 +3679,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 0",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_speeches",
-      "leadership"
+      "skill_entertain_speeches",
+      "skill_leadership"
     ],
     "talentIds": [
-      "battle_rage",
-      "fearless_heretics",
-      "frightening",
-      "impassioned_zeal"
+      "talent_battle_rage",
+      "talent_fearless_heretics",
+      "talent_frightening",
+      "talent_impassioned_zeal"
     ],
     "trappingIds": [
       "book_religion",
@@ -3703,20 +3703,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "climb",
-      "dodge",
-      "endurance",
-      "gossip",
-      "navigation",
-      "perception",
-      "melee_brawling"
+      "skill_athletics",
+      "skill_climb",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_navigation",
+      "skill_perception",
+      "skill_melee_brawling"
     ],
     "talentIds": [
-      "flee",
-      "fleet_footed",
-      "sprinter",
-      "step_aside"
+      "talent_flee",
+      "talent_fleet_footed",
+      "talent_sprinter",
+      "talent_step_aside"
     ],
     "trappingIds": [
       "scroll_case"
@@ -3730,18 +3730,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "charm",
-      "cool",
-      "lore_local",
-      "melee_basic",
-      "ride_horse"
+      "skill_animal_care",
+      "skill_charm",
+      "skill_cool",
+      "skill_lore_local",
+      "skill_melee_basic",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "crack_the_whip",
-      "criminal",
-      "orientation",
-      "seasoned_traveller"
+      "talent_crack_the_whip",
+      "talent_criminal",
+      "talent_orientation",
+      "talent_seasoned_traveller"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -3757,16 +3757,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm_animal",
-      "bribery",
-      "consume_alcohol",
-      "outdoor_survival"
+      "skill_charm_animal",
+      "skill_bribery",
+      "skill_consume_alcohol",
+      "skill_outdoor_survival"
     ],
     "talentIds": [
-      "nose_for_trouble",
-      "relentless",
-      "tenacious",
-      "trick_riding"
+      "talent_nose_for_trouble",
+      "talent_relentless",
+      "talent_tenacious",
+      "talent_trick_riding"
     ],
     "trappingIds": [
       "backpack",
@@ -3782,14 +3782,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "intimidate",
-      "leadership"
+      "skill_intimidate",
+      "skill_leadership"
     ],
     "talentIds": [
-      "dealmaker",
-      "hatred_outlaws",
-      "kingpin",
-      "very_resilient"
+      "talent_dealmaker",
+      "talent_hatred_outlaws",
+      "talent_kingpin",
+      "talent_very_resilient"
     ],
     "trappingIds": [
       "couriers",
@@ -3805,20 +3805,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "endurance",
-      "entertain_storytelling",
-      "gossip",
-      "haggle",
-      "intuition",
-      "outdoor_survival",
-      "stealth_rural_or_urban"
+      "skill_charm",
+      "skill_endurance",
+      "skill_entertain_storytelling",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_intuition",
+      "skill_outdoor_survival",
+      "skill_stealth_rural_or_urban"
     ],
     "talentIds": [
-      "fisherman",
-      "flee",
-      "rover",
-      "tinker"
+      "talent_fisherman",
+      "talent_flee",
+      "talent_rover",
+      "talent_tinker"
     ],
     "trappingIds": [
       "backpack",
@@ -3835,18 +3835,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "charm_animal",
-      "consume_alcohol",
-      "evaluate",
-      "ride_horse",
-      "trade_tinker"
+      "skill_animal_care",
+      "skill_charm_animal",
+      "skill_consume_alcohol",
+      "skill_evaluate",
+      "skill_ride_horse",
+      "skill_trade_tinker"
     ],
     "talentIds": [
-      "dealmaker",
-      "orientation",
-      "seasoned_traveller",
-      "strong_back"
+      "talent_dealmaker",
+      "talent_orientation",
+      "talent_seasoned_traveller",
+      "talent_strong_back"
     ],
     "trappingIds": [
       "mule_and_saddlebags",
@@ -3863,17 +3863,17 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "drive",
-      "intimidate",
-      "language_any",
-      "perception"
+      "skill_drive",
+      "skill_intimidate",
+      "skill_language_any",
+      "skill_perception"
     ],
     "talentIds": [
-      "numismatics",
-      "sharp",
-      "sturdy",
-      "well_prepared",
-      "very_resilient"
+      "talent_numismatics",
+      "talent_sharp",
+      "talent_sturdy",
+      "talent_well_prepared",
+      "talent_very_resilient"
     ],
     "trappingIds": [
       "cart",
@@ -3888,14 +3888,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_local",
-      "lore_geography"
+      "skill_lore_local",
+      "skill_lore_geography"
     ],
     "talentIds": [
-      "cat_tongued",
-      "strong_minded",
-      "suave",
-      "tenacious"
+      "talent_cat_tongued",
+      "talent_strong_minded",
+      "talent_suave",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "draught_horse_and_wagon",
@@ -3911,20 +3911,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "consume_alcohol",
-      "gamble",
-      "gossip",
-      "haggle",
-      "melee_basic",
-      "perception",
-      "ranged_crossbow"
+      "skill_bribery",
+      "skill_consume_alcohol",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_melee_basic",
+      "skill_perception",
+      "skill_ranged_crossbow"
     ],
     "talentIds": [
-      "coolheaded",
-      "embezzle",
-      "marksman",
-      "numismatics"
+      "talent_coolheaded",
+      "talent_embezzle",
+      "talent_marksman",
+      "talent_numismatics"
     ],
     "trappingIds": [
       "crossbow_with_10_bolts",
@@ -3939,18 +3939,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "endurance",
-      "intimidate",
-      "intuition",
-      "outdoor_survival",
-      "ride_horse"
+      "skill_animal_care",
+      "skill_endurance",
+      "skill_intimidate",
+      "skill_intuition",
+      "skill_outdoor_survival",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "crack_the_whip",
-      "criminal",
-      "roughrider",
-      "seasoned_traveller"
+      "talent_crack_the_whip",
+      "talent_criminal",
+      "talent_roughrider",
+      "talent_seasoned_traveller"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -3967,16 +3967,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "charm",
-      "leadership",
-      "ranged_blackpowder"
+      "skill_athletics",
+      "skill_charm",
+      "skill_leadership",
+      "skill_ranged_blackpowder"
     ],
     "talentIds": [
-      "etiquette_soldiers",
-      "fearless_outlaws",
-      "hatred_any",
-      "nose_for_trouble"
+      "talent_etiquette_soldiers",
+      "talent_fearless_outlaws",
+      "talent_hatred_any",
+      "talent_nose_for_trouble"
     ],
     "trappingIds": [
       "squad_of_road_wardens",
@@ -3993,14 +3993,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_empire",
-      "navigation"
+      "skill_lore_empire",
+      "skill_navigation"
     ],
     "talentIds": [
-      "combat_aware",
-      "commanding_presence",
-      "kingpin",
-      "public_speaker"
+      "talent_combat_aware",
+      "talent_commanding_presence",
+      "talent_kingpin",
+      "talent_public_speaker"
     ],
     "trappingIds": [
       "light_warhorse",
@@ -4017,20 +4017,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "consume_alcohol",
-      "heal",
-      "intimidate",
-      "intuition",
-      "lore_torture",
-      "melee_fist",
-      "perception"
+      "skill_charm",
+      "skill_consume_alcohol",
+      "skill_heal",
+      "skill_intimidate",
+      "skill_intuition",
+      "skill_lore_torture",
+      "skill_melee_fist",
+      "skill_perception"
     ],
     "talentIds": [
-      "coolheaded",
-      "menacing",
-      "read_write",
-      "resolute"
+      "talent_coolheaded",
+      "talent_menacing",
+      "talent_read_write",
+      "talent_resolute"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -4045,18 +4045,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "dodge",
-      "gossip",
-      "lore_witches",
-      "ranged_any",
-      "ride_horse"
+      "skill_cool",
+      "skill_dodge",
+      "skill_gossip",
+      "skill_lore_witches",
+      "skill_ranged_any",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "dual_wielder",
-      "marksman",
-      "seasoned_traveller",
-      "shadow"
+      "talent_dual_wielder",
+      "talent_marksman",
+      "talent_seasoned_traveller",
+      "talent_shadow"
     ],
     "trappingIds": [
       "crossbow_pistol_or_pistol",
@@ -4075,16 +4075,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "endurance",
-      "leadership",
-      "lore_law",
-      "lore_local"
+      "skill_endurance",
+      "skill_leadership",
+      "skill_lore_law",
+      "skill_lore_local"
     ],
     "talentIds": [
-      "fearless_witches",
-      "nose_for_trouble",
-      "relentless",
-      "strong_minded"
+      "talent_fearless_witches",
+      "talent_nose_for_trouble",
+      "talent_relentless",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "quality_clothing",
@@ -4099,14 +4099,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_chaos",
-      "lore_politics"
+      "skill_lore_chaos",
+      "skill_lore_politics"
     ],
     "talentIds": [
-      "frightening",
-      "iron_will",
-      "magical_sense",
-      "pure_soul"
+      "talent_frightening",
+      "talent_iron_will",
+      "talent_magical_sense",
+      "talent_pure_soul"
     ],
     "trappingIds": [
       "best_quality_courtly_garb",
@@ -4121,20 +4121,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "dodge",
-      "endurance",
-      "gossip",
-      "melee_basic",
-      "row",
-      "sail",
-      "swim"
+      "skill_consume_alcohol",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_melee_basic",
+      "skill_row",
+      "skill_sail",
+      "skill_swim"
     ],
     "talentIds": [
-      "dirty_fighting",
-      "fisherman",
-      "strong_back",
-      "strong_swimmer"
+      "talent_dirty_fighting",
+      "talent_fisherman",
+      "talent_strong_back",
+      "talent_strong_swimmer"
     ],
     "trappingIds": [
       "hand_weapon_boat_hook",
@@ -4150,18 +4150,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "entertain_storytelling",
-      "haggle",
-      "intuition",
-      "lore_riverways",
-      "perception"
+      "skill_athletics",
+      "skill_entertain_storytelling",
+      "skill_haggle",
+      "skill_intuition",
+      "skill_lore_riverways",
+      "skill_perception"
     ],
     "talentIds": [
-      "etiquette_guilder",
-      "seasoned_traveller",
-      "very_strong",
-      "waterman"
+      "talent_etiquette_guilder",
+      "talent_seasoned_traveller",
+      "talent_very_strong",
+      "talent_waterman"
     ],
     "trappingIds": [
       "rope",
@@ -4176,16 +4176,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "entertain_singing",
-      "heal",
-      "trade_boatbuilding"
+      "skill_climb",
+      "skill_entertain_singing",
+      "skill_heal",
+      "skill_trade_boatbuilding"
     ],
     "talentIds": [
-      "dealmaker",
-      "embezzle",
-      "nose_for_trouble",
-      "strike_mighty_blow"
+      "talent_dealmaker",
+      "talent_embezzle",
+      "talent_nose_for_trouble",
+      "talent_strike_mighty_blow"
     ],
     "trappingIds": [
       "backpack",
@@ -4200,14 +4200,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "leadership",
-      "navigation"
+      "skill_leadership",
+      "skill_navigation"
     ],
     "talentIds": [
-      "menacing",
-      "orientation",
-      "pilot",
-      "public_speaker"
+      "talent_menacing",
+      "talent_orientation",
+      "talent_pilot",
+      "talent_public_speaker"
     ],
     "trappingIds": [
       "hat",
@@ -4222,20 +4222,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "gossip",
-      "intuition",
-      "lore_local",
-      "lore_riverways",
-      "perception",
-      "row",
-      "swim"
+      "skill_consume_alcohol",
+      "skill_gossip",
+      "skill_intuition",
+      "skill_lore_local",
+      "skill_lore_riverways",
+      "skill_perception",
+      "skill_row",
+      "skill_swim"
     ],
     "talentIds": [
-      "fisherman",
-      "night_vision",
-      "orientation",
-      "waterman"
+      "talent_fisherman",
+      "talent_night_vision",
+      "talent_orientation",
+      "talent_waterman"
     ],
     "trappingIds": [
       "hand_weapon_boat_hook",
@@ -4250,18 +4250,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "cool",
-      "entertain_storytelling",
-      "language_any",
-      "melee_basic",
-      "navigation"
+      "skill_charm",
+      "skill_cool",
+      "skill_entertain_storytelling",
+      "skill_language_any",
+      "skill_melee_basic",
+      "skill_navigation"
     ],
     "talentIds": [
-      "dealmaker",
-      "etiquette_guilder",
-      "nose_for_trouble",
-      "river_guide"
+      "talent_dealmaker",
+      "talent_etiquette_guilder",
+      "talent_nose_for_trouble",
+      "talent_river_guide"
     ],
     "trappingIds": [
       "leather_jerkin",
@@ -4277,16 +4277,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "haggle",
-      "intimidate",
-      "lore_local",
-      "lore_wrecks"
+      "skill_haggle",
+      "skill_intimidate",
+      "skill_lore_local",
+      "skill_lore_wrecks"
     ],
     "talentIds": [
-      "acute_sense_sight",
-      "pilot",
-      "sea_legs",
-      "very_strong"
+      "talent_acute_sense_sight",
+      "talent_pilot",
+      "talent_sea_legs",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "pole",
@@ -4301,14 +4301,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "leadership",
-      "sail"
+      "skill_leadership",
+      "skill_sail"
     ],
     "talentIds": [
-      "sixth_sense",
-      "sharp",
-      "strong_swimmer",
-      "tenacious"
+      "talent_sixth_sense",
+      "talent_sharp",
+      "talent_strong_swimmer",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "boathand",
@@ -4323,20 +4323,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "dodge",
-      "endurance",
-      "melee_basic",
-      "perception",
-      "row",
-      "sail",
-      "swim"
+      "skill_athletics",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_melee_basic",
+      "skill_perception",
+      "skill_row",
+      "skill_sail",
+      "skill_swim"
     ],
     "talentIds": [
-      "strong_swimmer",
-      "strong_back",
-      "very_strong",
-      "waterman"
+      "talent_strong_swimmer",
+      "talent_strong_back",
+      "talent_very_strong",
+      "talent_waterman"
     ],
     "trappingIds": [
       "hand_weapon_sword",
@@ -4352,18 +4352,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "intimidate",
-      "gossip",
-      "lore_riverways",
-      "ranged_blackpowder"
+      "skill_bribery",
+      "skill_charm",
+      "skill_intimidate",
+      "skill_gossip",
+      "skill_lore_riverways",
+      "skill_ranged_blackpowder"
     ],
     "talentIds": [
-      "criminal",
-      "gunner",
-      "fisherman",
-      "seasoned_traveller"
+      "talent_criminal",
+      "talent_gunner",
+      "talent_fisherman",
+      "talent_seasoned_traveller"
     ],
     "trappingIds": [
       "lantern_and_oil",
@@ -4379,16 +4379,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "cool",
-      "intuition",
-      "leadership"
+      "skill_climb",
+      "skill_cool",
+      "skill_intuition",
+      "skill_leadership"
     ],
     "talentIds": [
-      "fearless_wreckers",
-      "hatred_any",
-      "pilot",
-      "sea_legs"
+      "talent_fearless_wreckers",
+      "talent_hatred_any",
+      "talent_pilot",
+      "talent_sea_legs"
     ],
     "trappingIds": [
       "grappling_hook",
@@ -4404,14 +4404,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_law",
-      "navigation"
+      "skill_lore_law",
+      "skill_navigation"
     ],
     "talentIds": [
-      "commanding_presence",
-      "kingpin",
-      "menacing",
-      "orientation"
+      "talent_commanding_presence",
+      "talent_kingpin",
+      "talent_menacing",
+      "talent_orientation"
     ],
     "trappingIds": [
       "patrol_boats_and_crew",
@@ -4426,20 +4426,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "consume_alcohol",
-      "dodge",
-      "endurance",
-      "gossip",
-      "outdoor_survival",
-      "row",
-      "swim"
+      "skill_athletics",
+      "skill_consume_alcohol",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_outdoor_survival",
+      "skill_row",
+      "skill_swim"
     ],
     "talentIds": [
-      "fisherman",
-      "gregarious",
-      "strider_marshes",
-      "strong_swimmer"
+      "talent_fisherman",
+      "talent_gregarious",
+      "talent_strider_marshes",
+      "talent_strong_swimmer"
     ],
     "trappingIds": [
       "bucket",
@@ -4455,18 +4455,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "gamble",
-      "lore_local",
-      "lore_riverways",
-      "ranged_entangling",
-      "ranged_throwing",
-      "set_trap"
+      "skill_gamble",
+      "skill_lore_local",
+      "skill_lore_riverways",
+      "skill_ranged_entangling",
+      "skill_ranged_throwing",
+      "skill_set_trap"
     ],
     "talentIds": [
-      "craftsman_boatbuilder",
-      "rover",
-      "strong_back",
-      "waterman"
+      "talent_craftsman_boatbuilder",
+      "talent_rover",
+      "talent_strong_back",
+      "talent_waterman"
     ],
     "trappingIds": [
       "eel_trap",
@@ -4483,16 +4483,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "intuition",
-      "melee_pole_arm",
-      "perception"
+      "skill_charm",
+      "skill_intuition",
+      "skill_melee_pole_arm",
+      "skill_perception"
     ],
     "talentIds": [
-      "savant_riverways",
-      "stout_hearted",
-      "tenacious",
-      "very_strong"
+      "talent_savant_riverways",
+      "talent_stout_hearted",
+      "talent_tenacious",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "row_boat",
@@ -4507,14 +4507,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_storytelling",
-      "lore_folklore"
+      "skill_entertain_storytelling",
+      "skill_lore_folklore"
     ],
     "talentIds": [
-      "master_tradesman_boatbuilder",
-      "public_speaker",
-      "sharp",
-      "strong_minded"
+      "talent_master_tradesman_boatbuilder",
+      "talent_public_speaker",
+      "talent_sharp",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "hut_or_riverboat"
@@ -4528,20 +4528,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "consume_alcohol",
-      "gamble",
-      "gossip",
-      "row",
-      "melee_brawling",
-      "sail",
-      "swim"
+      "skill_climb",
+      "skill_consume_alcohol",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_row",
+      "skill_melee_brawling",
+      "skill_sail",
+      "skill_swim"
     ],
     "talentIds": [
-      "fisherman",
-      "strider_coastal",
-      "strong_back",
-      "strong_swimmer"
+      "talent_fisherman",
+      "talent_strider_coastal",
+      "talent_strong_back",
+      "talent_strong_swimmer"
     ],
     "trappingIds": [
       "bucket",
@@ -4557,18 +4557,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "dodge",
-      "endurance",
-      "entertain_singing",
-      "language_any",
-      "melee_basic"
+      "skill_athletics",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_entertain_singing",
+      "skill_language_any",
+      "skill_melee_basic"
     ],
     "talentIds": [
-      "catfall",
-      "sea_legs",
-      "seasoned_traveller",
-      "strong_legs"
+      "talent_catfall",
+      "talent_sea_legs",
+      "talent_seasoned_traveller",
+      "talent_strong_legs"
     ],
     "trappingIds": [
       "hand_weapon_boat_hook",
@@ -4583,16 +4583,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "leadership",
-      "perception",
-      "trade_carpenter"
+      "skill_cool",
+      "skill_leadership",
+      "skill_perception",
+      "skill_trade_carpenter"
     ],
     "talentIds": [
-      "old_salt",
-      "strike_mighty_blow",
-      "tenacious",
-      "very_strong"
+      "talent_old_salt",
+      "talent_strike_mighty_blow",
+      "talent_tenacious",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "trade_tools_carpenter"
@@ -4606,14 +4606,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "navigation"
+      "skill_charm",
+      "skill_navigation"
     ],
     "talentIds": [
-      "orientation",
-      "pilot",
-      "public_speaker",
-      "savvy"
+      "talent_orientation",
+      "talent_pilot",
+      "talent_public_speaker",
+      "talent_savvy"
     ],
     "trappingIds": [
       "shipping_charts",
@@ -4630,20 +4630,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "bribery",
-      "cool",
-      "consume_alcohol",
-      "row",
-      "sail",
-      "stealth_rural_or_urban",
-      "swim"
+      "skill_athletics",
+      "skill_bribery",
+      "skill_cool",
+      "skill_consume_alcohol",
+      "skill_row",
+      "skill_sail",
+      "skill_stealth_rural_or_urban",
+      "skill_swim"
     ],
     "talentIds": [
-      "criminal",
-      "fisherman",
-      "strider_marshes",
-      "strong_back"
+      "talent_criminal",
+      "talent_fisherman",
+      "talent_strider_marshes",
+      "talent_strong_back"
     ],
     "trappingIds": [
       "large_sack",
@@ -4660,19 +4660,19 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "haggle",
-      "charm",
-      "gossip",
-      "lore_local",
-      "melee_basic",
-      "perception",
-      "secret_signs_smuggler"
+      "skill_haggle",
+      "skill_charm",
+      "skill_gossip",
+      "skill_lore_local",
+      "skill_melee_basic",
+      "skill_perception",
+      "skill_secret_signs_smuggler"
     ],
     "talentIds": [
-      "dealmaker",
-      "etiquette_criminals",
-      "waterman",
-      "very_strong"
+      "talent_dealmaker",
+      "talent_etiquette_criminals",
+      "talent_waterman",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "2_barrels",
@@ -4689,16 +4689,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "evaluate",
-      "intimidate",
-      "intuition",
-      "lore_riverways"
+      "skill_evaluate",
+      "skill_intimidate",
+      "skill_intuition",
+      "skill_lore_riverways"
     ],
     "talentIds": [
-      "briber",
-      "fearless_riverwardens",
-      "pilot",
-      "strong_swimmer"
+      "talent_briber",
+      "talent_fearless_riverwardens",
+      "talent_pilot",
+      "talent_strong_swimmer"
     ],
     "trappingIds": [
       "river_runner",
@@ -4713,14 +4713,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_any",
-      "leadership"
+      "skill_language_any",
+      "skill_leadership"
     ],
     "talentIds": [
-      "kingpin",
-      "savvy",
-      "strider_coastal",
-      "sea_legs"
+      "talent_kingpin",
+      "talent_savvy",
+      "talent_strider_coastal",
+      "talent_sea_legs"
     ],
     "trappingIds": [
       "disguise_kit",
@@ -4735,20 +4735,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "climb",
-      "consume_alcohol",
-      "dodge",
-      "endurance",
-      "gossip",
-      "melee_basic",
-      "swim"
+      "skill_athletics",
+      "skill_climb",
+      "skill_consume_alcohol",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_melee_basic",
+      "skill_swim"
     ],
     "talentIds": [
-      "dirty_fighting",
-      "strong_back",
-      "sturdy",
-      "very_strong"
+      "talent_dirty_fighting",
+      "talent_strong_back",
+      "talent_sturdy",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "hand_weapon_boat_hook",
@@ -4763,18 +4763,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "entertain_storytelling",
-      "gamble",
-      "intimidate",
-      "perception",
-      "stealth_urban"
+      "skill_bribery",
+      "skill_entertain_storytelling",
+      "skill_gamble",
+      "skill_intimidate",
+      "skill_perception",
+      "skill_stealth_urban"
     ],
     "talentIds": [
-      "criminal",
-      "etiquette_guilders",
-      "strong_legs",
-      "tenacious"
+      "talent_criminal",
+      "talent_etiquette_guilders",
+      "talent_strong_legs",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "guild_licence",
@@ -4791,16 +4791,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "evaluate",
-      "intuition",
-      "leadership"
+      "skill_cool",
+      "skill_evaluate",
+      "skill_intuition",
+      "skill_leadership"
     ],
     "talentIds": [
-      "dealmaker",
-      "embezzle",
-      "etiquette_criminals",
-      "public_speaker"
+      "talent_dealmaker",
+      "talent_embezzle",
+      "talent_etiquette_criminals",
+      "talent_public_speaker"
     ],
     "trappingIds": [
       "gang_of_stevedores",
@@ -4815,14 +4815,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "lore_taxes"
+      "skill_charm",
+      "skill_lore_taxes"
     ],
     "talentIds": [
-      "kingpin",
-      "menacing",
-      "numismatics",
-      "read_write"
+      "talent_kingpin",
+      "talent_menacing",
+      "talent_numismatics",
+      "talent_read_write"
     ],
     "trappingIds": [
       "office_and_staff",
@@ -4837,20 +4837,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "consume_alcohol",
-      "dodge",
-      "endurance",
-      "row",
-      "melee_basic",
-      "outdoor_survival",
-      "swim"
+      "skill_climb",
+      "skill_consume_alcohol",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_row",
+      "skill_melee_basic",
+      "skill_outdoor_survival",
+      "skill_swim"
     ],
     "talentIds": [
-      "break_and_enter",
-      "criminal",
-      "fisherman",
-      "strong_back"
+      "talent_break_and_enter",
+      "talent_criminal",
+      "talent_fisherman",
+      "talent_strong_back"
     ],
     "trappingIds": [
       "crowbar",
@@ -4866,18 +4866,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "cool",
-      "intuition",
-      "navigation",
-      "perception",
-      "set_trap"
+      "skill_bribery",
+      "skill_cool",
+      "skill_intuition",
+      "skill_navigation",
+      "skill_perception",
+      "skill_set_trap"
     ],
     "talentIds": [
-      "flee",
-      "rover",
-      "strong_swimmer",
-      "trapper"
+      "talent_flee",
+      "talent_rover",
+      "talent_strong_swimmer",
+      "talent_trapper"
     ],
     "trappingIds": [
       "hand_weapon_boat_hook",
@@ -4893,16 +4893,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "gossip",
-      "intimidate",
-      "ranged_crossbow",
-      "stealth_rural"
+      "skill_gossip",
+      "skill_intimidate",
+      "skill_ranged_crossbow",
+      "skill_stealth_rural"
     ],
     "talentIds": [
-      "dirty_fighting",
-      "etiquette_criminals",
-      "menacing",
-      "waterman"
+      "talent_dirty_fighting",
+      "talent_etiquette_criminals",
+      "talent_menacing",
+      "talent_waterman"
     ],
     "trappingIds": [
       "crossbow_with_10_bolts",
@@ -4918,14 +4918,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "leadership",
-      "lore_riverways"
+      "skill_leadership",
+      "skill_lore_riverways"
     ],
     "talentIds": [
-      "furious_assault",
-      "in_fighter",
-      "pilot",
-      "warrior_born"
+      "talent_furious_assault",
+      "talent_in_fighter",
+      "talent_pilot",
+      "talent_warrior_born"
     ],
     "trappingIds": [
       "fleet_of_riverboats_and_wrecker_crew",
@@ -4941,20 +4941,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "consume_alcohol",
-      "entertain_any",
-      "gamble",
-      "gossip",
-      "haggle",
-      "intimidate"
+      "skill_bribery",
+      "skill_charm",
+      "skill_consume_alcohol",
+      "skill_entertain_any",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_intimidate"
     ],
     "talentIds": [
-      "attractive",
-      "alley_cat",
-      "blather",
-      "gregarious"
+      "talent_attractive",
+      "talent_alley_cat",
+      "talent_blather",
+      "talent_gregarious"
     ],
     "trappingIds": [
       "flask_of_spirits"
@@ -4968,18 +4968,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "dodge",
-      "endurance",
-      "intuition",
-      "lore_local",
-      "melee_basic",
-      "perception"
+      "skill_dodge",
+      "skill_endurance",
+      "skill_intuition",
+      "skill_lore_local",
+      "skill_melee_basic",
+      "skill_perception"
     ],
     "talentIds": [
-      "ambidextrous",
-      "carouser",
-      "criminal",
-      "resistance_disease"
+      "talent_ambidextrous",
+      "talent_carouser",
+      "talent_criminal",
+      "talent_resistance_disease"
     ],
     "trappingIds": [
       "dose_of_weirdroot",
@@ -4994,16 +4994,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "evaluate",
-      "language_any",
-      "lore_law"
+      "skill_cool",
+      "skill_evaluate",
+      "skill_language_any",
+      "skill_lore_law"
     ],
     "talentIds": [
-      "dealmaker",
-      "embezzle",
-      "etiquette_any",
-      "suave"
+      "talent_dealmaker",
+      "talent_embezzle",
+      "talent_etiquette_any",
+      "talent_suave"
     ],
     "trappingIds": [
       "a_ring_of_hustlers"
@@ -5017,14 +5017,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "leadership",
-      "lore_heraldry"
+      "skill_leadership",
+      "skill_lore_heraldry"
     ],
     "talentIds": [
-      "briber",
-      "kingpin",
-      "numismatics",
-      "savvy"
+      "talent_briber",
+      "talent_kingpin",
+      "talent_numismatics",
+      "talent_savvy"
     ],
     "trappingIds": [
       "townhouse_with_discreet_back_entrance",
@@ -5039,20 +5039,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "consume_alcohol",
-      "charm",
-      "entertain_storytelling",
-      "gamble",
-      "gossip",
-      "haggle",
-      "sleight_of_hand"
+      "skill_bribery",
+      "skill_consume_alcohol",
+      "skill_charm",
+      "skill_entertain_storytelling",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_sleight_of_hand"
     ],
     "talentIds": [
-      "cardsharp",
-      "diceman",
-      "etiquette_any",
-      "luck"
+      "talent_cardsharp",
+      "talent_diceman",
+      "talent_etiquette_any",
+      "talent_luck"
     ],
     "trappingIds": [
       "backpack",
@@ -5069,18 +5069,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "dodge",
-      "entertain_acting",
-      "evaluate",
-      "intuition",
-      "perception"
+      "skill_cool",
+      "skill_dodge",
+      "skill_entertain_acting",
+      "skill_evaluate",
+      "skill_intuition",
+      "skill_perception"
     ],
     "talentIds": [
-      "blather",
-      "criminal",
-      "fast_hands",
-      "secret_identity"
+      "talent_blather",
+      "talent_criminal",
+      "talent_fast_hands",
+      "talent_secret_identity"
     ],
     "trappingIds": [
       "1_forged_document",
@@ -5097,16 +5097,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "language_thief",
-      "lore_heraldry",
-      "pick_lock",
-      "secret_signs_thief"
+      "skill_language_thief",
+      "skill_lore_heraldry",
+      "skill_pick_lock",
+      "skill_secret_signs_thief"
     ],
     "talentIds": [
-      "attractive",
-      "cat_tongued",
-      "dealmaker",
-      "read_write"
+      "talent_attractive",
+      "talent_cat_tongued",
+      "talent_dealmaker",
+      "talent_read_write"
     ],
     "trappingIds": [
       "disguise_kit",
@@ -5122,14 +5122,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_genealogy",
-      "research"
+      "skill_lore_genealogy",
+      "skill_research"
     ],
     "talentIds": [
-      "gregarious",
-      "master_of_disguise",
-      "nose_for_trouble",
-      "suave"
+      "talent_gregarious",
+      "talent_master_of_disguise",
+      "talent_nose_for_trouble",
+      "talent_suave"
     ],
     "trappingIds": [
       "forged_seal",
@@ -5144,20 +5144,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "consume_alcohol",
-      "dodge",
-      "evaluate",
-      "gamble",
-      "gossip",
-      "haggle",
-      "melee_basic"
+      "skill_charm",
+      "skill_consume_alcohol",
+      "skill_dodge",
+      "skill_evaluate",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_melee_basic"
     ],
     "talentIds": [
-      "alley_cat",
-      "cardsharp",
-      "dealmaker",
-      "gregarious"
+      "talent_alley_cat",
+      "talent_cardsharp",
+      "talent_dealmaker",
+      "talent_gregarious"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -5172,18 +5172,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "intimidate",
-      "intuition",
-      "perception",
-      "secret_signs_thief",
-      "trade_engraver"
+      "skill_cool",
+      "skill_intimidate",
+      "skill_intuition",
+      "skill_perception",
+      "skill_secret_signs_thief",
+      "skill_trade_engraver"
     ],
     "talentIds": [
-      "criminal",
-      "etiquette_criminals",
-      "numismatics",
-      "savvy"
+      "talent_criminal",
+      "talent_etiquette_criminals",
+      "talent_numismatics",
+      "talent_savvy"
     ],
     "trappingIds": [
       "eye_glass",
@@ -5199,16 +5199,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "entertain_storytelling",
-      "lore_art",
-      "lore_local"
+      "skill_bribery",
+      "skill_entertain_storytelling",
+      "skill_lore_art",
+      "skill_lore_local"
     ],
     "talentIds": [
-      "kingpin",
-      "strike_to_stun",
-      "suave",
-      "super_numerate"
+      "talent_kingpin",
+      "talent_strike_to_stun",
+      "talent_suave",
+      "talent_super_numerate"
     ],
     "trappingIds": [
       "pawnbrokers_shop"
@@ -5222,14 +5222,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_heraldry",
-      "research"
+      "skill_lore_heraldry",
+      "skill_research"
     ],
     "talentIds": [
-      "dirty_fighting",
-      "iron_will",
-      "menacing",
-      "briber"
+      "talent_dirty_fighting",
+      "talent_iron_will",
+      "talent_menacing",
+      "talent_briber"
     ],
     "trappingIds": [
       "hired_muscle",
@@ -5245,20 +5245,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "cool",
-      "dodge",
-      "endurance",
-      "gossip",
-      "intuition",
-      "perception",
-      "stealth_any"
+      "skill_climb",
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_intuition",
+      "skill_perception",
+      "skill_stealth_any"
     ],
     "talentIds": [
-      "alley_cat",
-      "criminal",
-      "flee",
-      "strong_back"
+      "talent_alley_cat",
+      "talent_criminal",
+      "talent_flee",
+      "talent_strong_back"
     ],
     "trappingIds": [
       "crowbar",
@@ -5275,18 +5275,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "endurance",
-      "evaluate",
-      "haggle",
-      "lore_medicine",
-      "melee_basic"
+      "skill_bribery",
+      "skill_endurance",
+      "skill_evaluate",
+      "skill_haggle",
+      "skill_lore_medicine",
+      "skill_melee_basic"
     ],
     "talentIds": [
-      "break_and_enter",
-      "night_vision",
-      "resistance_disease",
-      "very_strong"
+      "talent_break_and_enter",
+      "talent_night_vision",
+      "talent_resistance_disease",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "backpack",
@@ -5303,16 +5303,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "drive",
-      "lore_history",
-      "pick_lock",
-      "set_trap"
+      "skill_drive",
+      "skill_lore_history",
+      "skill_pick_lock",
+      "skill_set_trap"
     ],
     "talentIds": [
-      "read_write",
-      "strike_mighty_blow",
-      "tenacious",
-      "tunnel_rat"
+      "talent_read_write",
+      "talent_strike_mighty_blow",
+      "talent_tenacious",
+      "talent_tunnel_rat"
     ],
     "trappingIds": [
       "hand_weapon_pick",
@@ -5330,14 +5330,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "navigation",
-      "trade_engineer"
+      "skill_navigation",
+      "skill_trade_engineer"
     ],
     "talentIds": [
-      "fearless_undead",
-      "sixth_sense",
-      "strong_minded",
-      "trapper"
+      "talent_fearless_undead",
+      "talent_sixth_sense",
+      "talent_strong_minded",
+      "talent_trapper"
     ],
     "trappingIds": [
       "bedroll",
@@ -5355,20 +5355,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "consume_alcohol",
-      "cool",
-      "endurance",
-      "gamble",
-      "intimidate",
-      "melee_basic",
-      "outdoor_survival"
+      "skill_athletics",
+      "skill_consume_alcohol",
+      "skill_cool",
+      "skill_endurance",
+      "skill_gamble",
+      "skill_intimidate",
+      "skill_melee_basic",
+      "skill_outdoor_survival"
     ],
     "talentIds": [
-      "combat_aware",
-      "criminal",
-      "rover",
-      "flee"
+      "talent_combat_aware",
+      "talent_criminal",
+      "talent_rover",
+      "talent_flee"
     ],
     "trappingIds": [
       "bedroll",
@@ -5385,18 +5385,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "dodge",
-      "heal",
-      "lore_local",
-      "perception",
-      "ranged_bow",
-      "stealth_rural"
+      "skill_dodge",
+      "skill_heal",
+      "skill_lore_local",
+      "skill_perception",
+      "skill_ranged_bow",
+      "skill_stealth_rural"
     ],
     "talentIds": [
-      "dirty_fighting",
-      "marksman",
-      "strike_to_stun",
-      "trapper"
+      "talent_dirty_fighting",
+      "talent_marksman",
+      "talent_strike_to_stun",
+      "talent_trapper"
     ],
     "trappingIds": [
       "bow_with_10_arrows",
@@ -5412,16 +5412,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "gossip",
-      "intuition",
-      "leadership",
-      "ride_horse"
+      "skill_gossip",
+      "skill_intuition",
+      "skill_leadership",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "rapid_reload",
-      "roughrider",
-      "menacing",
-      "very_resilient"
+      "talent_rapid_reload",
+      "talent_roughrider",
+      "talent_menacing",
+      "talent_very_resilient"
     ],
     "trappingIds": [
       "helmet",
@@ -5438,14 +5438,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "lore_empire"
+      "skill_charm",
+      "skill_lore_empire"
     ],
     "talentIds": [
-      "deadeye_shot",
-      "fearless_road_wardens",
-      "iron_will",
-      "robust"
+      "talent_deadeye_shot",
+      "talent_fearless_road_wardens",
+      "talent_iron_will",
+      "talent_robust"
     ],
     "trappingIds": [
       "fiefdom_of_outlaw_chiefs",
@@ -5460,20 +5460,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "cool",
-      "dodge",
-      "endurance",
-      "intimidate",
-      "lore_local",
-      "melee_brawling",
-      "stealth_urban"
+      "skill_consume_alcohol",
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_intimidate",
+      "skill_lore_local",
+      "skill_melee_brawling",
+      "skill_stealth_urban"
     ],
     "talentIds": [
-      "criminal",
-      "etiquette_criminals",
-      "menacing",
-      "strike_mighty_blow"
+      "talent_criminal",
+      "talent_etiquette_criminals",
+      "talent_menacing",
+      "talent_strike_mighty_blow"
     ],
     "trappingIds": [
       "knuckledusters",
@@ -5488,18 +5488,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "evaluate",
-      "gossip",
-      "language_estalian_or_tilean",
-      "melee_basic"
+      "skill_bribery",
+      "skill_charm",
+      "skill_evaluate",
+      "skill_gossip",
+      "skill_language_estalian_or_tilean",
+      "skill_melee_basic"
     ],
     "talentIds": [
-      "embezzle",
-      "street_fighting",
-      "strike_to_stun",
-      "warrior_born"
+      "talent_embezzle",
+      "talent_street_fighting",
+      "talent_strike_to_stun",
+      "talent_warrior_born"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -5515,16 +5515,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "intuition",
-      "leadership",
-      "perception",
-      "ranged_crossbow"
+      "skill_intuition",
+      "skill_leadership",
+      "skill_perception",
+      "skill_ranged_crossbow"
     ],
     "talentIds": [
-      "fearless_watchmen",
-      "iron_will",
-      "resistance_poison",
-      "robust"
+      "talent_fearless_watchmen",
+      "talent_iron_will",
+      "talent_resistance_poison",
+      "talent_robust"
     ],
     "trappingIds": [
       "crossbow_pistol_with_10_bolts",
@@ -5540,14 +5540,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_law",
-      "lore_politics"
+      "skill_lore_law",
+      "skill_lore_politics"
     ],
     "talentIds": [
-      "commanding_presence",
-      "kingpin",
-      "frightening",
-      "wealthy"
+      "talent_commanding_presence",
+      "talent_kingpin",
+      "talent_frightening",
+      "talent_wealthy"
     ],
     "trappingIds": [
       "network_of_informers",
@@ -5563,20 +5563,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "climb",
-      "cool",
-      "dodge",
-      "endurance",
-      "intuition",
-      "perception",
-      "stealth_urban"
+      "skill_athletics",
+      "skill_climb",
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_intuition",
+      "skill_perception",
+      "skill_stealth_urban"
     ],
     "talentIds": [
-      "alley_cat",
-      "criminal",
-      "flee",
-      "strike_to_stun"
+      "talent_alley_cat",
+      "talent_criminal",
+      "talent_flee",
+      "talent_strike_to_stun"
     ],
     "trappingIds": [
       "crowbar",
@@ -5592,18 +5592,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "evaluate",
-      "gossip",
-      "lore_local",
-      "pick_lock",
-      "secret_signs_thief",
-      "sleight_of_hand"
+      "skill_evaluate",
+      "skill_gossip",
+      "skill_lore_local",
+      "skill_pick_lock",
+      "skill_secret_signs_thief",
+      "skill_sleight_of_hand"
     ],
     "talentIds": [
-      "break_and_enter",
-      "etiquette_criminals",
-      "fast_hands",
-      "shadow"
+      "talent_break_and_enter",
+      "talent_etiquette_criminals",
+      "talent_fast_hands",
+      "talent_shadow"
     ],
     "trappingIds": [
       "trade_tools_thief",
@@ -5618,16 +5618,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "gamble",
-      "intimidate",
-      "ranged_crossbow"
+      "skill_bribery",
+      "skill_gamble",
+      "skill_intimidate",
+      "skill_ranged_crossbow"
     ],
     "talentIds": [
-      "night_vision",
-      "nimble_fingered",
-      "step_aside",
-      "trapper"
+      "talent_night_vision",
+      "talent_nimble_fingered",
+      "talent_step_aside",
+      "talent_trapper"
     ],
     "trappingIds": [
       "crossbow_pistol_with_10_bolts",
@@ -5642,14 +5642,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "set_trap"
+      "skill_charm",
+      "skill_set_trap"
     ],
     "talentIds": [
-      "catfall",
-      "scale_sheer_surface",
-      "strong_legs",
-      "wealthy"
+      "talent_catfall",
+      "talent_scale_sheer_surface",
+      "talent_strong_legs",
+      "talent_wealthy"
     ],
     "trappingIds": [
       "dark_clothing",
@@ -5665,20 +5665,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "channelling",
-      "cool",
-      "endurance",
-      "gossip",
-      "intimidate",
-      "language_magick",
-      "sleight_of_hand",
-      "stealth_rural"
+      "skill_channelling",
+      "skill_cool",
+      "skill_endurance",
+      "skill_gossip",
+      "skill_intimidate",
+      "skill_language_magick",
+      "skill_sleight_of_hand",
+      "skill_stealth_rural"
     ],
     "talentIds": [
-      "criminal",
-      "instinctive_diction",
-      "menacing",
-      "petty_magic"
+      "talent_criminal",
+      "talent_instinctive_diction",
+      "talent_menacing",
+      "talent_petty_magic"
     ],
     "trappingIds": [
       "candles",
@@ -5695,18 +5695,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm_animal",
-      "dodge",
-      "intuition",
-      "melee_pole_arm",
-      "perception",
-      "trade_herbalist"
+      "skill_charm_animal",
+      "skill_dodge",
+      "skill_intuition",
+      "skill_melee_pole_arm",
+      "skill_perception",
+      "skill_trade_herbalist"
     ],
     "talentIds": [
-      "arcane_magic_witchery",
-      "attractive",
-      "sixth_sense",
-      "witch"
+      "talent_arcane_magic_witchery",
+      "talent_attractive",
+      "talent_sixth_sense",
+      "talent_witch"
     ],
     "trappingIds": [
       "quarterstaff",
@@ -5723,16 +5723,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "haggle",
-      "lore_dark_magic"
+      "skill_bribery",
+      "skill_charm",
+      "skill_haggle",
+      "skill_lore_dark_magic"
     ],
     "talentIds": [
-      "animal_affinity",
-      "fast_hands",
-      "frightening",
-      "magical_sense"
+      "talent_animal_affinity",
+      "talent_fast_hands",
+      "talent_frightening",
+      "talent_magical_sense"
     ],
     "trappingIds": [
       "backpack",
@@ -5748,14 +5748,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_daemonology",
-      "lore_magick"
+      "skill_lore_daemonology",
+      "skill_lore_magick"
     ],
     "talentIds": [
-      "aethyric_attunement",
-      "luck",
-      "strong_minded",
-      "very_resilient"
+      "talent_aethyric_attunement",
+      "talent_luck",
+      "talent_strong_minded",
+      "talent_very_resilient"
     ],
     "trappingIds": [
       "robes",
@@ -5770,20 +5770,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "charm_animal",
-      "endurance",
-      "language_battle",
-      "melee_basic",
-      "outdoor_survival",
-      "perception",
-      "ride_horse"
+      "skill_animal_care",
+      "skill_charm_animal",
+      "skill_endurance",
+      "skill_language_battle",
+      "skill_melee_basic",
+      "skill_outdoor_survival",
+      "skill_perception",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "combat_aware",
-      "crack_the_whip",
-      "lightning_reflexes",
-      "roughrider"
+      "talent_combat_aware",
+      "talent_crack_the_whip",
+      "talent_lightning_reflexes",
+      "talent_roughrider"
     ],
     "trappingIds": [
       "leather_jack",
@@ -5798,18 +5798,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "consume_alcohol",
-      "cool",
-      "gossip",
-      "melee_cavalry",
-      "ranged_blackpowder"
+      "skill_charm",
+      "skill_consume_alcohol",
+      "skill_cool",
+      "skill_gossip",
+      "skill_melee_cavalry",
+      "skill_ranged_blackpowder"
     ],
     "talentIds": [
-      "etiquette_soldiers",
-      "gunner",
-      "seasoned_traveller",
-      "trick_riding"
+      "talent_etiquette_soldiers",
+      "talent_gunner",
+      "talent_seasoned_traveller",
+      "talent_trick_riding"
     ],
     "trappingIds": [
       "breastplate",
@@ -5828,16 +5828,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "intimidate",
-      "intuition",
-      "leadership",
-      "lore_warfare"
+      "skill_intimidate",
+      "skill_intuition",
+      "skill_leadership",
+      "skill_lore_warfare"
     ],
     "talentIds": [
-      "combat_reflexes",
-      "fast_shot",
-      "hatred_any",
-      "war_leader"
+      "talent_combat_reflexes",
+      "talent_fast_shot",
+      "talent_hatred_any",
+      "talent_war_leader"
     ],
     "trappingIds": [
       "sash"
@@ -5851,14 +5851,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "gamble",
-      "lore_heraldry"
+      "skill_gamble",
+      "skill_lore_heraldry"
     ],
     "talentIds": [
-      "accurate_shot",
-      "inspiring",
-      "reaction_strike",
-      "robust"
+      "talent_accurate_shot",
+      "talent_inspiring",
+      "talent_reaction_strike",
+      "talent_robust"
     ],
     "trappingIds": [
       "deck_of_cards",
@@ -5873,20 +5873,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "endurance",
-      "entertain_storytelling",
-      "gamble",
-      "gossip",
-      "intuition",
-      "melee_basic",
-      "perception"
+      "skill_consume_alcohol",
+      "skill_endurance",
+      "skill_entertain_storytelling",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_intuition",
+      "skill_melee_basic",
+      "skill_perception"
     ],
     "talentIds": [
-      "diceman",
-      "etiquette_servants",
-      "strike_to_stun",
-      "tenacious"
+      "talent_diceman",
+      "talent_etiquette_servants",
+      "talent_strike_to_stun",
+      "talent_tenacious"
     ],
     "trappingIds": [
       "buckler",
@@ -5902,18 +5902,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "cool",
-      "dodge",
-      "intimidate",
-      "melee_pole_arm",
-      "ranged_bow"
+      "skill_athletics",
+      "skill_cool",
+      "skill_dodge",
+      "skill_intimidate",
+      "skill_melee_pole_arm",
+      "skill_ranged_bow"
     ],
     "talentIds": [
-      "relentless",
-      "reversal",
-      "shieldsman",
-      "strike_mighty_blow"
+      "talent_relentless",
+      "talent_reversal",
+      "talent_shieldsman",
+      "talent_strike_mighty_blow"
     ],
     "trappingIds": [
       "bow_with_10_arrows",
@@ -5930,16 +5930,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "heal",
-      "language_battle",
-      "lore_etiquette",
-      "melee_two_handed"
+      "skill_heal",
+      "skill_language_battle",
+      "skill_lore_etiquette",
+      "skill_melee_two_handed"
     ],
     "talentIds": [
-      "fearless_intruders",
-      "jump_up",
-      "stout_hearted",
-      "unshakable"
+      "talent_fearless_intruders",
+      "talent_jump_up",
+      "talent_stout_hearted",
+      "talent_unshakable"
     ],
     "trappingIds": [
       "great_weapon_or_halberd",
@@ -5955,14 +5955,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "leadership",
-      "lore_warfare"
+      "skill_leadership",
+      "skill_lore_warfare"
     ],
     "talentIds": [
-      "combat_master",
-      "furious_assault",
-      "iron_will",
-      "robust"
+      "talent_combat_master",
+      "talent_furious_assault",
+      "talent_iron_will",
+      "talent_robust"
     ],
     "trappingIds": [
       "breastplate"
@@ -5976,20 +5976,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "animal_care",
-      "charm_animal",
-      "heal",
-      "lore_heraldry",
-      "melee_cavalry",
-      "ride_horse",
-      "trade_farrier"
+      "skill_athletics",
+      "skill_animal_care",
+      "skill_charm_animal",
+      "skill_heal",
+      "skill_lore_heraldry",
+      "skill_melee_cavalry",
+      "skill_ride_horse",
+      "skill_trade_farrier"
     ],
     "talentIds": [
-      "etiquette_any",
-      "roughrider",
-      "sturdy",
-      "warrior_born"
+      "talent_etiquette_any",
+      "talent_roughrider",
+      "talent_sturdy",
+      "talent_warrior_born"
     ],
     "trappingIds": [
       "leather_jack",
@@ -6007,18 +6007,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "dodge",
-      "endurance",
-      "intimidate",
-      "language_battle",
-      "melee_any"
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_intimidate",
+      "skill_language_battle",
+      "skill_melee_any"
     ],
     "talentIds": [
-      "menacing",
-      "seasoned_traveller",
-      "shieldsman",
-      "strike_mighty_blow"
+      "talent_menacing",
+      "talent_seasoned_traveller",
+      "talent_shieldsman",
+      "talent_strike_mighty_blow"
     ],
     "trappingIds": [
       "destrier_with_saddle_and_tack",
@@ -6035,16 +6035,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "consume_alcohol",
-      "leadership",
-      "lore_warfare"
+      "skill_charm",
+      "skill_consume_alcohol",
+      "skill_leadership",
+      "skill_lore_warfare"
     ],
     "talentIds": [
-      "fearless_any",
-      "stout_hearted",
-      "unshakable",
-      "war_leader"
+      "talent_fearless_any",
+      "talent_stout_hearted",
+      "talent_unshakable",
+      "talent_war_leader"
     ],
     "trappingIds": [
       "barding",
@@ -6059,14 +6059,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_any",
-      "secret_signs_knightly_order"
+      "skill_lore_any",
+      "skill_secret_signs_knightly_order"
     ],
     "talentIds": [
-      "disarm",
-      "inspiring",
-      "iron_will",
-      "strike_to_injure"
+      "talent_disarm",
+      "talent_inspiring",
+      "talent_iron_will",
+      "talent_strike_to_injure"
     ],
     "trappingIds": [
       "plumed_great_helm",
@@ -6082,20 +6082,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "cool",
-      "dodge",
-      "endurance",
-      "gamble",
-      "intimidate",
-      "melee_any",
-      "melee_brawling"
+      "skill_athletics",
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_gamble",
+      "skill_intimidate",
+      "skill_melee_any",
+      "skill_melee_brawling"
     ],
     "talentIds": [
-      "dirty_fighting",
-      "in_fighter",
-      "iron_jaw",
-      "reversal"
+      "talent_dirty_fighting",
+      "talent_in_fighter",
+      "talent_iron_jaw",
+      "talent_reversal"
     ],
     "trappingIds": [
       "bandages",
@@ -6111,18 +6111,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "haggle",
-      "intuition",
-      "melee_basic",
-      "melee_flail_or_two_handed",
-      "perception",
-      "ranged_entangling"
+      "skill_haggle",
+      "skill_intuition",
+      "skill_melee_basic",
+      "skill_melee_flail_or_two_handed",
+      "skill_perception",
+      "skill_ranged_entangling"
     ],
     "talentIds": [
-      "ambidextrous",
-      "combat_reflexes",
-      "dual_wielder",
-      "shieldsman"
+      "talent_ambidextrous",
+      "talent_combat_reflexes",
+      "talent_dual_wielder",
+      "talent_shieldsman"
     ],
     "trappingIds": [
       "flail_or_great_weapon",
@@ -6139,16 +6139,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "gossip",
-      "lore_anatomy",
-      "perform_fight"
+      "skill_consume_alcohol",
+      "skill_gossip",
+      "skill_lore_anatomy",
+      "skill_perform_fight"
     ],
     "talentIds": [
-      "combat_master",
-      "disarm",
-      "menacing",
-      "robust"
+      "talent_combat_master",
+      "talent_disarm",
+      "talent_menacing",
+      "talent_robust"
     ],
     "trappingIds": [
       "breast_plate",
@@ -6163,14 +6163,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "ranged_any"
+      "skill_charm",
+      "skill_ranged_any"
     ],
     "talentIds": [
-      "frightening",
-      "furious_assault",
-      "implacable",
-      "reaction_strike"
+      "talent_frightening",
+      "talent_furious_assault",
+      "talent_implacable",
+      "talent_reaction_strike"
     ],
     "trappingIds": [
       "quality_helmet"
@@ -6184,20 +6184,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "dodge",
-      "endurance",
-      "entertain_taunt",
-      "gossip",
-      "haggle",
-      "intimidate",
-      "melee_any"
+      "skill_athletics",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_entertain_taunt",
+      "skill_gossip",
+      "skill_haggle",
+      "skill_intimidate",
+      "skill_melee_any"
     ],
     "talentIds": [
-      "in_fighter",
-      "dirty_fighting",
-      "menacing",
-      "warrior_born"
+      "talent_in_fighter",
+      "talent_dirty_fighting",
+      "talent_menacing",
+      "talent_warrior_born"
     ],
     "trappingIds": [
       "hood_or_mask",
@@ -6213,18 +6213,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "bribery",
-      "charm",
-      "intuition",
-      "melee_basic",
-      "perception",
-      "ride_horse"
+      "skill_bribery",
+      "skill_charm",
+      "skill_intuition",
+      "skill_melee_basic",
+      "skill_perception",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "combat_reflexes",
-      "criminal",
-      "reversal",
-      "strike_to_stun"
+      "talent_combat_reflexes",
+      "talent_criminal",
+      "talent_reversal",
+      "talent_strike_to_stun"
     ],
     "trappingIds": [
       "hand_weapon",
@@ -6241,16 +6241,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "climb",
-      "cool",
-      "navigation",
-      "ranged_thrown"
+      "skill_climb",
+      "skill_cool",
+      "skill_navigation",
+      "skill_ranged_thrown"
     ],
     "talentIds": [
-      "careful_strike",
-      "disarm",
-      "marksman",
-      "relentless"
+      "talent_careful_strike",
+      "talent_disarm",
+      "talent_marksman",
+      "talent_relentless"
     ],
     "trappingIds": [
       "cloak",
@@ -6267,14 +6267,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_acting",
-      "ranged_crossbow"
+      "skill_entertain_acting",
+      "skill_ranged_crossbow"
     ],
     "talentIds": [
-      "accurate_shot",
-      "ambidextrous",
-      "furious_assault",
-      "strike_to_injure"
+      "talent_accurate_shot",
+      "talent_ambidextrous",
+      "talent_furious_assault",
+      "talent_strike_to_injure"
     ],
     "trappingIds": [
       "crossbow_with_10_shots",
@@ -6289,20 +6289,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "athletics",
-      "climb",
-      "cool",
-      "dodge",
-      "endurance",
-      "language_battle",
-      "melee_basic",
-      "play_drum_or_fife"
+      "skill_athletics",
+      "skill_climb",
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_language_battle",
+      "skill_melee_basic",
+      "skill_play_drum_or_fife"
     ],
     "talentIds": [
-      "diceman",
-      "marksman",
-      "strong_back",
-      "warrior_born"
+      "talent_diceman",
+      "talent_marksman",
+      "talent_strong_back",
+      "talent_warrior_born"
     ],
     "trappingIds": [
       "dagger",
@@ -6318,18 +6318,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "gamble",
-      "gossip",
-      "melee_any",
-      "ranged_any",
-      "outdoor_survival"
+      "skill_consume_alcohol",
+      "skill_gamble",
+      "skill_gossip",
+      "skill_melee_any",
+      "skill_ranged_any",
+      "skill_outdoor_survival"
     ],
     "talentIds": [
-      "drilled",
-      "etiquette_soldiers",
-      "rapid_reload",
-      "shieldsman"
+      "talent_drilled",
+      "talent_etiquette_soldiers",
+      "talent_rapid_reload",
+      "talent_shieldsman"
     ],
     "trappingIds": [
       "breastplate",
@@ -6345,16 +6345,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 5",
     "characteristicAdvances": [],
     "skillIds": [
-      "heal",
-      "intuition",
-      "leadership",
-      "perception"
+      "skill_heal",
+      "skill_intuition",
+      "skill_leadership",
+      "skill_perception"
     ],
     "talentIds": [
-      "combat_aware",
-      "enclosed_fighter",
-      "unshakable",
-      "war_leader"
+      "talent_combat_aware",
+      "talent_enclosed_fighter",
+      "talent_unshakable",
+      "talent_war_leader"
     ],
     "trappingIds": [
       "symbol_of_rank",
@@ -6369,14 +6369,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Gold 1",
     "characteristicAdvances": [],
     "skillIds": [
-      "lore_warfare",
-      "navigation"
+      "skill_lore_warfare",
+      "skill_navigation"
     ],
     "talentIds": [
-      "inspiring",
-      "public_speaker",
-      "seasoned_traveller",
-      "stout_hearted"
+      "talent_inspiring",
+      "talent_public_speaker",
+      "talent_seasoned_traveller",
+      "talent_stout_hearted"
     ],
     "trappingIds": [
       "letter_of_commission",
@@ -6396,20 +6396,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "cool",
-      "dodge",
-      "endurance",
-      "gamble",
-      "heal",
-      "lore_trolls",
-      "melee_basic"
+      "skill_consume_alcohol",
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_gamble",
+      "skill_heal",
+      "skill_lore_trolls",
+      "skill_melee_basic"
     ],
     "talentIds": [
-      "dual_wielder",
-      "fearless_everything",
-      "frenzy",
-      "slayer"
+      "talent_dual_wielder",
+      "talent_fearless_everything",
+      "talent_frenzy",
+      "talent_slayer"
     ],
     "trappingIds": [
       "axe",
@@ -6426,18 +6426,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "evaluate",
-      "intimidate",
-      "language_battle",
-      "lore_giants",
-      "melee_two_handed",
-      "outdoor_survival"
+      "skill_evaluate",
+      "skill_intimidate",
+      "skill_language_battle",
+      "skill_lore_giants",
+      "skill_melee_two_handed",
+      "skill_outdoor_survival"
     ],
     "talentIds": [
-      "hardy",
-      "implacable",
-      "menacing",
-      "reversal"
+      "talent_hardy",
+      "talent_implacable",
+      "talent_menacing",
+      "talent_reversal"
     ],
     "trappingIds": [
       "great_axe",
@@ -6453,16 +6453,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "entertain_storytelling",
-      "lore_dragons",
-      "perception",
-      "ranged_thrown"
+      "skill_entertain_storytelling",
+      "skill_lore_dragons",
+      "skill_perception",
+      "skill_ranged_thrown"
     ],
     "talentIds": [
-      "ambidextrous",
-      "furious_assault",
-      "relentless",
-      "robust"
+      "talent_ambidextrous",
+      "talent_furious_assault",
+      "talent_relentless",
+      "talent_robust"
     ],
     "trappingIds": [
       "giants_head",
@@ -6477,14 +6477,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "intuition",
-      "lore_chaos"
+      "skill_intuition",
+      "skill_lore_chaos"
     ],
     "talentIds": [
-      "combat_master",
-      "frightening",
-      "strike_mighty_blow",
-      "very_strong"
+      "talent_combat_master",
+      "talent_frightening",
+      "talent_strike_mighty_blow",
+      "talent_very_strong"
     ],
     "trappingIds": [
       "dragons_head"
@@ -6498,20 +6498,20 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Brass 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "cool",
-      "dodge",
-      "endurance",
-      "heal",
-      "leadership",
-      "lore_theology",
-      "melee_any",
-      "pray"
+      "skill_cool",
+      "skill_dodge",
+      "skill_endurance",
+      "skill_heal",
+      "skill_leadership",
+      "skill_lore_theology",
+      "skill_melee_any",
+      "skill_pray"
     ],
     "talentIds": [
-      "bless_any",
-      "etiquette_cultists",
-      "read_write",
-      "strong_minded"
+      "talent_bless_any",
+      "talent_etiquette_cultists",
+      "talent_read_write",
+      "talent_strong_minded"
     ],
     "trappingIds": [
       "book_religion",
@@ -6529,18 +6529,18 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 2",
     "characteristicAdvances": [],
     "skillIds": [
-      "charm",
-      "entertain_speeches",
-      "intimidate",
-      "language_battle",
-      "melee_any",
-      "ranged_any"
+      "skill_charm",
+      "skill_entertain_speeches",
+      "skill_intimidate",
+      "skill_language_battle",
+      "skill_melee_any",
+      "skill_ranged_any"
     ],
     "talentIds": [
-      "dual_wielder",
-      "inspiring",
-      "invoke_any",
-      "seasoned_traveller"
+      "talent_dual_wielder",
+      "talent_inspiring",
+      "talent_invoke_any",
+      "talent_seasoned_traveller"
     ],
     "trappingIds": [
       "breastplate",
@@ -6555,16 +6555,16 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 3",
     "characteristicAdvances": [],
     "skillIds": [
-      "animal_care",
-      "intuition",
-      "perception",
-      "ride_horse"
+      "skill_animal_care",
+      "skill_intuition",
+      "skill_perception",
+      "skill_ride_horse"
     ],
     "talentIds": [
-      "combat_aware",
-      "holy_visions",
-      "pure_soul",
-      "stout_hearted"
+      "talent_combat_aware",
+      "talent_holy_visions",
+      "talent_pure_soul",
+      "talent_stout_hearted"
     ],
     "trappingIds": [
       "light_warhorse_with_saddle_and_tack"
@@ -6578,14 +6578,14 @@ export const careerSteps: CareerStepDefinition[] = [
     "status": "Silver 4",
     "characteristicAdvances": [],
     "skillIds": [
-      "consume_alcohol",
-      "lore_warfare"
+      "skill_consume_alcohol",
+      "skill_lore_warfare"
     ],
     "talentIds": [
-      "fearless_any",
-      "furious_assault",
-      "holy_hatred",
-      "war_leader"
+      "talent_fearless_any",
+      "talent_furious_assault",
+      "talent_holy_hatred",
+      "talent_war_leader"
     ],
     "trappingIds": [
       "religious_relic"

@@ -11,7 +11,9 @@ import {
 } from "../ui";
 import { SkillPickerSidebar } from "./SkillPickerSidebar";
 import { TalentPickerSidebar } from "./TalentPickerSidebar";
-import { talentDefinitions } from "../../data/rules/wfrp4e/talents";
+import { TraitPickerSidebar } from "./TraitPickerSidebar";
+import { parseSkillEntry, parseTalentEntry, parseTraitEntry } from "../../lib/adversaryRefs";
+import { resolveSkillDisplay, resolveTalentDisplay, resolveTraitDisplay } from "../../lib/adversaryDisplay";
 import type { NpcTemplate, NpcStatBlock } from "../../data/npcTypes";
 import type {
   CreatureCategory,
@@ -37,8 +39,6 @@ const creatureCategoryOptions: CreatureCategory[] = [
 const creatureSizeOptions: CreatureSize[] = [
   "tiny", "little", "small", "average", "large", "enormous", "monstrous",
 ];
-
-const talentNamesByLengthDesc = [...talentDefinitions].sort((a, b) => b.name.length - a.name.length);
 
 function slugify(value: string): string {
   return value
@@ -82,49 +82,50 @@ function makeEmptyCreature(): CreatureTemplate {
   };
 }
 
-function parseSkillEntry(entry: string): { name: string; value: string } {
-  const match = entry.match(/^(.*?)(?:\s+(\d+))?$/);
-  return { name: match?.[1] ?? entry, value: match?.[2] ?? "" };
+// Rebuild a stored "Base (Spec) value" string from its editable parts. The raw
+// entries stay free text; parsing/resolution is delegated to adversaryRefs.ts.
+function baseWithSpec(baseName: string, specialisation?: string): string {
+  return specialisation ? `${baseName} (${specialisation})` : baseName;
 }
 
-function formatSkillEntry(name: string, value: string): string {
-  return value.trim() ? `${name} ${value.trim()}` : name;
+function joinValue(base: string, value: string): string {
+  return value.trim() ? `${base} ${value.trim()}` : base;
 }
 
-function parseTalentEntry(entry: string): { name: string; suffix: string; isLinked: boolean } {
-  const matchedTalent = talentNamesByLengthDesc.find(
-    (talent) => entry === talent.name || entry.startsWith(`${talent.name} `),
-  );
-
-  if (matchedTalent) {
-    return { name: matchedTalent.name, suffix: entry.slice(matchedTalent.name.length).trim(), isLinked: true };
-  }
-
-  return { name: entry, suffix: "", isLinked: false };
-}
-
-function formatTalentEntry(name: string, suffix: string): string {
-  return suffix.trim() ? `${name} ${suffix.trim()}` : name;
+function UnlinkedMarker() {
+  return <Text as="span" variant="bodyMuted" className="ml-1 text-xs italic">(unlinked)</Text>;
 }
 
 function SkillsField({ values, onChange }: { values: readonly string[]; onChange: (values: string[]) => void }) {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const parsedEntries = values.map(parseSkillEntry);
+  const rows = values.map((raw) => {
+    const parsed = parseSkillEntry(raw);
+    const display = resolveSkillDisplay(raw);
+    return {
+      base: baseWithSpec(parsed.baseName, parsed.specialisation),
+      value: parsed.value !== undefined ? String(parsed.value) : "",
+      displayName: display.displayName,
+      isLinked: !display.unresolved,
+    };
+  });
 
   return (
     <div className="space-y-2">
       <Label>Skills</Label>
       <div className="space-y-2">
-        {parsedEntries.map((entry, index) => (
-          <div key={`${entry.name}-${index}`} className="flex items-center gap-2">
-            <Text className="flex-1">{entry.name}</Text>
+        {rows.map((row, index) => (
+          <div key={`${row.base}-${index}`} className="flex items-center gap-2">
+            <Text className="flex-1">
+              {row.displayName}
+              {!row.isLinked ? <UnlinkedMarker /> : null}
+            </Text>
             <Input
               type="number"
               className="w-20"
-              value={entry.value}
+              value={row.value}
               onChange={(event) => {
                 const next = [...values];
-                next[index] = formatSkillEntry(entry.name, event.target.value);
+                next[index] = joinValue(row.base, event.target.value);
                 onChange(next);
               }}
             />
@@ -132,7 +133,7 @@ function SkillsField({ values, onChange }: { values: readonly string[]; onChange
               variant="ghost"
               autoHeight
               leadingIcon={<X size={14} />}
-              aria-label={`Remove skill ${entry.name}`}
+              aria-label={`Remove skill ${row.displayName}`}
               onClick={() => onChange(values.filter((_, i) => i !== index))}
             />
           </div>
@@ -148,8 +149,8 @@ function SkillsField({ values, onChange }: { values: readonly string[]; onChange
       <SkillPickerSidebar
         isOpen={isPickerOpen}
         onClose={() => setIsPickerOpen(false)}
-        excludeNames={parsedEntries.map((entry) => entry.name)}
-        onSelect={(name) => onChange([...values, formatSkillEntry(name, "0")])}
+        excludeNames={rows.map((row) => row.base)}
+        onSelect={(name) => onChange([...values, joinValue(name, "0")])}
       />
     </div>
   );
@@ -157,25 +158,37 @@ function SkillsField({ values, onChange }: { values: readonly string[]; onChange
 
 function TalentsField({ values, onChange }: { values: readonly string[]; onChange: (values: string[]) => void }) {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const parsedEntries = values.map(parseTalentEntry);
+  const rows = values.map((raw) => {
+    const parsed = parseTalentEntry(raw);
+    const display = resolveTalentDisplay(raw);
+    const suffixParts: string[] = [];
+    if (parsed.specialisation) suffixParts.push(`(${parsed.specialisation})`);
+    if (parsed.value !== undefined) suffixParts.push(String(parsed.value));
+    return {
+      base: parsed.baseName,
+      suffix: suffixParts.join(" "),
+      displayName: display.displayName,
+      isLinked: !display.unresolved,
+    };
+  });
 
   return (
     <div className="space-y-2">
       <Label>Talents</Label>
       <div className="space-y-2">
-        {parsedEntries.map((entry, index) => (
-          <div key={`${entry.name}-${index}`} className="flex items-center gap-2">
+        {rows.map((row, index) => (
+          <div key={`${row.base}-${index}`} className="flex items-center gap-2">
             <Text className="flex-1">
-              {entry.name}
-              {!entry.isLinked ? <Text as="span" variant="bodyMuted" className="ml-1 text-xs italic">(unlinked)</Text> : null}
+              {row.displayName}
+              {!row.isLinked ? <UnlinkedMarker /> : null}
             </Text>
             <Input
               placeholder="Specialisation / rating"
               className="w-44"
-              value={entry.suffix}
+              value={row.suffix}
               onChange={(event) => {
                 const next = [...values];
-                next[index] = formatTalentEntry(entry.name, event.target.value);
+                next[index] = joinValue(row.base, event.target.value);
                 onChange(next);
               }}
             />
@@ -183,7 +196,7 @@ function TalentsField({ values, onChange }: { values: readonly string[]; onChang
               variant="ghost"
               autoHeight
               leadingIcon={<X size={14} />}
-              aria-label={`Remove talent ${entry.name}`}
+              aria-label={`Remove talent ${row.displayName}`}
               onClick={() => onChange(values.filter((_, i) => i !== index))}
             />
           </div>
@@ -199,8 +212,87 @@ function TalentsField({ values, onChange }: { values: readonly string[]; onChang
       <TalentPickerSidebar
         isOpen={isPickerOpen}
         onClose={() => setIsPickerOpen(false)}
-        excludeNames={parsedEntries.map((entry) => entry.name)}
-        onSelect={(name) => onChange([...values, formatTalentEntry(name, "")])}
+        excludeNames={rows.map((row) => row.base)}
+        onSelect={(name) => onChange([...values, name])}
+      />
+    </div>
+  );
+}
+
+function formatTraitEntry(base: string, spec: string, rating: string): string {
+  let entry = base;
+  if (spec.trim()) entry += ` (${spec.trim()})`;
+  if (rating.trim()) entry += ` ${rating.trim()}`;
+  return entry;
+}
+
+function TraitsField({ values, onChange }: { values: readonly string[]; onChange: (values: string[]) => void }) {
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const rows = values.map((raw) => {
+    const parsed = parseTraitEntry(raw);
+    const display = resolveTraitDisplay(raw);
+    return {
+      base: parsed.baseName,
+      spec: parsed.specialisation ?? "",
+      rating: parsed.rating !== undefined ? String(parsed.rating) : "",
+      displayName: display.displayName,
+      isLinked: !display.unresolved,
+    };
+  });
+
+  return (
+    <div className="space-y-2">
+      <Label>Traits</Label>
+      <div className="space-y-2">
+        {rows.map((row, index) => (
+          <div key={`${row.base}-${index}`} className="flex items-center gap-2">
+            <Text className="flex-1">
+              {row.displayName}
+              {!row.isLinked ? <UnlinkedMarker /> : null}
+            </Text>
+            <Input
+              placeholder="Specialisation"
+              className="w-36"
+              value={row.spec}
+              onChange={(event) => {
+                const next = [...values];
+                next[index] = formatTraitEntry(row.base, event.target.value, row.rating);
+                onChange(next);
+              }}
+            />
+            <Input
+              type="number"
+              placeholder="Rating"
+              className="w-20"
+              value={row.rating}
+              onChange={(event) => {
+                const next = [...values];
+                next[index] = formatTraitEntry(row.base, row.spec, event.target.value);
+                onChange(next);
+              }}
+            />
+            <Button
+              variant="ghost"
+              autoHeight
+              leadingIcon={<X size={14} />}
+              aria-label={`Remove trait ${row.displayName}`}
+              onClick={() => onChange(values.filter((_, i) => i !== index))}
+            />
+          </div>
+        ))}
+      </div>
+      <Button
+        variant="secondary"
+        autoHeight
+        leadingIcon={<Plus size={14} />}
+        name="Add Trait"
+        onClick={() => setIsPickerOpen(true)}
+      />
+      <TraitPickerSidebar
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        excludeNames={rows.map((row) => row.base)}
+        onSelect={(name) => onChange([...values, name])}
       />
     </div>
   );
@@ -495,6 +587,10 @@ export function AdversaryRecordForm({
             <TalentsField
               values={npcDraft.talents ?? []}
               onChange={(talents) => setNpcDraft((d) => ({ ...d, talents }))}
+            />
+            <TraitsField
+              values={npcDraft.traits ?? []}
+              onChange={(traits) => setNpcDraft((d) => ({ ...d, traits }))}
             />
             <TrappingsField
               values={npcDraft.trappings ?? []}

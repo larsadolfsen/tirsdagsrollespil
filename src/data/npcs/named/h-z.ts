@@ -28,11 +28,13 @@ export const namedNpcsHZ: NpcTemplate[] = [
       W: 16,
     },
     talents: [
-      "Weapon (Bone Clubs) +8",
     ],
     trappings: [
       "Face Paint",
       "Morrian Vestments",
+    ],
+    traits: [
+      "Weapon (Bone Clubs) +8",
     ],
   },
   {
@@ -62,6 +64,8 @@ export const namedNpcsHZ: NpcTemplate[] = [
       W: 10,
     },
     talents: [
+    ],
+    traits: [
       "Weapon (Fist) +5",
     ],
   },
@@ -112,19 +116,21 @@ export const namedNpcsHZ: NpcTemplate[] = [
     talents: [
       "Accurate Shot 4",
       "Doomed",
-      "Prejudice (Boors)",
-      "Ranged (Crossbow) +9",
       "Shadow",
       "Sprinter 2",
       "Relentless",
       "Very Strong",
       "Very Resilient",
-      "Weapon (Sword) +9",
     ],
     trappings: [
       "Crossbow with 10 bolts",
       "Manacles",
       "Rope (10 yards)",
+    ],
+    traits: [
+      "Prejudice (Boors)",
+      "Ranged (Crossbow) +9",
+      "Weapon (Sword) +9",
     ],
   },
   {
@@ -154,11 +160,13 @@ export const namedNpcsHZ: NpcTemplate[] = [
       W: 12,
     },
     talents: [
-      "Weapon (Fist) +3",
     ],
     trappings: [
       "2 Love Letters",
       "Rose",
+    ],
+    traits: [
+      "Weapon (Fist) +3",
     ],
   },
   {
@@ -193,6 +201,8 @@ export const namedNpcsHZ: NpcTemplate[] = [
       "Melee (Basic) 55",
     ],
     talents: [
+    ],
+    traits: [
       "Armour (Leathers) 1",
       "Prejudice (Nobles)",
       "Weapon (Club) +9",
@@ -231,6 +241,8 @@ export const namedNpcsHZ: NpcTemplate[] = [
       "Melee (Basic) 55",
     ],
     talents: [
+    ],
+    traits: [
       "Armour (Leathers) 1",
       "Prejudice (Nobles)",
       "Weapon (Club) +9",
@@ -264,14 +276,16 @@ export const namedNpcsHZ: NpcTemplate[] = [
       W: 15,
     },
     talents: [
-      "Armour (Leathers) 1",
-      "Prejudice (Betrayers)",
-      "Ranged (Whip) +5 (6)",
-      "Weapon (Dagger) +6",
     ],
     trappings: [
       "27 shillings and 17d",
       "Fine Clothing",
+    ],
+    traits: [
+      "Armour (Leathers) 1",
+      "Prejudice (Betrayers)",
+      "Ranged (Whip) +5 (6)",
+      "Weapon (Dagger) +6",
     ],
   },
   {
@@ -301,6 +315,8 @@ export const namedNpcsHZ: NpcTemplate[] = [
       W: 17,
     },
     talents: [
+    ],
+    traits: [
       "Prejudice (Warriors)",
       "Weapon (Dagger) +6",
     ],
@@ -354,12 +370,14 @@ export const namedNpcsHZ: NpcTemplate[] = [
       "Perfect Pitch",
       "Read/Write",
       "Small",
-      "Weapon (Dagger) +4",
     ],
     trappings: [
       "12 shillings and 32d",
       "Lyre",
       "Pack of Cards",
+    ],
+    traits: [
+      "Weapon (Dagger) +4",
     ],
   },
   {
@@ -389,6 +407,8 @@ export const namedNpcsHZ: NpcTemplate[] = [
       W: 14,
     },
     talents: [
+    ],
+    traits: [
       "Prejudice (Thieves)",
       "Weapon (Club) +7",
     ],
@@ -420,6 +440,8 @@ export const namedNpcsHZ: NpcTemplate[] = [
       W: 16,
     },
     talents: [
+    ],
+    traits: [
       "Prejudice (Dwarfs)",
       "Weapon (Hammer) +9",
     ],
@@ -471,8 +493,6 @@ export const namedNpcsHZ: NpcTemplate[] = [
       "Menacing",
       "Shieldsman",
       "Strike Mighty Blow",
-      "Weapon (Sword) +8",
-      "Weapon (Shield) +6",
     ],
     trappings: [
       "Fine sword",
@@ -482,6 +502,10 @@ export const namedNpcsHZ: NpcTemplate[] = [
       "Rich clothes",
       "Armour when prepared: AP 4 head, AP 4 body, AP 3 arms, AP 2 legs",
       "Once per encounter below half Wounds: regain 1d10 Wounds and remove one Fatigued, Prone, or Stunned condition if not Surprised",
+    ],
+    traits: [
+      "Weapon (Sword) +8",
+      "Weapon (Shield) +6",
     ],
   },
   {
@@ -519,13 +543,15 @@ export const namedNpcsHZ: NpcTemplate[] = [
     ],
     talents: [
       "Etiquette (Servants)",
-      "Weapon (Knife) +4",
     ],
     trappings: [
       "Ledger",
       "Keys",
       "Candle",
       "Servant's knife",
+    ],
+    traits: [
+      "Weapon (Knife) +4",
     ],
   },
   {
@@ -615,8 +641,7 @@ export const namedNpcsHZ: NpcTemplate[] = [
       "Fanatical",
       "Iron Will",
       "Menacing",
-      "Public Speaking",
-      "Weapon (Dagger) +5",
+      "Public Speaker",
     ],
     trappings: [
       "Dagger",
@@ -624,6 +649,9 @@ export const namedNpcsHZ: NpcTemplate[] = [
       "Profane symbol",
       "Hidden armour: AP 1 body and arms",
       "Miracle notes: Command, Blindness, Hold Person, Bestow Curse, Slow, Bane, Bless",
+    ],
+    traits: [
+      "Weapon (Dagger) +5",
     ],
   },
 ];

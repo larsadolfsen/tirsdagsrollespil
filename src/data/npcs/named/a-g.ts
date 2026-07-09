@@ -107,14 +107,16 @@ export const namedNpcsAG: NpcTemplate[] = [
       "Melee (Two-handed) 91",
     ],
     talents: [
-      "Armour (Full Plate) 5",
-      "Weapon (Rapier) +9",
-      "Weapon (Sword) +9",
-      "Weapon (Zweihänder) +10",
     ],
     trappings: [
       "Bulging Biceps",
       "Weapons and armour are owned by the Gravin and stored in his room",
+    ],
+    traits: [
+      "Armour (Full Plate) 5",
+      "Weapon (Rapier) +9",
+      "Weapon (Sword) +9",
+      "Weapon (Zweihänder) +10",
     ],
   },
   {
@@ -165,17 +167,19 @@ export const namedNpcsAG: NpcTemplate[] = [
       "Doomed",
       "Etiquette (Guilder)",
       "Etiquette (Scholar) 4",
-      "Prejudice (Those Who Contradict Him)",
       "Read/Write",
       "Savvy",
       "Speedreader 2",
       "Suave",
-      "Weapon (Dagger) +5",
     ],
     trappings: [
       "Lawyer's Robes",
       "Towering Sense of Self-Importance",
       "Wig",
+    ],
+    traits: [
+      "Prejudice (Those Who Contradict Him)",
+      "Weapon (Dagger) +5",
     ],
   },
   {
@@ -238,11 +242,13 @@ export const namedNpcsAG: NpcTemplate[] = [
       "Reversal 2",
       "Sixth Sense",
       "Warrior Born",
-      "Weapon (Dagger) +5",
     ],
     trappings: [
       "Poisoned dagger",
       "Servant's Clothing",
+    ],
+    traits: [
+      "Weapon (Dagger) +5",
     ],
   },
   {
@@ -272,11 +278,13 @@ export const namedNpcsAG: NpcTemplate[] = [
       W: 16,
     },
     talents: [
-      "Weapon (Bone Clubs) +8",
     ],
     trappings: [
       "Face Paint",
       "Morrian Vestments",
+    ],
+    traits: [
+      "Weapon (Bone Clubs) +8",
     ],
   },
   {
@@ -306,12 +314,14 @@ export const namedNpcsAG: NpcTemplate[] = [
       W: 9,
     },
     talents: [
-      "Weapon (Fist) +2",
     ],
     trappings: [
       "Courtly Garb",
       "Jewellery worth 45 GC",
       "6 Poems",
+    ],
+    traits: [
+      "Weapon (Fist) +2",
     ],
   },
   {
@@ -346,6 +356,8 @@ export const namedNpcsAG: NpcTemplate[] = [
       "Melee (Basic) 55",
     ],
     talents: [
+    ],
+    traits: [
       "Armour (Leathers) 1",
       "Prejudice (Nobles)",
       "Weapon (Club) +9",
@@ -379,6 +391,8 @@ export const namedNpcsAG: NpcTemplate[] = [
       W: 17,
     },
     talents: [
+    ],
+    traits: [
       "Prejudice (Warriors)",
       "Weapon (Dagger) +6",
     ],
@@ -410,6 +424,8 @@ export const namedNpcsAG: NpcTemplate[] = [
       W: 17,
     },
     talents: [
+    ],
+    traits: [
       "Prejudice (Warriors)",
       "Weapon (Dagger) +6",
     ],
@@ -468,19 +484,21 @@ export const namedNpcsAG: NpcTemplate[] = [
       "Mimic",
       "Night Vision 2",
       "Nimble Fingered",
-      "Prejudice (Witch Hunters)",
       "Read/Write",
       "Sixth Sense",
       "Small",
       "Step Aside 2",
       "Suffuse with Ulgu",
-      "Weapon (Dagger) +6",
     ],
     trappings: [
       "2 GC 17 shillings and 45d",
       "Lock Picks",
       "Sack",
       "Stolen good hidden in his quarters",
+    ],
+    traits: [
+      "Prejudice (Witch Hunters)",
+      "Weapon (Dagger) +6",
     ],
   },
   {
@@ -518,12 +536,14 @@ export const namedNpcsAG: NpcTemplate[] = [
     ],
     talents: [
       "Etiquette (Servants)",
-      "Weapon (Kitchen Knife) +4",
     ],
     trappings: [
       "Kitchen knife",
       "Apron",
       "Pantry keys",
+    ],
+    traits: [
+      "Weapon (Kitchen Knife) +4",
     ],
   },
   {
@@ -566,7 +586,6 @@ export const namedNpcsAG: NpcTemplate[] = [
       "Petty Magic",
       "Read/Write",
       "Second Sight",
-      "Weapon (Staff) +7",
     ],
     trappings: [
       "Staff",
@@ -574,6 +593,9 @@ export const namedNpcsAG: NpcTemplate[] = [
       "1d6 potions",
       "Scrolls of Floating Disk, Unseen Servant, and Locate Object",
       "Spell notes: Acid Splash, Light, Minor Illusion, Ray of Frost, Burning Hands, Feather Fall, Color Spray, Fog Cloud, Acid Arrow, Flaming Sphere",
+    ],
+    traits: [
+      "Weapon (Staff) +7",
     ],
   },
   {
@@ -603,11 +625,13 @@ export const namedNpcsAG: NpcTemplate[] = [
       W: 16,
     },
     talents: [
-      "Weapon (Bone Clubs) +8",
     ],
     trappings: [
       "Face Paint",
       "Morrian Vestments",
+    ],
+    traits: [
+      "Weapon (Bone Clubs) +8",
     ],
   },
 ];

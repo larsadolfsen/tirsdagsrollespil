@@ -6,6 +6,8 @@ import {
   SheetDataRollCell,
   SheetDataSection,
 } from "../components/wfrp";
+import { talentsAffectingSkill } from "../lib/skillTalentIndex";
+import type { Characteristic } from "../types";
 import type { SkillSubtab } from "./tabTypes";
 
 type SkillRow = {
@@ -16,6 +18,8 @@ type SkillRow = {
   shortDescription?: string;
   description?: string;
   specialization?: string;
+  skillId?: string;
+  specialisationId?: string;
 };
 
 const desktopSkillGridClass = "md:grid-cols-[56px_minmax(10rem,0.8fr)_minmax(14rem,1.2fr)_56px_56px_56px_56px_48px]";
@@ -40,14 +44,16 @@ export function SkillsTab({
   attributes,
   handleRoll,
   onOpenAdvance,
+  onNavigateToTalent,
 }: {
   activeSkillSubtab: SkillSubtab;
   setActiveSkillSubtab: (subtab: SkillSubtab) => void;
   visibleSkillRows: SkillRow[];
   attributes: Record<string, number>;
-  handleRoll: (characteristic: { key: string; label: string }) => void;
+  handleRoll: (characteristic: Characteristic) => void;
   onOpenAdvance: () => void;
   openSkillInfo?: (skillName: string) => void;
+  onNavigateToTalent: (talentId: string) => void;
 }) {
   return (
     <SubtabContentFrame
@@ -93,6 +99,7 @@ export function SkillsTab({
             const charValue = attributes[skill.characteristic] || 0;
             const totalValue = charValue + skill.advances;
             const formattedAdvances = skill.advances === 0 ? "-" : `+${skill.advances}`;
+            const affectingTalents = skill.skillId ? talentsAffectingSkill(skill.skillId) : [];
 
             return (
               <SheetDataAccordionRow
@@ -104,7 +111,7 @@ export function SkillsTab({
                       <button
                         onClick={(event) => {
                           event.preventDefault();
-                          handleRoll({ key: skill.characteristic, label: skill.displayName });
+                          handleRoll({ key: skill.characteristic, label: skill.displayName, skillId: skill.skillId, specialisationId: skill.specialisationId });
                         }}
                         className="wfrp-roll-btn"
                         aria-label={`Roll for ${skill.displayName}`}
@@ -148,6 +155,25 @@ export function SkillsTab({
                     ...(skill.specialization ? [{ label: "Specialization", value: skill.specialization, valueClassName: "!text-left" }] : []),
                     { label: "Score", value: charValue, valueClassName: "!text-left" },
                     { label: "Advances", value: formattedAdvances, valueClassName: "!text-left" },
+                    ...(affectingTalents.length > 0
+                      ? [{
+                          label: "Affecting Talents",
+                          value: (
+                            <div className="flex flex-wrap gap-x-3 gap-y-1">
+                              {affectingTalents.map((talent) => (
+                                <Button variant="unstyled"
+                                  key={talent.id}
+                                  type="button"
+                                  onClick={() => onNavigateToTalent(talent.id)}
+                                  className="wfrp-skill-link"
+                                  aria-label={`View ${talent.name} talent`}
+                                  name={talent.name}
+                                />
+                              ))}
+                            </div>
+                          ),
+                        }]
+                      : []),
                   ]}
                 />
               </SheetDataAccordionRow>

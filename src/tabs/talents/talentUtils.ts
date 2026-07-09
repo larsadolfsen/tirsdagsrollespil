@@ -1,4 +1,56 @@
 import type { ResolvedCharacterTalent } from "../../data/characters/resolved";
+import { getSkillDisplayName, skillDefinitions, skillSpecialisationDefinitions } from "../../data/rules/wfrp4e";
+import { parseSkillRef } from "../../lib/skillRefs";
+import type { SkillRef } from "../../types/rules";
+
+export type TalentSkillLink = { id: string; displayName: string };
+
+/**
+ * A talent's skill refs (relatedSkillIds + effect-level skillIds), resolved to display
+ * names for cross-linking. Refs to the same base skill are deduped: if a specific
+ * specialisation ref is present, the redundant base-skill ref is dropped.
+ */
+export function getTalentSkillLinks(talent: {
+  relatedSkillIds?: SkillRef[];
+  effects?: ResolvedCharacterTalent["effects"];
+}): TalentSkillLink[] {
+  const refs = [
+    ...(talent.relatedSkillIds ?? []),
+    ...(talent.effects ?? []).flatMap((effect) =>
+      "skillIds" in effect ? (effect.skillIds ?? []) : [],
+    ),
+  ];
+
+  const refsByBaseId = new Map<string, Set<string>>();
+  for (const ref of refs) {
+    const { baseId } = parseSkillRef(ref);
+    const existing = refsByBaseId.get(baseId) ?? new Set<string>();
+    existing.add(ref);
+    refsByBaseId.set(baseId, existing);
+  }
+
+  const resolvedRefs: string[] = [];
+  for (const [baseId, baseRefs] of refsByBaseId) {
+    const specificRefs = [...baseRefs].filter((ref) => ref !== baseId);
+    resolvedRefs.push(...(specificRefs.length > 0 ? specificRefs : [baseId]));
+  }
+
+  return resolvedRefs
+    .map((ref): TalentSkillLink | null => {
+      const { baseId, specialisationId } = parseSkillRef(ref);
+      const skill = skillDefinitions.find((entry) => entry.id === baseId);
+      if (!skill) {
+        return null;
+      }
+
+      const specialisation = specialisationId
+        ? skillSpecialisationDefinitions.find((entry) => entry.id === specialisationId)
+        : null;
+
+      return { id: baseId, displayName: getSkillDisplayName(skill, specialisation) };
+    })
+    .filter((link): link is TalentSkillLink => link !== null);
+}
 
 const characteristicKeyByTalentMaxName: Record<string, string> = {
   "Weapon Skill": "WS",

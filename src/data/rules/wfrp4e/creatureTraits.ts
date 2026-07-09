@@ -1,3 +1,5 @@
+import type { SkillRef } from "../../../types/rules";
+
 export type CharacteristicKey = "WS" | "BS" | "S" | "T" | "I" | "Ag" | "Dex" | "Int" | "WP" | "Fel";
 
 export type CreatureTraitParameterKind =
@@ -43,7 +45,7 @@ export interface CreatureTraitModifier {
   amount?: CreatureTraitModifierAmount;
   target?: string;
   characteristic?: CharacteristicKey | "all";
-  skill?: string;
+  skill?: SkillRef | "all";
   action?: string;
   condition?: string;
   formula?: string;
@@ -73,7 +75,7 @@ export interface CreatureTraitDefinition {
 
 export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
   {
-    id: "afraid",
+    id: "trait_afraid",
     name: "Afraid",
     parameter: { kind: "target", label: "Target", required: true },
     tags: ["psychology", "targeted"],
@@ -87,7 +89,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "amphibious",
+    id: "trait_amphibious",
     name: "Amphibious",
     tags: ["movement", "skill"],
     summary: "Removes normal water movement limitations and improves swim tests.",
@@ -96,11 +98,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Add Agility Bonus SL to Swim tests.",
     modifiers: [
       { type: "movement", target: "water", notes: "Moves at full Movement through water." },
-      { type: "skillTestBonus", skill: "Swim", amount: "agilityBonus" },
+      { type: "skillTestBonus", skill: "skill_swim", amount: "agilityBonus" },
     ],
   },
   {
-    id: "arboreal",
+    id: "trait_arboreal",
     name: "Arboreal",
     tags: ["movement", "skill", "terrain"],
     summary: "Improves climbing and stealth in woodland terrain.",
@@ -108,12 +110,12 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     combatTracker: "Allow terrain-aware prompts for trees, canopy, and forest cover.",
     diceRoller: "Add Agility Bonus SL to Climb and Stealth tests in woodland.",
     modifiers: [
-      { type: "skillTestBonus", skill: "Climb", amount: "agilityBonus", appliesTo: "woodland" },
-      { type: "skillTestBonus", skill: "Stealth", amount: "agilityBonus", appliesTo: "woodland" },
+      { type: "skillTestBonus", skill: "skill_climb", amount: "agilityBonus", appliesTo: "woodland" },
+      { type: "skillTestBonus", skill: "skill_stealth", amount: "agilityBonus", appliesTo: "woodland" },
     ],
   },
   {
-    id: "animosity",
+    id: "trait_animosity",
     name: "Animosity",
     parameter: { kind: "target", label: "Target", required: true },
     tags: ["psychology", "targeted"],
@@ -127,7 +129,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "armour",
+    id: "trait_armour",
     name: "Armour",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["defense", "armour"],
@@ -141,7 +143,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "belligerent",
+    id: "trait_belligerent",
     name: "Belligerent",
     tags: ["combat", "psychology"],
     summary: "Improves staying power while the creature has Advantage.",
@@ -153,7 +155,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "bestial",
+    id: "trait_bestial",
     name: "Bestial",
     tags: ["ai", "psychology", "training"],
     summary: "Marks limited reasoning, language, and control options.",
@@ -162,11 +164,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Blocks tests that require normal language, reasoning, or Fellowship unless explicitly allowed.",
     modifiers: [
       { type: "combatFlag", target: "bestial" },
-      { type: "skillTestBonus", skill: "Fellowship", notes: "Usually unavailable unless another trait allows it." },
+      { type: "immunity", target: "fellowship", notes: "Has no Fellowship; usually unavailable unless another trait allows it." },
     ],
   },
   {
-    id: "big",
+    id: "trait_big",
     name: "Big",
     tags: ["size", "characteristic"],
     summary: "Applies larger creature stat adjustments.",
@@ -180,7 +182,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "bite",
+    id: "trait_bite",
     name: "Bite",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["attack", "weapon", "free-attack"],
@@ -194,7 +196,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "blessed",
+    id: "trait_blessed",
     name: "Blessed",
     parameter: { kind: "various", label: "Blessing list or deity", required: true },
     tags: ["magic", "miracle"],
@@ -208,7 +210,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "bounce",
+    id: "trait_bounce",
     name: "Bounce",
     tags: ["movement", "terrain"],
     summary: "Improves charge and running movement and bypasses some terrain restrictions.",
@@ -221,22 +223,22 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "breath",
+    id: "trait_breath",
     name: "Breath",
     parameter: { kind: "rating", label: "Rating and damage type", required: true },
     tags: ["attack", "area", "condition", "damage"],
     summary: "Adds a cone or area breath attack with typed secondary effects.",
     statBlock: "Store rating and damage type such as fire, cold, poison, smoke, or corrosion.",
-    combatTracker: "Show as an area attack with action cost and cooldown if the encounter needs one.",
-    diceRoller: "Roll opposed test against affected targets and apply typed damage or conditions.",
+    combatTracker: "Show as a Free Attack costing 2 Advantage, hitting a target and all within Strength Bonus yards.",
+    diceRoller: "Roll opposed BS/Dodge against affected targets; on a failed defense apply Rating damage plus the typed effect.",
     modifiers: [
-      { type: "actionOption", action: "Breath Attack", trigger: "Action" },
-      { type: "damage", amount: "rating", target: "area" },
+      { type: "actionOption", action: "Breath Attack", trigger: "Free Attack costing 2 Advantage" },
+      { type: "damage", amount: "rating", target: "area within Strength Bonus yards" },
       { type: "condition", target: "by breath type", appliesTo: "failed defense" },
     ],
   },
   {
-    id: "brute",
+    id: "trait_brute",
     name: "Brute",
     tags: ["characteristic", "combat"],
     summary: "Trades mobility and agility for higher physical force.",
@@ -251,7 +253,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "champion",
+    id: "trait_champion",
     name: "Champion",
     tags: ["combat", "damage"],
     summary: "Turns a successful melee defense into a damage opportunity.",
@@ -264,7 +266,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "chill-grasp",
+    id: "trait_chill_grasp",
     name: "Chill Grasp",
     tags: ["attack", "damage", "magic"],
     summary: "Adds a magical touch attack that ignores normal soak sources.",
@@ -278,7 +280,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "clever",
+    id: "trait_clever",
     name: "Clever",
     tags: ["characteristic"],
     summary: "Improves mental speed and reasoning.",
@@ -291,7 +293,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "cold-blooded",
+    id: "trait_cold_blooded",
     name: "Cold-blooded",
     tags: ["psychology", "dice"],
     summary: "Improves failed Willpower handling.",
@@ -303,7 +305,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "constrictor",
+    id: "trait_constrictor",
     name: "Constrictor",
     tags: ["attack", "condition", "grapple"],
     summary: "Allows a successful hit to entangle and start a grapple.",
@@ -316,7 +318,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "construct",
+    id: "trait_construct",
     name: "Construct",
     tags: ["immunity", "magic", "ai"],
     summary: "Marks the creature as mindless, magically sustained, and resistant to normal living-creature effects.",
@@ -330,7 +332,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "corrosive-blood",
+    id: "trait_corrosive_blood",
     name: "Corrosive Blood",
     tags: ["damage", "area", "reaction"],
     summary: "Damages engaged creatures when this creature is wounded.",
@@ -343,20 +345,20 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "corrupted",
+    id: "trait_corrupted",
     name: "Corrupted",
-    parameter: { kind: "rating", label: "Strength", required: true },
+    parameter: { kind: "type", label: "Strength (Minor/Moderate/Major)", required: true },
     tags: ["corruption", "magic"],
-    summary: "Marks the creature as a source of corruption exposure.",
-    statBlock: "Store corruption strength as rating.",
+    summary: "Marks the creature as a source of Corruption exposure at the given Strength.",
+    statBlock: "Store Corruption strength as Minor, Moderate, or Major per the Corruption rules.",
     combatTracker: "Prompt corruption checks when the creature causes exposure.",
-    diceRoller: "Use rating when rolling or resolving corruption exposure.",
+    diceRoller: "Use the Strength value when rolling or resolving corruption exposure.",
     modifiers: [
-      { type: "diceHook", target: "corruption-test", amount: "rating" },
+      { type: "diceHook", target: "corruption-test", appliesTo: "parameter type" },
     ],
   },
   {
-    id: "cunning",
+    id: "trait_cunning",
     name: "Cunning",
     tags: ["characteristic", "social"],
     summary: "Improves social manipulation and mental checks.",
@@ -370,7 +372,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "dark-vision",
+    id: "trait_dark_vision",
     name: "Dark Vision",
     tags: ["vision", "targeting"],
     summary: "Allows the creature to see in darkness.",
@@ -382,21 +384,22 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "daemonic",
+    id: "trait_daemonic",
     name: "Daemonic",
-    parameter: { kind: "target", label: "Patron or source", required: false },
+    parameter: { kind: "difficulty", label: "Ignore-blow roll target", required: true },
     tags: ["daemon", "magic", "defense"],
-    summary: "Marks attacks as magical and adds instability handling.",
-    statBlock: "Store daemon source and magical attack flag.",
-    combatTracker: "Track special removal or instability behaviour when reduced to 0 wounds.",
-    diceRoller: "Treat attacks as magical and enable daemon-specific resolution hooks.",
+    summary: "Needs no food, water, or air; attacks count as magical; may shrug off a blow entirely; destroyed rather than merely dying at 0 Wounds.",
+    statBlock: "Store the ignore-blow roll target (e.g. 8+) and magical attack flag.",
+    combatTracker: "Track special removal (banished, not dying) or instability behaviour when reduced to 0 wounds.",
+    diceRoller: "Treat attacks as magical; on being hit, roll 1d10 against the parameter target to ignore the blow entirely.",
     modifiers: [
       { type: "damage", target: "attacks", notes: "Treat as magical." },
+      { type: "diceHook", target: "ignore-blow-roll", trigger: "hit by an attack", appliesTo: "parameter target" },
       { type: "combatFlag", target: "daemon-instability" },
     ],
   },
   {
-    id: "die-hard",
+    id: "trait_die_hard",
     name: "Die Hard",
     tags: ["defense", "critical", "wounds"],
     summary: "Keeps the creature fighting after severe injury.",
@@ -409,7 +412,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "disease",
+    id: "trait_disease",
     name: "Disease",
     parameter: { kind: "type", label: "Disease", required: true },
     tags: ["condition", "disease"],
@@ -422,7 +425,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "distracting",
+    id: "trait_distracting",
     name: "Distracting",
     tags: ["debuff", "area", "dice"],
     summary: "Applies a penalty to nearby enemy tests.",
@@ -434,7 +437,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "elite",
+    id: "trait_elite",
     name: "Elite",
     tags: ["characteristic", "combat"],
     summary: "Improves combat skill and discipline.",
@@ -448,7 +451,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "ethereal",
+    id: "trait_ethereal",
     name: "Ethereal",
     tags: ["defense", "movement", "magic"],
     summary: "Allows passage through solid barriers and restricts what can harm the creature.",
@@ -461,7 +464,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "fast",
+    id: "trait_fast",
     name: "Fast",
     tags: ["movement", "characteristic"],
     summary: "Improves speed and agility.",
@@ -474,7 +477,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "fear",
+    id: "trait_fear",
     name: "Fear",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["psychology", "condition"],
@@ -488,7 +491,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "flight",
+    id: "trait_flight",
     name: "Flight",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["movement", "targeting"],
@@ -502,7 +505,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "frenzy",
+    id: "trait_frenzy",
     name: "Frenzy",
     tags: ["psychology", "combat"],
     summary: "Allows or requires frenzy state handling.",
@@ -515,7 +518,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "fury",
+    id: "trait_fury",
     name: "Fury",
     tags: ["combat", "psychology"],
     summary: "Allows Advantage spending to enter Hatred or Frenzy style combat states.",
@@ -528,7 +531,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "ghostly-howl",
+    id: "trait_ghostly_howl",
     name: "Ghostly Howl",
     tags: ["area", "condition", "damage"],
     summary: "Area howl that damages, deafens, and can break targets.",
@@ -543,7 +546,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "hardy",
+    id: "trait_hardy",
     name: "Hardy",
     tags: ["wounds", "defense"],
     summary: "Increases wounds before size modifiers.",
@@ -555,7 +558,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "hatred",
+    id: "trait_hatred",
     name: "Hatred",
     parameter: { kind: "target", label: "Target", required: true },
     tags: ["psychology", "targeted"],
@@ -569,7 +572,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "horns",
+    id: "trait_horns",
     name: "Horns",
     parameter: { kind: "rating", label: "Rating and feature", required: true },
     tags: ["attack", "charge", "weapon"],
@@ -583,7 +586,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "hungry",
+    id: "trait_hungry",
     name: "Hungry",
     tags: ["ai", "psychology"],
     summary: "Forces control checks after killing or incapacitating living targets.",
@@ -596,7 +599,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "immunity",
+    id: "trait_immunity",
     name: "Immunity",
     parameter: { kind: "type", label: "Type", required: true },
     tags: ["defense", "immunity"],
@@ -609,7 +612,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "immunity-to-psychology",
+    id: "trait_immunity_to_psychology",
     name: "Immunity to Psychology",
     tags: ["psychology", "immunity"],
     summary: "Blocks psychology rules against the creature.",
@@ -621,7 +624,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "infected",
+    id: "trait_infected",
     name: "Infected",
     tags: ["condition", "disease"],
     summary: "Adds infection risk to weapon wounds.",
@@ -633,7 +636,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "infestation",
+    id: "trait_infestation",
     name: "Infestation",
     tags: ["debuff", "area", "melee"],
     summary: "Distracts nearby melee opponents.",
@@ -641,11 +644,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     combatTracker: "Show melee penalty to engaged opponents.",
     diceRoller: "Apply -10 to hit the creature in melee.",
     modifiers: [
-      { type: "skillTestBonus", skill: "Melee", amount: -10, appliesTo: "opponents attacking this creature" },
+      { type: "skillTestBonus", skill: "skill_melee", amount: -10, appliesTo: "opponents attacking this creature" },
     ],
   },
   {
-    id: "leader",
+    id: "trait_leader",
     name: "Leader",
     tags: ["support", "skill"],
     summary: "Improves Fellowship and Willpower support behaviour.",
@@ -658,7 +661,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "magical",
+    id: "trait_magical",
     name: "Magical",
     tags: ["magic", "damage"],
     summary: "Marks the creature and its attacks as magical.",
@@ -671,7 +674,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "magic-resistance",
+    id: "trait_magic_resistance",
     name: "Magic Resistance",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["magic", "defense", "dice"],
@@ -684,7 +687,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "mental-corruption",
+    id: "trait_mental_corruption",
     name: "Mental Corruption",
     tags: ["corruption", "mental"],
     summary: "Marks the creature as having a mental corruption effect.",
@@ -696,7 +699,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "miracles",
+    id: "trait_miracles",
     name: "Miracles",
     parameter: { kind: "various", label: "Miracle list or deity", required: true },
     tags: ["miracle", "magic"],
@@ -710,7 +713,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "mutation",
+    id: "trait_mutation",
     name: "Mutation",
     tags: ["mutation", "corruption"],
     summary: "Marks the creature as having a physical mutation.",
@@ -722,7 +725,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "night-vision",
+    id: "trait_night_vision",
     name: "Night Vision",
     tags: ["vision", "targeting"],
     summary: "Improves visibility handling in low light.",
@@ -734,7 +737,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "painless",
+    id: "trait_painless",
     name: "Painless",
     tags: ["defense", "critical", "condition"],
     summary: "Ignores pain-based impairment and many non-amputation critical penalties.",
@@ -747,7 +750,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "petrifying-gaze",
+    id: "trait_petrifying_gaze",
     name: "Petrifying Gaze",
     tags: ["attack", "condition", "gaze"],
     summary: "Adds a gaze attack that can stun and eventually petrify.",
@@ -761,7 +764,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "prejudice",
+    id: "trait_prejudice",
     name: "Prejudice",
     parameter: { kind: "target", label: "Target", required: true },
     tags: ["psychology", "targeted"],
@@ -774,7 +777,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "ranged",
+    id: "trait_ranged",
     name: "Ranged",
     parameter: { kind: "rating", label: "Rating and range", required: true },
     tags: ["attack", "weapon", "ranged"],
@@ -788,7 +791,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "rear",
+    id: "trait_rear",
     name: "Rear",
     tags: ["movement", "attack"],
     summary: "Allows a stomp-style attack after movement if size allows it.",
@@ -800,7 +803,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "regenerate",
+    id: "trait_regenerate",
     name: "Regenerate",
     tags: ["healing", "wounds"],
     summary: "Restores wounds at the start of round with exceptions for special damage.",
@@ -813,7 +816,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "size",
+    id: "trait_size",
     name: "Size",
     parameter: { kind: "size", label: "Size", required: true },
     tags: ["size", "wounds", "combat"],
@@ -829,7 +832,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "skittish",
+    id: "trait_skittish",
     name: "Skittish",
     tags: ["psychology", "condition"],
     summary: "Adds vulnerability to fear from magic or loud noise.",
@@ -841,7 +844,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "spellcaster",
+    id: "trait_spellcaster",
     name: "Spellcaster",
     parameter: { kind: "various", label: "Lore or spell list", required: true },
     tags: ["magic", "spells"],
@@ -855,7 +858,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "stealthy",
+    id: "trait_stealthy",
     name: "Stealthy",
     tags: ["skill"],
     summary: "Improves Stealth by rating or Agility Bonus style scaling.",
@@ -863,11 +866,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     combatTracker: "Use as reminder for ambush and hidden state.",
     diceRoller: "Add Agility Bonus SL to Stealth tests.",
     modifiers: [
-      { type: "skillTestBonus", skill: "Stealth", amount: "agilityBonus" },
+      { type: "skillTestBonus", skill: "skill_stealth", amount: "agilityBonus" },
     ],
   },
   {
-    id: "stride",
+    id: "trait_stride",
     name: "Stride",
     tags: ["movement"],
     summary: "Improves run movement.",
@@ -879,7 +882,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "stupid",
+    id: "trait_stupid",
     name: "Stupid",
     tags: ["ai", "condition"],
     summary: "Requires intelligence handling at the start of rounds or causes inaction.",
@@ -892,7 +895,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "swamp-strider",
+    id: "trait_swamp_strider",
     name: "Swamp-strider",
     tags: ["movement", "terrain"],
     summary: "Removes boggy ground movement penalties.",
@@ -904,7 +907,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "swarm",
+    id: "trait_swarm",
     name: "Swarm",
     tags: ["group", "damage", "psychology"],
     summary: "Treats many small creatures as one combatant with special damage and psychology handling.",
@@ -915,11 +918,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
       { type: "combatFlag", target: "swarm" },
       { type: "immunity", target: "psychology" },
       { type: "damage", trigger: "end of round after successful swarm hit", target: "engaged opponent" },
-      { type: "skillTestBonus", skill: "Weapon Skill", amount: 10, appliesTo: "swarm attacks" },
+      { type: "characteristic", characteristic: "WS", amount: 10, appliesTo: "swarm attacks" },
     ],
   },
   {
-    id: "tail-attack",
+    id: "trait_tail_attack",
     name: "Tail Attack",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["attack", "weapon", "condition"],
@@ -934,7 +937,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "tentacles",
+    id: "trait_tentacles",
     name: "Tentacles",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["attack", "grapple", "natural-weapon"],
@@ -949,7 +952,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "territorial",
+    id: "trait_territorial",
     name: "Territorial",
     tags: ["ai", "area"],
     summary: "Restricts pursuit and anchors combat behaviour to a protected area.",
@@ -961,7 +964,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "terror",
+    id: "trait_terror",
     name: "Terror",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["psychology", "condition"],
@@ -975,7 +978,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "tongue-attack",
+    id: "trait_tongue_attack",
     name: "Tongue Attack",
     parameter: { kind: "rating", label: "Rating and range", required: true },
     tags: ["attack", "entangle", "grapple"],
@@ -991,7 +994,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "tough",
+    id: "trait_tough",
     name: "Tough",
     tags: ["characteristic", "defense"],
     summary: "Improves resistance and resolve.",
@@ -1004,7 +1007,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "tracker",
+    id: "trait_tracker",
     name: "Tracker",
     tags: ["skill"],
     summary: "Improves tracking tests.",
@@ -1012,11 +1015,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     combatTracker: "Use as out-of-combat pursuit or ambush helper.",
     diceRoller: "Add Initiative Bonus SL to Track tests.",
     modifiers: [
-      { type: "skillTestBonus", skill: "Track", amount: "initiativeBonus" },
+      { type: "skillTestBonus", skill: "skill_track", amount: "initiativeBonus" },
     ],
   },
   {
-    id: "trained",
+    id: "trait_trained",
     name: "Trained",
     parameter: { kind: "skills", label: "Trained skills", required: true, repeatable: true },
     tags: ["skill", "animal"],
@@ -1026,11 +1029,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Apply package-specific bonuses or permit tests that would otherwise be unavailable.",
     modifiers: [
       { type: "actionOption", target: "trained behaviour", appliesTo: "configured skill list" },
-      { type: "skillTestBonus", skill: "configured trained skill", appliesTo: "trained animal use" },
+      { type: "skillTestBonus", appliesTo: "trained animal use", notes: "Skill is set by the trained skill list parameter, not a fixed catalog id." },
     ],
   },
   {
-    id: "undead",
+    id: "trait_undead",
     name: "Undead",
     tags: ["undead", "immunity", "magic"],
     summary: "Marks the creature as neither living nor normally dead for effect filtering.",
@@ -1043,7 +1046,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "unstable",
+    id: "trait_unstable",
     name: "Unstable",
     tags: ["magic", "wounds", "state"],
     summary: "Adds wound loss when the creature loses a round and can collapse at 0 wounds.",
@@ -1056,7 +1059,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "vampiric",
+    id: "trait_vampiric",
     name: "Vampiric",
     tags: ["healing", "attack"],
     summary: "Restores wounds when the creature inflicts bite damage.",
@@ -1068,7 +1071,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "venom",
+    id: "trait_venom",
     name: "Venom",
     parameter: { kind: "difficulty", label: "Difficulty", required: true },
     tags: ["poison", "condition"],
@@ -1082,7 +1085,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "vomit",
+    id: "trait_vomit",
     name: "Vomit",
     tags: ["attack", "area", "condition", "damage"],
     summary: "Adds a close area attack that damages targets, stuns, and corrodes equipment.",
@@ -1097,7 +1100,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "ward",
+    id: "trait_ward",
     name: "Ward",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["defense", "dice"],
@@ -1111,7 +1114,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "wallcrawler",
+    id: "trait_wallcrawler",
     name: "Wallcrawler",
     tags: ["movement", "skill"],
     summary: "Allows movement across vertical or inverted surfaces.",
@@ -1120,11 +1123,11 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     diceRoller: "Suppress normal Climb tests for supported surfaces.",
     modifiers: [
       { type: "movement", target: "walls and ceilings" },
-      { type: "skillTestBonus", skill: "Climb", notes: "Automatic success where trait applies." },
+      { type: "skillTestBonus", skill: "skill_climb", notes: "Automatic success where trait applies." },
     ],
   },
   {
-    id: "weapon",
+    id: "trait_weapon",
     name: "Weapon",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["attack", "weapon"],
@@ -1137,7 +1140,7 @@ export const creatureTraitDefinitions: CreatureTraitDefinition[] = [
     ],
   },
   {
-    id: "web",
+    id: "trait_web",
     name: "Web",
     parameter: { kind: "rating", label: "Rating", required: true },
     tags: ["attack", "condition", "entangle"],

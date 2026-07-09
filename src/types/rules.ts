@@ -4,17 +4,33 @@ export type RulesTextDefinition = {
   description: string;
 };
 
+// Plan 00 (D-g): catalog ids are prefixed and globally unique. Ref types document
+// intent; the field a ref lives in also signals its kind.
+import type { CharacteristicKey } from "../data/rules/wfrp4e/creatureTraits";
+
+export type { CharacteristicKey };
+export type SkillRef = string; // "skill_endurance" (base, matches any spec) | "skill_stealth_urban"
+export type TalentRef = string; // "talent_hatred" | "talent_etiquette_nobles"
+export type TraitRef = string; // "trait_weapon" | "trait_chill_grasp"
+
 export type TalentEffect =
   | {
       type: "test_sl_bonus";
+      // Plan 13: display label only — matching is via skillIds/characteristics below.
       test: string;
       valuePerLevel: number;
       condition?: string;
+      // Plan 06: structured, id-first matching (base ref matches any specialisation).
+      skillIds?: SkillRef[];
+      characteristics?: CharacteristicKey[];
     }
   | {
       type: "test_reverse_failed_roll";
+      // Plan 13: display label only — matching is via skillIds/characteristics below.
       test: string;
       condition?: string;
+      skillIds?: SkillRef[];
+      characteristics?: CharacteristicKey[];
     }
   | {
       type: "attribute_bonus";
@@ -72,6 +88,11 @@ export interface TalentDefinition extends RulesTextDefinition {
   effects?: TalentEffect[];
   grouped?: boolean;
   specialisationLabel?: string;
+  // Plan 07: cross-linking (prose talents included). Plan 10: career/XP grants.
+  relatedSkillIds?: SkillRef[];
+  grantsSkillIds?: SkillRef[];
+  // Plan 10: XP discount per Advance on a granted skill, where MD specifies one (undefined = no discount).
+  grantedSkillDiscount?: number;
 }
 
 export interface SpellDefinition extends RulesTextDefinition {

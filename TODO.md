@@ -234,12 +234,12 @@ Duration); skill→characteristic associations (44/44); career structure + 8 sam
 - [x] **R3. ✅ Petrifying Gaze formula wrong.** — FIXED (fc71711); `tests/creature-traits.spec.ts`.
   - Data `"2 + SL"` → book is **1 Stunned per 2 SL** (SL÷2), plus permanent petrification at 6+ SL.
 
-- [ ] **R4. Breath trigger wrong.** `creatureTraits.ts:233`
+- [x] **R4. ✅ Breath trigger wrong.** — FIXED (Plan A05); `tests/creature-traits.spec.ts`.
   - Data trigger `"Action"` → book: a **Free Attack costing 2 Advantage**.
 
-- [ ] **R5. Daemonic parameter mislabeled.** `creatureTraits.ts:387`
-  - Labeled `"Patron or source"`; the book's bracketed value is the `(Target)` ignore-blow roll
-    (roll 1d10 ≥ Target → blow ignored). The ignore-blow mechanic is also not modeled.
+- [x] **R5. ✅ Daemonic parameter mislabeled.** — FIXED (Plan A05); `tests/creature-traits.spec.ts`.
+  - Labeled `"Patron or source"`; the book's bracketed value is the ignore-blow roll target
+    (roll 1d10 ≥ Target → blow ignored). The ignore-blow mechanic is now modeled as a diceHook.
 
 ## 🔴 Talents — `max` values  ✅ FIXED (session 2: 01a6124, 90e2ff8, 3dd521b)
 
@@ -499,3 +499,21 @@ The recurring bug: a flat `"1"`/`"5"` where the book uses a Characteristic Bonus
   Channelling / Lore (Magic) / Language (Magick) / Research Tests.
 - Note: WoM has no fresh alphabetical talent list; it reuses Core talents + reprints an updated **Concoct**
   (now also Trade (Alchemist)). Concoct is already in the Core-missing list above.
+
+---
+# Architecture — robust skill ↔ talent connection (logged 2026-07-04)
+
+> **Promoted to a Superpowers spec + plans.** The full design, resolved decisions, extracted
+> talent→skill mapping, and the 13-piece plan index now live in:
+> - Spec (characters): [`docs/superpowers/specs/2026-07-04-skill-talent-link-design.md`](docs/superpowers/specs/2026-07-04-skill-talent-link-design.md)
+> - Spec (NPCs/generics/creatures): [`docs/superpowers/specs/2026-07-04-adversary-skill-trait-link-design.md`](docs/superpowers/specs/2026-07-04-adversary-skill-trait-link-design.md)
+> - Plans: `docs/superpowers/plans/2026-07-04-skill-talent-*` (character 01–13) and `…-adversary-A01–A08`
+> - Consistency: single effect registry (Plan 02b) + `.claude/skills/talent-effects` authoring skill
+> - **ID scheme (D-g): prefixed globally-unique ids** `skill_*`/`talent_*`/`trait_*` (characteristics bare).
+>   ✅ **Plan 00 IMPLEMENTED** — all catalogs prefixed; live-server read/write normalization + at-rest
+>   migration; `id-uniqueness.spec` guard; lint+build green.
+> - Ordering: ~~Plan 00 (unique ids)~~ ✅ done → then everything else; adversary A01→A03 (de-conflate traits) before char Plan 04.
+>
+> Related open data items above (R6–R8 + the wrong-Max / wrong-mechanic / extra-talent lists) are
+> folded into that effort's reconciliation plans (03–05), which auto-apply `skills-and-talents.md`
+> as source of truth.

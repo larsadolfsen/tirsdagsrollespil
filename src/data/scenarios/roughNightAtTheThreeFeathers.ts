@@ -296,7 +296,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
             npcs: Object.values(NPC),
             locations: Object.values(LOC),
             weapons: ["dagger", "sword", "rapier", "zweihander", "crossbow", "blunderbuss", "whip", "knuckledusters", "improvised_weapon"],
-            talents: ["doomed", "read_write", "strike_to_stun", "warrior_born", "flee", "perfect_pitch"],
+            talents: ["talent_doomed", "talent_read_write", "talent_strike_to_stun", "talent_warrior_born", "talent_flee", "talent_perfect_pitch"],
           },
         },
         {
@@ -731,7 +731,7 @@ export const roughNightAtTheThreeFeathersScenario: ScenarioSessionImportDefiniti
             "The Gravin is not stupid. She wants the truth, but she also wants control.",
             "Make clear that violence against her guards has consequences beyond this room.",
           ],
-          links: { locations: [LOC.barroom, LOC.guestRooms, LOC.room1, LOC.room4], npcs: [NPC.gravin, NPC.bodyguards, NPC.staff, NPC.hans], weapons: ["sword", "improvised_weapon"], talents: ["strike_to_stun"] },
+          links: { locations: [LOC.barroom, LOC.guestRooms, LOC.room1, LOC.room4], npcs: [NPC.gravin, NPC.bodyguards, NPC.staff, NPC.hans], weapons: ["sword", "improvised_weapon"], talents: ["talent_strike_to_stun"] },
           encounterData: { monsterGroups: [npcGroup("grp-gravin-bodyguards-lockdown", NPC.bodyguards, 4, "Gravin's Bodyguards"), npcGroup("grp-inn-staff-lockdown", NPC.staff, 4, "Inn Staff")], playerOrder: [] },
         },
       ],

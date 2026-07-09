@@ -9,6 +9,7 @@ import {
   SheetEmptyState,
 } from "../components/wfrp";
 import type { ResolvedCharacterTalent } from "../data/characters/resolved";
+import { getTalentSkillLinks } from "./talents/talentUtils";
 
 type TalentEffect = NonNullable<ResolvedCharacterTalent["effects"]>[number];
 
@@ -43,12 +44,14 @@ export function TalentsTab({
   formatTalentEffect,
   onOpenTalentSidebar,
   onRemoveTalent,
+  onNavigateToSkill,
 }: {
   talentRowsBySource: Record<TalentSourceSubtab, CharacterTalentRow[]>;
   getTalentMaxDisplay: (max: string) => string | number;
   formatTalentEffect: (effect: TalentEffect) => string;
   onOpenTalentSidebar: () => void;
   onRemoveTalent: (talentName: string) => void;
+  onNavigateToSkill: (skillId: string) => void;
 }) {
   const [activeTalentSourceSubtab, setActiveTalentSourceSubtab] = useState<TalentSourceSubtab>("all");
   const characterTalentRows = talentRowsBySource[activeTalentSourceSubtab];
@@ -90,6 +93,7 @@ export function TalentsTab({
               const summaryRuleText = talent.effects?.length
                 ? talent.effects.map(formatTalentEffect).join("; ")
                 : talent.description;
+              const skillLinks = getTalentSkillLinks(talent);
 
               return (
                 <SheetDataAccordionRow
@@ -116,6 +120,25 @@ export function TalentsTab({
                       { label: "Taken", value: count },
                       { label: "Maximum", value: getTalentMaxDisplay(talent.max) },
                       ...(talent.tests ? [{ label: "Tests", value: talent.tests }] : []),
+                      ...(skillLinks.length > 0
+                        ? [{
+                            label: "Related Skills",
+                            value: (
+                              <div className="flex flex-wrap gap-x-3 gap-y-1">
+                                {skillLinks.map((skillLink) => (
+                                  <Button variant="unstyled"
+                                    key={skillLink.id}
+                                    type="button"
+                                    onClick={() => onNavigateToSkill(skillLink.id)}
+                                    className="wfrp-skill-link"
+                                    aria-label={`View ${skillLink.displayName} skill`}
+                                    name={skillLink.displayName}
+                                  />
+                                ))}
+                              </div>
+                            ),
+                          }]
+                        : []),
                     ]}
                   >
                     <div className="pt-2">
