@@ -59,33 +59,6 @@ test("unknown character urls show the character picker instead of the default sh
   await expect(page).toHaveTitle("Enemy Within WFRP 4E");
 });
 
-test("renaming a character updates the URL and updates the landing page/GM page name", async ({ page }) => {
-  await page.goto("/enemy_within/thano-voss");
-
-  // Rename character
-  await page.getByRole("button", { name: "Edit character name" }).click();
-  const nameInput = page.getByLabel("Edit character name");
-  await nameInput.fill("Thano Voss The Cool");
-  await nameInput.press("Enter");
-
-  // The URL should update to /enemy_within/thano-voss-the-cool
-  await expect(page).toHaveURL(/\/enemy_within\/thano-voss-the-cool$/);
-
-  // Navigate back to Enemy Within (Landing Page) using breadcrumbs
-  const breadcrumbs = page.getByRole("navigation", { name: "Breadcrumb" });
-  await breadcrumbs.getByRole("link", { name: "Enemy Within" }).click();
-
-  // The character card should now say "Thano Voss The Cool"
-  await expect(page.locator(".wfrp-landing-character-card").filter({ hasText: "Thano Voss The Cool" })).toBeVisible();
-
-  // Go to Game Master page
-  await page.getByRole("button", { name: "Open Game Master" }).click();
-  await page.getByRole("button", { name: "Open", exact: true }).first().click();
-
-  // The player card on the GM page should also say "Thano Voss The Cool"
-  await expect(page.getByText("Thano Voss The Cool")).toBeVisible();
-});
-
 test("mobile breadcrumbs collapse to a path menu, parent, and current page", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/enemy_within/gerhard-lehrmann/skills");

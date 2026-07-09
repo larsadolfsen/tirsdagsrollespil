@@ -600,7 +600,8 @@ export function GameMasterPage({
               className="wfrp-character-portrait-image"
             />
           )}
-          identity={<AppHeaderIdentity name={campaignName} subtitle="Campaign View" />}
+          identity={<AppHeaderIdentity name={campaignName} subtitle="Campaign View" groupLabel="Campaign identity" />}
+          regionLabel="Campaign header"
           leadingDesktopActions={(
             <Button
               variant="wfrpIcon"

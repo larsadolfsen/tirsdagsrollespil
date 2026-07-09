@@ -1890,7 +1890,9 @@ export function AppComposition() {
         ? [{
             label: libraryBook.title,
             href: buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: libraryBook.id }),
-            onClick: () => selectLibraryBook(libraryBook.id),
+            // Navigate directly (not selectLibraryBook) so this "up" crumb lands on
+            // the book's chapter list instead of re-selecting the first chapter.
+            onClick: () => navigate(buildCampaignLibraryPath({ campaignId: characterData.campaignId, bookId: libraryBook.id })),
           }]
         : []),
       ...(libraryChapter ? [{ label: libraryChapter.title }] : []),

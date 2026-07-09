@@ -1,6 +1,12 @@
 ﻿import { expect, test } from "@playwright/test";
 
-test("encounter builder keeps sidebar open, shows add feedback, and disables unique NPCs", async ({ page }) => {
+// Assumes the campaign's GM sessions already contain the "Rough Night at the
+// Three Feathers" scenario (14 scenes, incl. the Clanrat/Stormvermin/Hired
+// Thug/Josef Aufwiegler cast in scene 7). There is no seed script or
+// Playwright globalSetup that imports this scenario, so this test only
+// passes against a local dev DB where it was manually imported via the GM
+// page's "Import scenario" dialog. Skipped until a fixture/importer exists.
+test.skip("encounter builder keeps sidebar open, shows add feedback, and disables unique NPCs", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Open Game Master" }).click();
   await page.getByRole("button", { name: "Open", exact: true }).first().click();
