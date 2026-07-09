@@ -32,6 +32,7 @@ export function BottomSheetPaper({
     clearTimeout(timerRef.current);
 
     if (isOpen) {
+      sheet.style.visibility = "visible";
       sheet.style.transform = "translateY(100%)";
       if (overlay) overlay.style.opacity = "0";
       timerRef.current = setTimeout(() => {
@@ -41,6 +42,11 @@ export function BottomSheetPaper({
     } else {
       sheet.style.transform = "translateY(100%)";
       if (overlay) overlay.style.opacity = "0";
+      // Delay visibility:hidden until the slide-down transition finishes,
+      // so the close animation stays visible instead of snapping away.
+      timerRef.current = setTimeout(() => {
+        sheet.style.visibility = "hidden";
+      }, 300);
     }
 
     return () => clearTimeout(timerRef.current);
@@ -74,12 +80,15 @@ export function BottomSheetPaper({
       <div
         ref={sheetRef}
         data-bottom-sheet-paper="true"
+        aria-hidden={isAnimated && !isVisible ? true : undefined}
+        inert={isAnimated && !isVisible ? true : undefined}
         className={cn(
           "fixed inset-x-0 bottom-0 z-40 mx-auto w-full",
           !isModal && "max-w-[1199px] px-4",
           className,
         )}
         style={isAnimated ? {
+          visibility: isVisible ? "visible" : "hidden",
           transform: "translateY(100%)",
           transition: "transform 0.3s ease-out",
         } : undefined}

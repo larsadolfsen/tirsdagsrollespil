@@ -24,6 +24,8 @@ export interface AppHeaderProps {
   leadingDesktopActions?: ReactNode;
   /** Called when the mobile hamburger button is tapped. */
   onMobileMenuOpen: () => void;
+  /** Accessible name for the header landmark. Omit to render without a region role. */
+  regionLabel?: string;
 }
 
 export function AppHeader({
@@ -36,9 +38,14 @@ export function AppHeader({
   desktopActions,
   leadingDesktopActions,
   onMobileMenuOpen,
+  regionLabel,
 }: AppHeaderProps) {
   return (
-    <section className="flex h-14 max-h-14 items-center gap-3 overflow-visible border-b border-t-4 border-wfrp-border border-b-white/30 border-t-wfrp-red bg-background px-3 py-1">
+    <section
+      role={regionLabel ? "region" : undefined}
+      aria-label={regionLabel}
+      className="flex h-14 max-h-14 items-center gap-3 overflow-visible border-b border-t-4 border-wfrp-border border-b-white/30 border-t-wfrp-red bg-background px-3 py-1"
+    >
       {leadingDesktopActions && (
         <div className="hidden shrink-0 sm:flex">
           {leadingDesktopActions}
@@ -87,11 +94,17 @@ export function AppHeader({
 export interface AppHeaderIdentityProps {
   name: string;
   subtitle?: string;
+  /** Accessible name for the identity group. Omit to render without a group role. */
+  groupLabel?: string;
 }
 
-export function AppHeaderIdentity({ name, subtitle }: AppHeaderIdentityProps) {
+export function AppHeaderIdentity({ name, subtitle, groupLabel }: AppHeaderIdentityProps) {
   return (
-    <div className="flex max-h-12 min-w-0 flex-col justify-center overflow-hidden">
+    <div
+      role={groupLabel ? "group" : undefined}
+      aria-label={groupLabel}
+      className="flex max-h-12 min-w-0 flex-col justify-center overflow-hidden"
+    >
       <span className="block truncate font-serif text-base font-semibold leading-tight tracking-tight text-gray-100 sm:text-xl">
         {name}
       </span>
