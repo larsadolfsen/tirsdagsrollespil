@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CampaignCharacterRoute } from "./campaignRoutes";
 import {
   buildCampaignCharacterPath,
@@ -42,6 +42,7 @@ export function useCampaignRouteSync({
   setActiveMobileMainView,
   setSelectedCharacterId,
 }: UseCampaignRouteSyncOptions) {
+  const [hasAppliedInitialRoute, setHasAppliedInitialRoute] = useState(false);
   const currentCampaignRoute = useRef<CampaignCharacterRoute | null>(
     parseCampaignCharacterPath(getCurrentPathname()),
   );
@@ -94,6 +95,7 @@ export function useCampaignRouteSync({
     };
 
     applyRoute(getCurrentPathname());
+    setHasAppliedInitialRoute(true);
 
     const handlePopState = () => applyRoute(getCurrentPathname());
     window.addEventListener("popstate", handlePopState);
@@ -104,8 +106,10 @@ export function useCampaignRouteSync({
   }, [availableCharacters, setActiveMainTab, setActiveMobileMainView, setSelectedCharacterId]);
 
   useEffect(() => {
+    if (!hasAppliedInitialRoute) return;
+
     syncCampaignRoute();
-  }, [syncCampaignRoute]);
+  }, [hasAppliedInitialRoute, syncCampaignRoute]);
 
   const selectMainTab = useCallback((tab: MainTab) => {
     syncCampaignRoute({ view: tab, mode: "push", omitDefaultView: false });
