@@ -55,7 +55,7 @@ import type { CharacterProgressData } from "../types";
 import { UI_LABELS } from "../labels";
 import { loadGameSession } from "../lib/gameSession";
 import { isPrayerDefinition } from "../tabs/spells/spellUtils";
-import { talentDefinitions } from "../data/rules/wfrp4e/talents";
+import { resolveSkillDisplay, resolveTalentDisplay, resolveTraitDisplay } from "../lib/adversaryDisplay";
 
 export type SceneComponent = GMSceneComponent;
 
@@ -659,14 +659,6 @@ function MonsterInfoPane({
   );
 }
 
-function splitNpcListEntry(entry: string) {
-  const match = entry.match(/^(.*?)(?:\s+([+-]?\d+))$/);
-  return {
-    label: match?.[1] ?? entry,
-    value: match?.[2] ?? "",
-  };
-}
-
 function NpcInfoPane({
   npc,
   displayName,
@@ -683,23 +675,14 @@ function NpcInfoPane({
   const characteristics = npc.statBlock;
   const category = npc.category.charAt(0).toUpperCase() + npc.category.slice(1);
   const skills = (npc.skills ?? [])
-    .map(splitNpcListEntry)
-    .sort((a, b) => a.label.localeCompare(b.label));
+    .map(resolveSkillDisplay)
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
   const talents = (npc.talents ?? [])
-    .map(splitNpcListEntry)
-    .sort((a, b) => a.label.localeCompare(b.label))
-    .map((talent) => {
-      const definition = talentDefinitions.find(
-        (t) => t.name.toLowerCase().trim() === talent.label.toLowerCase().trim()
-      );
-      return {
-        label: talent.label,
-        value: definition
-          ? (talent.value ? `${talent.value} — ${definition.description}` : definition.description)
-          : talent.value,
-        hasDefinition: !!definition,
-      };
-    });
+    .map(resolveTalentDisplay)
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
+  const traits = (npc.traits ?? [])
+    .map(resolveTraitDisplay)
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
   const trappings = [...(npc.trappings ?? [])].sort((a, b) => a.localeCompare(b));
 
   return (
@@ -764,8 +747,8 @@ function NpcInfoPane({
           <SheetDataDefinitionList
             className="!grid grid-cols-2 gap-x-6 gap-y-1 border-t-0 pt-0"
             items={skills.map((skill) => ({
-              label: skill.label,
-              value: skill.value,
+              label: skill.displayName,
+              value: skill.value !== undefined ? String(skill.value) : "",
               labelClassName: "text-white",
               valueClassName: "tabular-nums",
             }))}
@@ -780,16 +763,34 @@ function NpcInfoPane({
           <SheetDataDefinitionList
             className="border-t-0 pt-0"
             items={talents.map((talent) => ({
-              label: talent.label,
-              value: talent.value,
+              label: talent.value !== undefined ? `${talent.displayName} ${talent.value}` : talent.displayName,
+              value: talent.description ?? "",
               labelClassName: "text-white",
-              valueClassName: talent.hasDefinition ? undefined : "tabular-nums",
             }))}
           />
         ) : (
           <p className="text-xs leading-relaxed text-gray-300">No talents listed</p>
         )}
       </WfrpSection>
+
+      {traits.length > 0 && (
+        <WfrpSection title="Traits" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Traits">
+          <SheetDataDefinitionList
+            className="border-t-0 pt-0"
+            items={traits.map((trait) => {
+              const specSuffix = trait.specialisation ? ` (${trait.specialisation})` : "";
+              const ratingSuffix = trait.rating !== undefined ? ` ${trait.rating}` : "";
+              return {
+                label: `${trait.displayName}${specSuffix}${ratingSuffix}`,
+                value: trait.summary
+                  ? `${trait.summary}${trait.combatTracker ? ` ${trait.combatTracker}` : ""}`
+                  : "",
+                labelClassName: "text-white",
+              };
+            })}
+          />
+        </WfrpSection>
+      )}
 
       <WfrpSection title="Trappings" {...ENCOUNTER_SECTION_DIVIDER} aria-label="Trappings">
         {trappings.length > 0 ? (
