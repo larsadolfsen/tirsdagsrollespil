@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
-import { PanelLeftClose, PanelLeftOpen, Plus } from "lucide-react";
+import {
+  BookOpenText,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Plus,
+  Swords,
+} from "lucide-react";
 import type { CharacterSummary } from "../data/repository";
 import type { GMSession } from "../data/gmSessions";
 import { AppShell } from "./AppShell";
+import { FormattedTextField } from "./FormattedTextField";
 import { PlayerCardsRow } from "./PlayerCardsRow";
+import { SceneActionsMenu } from "./SceneActionsMenu";
 import { AppSidebar, SidebarItemList } from "./sidebar";
 import {
   Breadcrumbs,
   Button,
   Heading,
+  SectionHeading,
+  WfrpFilterChips,
   type BreadcrumbItem,
+  type WfrpFilterChipOption,
 } from "./ui";
 import {
   SheetEmptyState,
@@ -29,6 +40,32 @@ type GameMasterPageProps = {
   selectedSessionId: string | null;
   sessions: GMSession[];
 };
+
+type SceneComponentType = "introduction" | "encounter";
+
+type SceneState = {
+  id: string;
+  components: SceneComponentType[];
+  introductionText: string;
+};
+
+const sceneComponentOptions: WfrpFilterChipOption<SceneComponentType>[] = [
+  { id: "introduction", label: "Introduction", icon: BookOpenText },
+  { id: "encounter", label: "Encounter", icon: Swords },
+];
+
+let nextSceneId = 1;
+
+function createScene(
+  components: SceneComponentType[] = [],
+  introductionText = "",
+): SceneState {
+  return {
+    id: `scene-${nextSceneId++}`,
+    components,
+    introductionText,
+  };
+}
 
 function GameMasterHeader({
   isSessionsSidebarOpen,
@@ -74,10 +111,12 @@ export function GameMasterPage({
 }: GameMasterPageProps) {
   const [isRenamingSession, setIsRenamingSession] = useState(false);
   const [sessionTitleDraft, setSessionTitleDraft] = useState(editingSessionName);
+  const [scenes, setScenes] = useState<SceneState[]>(() => [createScene()]);
 
   useEffect(() => {
     setIsRenamingSession(false);
     setSessionTitleDraft(editingSessionName);
+    setScenes([createScene()]);
   }, [activeSession?.id]);
 
   useEffect(() => {
@@ -96,6 +135,47 @@ export function GameMasterPage({
     setIsRenamingSession(false);
   };
 
+  const addScene = (sceneIndex: number, placement: "before" | "after") => {
+    setScenes((currentScenes) => {
+      const nextScenes = [...currentScenes];
+      nextScenes.splice(sceneIndex + (placement === "after" ? 1 : 0), 0, createScene());
+      return nextScenes;
+    });
+  };
+
+  const copyScene = (sceneIndex: number) => {
+    setScenes((currentScenes) => {
+      const sourceScene = currentScenes[sceneIndex];
+      if (!sourceScene) {
+        return currentScenes;
+      }
+
+      const nextScenes = [...currentScenes];
+      nextScenes.splice(
+        sceneIndex + 1,
+        0,
+        createScene([...sourceScene.components], sourceScene.introductionText),
+      );
+      return nextScenes;
+    });
+  };
+
+  const deleteScene = (sceneId: string) => {
+    setScenes((currentScenes) => currentScenes.filter((scene) => scene.id !== sceneId));
+  };
+
+  const updateSceneComponents = (sceneId: string, components: SceneComponentType[]) => {
+    setScenes((currentScenes) => currentScenes.map((scene) => (
+      scene.id === sceneId ? { ...scene, components } : scene
+    )));
+  };
+
+  const updateIntroductionText = (sceneId: string, introductionText: string) => {
+    setScenes((currentScenes) => currentScenes.map((scene) => (
+      scene.id === sceneId ? { ...scene, introductionText } : scene
+    )));
+  };
+
   const sessionSidebar = (
     <AppSidebar
       isOpen={isSessionsSidebarOpen}
@@ -104,10 +184,10 @@ export function GameMasterPage({
       motionKey="gm-sessions-sidebar"
       title="Sessions"
       titleId="gm-sessions-title"
-      overlayUntil="desktop"
+      overlayUntil="mobile"
       showHeader={false}
       closeLabel="Close sessions sidebar"
-      className="!fixed !top-14 !h-[calc(100dvh-3.5rem)] !max-h-[calc(100dvh-3.5rem)] md:!w-72 md:!min-w-[288px] md:!max-w-[288px] xl:!fixed xl:!left-0 xl:!top-14 xl:!z-50 xl:!h-[calc(100dvh-3.5rem)] xl:!max-h-[calc(100dvh-3.5rem)] !bg-background"
+      className="!top-14 !h-[calc(100dvh-3.5rem)] !max-h-[calc(100dvh-3.5rem)] !bg-background md:!top-auto md:!h-auto md:!max-h-none md:!w-72 md:!min-w-[288px] md:!max-w-[288px] md:!shadow-none"
       contentClassName="!p-0 !bg-background"
       footerClassName="!bg-background"
       footer={(
@@ -147,15 +227,19 @@ export function GameMasterPage({
   );
 
   return (
-    <AppShell mobileAddAction={null} sidebars={sessionSidebar}>
-      <GameMasterHeader
-        isSessionsSidebarOpen={isSessionsSidebarOpen}
-        onToggleSessions={() => onSessionsSidebarOpenChange(!isSessionsSidebarOpen)}
-      />
-
+    <AppShell
+      header={(
+        <GameMasterHeader
+          isSessionsSidebarOpen={isSessionsSidebarOpen}
+          onToggleSessions={() => onSessionsSidebarOpenChange(!isSessionsSidebarOpen)}
+        />
+      )}
+      mobileAddAction={null}
+      sidebars={sessionSidebar}
+    >
       <div className="relative min-h-[calc(100dvh-3.5rem)] w-full">
 
-        <div className="flex flex-col gap-4 px-4 py-4 md:gap-6 md:px-72 md:py-6">
+        <div className="flex flex-col gap-4 px-4 py-4 md:gap-6 md:px-6 md:py-6">
           <div className="mx-auto w-full max-w-[1200px] flex flex-col gap-4 md:gap-6">
             <Breadcrumbs items={breadcrumbs} />
             <PlayerCardsRow characters={characters} />
@@ -182,7 +266,7 @@ export function GameMasterPage({
                     />
                   ) : (
                     <div>
-                      <Heading level={2} variant="sectionDisplay">
+                      <SectionHeading>
                         <button
                           type="button"
                           onClick={() => setIsRenamingSession(true)}
@@ -191,8 +275,68 @@ export function GameMasterPage({
                         >
                           {editingSessionName || "Untitled Session"}
                         </button>
-                      </Heading>
+                      </SectionHeading>
                     </div>
+                  )}
+                  {scenes.length > 0 ? (
+                    <div className="flex flex-col gap-8">
+                      {scenes.map((scene, sceneIndex) => (
+                        <section key={scene.id}>
+                          <div className="mt-4 flex min-h-12 items-center justify-between gap-4">
+                            <Heading level={3} variant="subsection">
+                              Scene {sceneIndex + 1}
+                            </Heading>
+                            <SceneActionsMenu
+                              sceneNumber={sceneIndex + 1}
+                              onAddBefore={() => addScene(sceneIndex, "before")}
+                              onAddAfter={() => addScene(sceneIndex, "after")}
+                              onCopy={() => copyScene(sceneIndex)}
+                              onDelete={() => deleteScene(scene.id)}
+                            />
+                          </div>
+                          <div className="mt-2">
+                            <span className="wfrp-label mb-2 block text-wfrp-muted-text">
+                              Add component
+                            </span>
+                            <WfrpFilterChips
+                              options={sceneComponentOptions}
+                              selectedIds={scene.components}
+                              onChange={(components) => updateSceneComponents(scene.id, components)}
+                              ariaLabel={`Scene ${sceneIndex + 1} components`}
+                            />
+                          </div>
+                          {scene.components.length > 0 ? (
+                            <div className="mt-6 flex flex-col gap-5">
+                              {scene.components.map((component) => (
+                                <div key={component}>
+                                  <Heading level={4} variant="subsection">
+                                    {sceneComponentOptions.find((option) => option.id === component)?.label}
+                                  </Heading>
+                                  {component === "introduction" ? (
+                                    <FormattedTextField
+                                      value={scene.introductionText}
+                                      onChange={(value) => updateIntroductionText(scene.id, value)}
+                                      ariaLabel={`Scene ${sceneIndex + 1} introduction`}
+                                      placeholder="Write the scene introduction…"
+                                      className="mt-3"
+                                    />
+                                  ) : null}
+                                </div>
+                              ))}
+                            </div>
+                          ) : null}
+                        </section>
+                      ))}
+                    </div>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      onClick={() => setScenes([createScene()])}
+                      leadingIcon={<Plus />}
+                      className="mt-4"
+                    >
+                      Add scene
+                    </Button>
                   )}
                 </div>
               ) : (

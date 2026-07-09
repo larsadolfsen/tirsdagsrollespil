@@ -54,7 +54,16 @@ export function DropdownMenuTrigger({ asChild, children, ...props }: ButtonHTMLA
   );
 }
 
-export function DropdownMenuContent({ className, align = "start", onKeyDown, ...props }: HTMLAttributes<HTMLDivElement> & { align?: "start" | "center" | "end" }) {
+export function DropdownMenuContent({
+  className,
+  align = "start",
+  offset = "default",
+  onKeyDown,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & {
+  align?: "start" | "center" | "end";
+  offset?: "default" | "overlap";
+}) {
   const context = useDropdownContext("DropdownMenuContent");
 
   if (!context.open) {
@@ -75,7 +84,9 @@ export function DropdownMenuContent({ className, align = "start", onKeyDown, ...
       tabIndex={-1}
       onKeyDown={handleKeyDown}
       className={cn(
-        "absolute z-50 mt-2 min-w-40 overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-wfrp-popover",
+        "absolute z-50 min-w-40 overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-wfrp-popover",
+        offset === "default" && "mt-2",
+        offset === "overlap" && "-mt-1",
         align === "end" && "right-0",
         align === "center" && "left-1/2 -translate-x-1/2",
         className,
@@ -85,20 +96,31 @@ export function DropdownMenuContent({ className, align = "start", onKeyDown, ...
   );
 }
 
-export function DropdownMenuItem({ className, inset, onClick, ...props }: HTMLAttributes<HTMLDivElement> & { inset?: boolean }) {
+export function DropdownMenuItem({
+  className,
+  inset,
+  variant = "default",
+  onClick,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & {
+  inset?: boolean;
+  variant?: "default" | "destructive";
+}) {
   const context = useDropdownContext("DropdownMenuItem");
 
   return (
     <div
       role="menuitem"
       tabIndex={0}
+      data-variant={variant}
       onClick={(event) => {
         onClick?.(event);
         context.setOpen(false);
       }}
       className={cn(
-        "wfrp-text relative flex min-h-9 cursor-pointer select-none items-center rounded-sm px-2 py-1.5 outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "wfrp-text relative flex min-h-9 w-full cursor-pointer select-none items-center px-3 py-1.5 outline-none transition-colors hover:bg-wfrp-control-hover hover:text-white focus:bg-wfrp-control-hover focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         inset && "pl-8",
+        variant === "destructive" && "text-white hover:!text-red-300 focus:!text-red-300",
         className,
       )}
       {...props}
@@ -111,7 +133,7 @@ export function DropdownMenuLabel({ className, inset, ...props }: HTMLAttributes
 }
 
 export function DropdownMenuSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("-mx-1 my-1 h-px bg-border", className)} {...props} />;
+  return <div className={cn("h-px bg-border", className)} {...props} />;
 }
 
 export const DropdownMenuGroup = ({ children }: { children?: ReactNode }) => <>{children}</>;

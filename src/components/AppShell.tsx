@@ -9,17 +9,20 @@ type MobileFloatingAction = {
 
 interface AppShellProps {
   children: ReactNode;
+  header?: ReactNode;
   mobileAddAction: MobileFloatingAction | null;
   sidebars: ReactNode;
 }
 
 export function AppShell({
   children,
+  header,
   mobileAddAction,
   sidebars,
 }: AppShellProps) {
   return (
     <div className="min-h-screen bg-background text-wfrp-page-text font-sans selection:bg-wfrp-gold/40 flex flex-col">
+      {header}
       <div className="flex flex-1 overflow-hidden relative">
         <main className="flex-1 overflow-y-auto p-0">
           {children}

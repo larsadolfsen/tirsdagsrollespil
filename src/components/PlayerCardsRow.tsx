@@ -96,10 +96,10 @@ export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
 
   return (
     <section
-      className="flex flex-wrap gap-4 w-full mb-4 select-none"
+      className="grid w-full grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 mb-4 select-none"
       aria-labelledby="player-characters-heading"
     >
-      <div className="w-full">
+      <div className="col-span-full w-full">
         <SectionHeading id="player-characters-heading">
           Characters
         </SectionHeading>
@@ -120,12 +120,12 @@ export function PlayerCardsRow({ characters }: PlayerCardsRowProps) {
         const woundsPercent = woundsMax > 0 ? (safeWoundsCurrent / woundsMax) * 100 : 0;
 
         return (
-          <div key={character.id} className="w-full max-w-[288px]">
+          <div key={character.id} className="min-w-0 w-full">
             <a
               href={`/${character.campaignId}/${character.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="wfrp-landing-character-card no-underline relative group max-w-[288px]"
+              className="wfrp-landing-character-card no-underline relative group"
               aria-label={`Open ${character.name} in a new tab`}
             >
               <div className="wfrp-landing-portrait">
