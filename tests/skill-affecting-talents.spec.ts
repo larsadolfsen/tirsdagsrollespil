@@ -41,7 +41,7 @@ test("a skill affected only by talents the character doesn't have shows no affec
   const enduranceRow = page.locator(".wfrp-data-accordion-row").filter({ hasText: "Endurance" }).first();
   await enduranceRow.locator(".wfrp-data-accordion-summary").click();
 
-  await expect(enduranceRow.getByText("Affecting Talents")).toHaveCount(0);
+  await expect(enduranceRow.getByText("Talents", { exact: true })).toHaveCount(0);
 });
 
 test("a skill with no affecting talents shows no affecting talents row", async ({ page }) => {
@@ -52,5 +52,5 @@ test("a skill with no affecting talents shows no affecting talents row", async (
   const psychometryRow = page.locator(".wfrp-data-accordion-row").filter({ hasText: "Psychometry" }).first();
   await psychometryRow.locator(".wfrp-data-accordion-summary").click();
 
-  await expect(psychometryRow.getByText("Affecting Talents")).toHaveCount(0);
+  await expect(psychometryRow.getByText("Talents", { exact: true })).toHaveCount(0);
 });
