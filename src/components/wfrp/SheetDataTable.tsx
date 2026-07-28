@@ -248,7 +248,9 @@ export function SheetDataAccordionDetails({
   description?: ReactNode;
   descriptionFallback?: ReactNode;
   rows?: Array<{
+    block?: boolean;
     bordered?: boolean;
+    divider?: boolean;
     label: string;
     value: ReactNode;
     valueClassName?: string;
@@ -269,8 +271,11 @@ export function SheetDataAccordionDetails({
               <div
                 key={row.label}
                 className={cn(
-                  "grid min-w-0 grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 wfrp-text-strong text-wfrp-muted-text",
+                  row.block
+                    ? "flex min-w-0 flex-col gap-1 wfrp-text-strong text-wfrp-muted-text"
+                    : "grid min-w-0 grid-cols-[minmax(7rem,max-content)_minmax(0,1fr)] items-baseline gap-3 wfrp-text-strong text-wfrp-muted-text",
                   row.bordered && "border-y border-white/10 py-1",
+                  row.divider && "border-t border-white/10 pt-2",
                 )}
               >
                 <span className="wfrp-list-cell-strong text-wfrp-muted-text">{row.label}</span>

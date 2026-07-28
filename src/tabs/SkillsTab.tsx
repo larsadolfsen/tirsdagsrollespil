@@ -172,15 +172,16 @@ export function SkillsTab({
                     { label: "Advances", value: formattedAdvances, valueClassName: "!text-left" },
                     ...(affectingTalents.length > 0
                       ? [{
-                          bordered: true,
+                          block: true,
+                          divider: true,
                           label: "Talents",
-                          valueClassName: "col-span-2",
                           value: (
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-1">
                               {affectingTalents.map((talent) => (
-                                <div key={talent.id} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                <div key={talent.id} className="flex flex-wrap items-baseline gap-x-2">
                                   <Button variant="unstyled"
                                     type="button"
+                                    autoHeight
                                     onClick={() => onNavigateToTalent(talent.id)}
                                     className="wfrp-skill-link shrink-0"
                                     aria-label={`View ${talent.name} talent`}
