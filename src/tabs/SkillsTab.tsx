@@ -172,8 +172,9 @@ export function SkillsTab({
                     { label: "Advances", value: formattedAdvances, valueClassName: "!text-left" },
                     ...(affectingTalents.length > 0
                       ? [{
+                          bordered: true,
                           label: "Talents",
-                          valueClassName: "col-span-2 pt-1",
+                          valueClassName: "col-span-2",
                           value: (
                             <div className="flex flex-col gap-2">
                               {affectingTalents.map((talent) => (
