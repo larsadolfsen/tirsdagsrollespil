@@ -217,14 +217,6 @@ export const talentDefinitions: TalentDefinition[] = [
     description: "You are a born debater, granting a bonus to Charm or Intimidate Tests made to win an argument.",
   },
   {
-    id: "talent_armour",
-    name: "Armour",
-    max: "1",
-    grouped: true,
-    specialisationLabel: "Armour type and rating",
-    description: "Worn or natural protection that grants Armour Points. Record the armour type and the Armour Points it provides as the specialisation.",
-  },
-  {
     id: "talent_attractive",
     relatedSkillIds: ["skill_charm"],
     name: "Attractive",
@@ -358,28 +350,12 @@ export const talentDefinitions: TalentDefinition[] = [
     description: "You are of recognised noble birth, marking you as a person of Status and opening doors closed to commoners.",
   },
   {
-    id: "talent_prejudice",
-    name: "Prejudice",
-    max: "1",
-    grouped: true,
-    specialisationLabel: "Target of prejudice",
-    description: "Choose a person, group, or kind of creature when you take this Talent. You openly dislike them, which hampers your social dealings with that target.",
-  },
-  {
     id: "talent_public_speaker",
     relatedSkillIds: ["skill_charm"],
     name: "Public Speaker",
     max: "Fellowship Bonus",
     tests: "Charm or Leadership Tests when addressing a crowd",
     description: "You can hold a crowd, granting a bonus to Charm or Leadership Tests when addressing many people at once.",
-  },
-  {
-    id: "talent_ranged",
-    name: "Ranged",
-    max: "1",
-    grouped: true,
-    specialisationLabel: "Weapon and bonus",
-    description: "A combat bonus with a specific ranged weapon. Record the weapon and the bonus it grants as the specialisation.",
   },
   {
     id: "talent_relentless",
@@ -478,14 +454,6 @@ export const talentDefinitions: TalentDefinition[] = [
     name: "Wealthy",
     max: "None",
     description: "You command considerable personal wealth, reflected in your possessions and standing.",
-  },
-  {
-    id: "talent_weapon",
-    name: "Weapon",
-    max: "1",
-    grouped: true,
-    specialisationLabel: "Weapon and bonus",
-    description: "A combat bonus with a specific melee weapon. Record the weapon and the bonus it grants as the specialisation.",
   },
   {
     id: "talent_acute_sense",

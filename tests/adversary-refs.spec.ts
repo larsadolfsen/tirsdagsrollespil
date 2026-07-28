@@ -69,10 +69,13 @@ test("field-specific resolution is id-collision safe", () => {
   // A talent-only name resolves as a talent, not a trait.
   expect(parseTalentEntry("Strike to Stun").unresolved).toBe(false);
   expect(parseTraitEntry("Strike to Stun").unresolved).toBe(true);
-  // "Weapon" exists in BOTH catalogs (a meta-entry pending removal in A03/Plan 04).
-  // Each parser resolves only within its own catalog — never the other's id.
-  expect(parseTalentEntry("Weapon (Sword) +8").talentId).toBe("talent_weapon");
+  // "Weapon" is now trait-only (the meta talent was removed in Plan 04).
+  expect(parseTalentEntry("Weapon (Sword) +8").unresolved).toBe(true);
   expect(parseTraitEntry("Weapon (Sword) +8").traitId).toBe("trait_weapon");
+  // "Hatred" is a legitimate name in BOTH catalogs (a talent AND a bestiary trait).
+  // Each parser resolves only within its own catalog — never the other's id.
+  expect(parseTalentEntry("Hatred (Orcs)").talentId).toBe("talent_hatred");
+  expect(parseTraitEntry("Hatred (Orcs)").traitId).toBe("trait_hatred");
   // Unknown strings resolve in neither.
   expect(parseSkillEntry("Definitely Not A Skill").unresolved).toBe(true);
 });
