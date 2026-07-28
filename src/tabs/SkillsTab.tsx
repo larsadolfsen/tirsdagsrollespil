@@ -6,9 +6,17 @@ import {
   SheetDataRollCell,
   SheetDataSection,
 } from "../components/wfrp";
-import { talentsAffectingSkill } from "../lib/skillTalentIndex";
+import type { ResolvedCharacterTalent } from "../data/characters/resolved";
+import { formatTalentEffect } from "../lib/talentEffects";
+import { talentsAffectingSkillAmong } from "../lib/skillTalentIndex";
 import type { Characteristic } from "../types";
 import type { SkillSubtab } from "./tabTypes";
+
+function getTalentRuleText(talent: ResolvedCharacterTalent): string {
+  return talent.effects?.length
+    ? talent.effects.map(formatTalentEffect).join("; ")
+    : talent.description;
+}
 
 type SkillRow = {
   key: string;
@@ -45,6 +53,7 @@ export function SkillsTab({
   handleRoll,
   onOpenAdvance,
   onNavigateToTalent,
+  characterTalents,
 }: {
   activeSkillSubtab: SkillSubtab;
   setActiveSkillSubtab: (subtab: SkillSubtab) => void;
@@ -54,7 +63,11 @@ export function SkillsTab({
   onOpenAdvance: () => void;
   openSkillInfo?: (skillName: string) => void;
   onNavigateToTalent: (talentId: string) => void;
+  characterTalents: ResolvedCharacterTalent[];
 }) {
+  const uniqueCharacterTalents = Array.from(
+    new Map(characterTalents.map((talent) => [talent.id, talent])).values(),
+  );
   return (
     <SubtabContentFrame
       contentClassName="max-xl:pb-24"
@@ -99,7 +112,9 @@ export function SkillsTab({
             const charValue = attributes[skill.characteristic] || 0;
             const totalValue = charValue + skill.advances;
             const formattedAdvances = skill.advances === 0 ? "-" : `+${skill.advances}`;
-            const affectingTalents = skill.skillId ? talentsAffectingSkill(skill.skillId) : [];
+            const affectingTalents = skill.skillId
+              ? talentsAffectingSkillAmong(skill.skillId, uniqueCharacterTalents)
+              : [];
 
             return (
               <SheetDataAccordionRow
@@ -159,16 +174,20 @@ export function SkillsTab({
                       ? [{
                           label: "Affecting Talents",
                           value: (
-                            <div className="flex flex-wrap gap-x-3 gap-y-1">
+                            <div className="flex flex-col gap-2">
                               {affectingTalents.map((talent) => (
-                                <Button variant="unstyled"
-                                  key={talent.id}
-                                  type="button"
-                                  onClick={() => onNavigateToTalent(talent.id)}
-                                  className="wfrp-skill-link"
-                                  aria-label={`View ${talent.name} talent`}
-                                  name={talent.name}
-                                />
+                                <div key={talent.id} className="flex flex-col gap-0.5">
+                                  <Button variant="unstyled"
+                                    type="button"
+                                    onClick={() => onNavigateToTalent(talent.id)}
+                                    className="wfrp-skill-link self-start"
+                                    aria-label={`View ${talent.name} talent`}
+                                    name={talent.name}
+                                  />
+                                  <span className="text-left wfrp-text-strong leading-tight text-wfrp-muted-text">
+                                    {getTalentRuleText(talent)}
+                                  </span>
+                                </div>
                               ))}
                             </div>
                           ),

@@ -2,8 +2,15 @@ import type { TalentDefinition } from "../types/rules";
 import { talentDefinitions } from "../data/rules/wfrp4e/talents";
 import { parseSkillRef } from "./skillRefs";
 
+/** Minimal shape needed to derive a talent's skill refs (satisfied by TalentDefinition and ResolvedCharacterTalent). */
+type TalentSkillRefSource = {
+  relatedSkillIds?: TalentDefinition["relatedSkillIds"];
+  grantsSkillIds?: TalentDefinition["grantsSkillIds"];
+  effects?: TalentDefinition["effects"];
+};
+
 /** All structured skill refs a talent carries (effect skillIds + related + grants). */
-export function collectTalentSkillRefs(talent: TalentDefinition): string[] {
+export function collectTalentSkillRefs(talent: TalentSkillRefSource): string[] {
   return [
     ...(talent.relatedSkillIds ?? []),
     ...(talent.grantsSkillIds ?? []),
@@ -19,8 +26,8 @@ export function collectTalentSkillRefs(talent: TalentDefinition): string[] {
  * ("skill_stealth") so a query on the base skill finds it. Single source of truth —
  * built from talent refs, never stored back on skills.
  */
-function buildSkillTalentIndexUncached(talents: TalentDefinition[]): Map<string, TalentDefinition[]> {
-  const index = new Map<string, TalentDefinition[]>();
+function buildSkillTalentIndexUncached<T extends TalentSkillRefSource>(talents: T[]): Map<string, T[]> {
+  const index = new Map<string, T[]>();
   for (const talent of talents) {
     const baseIds = new Set(collectTalentSkillRefs(talent).map((ref) => parseSkillRef(ref).baseId));
     for (const baseId of baseIds) {
@@ -55,4 +62,16 @@ export function talentsAffectingSkill(
   talents?: TalentDefinition[],
 ): TalentDefinition[] {
   return buildSkillTalentIndex(talents).get(parseSkillRef(skillId).baseId) ?? [];
+}
+
+/**
+ * Talents from an arbitrary list (e.g. a specific character's own talents) affecting
+ * a given skill. Unlike talentsAffectingSkill, this is never memoised — callers pass
+ * a caller-owned list, not the static catalog.
+ */
+export function talentsAffectingSkillAmong<T extends TalentSkillRefSource>(
+  skillId: string,
+  talents: T[],
+): T[] {
+  return buildSkillTalentIndexUncached(talents).get(parseSkillRef(skillId).baseId) ?? [];
 }

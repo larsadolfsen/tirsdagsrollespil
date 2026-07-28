@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-// Plan 12: a skill's detail cross-links to every catalog talent that references it
-// (catalog-wide, not filtered to the character's own talents), symmetric with
+// A skill's detail cross-links only to the character's own talents that reference it
+// (not every catalog talent), and shows each talent's rule text — symmetric with
 // Plan 11's talent -> related skills links.
 
 test.beforeEach(async ({ page }) => {
@@ -16,20 +16,32 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("skill detail shows affecting talents and navigates to the Talents section", async ({ page }) => {
+test("skill detail shows only the character's own affecting talents, with rule text, and navigates to the Talents section", async ({ page }) => {
   await page.goto("/enemy_within/karl-muller");
   await page.getByRole("button", { name: "Skills", exact: true }).click();
 
-  // Karl has Endurance trained; Resistance (Corruption) references skill_endurance
-  // in the catalog even though Karl himself doesn't have that talent.
-  const enduranceRow = page.locator(".wfrp-data-accordion-row").filter({ hasText: "Endurance" }).first();
-  await enduranceRow.locator(".wfrp-data-accordion-summary").click();
+  // Karl has Pray (Sigmar) trained and owns the Bless talent, which references skill_pray.
+  const prayRow = page.locator(".wfrp-data-accordion-row").filter({ hasText: "Pray" }).first();
+  await prayRow.locator(".wfrp-data-accordion-summary").click();
 
-  const talentLink = enduranceRow.getByRole("button", { name: "View Resistance (Corruption) talent" });
+  const talentLink = prayRow.getByRole("button", { name: "View Bless talent" });
   await expect(talentLink).toBeVisible();
+  await expect(prayRow.getByText("Allows the character to learn and invoke Blessings appropriate to their cult.")).toBeVisible();
 
   await talentLink.click();
   await expect(page.locator(".wfrp-subpanel-header").filter({ hasText: "Talent" })).toBeVisible();
+});
+
+test("a skill affected only by talents the character doesn't have shows no affecting talents row", async ({ page }) => {
+  await page.goto("/enemy_within/karl-muller");
+  await page.getByRole("button", { name: "Skills", exact: true }).click();
+
+  // Karl has Endurance trained, but doesn't own Resistance (Corruption) or Iron Jaw,
+  // the only catalog talents that reference skill_endurance.
+  const enduranceRow = page.locator(".wfrp-data-accordion-row").filter({ hasText: "Endurance" }).first();
+  await enduranceRow.locator(".wfrp-data-accordion-summary").click();
+
+  await expect(enduranceRow.getByText("Affecting Talents")).toHaveCount(0);
 });
 
 test("a skill with no affecting talents shows no affecting talents row", async ({ page }) => {

@@ -2281,6 +2281,7 @@ export function AppComposition() {
                               setActiveInfo({ type: 'skill', name: skillName });
                             }}
                             onNavigateToTalent={() => selectMainTab("features")}
+                            characterTalents={characterTalents}
                           />
                         )}
 
