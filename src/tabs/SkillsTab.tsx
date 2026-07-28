@@ -176,11 +176,11 @@ export function SkillsTab({
                           value: (
                             <div className="flex flex-col gap-2">
                               {affectingTalents.map((talent) => (
-                                <div key={talent.id} className="flex flex-col gap-0.5">
+                                <div key={talent.id} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                                   <Button variant="unstyled"
                                     type="button"
                                     onClick={() => onNavigateToTalent(talent.id)}
-                                    className="wfrp-skill-link self-start"
+                                    className="wfrp-skill-link shrink-0"
                                     aria-label={`View ${talent.name} talent`}
                                     name={talent.name}
                                   />
